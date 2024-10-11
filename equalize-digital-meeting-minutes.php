@@ -106,7 +106,8 @@ function get_meeting_minutes( $request ) {
 
     $args = array(
         'post_type'      => 'edmm_meeting_minutes',
-        'posts_per_page' => 1,
+        'post_status'    => 'publish',
+        'posts_per_page' => 20,
         'paged'          => $page,
         'meta_key'       => 'edmm_meeting_date',
         'orderby'        => 'meta_value',
