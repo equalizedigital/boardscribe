@@ -111,15 +111,32 @@ function get_meeting_minutes( $request ) {
         'meta_key'       => 'edmm_meeting_date',
         'orderby'        => 'meta_value',
         'order'          => 'ASC',
+        'meta_query'     => array(
+            'relation' => 'AND',
+            array(
+                'key'     => 'edmm_meeting_date',
+                'compare' => 'EXISTS',
+            ),
+        ),
     );
 
     if ( ! empty( $params['included-years'] ) ) {
         $years = explode( ',', $params['included-years'] );
-        $args['date_query'] = array(
-            array(
-                'year' => $years,
-            ),
-        );
+    
+        // Add an OR clause for each year to match posts in those years
+        $year_queries = array( 'relation' => 'OR' );
+    
+        foreach ( $years as $year ) {
+            $year = intval( $year ); // Ensure the year is an integer
+            $year_queries[] = array(
+                'key'     => 'edmm_meeting_date',
+                'value'   => array( $year . '-01-01', $year . '-12-31' ),
+                'compare' => 'BETWEEN',
+                'type'    => 'DATE',
+            );
+        }
+    
+        $args['meta_query'][] = $year_queries;
     }
 
     $query = new \WP_Query( $args );
