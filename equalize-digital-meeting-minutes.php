@@ -141,7 +141,7 @@ function get_meeting_minutes( $request ) {
                     ? $date_object->format($not_held_date_format) 
                     : $date_object->format($held_date_format);
             } else {
-                $formatted_date = 'Date not available'; // Handle the case when date parsing fails
+                $formatted_date = '<span class="sr-text screen-reader-text">Date not available</span>'; // Handle the case when date parsing fails
             }
 
             $meetings[] = array(
@@ -149,8 +149,8 @@ function get_meeting_minutes( $request ) {
                 'date'   => $formatted_date,
                 'agenda' => $meeting_not_held 
                     ? 'Meeting not held' 
-                    : ( $meeting_agenda_url ? $meeting_agenda_url : 'Agenda not available' ),
-                'notes'  => $meeting_notes_url ? $meeting_notes_url : 'Meeting notes not available',
+                    : ( $meeting_agenda_url ? $meeting_agenda_url : '<span class="sr-text screen-reader-text">Agenda not available</span>' ),
+                'notes'  => $meeting_notes_url ? $meeting_notes_url : '<span class="sr-text screen-reader-text">Meeting notes not available</span>',
             );
         }
         wp_reset_postdata();
