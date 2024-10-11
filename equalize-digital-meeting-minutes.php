@@ -106,7 +106,7 @@ function get_meeting_minutes( $request ) {
 
     $args = array(
         'post_type'      => 'edmm_meeting_minutes',
-        'posts_per_page' => 20,
+        'posts_per_page' => 1,
         'paged'          => $page,
         'meta_key'       => 'edmm_meeting_date',
         'orderby'        => 'meta_value',
@@ -202,86 +202,164 @@ function meeting_minutes_shortcode( $atts ) {
     <div id="edmm-pagination"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        let currentPage = 1;
-        const apiUrl = '<?php echo esc_url_raw( $api_url ); ?>';
+            let currentPage = 1;
+            const apiUrl = '<?php echo esc_url_raw( $api_url ); ?>';
+            const maxSlots = 7;
 
-        const renderTable = (data) => {
-            let table = '<table><thead><tr>';
-            if ('<?php echo esc_js( $atts['hide-title'] ); ?>' !== 'true') {
-                table += '<th>Title</th>';
-            }
-            if ('<?php echo esc_js( $atts['hide-date'] ); ?>' !== 'true') {
-                table += '<th>Date</th>';
-            }
-            if ('<?php echo esc_js( $atts['hide-agenda'] ); ?>' !== 'true') {
-                table += '<th>Agenda</th>';
-            }
-            if ('<?php echo esc_js( $atts['hide-notes'] ); ?>' !== 'true') {
-                table += '<th>Notes</th>';
-            }
-            table += '</tr></thead><tbody>';
-            data.meetings.forEach(meeting => {
-                table += '<tr>';
+            const renderTable = (data) => {
+                let table = '<table><thead><tr>';
                 if ('<?php echo esc_js( $atts['hide-title'] ); ?>' !== 'true') {
-                    table += '<td scope="row">' + meeting.title + '</td>';
+                    table += '<th>Title</th>';
                 }
                 if ('<?php echo esc_js( $atts['hide-date'] ); ?>' !== 'true') {
-                    table += '<td>' + meeting.date + '</td>';
+                    table += '<th>Date</th>';
                 }
                 if ('<?php echo esc_js( $atts['hide-agenda'] ); ?>' !== 'true') {
-                    table += '<td>' + (meeting.agenda.startsWith('http') ? '<a href="' + meeting.agenda + '" aria-label="Agenda for ' + meeting.date + '">View Agenda</a>' : meeting.agenda) + '</td>';
+                    table += '<th>Agenda</th>';
                 }
                 if ('<?php echo esc_js( $atts['hide-notes'] ); ?>' !== 'true') {
-                    table += '<td>' + (meeting.notes.startsWith('http') ? '<a href="' + meeting.notes + '" aria-label="Notes for ' + meeting.date + '">View Notes</a>' : meeting.notes) + '</td>';
+                    table += '<th>Notes</th>';
                 }
-                table += '</tr>';
-            });
-            table += '</tbody></table>';
-            document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
-
-            let pagination = '';
-            if (data.max_num_pages > 1) {
-                pagination += '<nav aria-label="Pagination"><ul class="usa-pagination">';
-                for (let i = 1; i <= data.max_num_pages; i++) {
-                    pagination += '<li class="usa-pagination__item' + (i === data.current_page ? ' usa-current' : '') + '"><a href="#" data-page="' + i + '" class="usa-pagination__link" aria-label="Page ' + i + '">' + i + '</a></li>';
-                }
-                pagination += '</ul></nav>';
-            }
-            document.getElementById('edmm-pagination').innerHTML = pagination;
-
-            document.querySelectorAll('#edmm-pagination a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    currentPage = parseInt(this.getAttribute('data-page'));
-                    console.log('Pagination clicked, currentPage updated to:', currentPage); // Debugging current page update
-                    fetchMeetings();
-                });
-            });
-        };
-
-        const fetchMeetings = () => {
-            const urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
-            console.log('Fetching from URL:', urlWithPage); // Debug to verify final URL
-
-            fetch(urlWithPage)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.statusText);
+                table += '</tr></thead><tbody>';
+                data.meetings.forEach(meeting => {
+                    table += '<tr>';
+                    if ('<?php echo esc_js( $atts['hide-title'] ); ?>' !== 'true') {
+                        table += '<td scope="row">' + meeting.title + '</td>';
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Data received:', data); // Debug response data
-                    renderTable(data);
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
+                    if ('<?php echo esc_js( $atts['hide-date'] ); ?>' !== 'true') {
+                        table += '<td>' + meeting.date + '</td>';
+                    }
+                    if ('<?php echo esc_js( $atts['hide-agenda'] ); ?>' !== 'true') {
+                        table += '<td>' + (meeting.agenda.startsWith('http') ? '<a href="' + meeting.agenda + '" aria-label="Agenda for ' + meeting.date + '">View Agenda</a>' : meeting.agenda) + '</td>';
+                    }
+                    if ('<?php echo esc_js( $atts['hide-notes'] ); ?>' !== 'true') {
+                        table += '<td>' + (meeting.notes.startsWith('http') ? '<a href="' + meeting.notes + '" aria-label="Notes for ' + meeting.date + '">View Notes</a>' : meeting.notes) + '</td>';
+                    }
+                    table += '</tr>';
                 });
-        };
+                table += '</tbody></table>';
+                document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
 
-        fetchMeetings(); // Initial fetch to load the first page
-    });
+                let pagination = '';
+                if (data.max_num_pages > 1) {
+                    pagination += '<nav aria-label="Pagination"><div class="pagination-buttons">';
+
+                    // Add Previous button if not on the first page
+                    if (data.current_page > 1) {
+                        pagination += '<button type="button" class="pagination-button prev" aria-label="Previous Page" data-page="' + (data.current_page - 1) + '">Previous</button>';
+                    }
+
+                    // Calculate which pages to show
+                    let slots = calculatePaginationSlots(data.current_page, data.max_num_pages);
+
+                    // Render pagination buttons
+                    slots.forEach(slot => {
+                        if (slot === '...') {
+                            pagination += '<span class="pagination-ellipsis">...</span>';
+                        } else {
+                            pagination += '<button type="button" class="pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '">' + slot + '</button>';
+                        }
+                    });
+
+                    // Add Next button if not on the last page
+                    if (data.current_page < data.max_num_pages) {
+                        pagination += '<button type="button" class="pagination-button next" aria-label="Next Page" data-page="' + (data.current_page + 1) + '">Next</button>';
+                    }
+
+                    pagination += '</div></nav>';
+                }
+                document.getElementById('edmm-pagination').innerHTML = pagination;
+
+                // Add event listeners to buttons
+                document.querySelectorAll('#edmm-pagination button').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetPage = parseInt(this.getAttribute('data-page'));
+                        if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= data.max_num_pages) {
+                            currentPage = targetPage;
+                            fetchMeetings();
+                        }
+                    });
+                });
+            };
+
+            const calculatePaginationSlots = (currentPage, totalPages) => {
+                let slots = [];
+
+                // Always show the first page
+                slots.push(1);
+
+                // If there are less than or equal to maxSlots pages, show all of them
+                if (totalPages <= maxSlots) {
+                    for (let i = 2; i <= totalPages; i++) {
+                        slots.push(i);
+                    }
+                } else {
+                    // Show first page, current page, previous, next, and last page, plus ellipsis
+                    if (currentPage > 3) {
+                        slots.push('...');
+                    }
+
+                    // Add the previous, current, and next pages
+                    let start = Math.max(2, currentPage - 1);
+                    let end = Math.min(currentPage + 1, totalPages - 1);
+
+                    for (let i = start; i <= end; i++) {
+                        slots.push(i);
+                    }
+
+                    // If there are more pages after the current set, add an ellipsis
+                    if (currentPage < totalPages - 2) {
+                        slots.push('...');
+                    }
+
+                    // Always show the last page
+                    slots.push(totalPages);
+                }
+
+                return slots;
+            };
+
+            const fetchMeetings = () => {
+                const urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
+                fetch(urlWithPage)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        renderTable(data);
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            };
+
+            fetchMeetings(); // Initial fetch to load the first page
+        });
     </script>
+    <style>
+        .pagination-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .pagination-button {
+            padding: 5px 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .pagination-button.current {
+            background-color: #0056b3;
+        }
+        .pagination-button[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
     <?php
     return ob_get_clean();
 }
