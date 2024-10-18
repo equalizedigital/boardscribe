@@ -10,7 +10,14 @@ namespace EqualizeDigital\MeetingMinutes;
  * Author URI: https://equalizedigital.com
  */
 
-// Register Custom Post Type
+/**
+ * Registers the 'Meeting Minutes' custom post type.
+ *
+ * This function defines the labels and arguments for the 'Meeting Minutes' custom post type
+ * and registers it with WordPress using the `register_post_type` function.
+ *
+ * @return void
+ */
 function register_meeting_minutes_cpt() {
     $labels = array(
         'name'               => _x( 'Meeting Minutes', 'Post Type General Name', 'edmm' ),
@@ -35,7 +42,15 @@ function register_meeting_minutes_cpt() {
 }
 add_action( 'init', __NAMESPACE__ . '\register_meeting_minutes_cpt' );
 
-// Add Meta Fields using ACF Free
+/**
+ * Adds ACF meta fields for the 'Meeting Minutes' post type.
+ *
+ * This function checks if the Advanced Custom Fields (ACF) plugin is active,
+ * and if so, it defines custom fields for storing meeting-related metadata
+ * such as the meeting date, agenda URL, and notes URL.
+ *
+ * @return void
+ */
 function add_acf_meta_fields() {
     if ( function_exists( 'acf_add_local_field_group' ) ) {
         acf_add_local_field_group( array(
@@ -83,7 +98,14 @@ function add_acf_meta_fields() {
 }
 add_action( 'acf/init', __NAMESPACE__ . '\add_acf_meta_fields' );
 
-// Create REST Route for Meeting Minutes
+/**
+ * Registers a custom REST API route for retrieving meeting minutes.
+ *
+ * This function creates a custom REST API endpoint at `/edmm/v1/meeting-minutes/`
+ * that allows users to retrieve meeting minutes using GET requests.
+ *
+ * @return void
+ */
 function register_meeting_minutes_rest_route() {
     register_rest_route( 'edmm/v1', '/meeting-minutes/', array(
         'methods'             => 'GET',
@@ -93,21 +115,30 @@ function register_meeting_minutes_rest_route() {
 }
 add_action( 'rest_api_init', __NAMESPACE__ . '\register_meeting_minutes_rest_route' );
 
+/**
+ * Retrieves meeting minutes via a custom REST API endpoint.
+ *
+ * This function handles the logic for retrieving meeting minutes from the database
+ * based on the specified parameters, such as page number and posts per page.
+ * It also formats the response to include the necessary information like title,
+ * date, agenda, and notes.
+ *
+ * @param \WP_REST_Request $request The request object containing the parameters.
+ * @return \WP_REST_Response The response object containing the meeting minutes.
+ */
 function get_meeting_minutes( $request ) {
     
-    $params = $request->get_query_params();
-    error_log('Received parameters: ' . print_r($params, true));
+    $params         = $request->get_query_params();
+    $page           = isset($params['page']) ? absint($params['page']) : 1;
+    $posts_per_page = isset($params['posts_per_page']) ? absint($params['posts_per_page']) : 20;
 
-    $page = isset($params['page']) ? absint($params['page']) : 1;
-    error_log('Page received (from $params): ' . $page);
-
-    $held_date_format = isset($params['held-date-format']) ? sanitize_text_field($params['held-date-format']) : 'Y/m/d';
-    $not_held_date_format = isset($params['not-held-date-format']) ? sanitize_text_field($params['not-held-date-format']) : 'Y/m';
+    $held_date_format = isset($params['held_date_format']) ? sanitize_text_field($params['held_date_format']) : 'Y/m/d';
+    $not_held_date_format = isset($params['not_held_date_format']) ? sanitize_text_field($params['not_held_date_format']) : 'Y/m';
 
     $args = array(
         'post_type'      => 'edmm_meeting_minutes',
         'post_status'    => 'publish',
-        'posts_per_page' => 20,
+        'posts_per_page' => $posts_per_page,
         'paged'          => $page,
         'meta_key'       => 'edmm_meeting_date',
         'orderby'        => 'meta_value',
@@ -121,8 +152,8 @@ function get_meeting_minutes( $request ) {
         ),
     );
 
-    if ( ! empty( $params['included-years'] ) ) {
-        $years = explode( ',', $params['included-years'] );
+    if ( ! empty( $params['included_years'] ) ) {
+        $years = explode( ',', $params['included_years'] );
     
         // Add an OR clause for each year to match posts in those years
         $year_queries = array( 'relation' => 'OR' );
@@ -151,7 +182,7 @@ function get_meeting_minutes( $request ) {
             $meeting_agenda_url = get_field( 'edmm_meeting_agenda_url' );
             $meeting_notes_url  = get_field( 'edmm_meeting_notes_url' );
 
-            error_log('Raw meeting date value from ACF: ' . print_r($meeting_date, true));
+            //error_log('Raw meeting date value from ACF: ' . print_r($meeting_date, true));
 
             $date_object = \DateTime::createFromFormat('d/m/Y', $meeting_date);
             if ($date_object) {
@@ -178,62 +209,79 @@ function get_meeting_minutes( $request ) {
         'meetings'      => $meetings,
         'max_num_pages' => $query->max_num_pages,
         'current_page'  => $page,
+        'total_entries' => $query->found_posts,
     ) );
 }
 
-// Shortcode to Display Meeting Minutes Table
+/**
+ * Shortcode to display meeting minutes in a table format.
+ *
+ * This function provides a shortcode `[edmm_meeting_minutes]` that fetches and displays
+ * meeting minutes in a paginated table format. Users can customize the shortcode's behavior
+ * by passing attributes such as included years, date formats, and visibility options.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string The HTML output of the table.
+ */
 function meeting_minutes_shortcode( $atts ) {
     $atts = shortcode_atts( array(
-        'included-years'    => '',
-        'hide-title'        => 'false',
-        'hide-date'         => 'false',
-        'hide-agenda'       => 'false',
-        'hide-notes'        => 'false',
-        'held-date-format'  => 'Y/m/d',
-        'not-held-date-format' => 'Y/m'
+        'included_years'       => '',
+        'hide_title'           => 'false',
+        'hide_date'            => 'false',
+        'hide_agenda'          => 'false',
+        'hide_notes'           => 'false',
+        'held_date_format'     => 'Y/m/d',
+        'not_held_date_format' => 'Y/m',
+        'class'                => '',
+        'posts_per_page'       => 20,
     ), $atts, 'edmm_meeting_minutes' );
 
-    $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included-years=' . urlencode( $atts['included-years'] ) 
-        . '&held-date-format=' . urlencode( $atts['held-date-format'] )
-        . '&not-held-date-format=' . urlencode( $atts['not-held-date-format'] );
+    $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] ) 
+        . '&held_date_format=' . urlencode( $atts['held_date_format'] )
+        . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
+        . '&posts_per_page=' . absint( $atts['posts_per_page'] ); 
 
     ob_start();
     ?>
     <div id="edmm-meeting-minutes-table"></div>
     <div id="edmm-pagination"></div>
+    <div id="pagination-info" aria-live="polite" aria-atomic="true" style="position: absolute; left: -9999px;"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let currentPage = 1;
             const apiUrl = '<?php echo esc_url_raw( $api_url ); ?>';
             const maxSlots = 7;
+            const postsPerPage = <?php echo absint( $atts['posts_per_page'] ); ?>;
 
             const renderTable = (data) => {
-                let table = '<table><thead><tr>';
-                if ('<?php echo esc_js( $atts['hide-title'] ); ?>' !== 'true') {
+                let tableClass = '<?php echo esc_js( $atts['class'] ); ?>';
+                let table = '<table class="' + tableClass + '"><thead><tr>';
+                
+                if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
                     table += '<th>Title</th>';
                 }
-                if ('<?php echo esc_js( $atts['hide-date'] ); ?>' !== 'true') {
+                if ('<?php echo esc_js( $atts['hide_date'] ); ?>' !== 'true') {
                     table += '<th>Date</th>';
                 }
-                if ('<?php echo esc_js( $atts['hide-agenda'] ); ?>' !== 'true') {
+                if ('<?php echo esc_js( $atts['hide_agenda'] ); ?>' !== 'true') {
                     table += '<th>Agenda</th>';
                 }
-                if ('<?php echo esc_js( $atts['hide-notes'] ); ?>' !== 'true') {
+                if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
                     table += '<th>Notes</th>';
                 }
                 table += '</tr></thead><tbody>';
                 data.meetings.forEach(meeting => {
                     table += '<tr>';
-                    if ('<?php echo esc_js( $atts['hide-title'] ); ?>' !== 'true') {
+                    if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
                         table += '<td scope="row">' + meeting.title + '</td>';
                     }
-                    if ('<?php echo esc_js( $atts['hide-date'] ); ?>' !== 'true') {
+                    if ('<?php echo esc_js( $atts['hide_date'] ); ?>' !== 'true') {
                         table += '<td>' + meeting.date + '</td>';
                     }
-                    if ('<?php echo esc_js( $atts['hide-agenda'] ); ?>' !== 'true') {
+                    if ('<?php echo esc_js( $atts['hide_agenda'] ); ?>' !== 'true') {
                         table += '<td>' + (meeting.agenda.startsWith('http') ? '<a href="' + meeting.agenda + '" aria-label="Agenda for ' + meeting.date + '">View Agenda</a>' : meeting.agenda) + '</td>';
                     }
-                    if ('<?php echo esc_js( $atts['hide-notes'] ); ?>' !== 'true') {
+                    if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
                         table += '<td>' + (meeting.notes.startsWith('http') ? '<a href="' + meeting.notes + '" aria-label="Notes for ' + meeting.date + '">View Notes</a>' : meeting.notes) + '</td>';
                     }
                     table += '</tr>';
@@ -241,13 +289,21 @@ function meeting_minutes_shortcode( $atts ) {
                 table += '</tbody></table>';
                 document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
 
+                // Update aria-live region with pagination info
+                const totalEntries = data.total_entries;
+                const startEntry = (currentPage - 1) * postsPerPage + 1;
+                const endEntry = Math.min(currentPage * postsPerPage, totalEntries);
+
+                const paginationInfo = `Showing ${startEntry} to ${endEntry} of ${totalEntries} entries`;
+                document.getElementById('pagination-info').textContent = paginationInfo;
+
                 let pagination = '';
                 if (data.max_num_pages > 1) {
-                    pagination += '<nav aria-label="Pagination"><div class="pagination-buttons">';
+                    pagination += '<nav aria-label="Pagination"><div class="edmm-pagination-buttons">';
 
                     // Add Previous button if not on the first page
                     if (data.current_page > 1) {
-                        pagination += '<button type="button" class="pagination-button prev" aria-label="Previous Page" data-page="' + (data.current_page - 1) + '">Previous</button>';
+                        pagination += '<button type="button" class="edmm-pagination-button prev" aria-label="Previous Page" data-page="' + (data.current_page - 1) + '">Previous</button>';
                     }
 
                     // Calculate which pages to show
@@ -258,13 +314,13 @@ function meeting_minutes_shortcode( $atts ) {
                         if (slot === '...') {
                             pagination += '<span class="pagination-ellipsis">...</span>';
                         } else {
-                            pagination += '<button type="button" class="pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '">' + slot + '</button>';
+                            pagination += '<button type="button" class="edmm-pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '">' + slot + '</button>';
                         }
                     });
 
                     // Add Next button if not on the last page
                     if (data.current_page < data.max_num_pages) {
-                        pagination += '<button type="button" class="pagination-button next" aria-label="Next Page" data-page="' + (data.current_page + 1) + '">Next</button>';
+                        pagination += '<button type="button" class="edmm-pagination-button next" aria-label="Next Page" data-page="' + (data.current_page + 1) + '">Next</button>';
                     }
 
                     pagination += '</div></nav>';
@@ -342,21 +398,21 @@ function meeting_minutes_shortcode( $atts ) {
         });
     </script>
     <style>
-        .pagination-buttons {
+        .edmm-pagination-buttons {
             display: flex;
             gap: 5px;
         }
-        .pagination-button {
+        .edmm-pagination-button {
             padding: 5px 10px;
             border: none;
             background-color: #007bff;
             color: white;
             cursor: pointer;
         }
-        .pagination-button.current {
+        .edmm-pagination-button.current {
             background-color: #0056b3;
         }
-        .pagination-button[disabled] {
+        .edmm-pagination-button[disabled] {
             background-color: #ccc;
             cursor: not-allowed;
         }
