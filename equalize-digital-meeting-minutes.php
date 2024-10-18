@@ -258,23 +258,23 @@ function meeting_minutes_shortcode( $atts ) {
                 let table = '<table class="edmm-meeting-minutes-table ' + tableClass + '"><thead><tr>';
                 
                 if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
-                    table += '<th>Title</th>';
+                    table += '<th scope="col">Title</th>';
                 }
                 if ('<?php echo esc_js( $atts['hide_date'] ); ?>' !== 'true') {
-                    table += '<th>Date</th>';
+                    table += '<th scope="col">Date</th>';
                 }
                 if ('<?php echo esc_js( $atts['hide_agenda'] ); ?>' !== 'true') {
-                    table += '<th>Agenda</th>';
+                    table += '<th scope="col">Agenda</th>';
                 }
                 if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
-                    table += '<th>Notes</th>';
+                    table += '<th scope="col">Notes</th>';
                 }
                 table += '</tr></thead><tbody>';
                 
                 data.meetings.forEach(meeting => {
                     table += '<tr>';
                     if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
-                        table += '<td data-label="Title">' + meeting.title + '</td>';
+                        table += '<td data-label="Title" scope="row">' + meeting.title + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_date'] ); ?>' !== 'true') {
                         table += '<td data-label="Date">' + meeting.date + '</td>';
@@ -288,8 +288,61 @@ function meeting_minutes_shortcode( $atts ) {
                     table += '</tr>';
                 });
                 table += '</tbody></table>';
+                
                 document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
+
+                // Update aria-live region with pagination info
+                const totalEntries = data.total_entries;
+                const startEntry = (currentPage - 1) * postsPerPage + 1;
+                const endEntry = Math.min(currentPage * postsPerPage, totalEntries);
+                const paginationInfo = `Showing ${startEntry} to ${endEntry} of ${totalEntries} entries`;
+                document.getElementById('pagination-info').textContent = paginationInfo;
+
+                // Pagination HTML
+                let pagination = '';
+                if (data.max_num_pages > 1) {
+                    pagination += '<nav aria-label="Pagination"><div class="edmm-pagination-buttons">';
+
+                    // Add Previous button if not on the first page
+                    if (data.current_page > 1) {
+                        pagination += '<button type="button" class="edmm-pagination-button prev" aria-label="Previous Page" data-page="' + (data.current_page - 1) + '">Previous</button>';
+                    }
+
+                    // Calculate which pages to show
+                    let slots = calculatePaginationSlots(data.current_page, data.max_num_pages);
+
+                    // Render pagination buttons
+                    slots.forEach(slot => {
+                        if (slot === '...') {
+                            pagination += '<span class="pagination-ellipsis">...</span>';
+                        } else {
+                            pagination += '<button type="button" class="edmm-pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '">' + slot + '</button>';
+                        }
+                    });
+
+                    // Add Next button if not on the last page
+                    if (data.current_page < data.max_num_pages) {
+                        pagination += '<button type="button" class="edmm-pagination-button next" aria-label="Next Page" data-page="' + (data.current_page + 1) + '">Next</button>';
+                    }
+
+                    pagination += '</div></nav>';
+                }
+
+                document.getElementById('edmm-pagination').innerHTML = pagination;
+
+                // Add event listeners to buttons
+                document.querySelectorAll('#edmm-pagination button').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetPage = parseInt(this.getAttribute('data-page'));
+                        if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= data.max_num_pages) {
+                            currentPage = targetPage;
+                            fetchMeetings();
+                        }
+                    });
+                });
             };
+
 
             const calculatePaginationSlots = (currentPage, totalPages) => {
                 let slots = [];
