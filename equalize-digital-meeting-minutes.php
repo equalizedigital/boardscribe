@@ -255,7 +255,7 @@ function meeting_minutes_shortcode( $atts ) {
 
             const renderTable = (data) => {
                 let tableClass = '<?php echo esc_js( $atts['class'] ); ?>';
-                let table = '<table class="' + tableClass + '"><thead><tr>';
+                let table = '<table class="edmm-meeting-minutes-table ' + tableClass + '"><thead><tr>';
                 
                 if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
                     table += '<th>Title</th>';
@@ -270,74 +270,25 @@ function meeting_minutes_shortcode( $atts ) {
                     table += '<th>Notes</th>';
                 }
                 table += '</tr></thead><tbody>';
+                
                 data.meetings.forEach(meeting => {
                     table += '<tr>';
                     if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
-                        table += '<td scope="row">' + meeting.title + '</td>';
+                        table += '<td data-label="Title">' + meeting.title + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_date'] ); ?>' !== 'true') {
-                        table += '<td>' + meeting.date + '</td>';
+                        table += '<td data-label="Date">' + meeting.date + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_agenda'] ); ?>' !== 'true') {
-                        table += '<td>' + (meeting.agenda.startsWith('http') ? '<a href="' + meeting.agenda + '" aria-label="Agenda for ' + meeting.date + '">View Agenda</a>' : meeting.agenda) + '</td>';
+                        table += '<td data-label="Agenda">' + (meeting.agenda.startsWith('http') ? '<a href="' + meeting.agenda + '" aria-label="Agenda for ' + meeting.date + '">View Agenda</a>' : meeting.agenda) + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
-                        table += '<td>' + (meeting.notes.startsWith('http') ? '<a href="' + meeting.notes + '" aria-label="Notes for ' + meeting.date + '">View Notes</a>' : meeting.notes) + '</td>';
+                        table += '<td data-label="Notes">' + (meeting.notes.startsWith('http') ? '<a href="' + meeting.notes + '" aria-label="Notes for ' + meeting.date + '">View Notes</a>' : meeting.notes) + '</td>';
                     }
                     table += '</tr>';
                 });
                 table += '</tbody></table>';
                 document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
-
-                // Update aria-live region with pagination info
-                const totalEntries = data.total_entries;
-                const startEntry = (currentPage - 1) * postsPerPage + 1;
-                const endEntry = Math.min(currentPage * postsPerPage, totalEntries);
-
-                const paginationInfo = `Showing ${startEntry} to ${endEntry} of ${totalEntries} entries`;
-                document.getElementById('pagination-info').textContent = paginationInfo;
-
-                let pagination = '';
-                if (data.max_num_pages > 1) {
-                    pagination += '<nav aria-label="Pagination"><div class="edmm-pagination-buttons">';
-
-                    // Add Previous button if not on the first page
-                    if (data.current_page > 1) {
-                        pagination += '<button type="button" class="edmm-pagination-button prev" aria-label="Previous Page" data-page="' + (data.current_page - 1) + '">Previous</button>';
-                    }
-
-                    // Calculate which pages to show
-                    let slots = calculatePaginationSlots(data.current_page, data.max_num_pages);
-
-                    // Render pagination buttons
-                    slots.forEach(slot => {
-                        if (slot === '...') {
-                            pagination += '<span class="pagination-ellipsis">...</span>';
-                        } else {
-                            pagination += '<button type="button" class="edmm-pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '">' + slot + '</button>';
-                        }
-                    });
-
-                    // Add Next button if not on the last page
-                    if (data.current_page < data.max_num_pages) {
-                        pagination += '<button type="button" class="edmm-pagination-button next" aria-label="Next Page" data-page="' + (data.current_page + 1) + '">Next</button>';
-                    }
-
-                    pagination += '</div></nav>';
-                }
-                document.getElementById('edmm-pagination').innerHTML = pagination;
-
-                // Add event listeners to buttons
-                document.querySelectorAll('#edmm-pagination button').forEach(button => {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const targetPage = parseInt(this.getAttribute('data-page'));
-                        if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= data.max_num_pages) {
-                            currentPage = targetPage;
-                            fetchMeetings();
-                        }
-                    });
-                });
             };
 
             const calculatePaginationSlots = (currentPage, totalPages) => {
@@ -415,6 +366,52 @@ function meeting_minutes_shortcode( $atts ) {
         .edmm-pagination-button[disabled] {
             background-color: #ccc;
             cursor: not-allowed;
+        }
+        
+        .edmm-meeting-minutes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .edmm-meeting-minutes-table th,
+        .edmm-meeting-minutes-table td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        /* Add styles for stacking on small screens */
+        @media only screen and (max-width: 768px) {
+            .edmm-meeting-minutes-table, 
+            .edmm-meeting-minutes-table thead, 
+            .edmm-meeting-minutes-table tbody, 
+            .edmm-meeting-minutes-table th, 
+            .edmm-meeting-minutes-table td, 
+            .edmm-meeting-minutes-table tr {
+                display: block;
+            }
+
+            .edmm-meeting-minutes-table thead {
+                display: none;
+            }
+
+            .edmm-meeting-minutes-table tr {
+                margin-bottom: 10px;
+            }
+
+            .edmm-meeting-minutes-table td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }
+
+            .edmm-meeting-minutes-table td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                text-transform: uppercase;
+            }
         }
     </style>
     <?php
