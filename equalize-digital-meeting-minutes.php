@@ -193,17 +193,25 @@ function get_meeting_minutes( $request ) {
                 $formatted_date = '<span class="sr-text screen-reader-text">Date not available</span>'; // Handle the case when date parsing fails
             }
 
-            $meetings[] = array(
-                'title'  => get_the_title(),
-                'date'   => $formatted_date,
-                'agenda' => $meeting_not_held 
-                    ? 'Meeting not held' 
-                    : ( $meeting_agenda_url ? $meeting_agenda_url : '<span class="sr-text screen-reader-text">Agenda not available</span>' ),
-                'notes'  => $meeting_notes_url ? $meeting_notes_url : '<span class="sr-text screen-reader-text">Meeting notes not available</span>',
-            );
-        }
-        wp_reset_postdata();
-    }
+			$agenda_item = $meeting_agenda_url
+				? apply_filters( 'edmm_meeting_agenda_link', '<a href="' . $meeting_agenda_url . '" aria-label="Agenda for ' . $formatted_date . '">View Agenda</a>' )
+				: '<span class="sr-text screen-reader-text">Agenda not available</span>';
+
+			$notes_item = $meeting_notes_url
+				? apply_filters( 'edmm_meeting_notes_link', '<a href="' . $meeting_notes_url . '" aria-label="Notes for ' . $formatted_date . '">View Notes</a>' )
+				: '<span class="sr-text screen-reader-text">Notes not available</span>';
+
+			$meetings[] = array(
+				'title'  => get_the_title(),
+				'date'   => $formatted_date,
+				'agenda' => $meeting_not_held
+					? 'Meeting not held'
+					: $agenda_item,
+				'notes'  => $notes_item,
+			);
+		}
+		wp_reset_postdata();
+	}
 
     return rest_ensure_response( array(
         'meetings'      => $meetings,
