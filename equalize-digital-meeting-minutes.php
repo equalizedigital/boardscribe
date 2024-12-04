@@ -288,10 +288,10 @@ function meeting_minutes_shortcode( $atts ) {
                         table += '<td data-label="Date">' + meeting.date + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_agenda'] ); ?>' !== 'true') {
-                        table += '<td data-label="Agenda">' + (meeting.agenda.startsWith('http') ? '<a href="' + meeting.agenda + '" aria-label="Agenda for ' + meeting.date + '">View Agenda</a>' : meeting.agenda) + '</td>';
+                        table += '<td data-label="Agenda">' + meeting.agenda + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
-                        table += '<td data-label="Notes">' + (meeting.notes.startsWith('http') ? '<a href="' + meeting.notes + '" aria-label="Notes for ' + meeting.date + '">View Notes</a>' : meeting.notes) + '</td>';
+                        table += '<td data-label="Notes">' + meeting.notes + '</td>';
                     }
                     table += '</tr>';
                 });
