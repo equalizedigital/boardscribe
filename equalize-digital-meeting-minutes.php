@@ -99,6 +99,16 @@ function add_acf_meta_fields() {
 add_action( 'acf/init', __NAMESPACE__ . '\add_acf_meta_fields' );
 
 /**
+ * Adds additional fields to the file size and type fix provided by the Accessibility Checker Pro plugin.
+ */
+function add_additional_fields_to_edacp_file_size_and_type_fix ( $additional_filters ) {
+	$additional_filters[] = 'edmm_meeting_notes_link';
+	$additional_filters[] = 'edmm_meeting_agenda_link';
+	return $additional_filters;
+}
+add_filter( 'edac_fix_file_size_and_type_additional_filters', __NAMESPACE__ . '\add_additional_fields_to_edacp_file_size_and_type_fix' );
+
+/**
  * Registers a custom REST API route for retrieving meeting minutes.
  *
  * This function creates a custom REST API endpoint at `/edmm/v1/meeting-minutes/`
