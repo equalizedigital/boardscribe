@@ -137,7 +137,7 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_meeting_minutes_rest_rou
  * @return \WP_REST_Response The response object containing the meeting minutes.
  */
 function get_meeting_minutes( $request ) {
-    
+
     $params         = $request->get_query_params();
     $page           = isset($params['page']) ? absint($params['page']) : 1;
     $posts_per_page = isset($params['posts_per_page']) ? absint($params['posts_per_page']) : 20;
@@ -152,7 +152,7 @@ function get_meeting_minutes( $request ) {
         'paged'          => $page,
         'meta_key'       => 'edmm_meeting_date',
         'orderby'        => 'meta_value',
-        'order'          => 'ASC',
+        'order'          => 'DESC',
         'meta_query'     => array(
             'relation' => 'AND',
             array(
@@ -164,10 +164,10 @@ function get_meeting_minutes( $request ) {
 
     if ( ! empty( $params['included_years'] ) ) {
         $years = explode( ',', $params['included_years'] );
-    
+
         // Add an OR clause for each year to match posts in those years
         $year_queries = array( 'relation' => 'OR' );
-    
+
         foreach ( $years as $year ) {
             $year = intval( $year ); // Ensure the year is an integer
             $year_queries[] = array(
@@ -177,7 +177,7 @@ function get_meeting_minutes( $request ) {
                 'type'    => 'DATE',
             );
         }
-    
+
         $args['meta_query'][] = $year_queries;
     }
 
@@ -196,8 +196,8 @@ function get_meeting_minutes( $request ) {
 
             $date_object = \DateTime::createFromFormat('d/m/Y', $meeting_date);
             if ($date_object) {
-                $formatted_date = $meeting_not_held 
-                    ? $date_object->format($not_held_date_format) 
+                $formatted_date = $meeting_not_held
+                    ? $date_object->format($not_held_date_format)
                     : $date_object->format($held_date_format);
             } else {
                 $formatted_date = '<span class="sr-text screen-reader-text">Date not available</span>'; // Handle the case when date parsing fails
@@ -254,10 +254,10 @@ function meeting_minutes_shortcode( $atts ) {
         'posts_per_page'       => 20,
     ), $atts, 'edmm_meeting_minutes' );
 
-    $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] ) 
+    $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] )
         . '&held_date_format=' . urlencode( $atts['held_date_format'] )
         . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
-        . '&posts_per_page=' . absint( $atts['posts_per_page'] ); 
+        . '&posts_per_page=' . absint( $atts['posts_per_page'] );
 
     ob_start();
     ?>
@@ -274,7 +274,7 @@ function meeting_minutes_shortcode( $atts ) {
             const renderTable = (data) => {
                 let tableClass = '<?php echo esc_js( $atts['class'] ); ?>';
                 let table = '<table class="edmm-meeting-minutes-table ' + tableClass + '"><thead><tr>';
-                
+
                 if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
                     table += '<th scope="col">Title</th>';
                 }
@@ -288,7 +288,7 @@ function meeting_minutes_shortcode( $atts ) {
                     table += '<th scope="col">Notes</th>';
                 }
                 table += '</tr></thead><tbody>';
-                
+
                 data.meetings.forEach(meeting => {
                     table += '<tr>';
                     if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
@@ -306,7 +306,7 @@ function meeting_minutes_shortcode( $atts ) {
                     table += '</tr>';
                 });
                 table += '</tbody></table>';
-                
+
                 document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
 
                 // Update aria-live region with pagination info
@@ -438,7 +438,7 @@ function meeting_minutes_shortcode( $atts ) {
             background-color: #ccc;
             cursor: not-allowed;
         }
-        
+
         .edmm-meeting-minutes-table {
             width: 100%;
             border-collapse: collapse;
@@ -453,11 +453,11 @@ function meeting_minutes_shortcode( $atts ) {
 
         /* Add styles for stacking on small screens */
         @media only screen and (max-width: 768px) {
-            .edmm-meeting-minutes-table, 
-            .edmm-meeting-minutes-table thead, 
-            .edmm-meeting-minutes-table tbody, 
-            .edmm-meeting-minutes-table th, 
-            .edmm-meeting-minutes-table td, 
+            .edmm-meeting-minutes-table,
+            .edmm-meeting-minutes-table thead,
+            .edmm-meeting-minutes-table tbody,
+            .edmm-meeting-minutes-table th,
+            .edmm-meeting-minutes-table td,
             .edmm-meeting-minutes-table tr {
                 display: block;
             }
