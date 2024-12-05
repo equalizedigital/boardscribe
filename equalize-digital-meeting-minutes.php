@@ -334,7 +334,7 @@ function meeting_minutes_shortcode( $atts ) {
                         if (slot === '...') {
                             pagination += '<span class="pagination-ellipsis">...</span>';
                         } else {
-                            pagination += '<button type="button" class="edmm-pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '">' + slot + '</button>';
+                            pagination += '<button type="button" class="edmm-pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '"'+ (slot === data.current_page ? 'aria-current="true"' : '') +'>' + slot + '</button>';
                         }
                     });
 
