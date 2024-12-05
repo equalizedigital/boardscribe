@@ -355,10 +355,20 @@ function meeting_minutes_shortcode( $atts ) {
                         const targetPage = parseInt(this.getAttribute('data-page'));
                         if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= data.max_num_pages) {
                             currentPage = targetPage;
-                            fetchMeetings();
+                            fetchMeetings( true );
                         }
                     });
                 });
+
+                // Focus on the first link in the table
+                if (refocus) {
+                    setTimeout(() => {
+                        document.getElementById('edmm-meeting-minutes-table')
+                            ?.querySelector('a')
+                            ?.focus();
+                    }, 100);
+                }
+
             };
 
 
@@ -399,7 +409,7 @@ function meeting_minutes_shortcode( $atts ) {
                 return slots;
             };
 
-            const fetchMeetings = () => {
+            const fetchMeetings = (refocus = false) => {
                 const urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
                 fetch(urlWithPage)
                     .then(response => {
@@ -409,7 +419,7 @@ function meeting_minutes_shortcode( $atts ) {
                         return response.json();
                     })
                     .then(data => {
-                        renderTable(data);
+                        renderTable(data, refocus);
                     })
                     .catch(error => {
                         console.error('There was a problem with the fetch operation:', error);
