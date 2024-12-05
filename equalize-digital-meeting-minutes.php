@@ -271,9 +271,11 @@ function meeting_minutes_shortcode( $atts ) {
             const maxSlots = 7;
             const postsPerPage = <?php echo absint( $atts['posts_per_page'] ); ?>;
 
-            const renderTable = (data) => {
+            const renderTable = (data, refocus = false) => {
+                refocus = refocus || false;
+
                 let tableClass = '<?php echo esc_js( $atts['class'] ); ?>';
-                let table = '<table class="edmm-meeting-minutes-table ' + tableClass + '"><thead><tr>';
+                let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + tableClass + '"><thead class="desktop"><tr>';
 
                 if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
                     table += '<th scope="col">Title</th>';
@@ -363,14 +365,11 @@ function meeting_minutes_shortcode( $atts ) {
                 // Focus on the first link in the table
                 if (refocus) {
                     setTimeout(() => {
-                        document.getElementById('edmm-meeting-minutes-table')
-                            ?.querySelector('a')
-                            ?.focus();
+                        document.querySelector('.edmm-meeting-minutes-table')?.focus();
                     }, 100);
                 }
 
             };
-
 
             const calculatePaginationSlots = (currentPage, totalPages) => {
                 let slots = [];
@@ -409,7 +408,9 @@ function meeting_minutes_shortcode( $atts ) {
                 return slots;
             };
 
-            const fetchMeetings = (refocus = false) => {
+            const fetchMeetings = (refocus) => {
+                refocus = refocus || false;
+
                 const urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
                 fetch(urlWithPage)
                     .then(response => {
