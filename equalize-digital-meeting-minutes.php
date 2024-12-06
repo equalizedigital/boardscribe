@@ -99,6 +99,16 @@ function add_acf_meta_fields() {
 add_action( 'acf/init', __NAMESPACE__ . '\add_acf_meta_fields' );
 
 /**
+ * Adds additional fields to the file size and type fix provided by the Accessibility Checker Pro plugin.
+ */
+function add_additional_fields_to_edacp_file_size_and_type_fix ( $additional_filters ) {
+	$additional_filters[] = 'edmm_meeting_notes_link';
+	$additional_filters[] = 'edmm_meeting_agenda_link';
+	return $additional_filters;
+}
+add_filter( 'edac_fix_file_size_and_type_additional_filters', __NAMESPACE__ . '\add_additional_fields_to_edacp_file_size_and_type_fix' );
+
+/**
  * Registers a custom REST API route for retrieving meeting minutes.
  *
  * This function creates a custom REST API endpoint at `/edmm/v1/meeting-minutes/`
@@ -127,7 +137,7 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_meeting_minutes_rest_rou
  * @return \WP_REST_Response The response object containing the meeting minutes.
  */
 function get_meeting_minutes( $request ) {
-    
+
     $params         = $request->get_query_params();
     $page           = isset($params['page']) ? absint($params['page']) : 1;
     $posts_per_page = isset($params['posts_per_page']) ? absint($params['posts_per_page']) : 20;
@@ -142,7 +152,7 @@ function get_meeting_minutes( $request ) {
         'paged'          => $page,
         'meta_key'       => 'edmm_meeting_date',
         'orderby'        => 'meta_value',
-        'order'          => 'ASC',
+        'order'          => 'DESC',
         'meta_query'     => array(
             'relation' => 'AND',
             array(
@@ -154,10 +164,10 @@ function get_meeting_minutes( $request ) {
 
     if ( ! empty( $params['included_years'] ) ) {
         $years = explode( ',', $params['included_years'] );
-    
+
         // Add an OR clause for each year to match posts in those years
         $year_queries = array( 'relation' => 'OR' );
-    
+
         foreach ( $years as $year ) {
             $year = intval( $year ); // Ensure the year is an integer
             $year_queries[] = array(
@@ -167,7 +177,7 @@ function get_meeting_minutes( $request ) {
                 'type'    => 'DATE',
             );
         }
-    
+
         $args['meta_query'][] = $year_queries;
     }
 
@@ -186,24 +196,32 @@ function get_meeting_minutes( $request ) {
 
             $date_object = \DateTime::createFromFormat('d/m/Y', $meeting_date);
             if ($date_object) {
-                $formatted_date = $meeting_not_held 
-                    ? $date_object->format($not_held_date_format) 
+                $formatted_date = $meeting_not_held
+                    ? $date_object->format($not_held_date_format)
                     : $date_object->format($held_date_format);
             } else {
                 $formatted_date = '<span class="sr-text screen-reader-text">Date not available</span>'; // Handle the case when date parsing fails
             }
 
-            $meetings[] = array(
-                'title'  => get_the_title(),
-                'date'   => $formatted_date,
-                'agenda' => $meeting_not_held 
-                    ? 'Meeting not held' 
-                    : ( $meeting_agenda_url ? $meeting_agenda_url : '<span class="sr-text screen-reader-text">Agenda not available</span>' ),
-                'notes'  => $meeting_notes_url ? $meeting_notes_url : '<span class="sr-text screen-reader-text">Meeting notes not available</span>',
-            );
-        }
-        wp_reset_postdata();
-    }
+			$agenda_item = $meeting_agenda_url
+				? apply_filters( 'edmm_meeting_agenda_link', '<a href="' . $meeting_agenda_url . '" aria-label="Agenda for ' . $formatted_date . '">View Agenda</a>' )
+				: '<span class="sr-text screen-reader-text">Agenda not available</span>';
+
+			$notes_item = $meeting_notes_url
+				? apply_filters( 'edmm_meeting_notes_link', '<a href="' . $meeting_notes_url . '" aria-label="Notes for ' . $formatted_date . '">View Notes</a>' )
+				: '<span class="sr-text screen-reader-text">Notes not available</span>';
+
+			$meetings[] = array(
+				'title'  => get_the_title(),
+				'date'   => $formatted_date,
+				'agenda' => $meeting_not_held
+					? 'Meeting not held'
+					: $agenda_item,
+				'notes'  => $notes_item,
+			);
+		}
+		wp_reset_postdata();
+	}
 
     return rest_ensure_response( array(
         'meetings'      => $meetings,
@@ -236,10 +254,10 @@ function meeting_minutes_shortcode( $atts ) {
         'posts_per_page'       => 20,
     ), $atts, 'edmm_meeting_minutes' );
 
-    $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] ) 
+    $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] )
         . '&held_date_format=' . urlencode( $atts['held_date_format'] )
         . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
-        . '&posts_per_page=' . absint( $atts['posts_per_page'] ); 
+        . '&posts_per_page=' . absint( $atts['posts_per_page'] );
 
     ob_start();
     ?>
@@ -253,10 +271,12 @@ function meeting_minutes_shortcode( $atts ) {
             const maxSlots = 7;
             const postsPerPage = <?php echo absint( $atts['posts_per_page'] ); ?>;
 
-            const renderTable = (data) => {
+            const renderTable = (data, refocus = false) => {
+                refocus = refocus || false;
+
                 let tableClass = '<?php echo esc_js( $atts['class'] ); ?>';
-                let table = '<table class="edmm-meeting-minutes-table ' + tableClass + '"><thead><tr>';
-                
+                let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + tableClass + '"><thead class="desktop"><tr>';
+
                 if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
                     table += '<th scope="col">Title</th>';
                 }
@@ -270,7 +290,7 @@ function meeting_minutes_shortcode( $atts ) {
                     table += '<th scope="col">Notes</th>';
                 }
                 table += '</tr></thead><tbody>';
-                
+
                 data.meetings.forEach(meeting => {
                     table += '<tr>';
                     if ('<?php echo esc_js( $atts['hide_title'] ); ?>' !== 'true') {
@@ -280,15 +300,15 @@ function meeting_minutes_shortcode( $atts ) {
                         table += '<td data-label="Date">' + meeting.date + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_agenda'] ); ?>' !== 'true') {
-                        table += '<td data-label="Agenda">' + (meeting.agenda.startsWith('http') ? '<a href="' + meeting.agenda + '" aria-label="Agenda for ' + meeting.date + '">View Agenda</a>' : meeting.agenda) + '</td>';
+                        table += '<td data-label="Agenda">' + meeting.agenda + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
-                        table += '<td data-label="Notes">' + (meeting.notes.startsWith('http') ? '<a href="' + meeting.notes + '" aria-label="Notes for ' + meeting.date + '">View Notes</a>' : meeting.notes) + '</td>';
+                        table += '<td data-label="Notes">' + meeting.notes + '</td>';
                     }
                     table += '</tr>';
                 });
                 table += '</tbody></table>';
-                
+
                 document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
 
                 // Update aria-live region with pagination info
@@ -316,7 +336,7 @@ function meeting_minutes_shortcode( $atts ) {
                         if (slot === '...') {
                             pagination += '<span class="pagination-ellipsis">...</span>';
                         } else {
-                            pagination += '<button type="button" class="edmm-pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '">' + slot + '</button>';
+                            pagination += '<button type="button" class="edmm-pagination-button' + (slot === data.current_page ? ' current' : '') + '" data-page="' + slot + '" aria-label="Page ' + slot + '"'+ (slot === data.current_page ? 'aria-current="true"' : '') +'>' + slot + '</button>';
                         }
                     });
 
@@ -337,12 +357,19 @@ function meeting_minutes_shortcode( $atts ) {
                         const targetPage = parseInt(this.getAttribute('data-page'));
                         if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= data.max_num_pages) {
                             currentPage = targetPage;
-                            fetchMeetings();
+                            fetchMeetings( true );
                         }
                     });
                 });
-            };
 
+                // Focus on the first link in the table
+                if (refocus) {
+                    setTimeout(() => {
+                        document.querySelector('.edmm-meeting-minutes-table')?.focus();
+                    }, 100);
+                }
+
+            };
 
             const calculatePaginationSlots = (currentPage, totalPages) => {
                 let slots = [];
@@ -381,7 +408,9 @@ function meeting_minutes_shortcode( $atts ) {
                 return slots;
             };
 
-            const fetchMeetings = () => {
+            const fetchMeetings = (refocus) => {
+                refocus = refocus || false;
+
                 const urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
                 fetch(urlWithPage)
                     .then(response => {
@@ -391,7 +420,7 @@ function meeting_minutes_shortcode( $atts ) {
                         return response.json();
                     })
                     .then(data => {
-                        renderTable(data);
+                        renderTable(data, refocus);
                     })
                     .catch(error => {
                         console.error('There was a problem with the fetch operation:', error);
@@ -420,7 +449,7 @@ function meeting_minutes_shortcode( $atts ) {
             background-color: #ccc;
             cursor: not-allowed;
         }
-        
+
         .edmm-meeting-minutes-table {
             width: 100%;
             border-collapse: collapse;
@@ -435,11 +464,11 @@ function meeting_minutes_shortcode( $atts ) {
 
         /* Add styles for stacking on small screens */
         @media only screen and (max-width: 768px) {
-            .edmm-meeting-minutes-table, 
-            .edmm-meeting-minutes-table thead, 
-            .edmm-meeting-minutes-table tbody, 
-            .edmm-meeting-minutes-table th, 
-            .edmm-meeting-minutes-table td, 
+            .edmm-meeting-minutes-table,
+            .edmm-meeting-minutes-table thead,
+            .edmm-meeting-minutes-table tbody,
+            .edmm-meeting-minutes-table th,
+            .edmm-meeting-minutes-table td,
             .edmm-meeting-minutes-table tr {
                 display: block;
             }
