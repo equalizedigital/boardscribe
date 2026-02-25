@@ -63,6 +63,7 @@ function add_acf_meta_fields() {
                     'name'  => 'edmm_meeting_date',
                     'required' => 1,
                     'type'  => 'date_picker',
+					'display_format' => 'm/d/Y', // American Date Format
                 ),
                 array(
                     'key'   => 'field_edmm_meeting_agenda_url',
