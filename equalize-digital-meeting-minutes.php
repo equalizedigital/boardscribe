@@ -291,6 +291,7 @@ function meeting_minutes_shortcode( $atts ) {
         'hide_agenda'          => 'false',
         'hide_notes'           => 'false',
         'hide_tags'            => 'false',
+        'tags_label'           => 'Tags',
         'held_date_format'     => 'Y/m/d',
         'not_held_date_format' => 'Y/m',
         'class'                => '',
@@ -339,7 +340,7 @@ function meeting_minutes_shortcode( $atts ) {
                     table += '<th scope="col">Notes</th>';
                 }
                 if ('<?php echo esc_js( $atts['hide_tags'] ); ?>' !== 'true') {
-                    table += '<th scope="col">Tags</th>';
+                    table += '<th scope="col"><?php echo esc_js( $atts['tags_label'] ); ?></th>';
                 }
                 table += '</tr></thead><tbody>';
 
@@ -358,7 +359,7 @@ function meeting_minutes_shortcode( $atts ) {
                         table += '<td data-label="Notes">' + meeting.notes + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_tags'] ); ?>' !== 'true') {
-                        table += '<td data-label="Tags">' + (meeting.tags || '') + '</td>';
+                        table += '<td data-label="<?php echo esc_js( $atts['tags_label'] ); ?>">' + (meeting.tags || '') + '</td>';
                     }
                     table += '</tr>';
                 });

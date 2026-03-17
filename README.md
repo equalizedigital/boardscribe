@@ -42,6 +42,7 @@ The plugin provides the `[edmm_meeting_minutes]` shortcode, which you can use to
 - `hide_agenda`: Hides the "Agenda" column if set to `true`. Default: `false`.
 - `hide_notes`: Hides the "Notes" column if set to `true`. Default: `false`.
 - `hide_tags`: Hides the "Tags" column if set to `true`. Default: `false`.
+- `tags_label`: Custom label for the "Tags" column header (also used as the `data-label` on mobile). Default: `Tags`.
 - `held_date_format`: The format for dates of meetings that were held. Uses standard PHP date format (e.g., `Y/m/d`). Default: `Y/m/d`.
 - `not_held_date_format`: The format for dates of meetings that were not held. Uses standard PHP date format (e.g., `Y/m`). Default: `Y/m`.
 - `class`: Adds a custom CSS class to the `<table>` element. Default: empty.
