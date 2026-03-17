@@ -43,6 +43,29 @@ function register_meeting_minutes_cpt() {
 add_action( 'init', __NAMESPACE__ . '\register_meeting_minutes_cpt' );
 
 /**
+ * Registers the 'Meeting Tag' taxonomy for the Meeting Minutes post type.
+ *
+ * @return void
+ */
+function register_meeting_minutes_taxonomy() {
+    $labels = array(
+        'name'          => _x( 'Meeting Tags', 'Taxonomy General Name', 'edmm' ),
+        'singular_name' => _x( 'Meeting Tag', 'Taxonomy Singular Name', 'edmm' ),
+        'menu_name'     => __( 'Meeting Tags', 'edmm' ),
+    );
+
+    register_taxonomy( 'edmm_meeting_tag', 'edmm_meeting_minutes', array(
+        'labels'       => $labels,
+        'hierarchical' => false,
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_rest' => true,
+        'rewrite'      => false,
+    ) );
+}
+add_action( 'init', __NAMESPACE__ . '\register_meeting_minutes_taxonomy' );
+
+/**
  * Adds ACF meta fields for the 'Meeting Minutes' post type.
  *
  * This function checks if the Advanced Custom Fields (ACF) plugin is active,
@@ -145,6 +168,7 @@ function get_meeting_minutes( $request ) {
 
     $held_date_format = isset($params['held_date_format']) ? sanitize_text_field($params['held_date_format']) : 'Y/m/d';
     $not_held_date_format = isset($params['not_held_date_format']) ? sanitize_text_field($params['not_held_date_format']) : 'Y/m';
+    $tags = isset($params['tags']) ? sanitize_text_field($params['tags']) : '';
 
     $args = array(
         'post_type'      => 'edmm_meeting_minutes',
@@ -182,6 +206,16 @@ function get_meeting_minutes( $request ) {
         $args['meta_query'][] = $year_queries;
     }
 
+    if ( ! empty( $tags ) ) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'edmm_meeting_tag',
+                'field'    => 'slug',
+                'terms'    => array_map( 'trim', explode( ',', $tags ) ),
+            ),
+        );
+    }
+
     $query = new \WP_Query( $args );
     $meetings = array();
 
@@ -212,6 +246,11 @@ function get_meeting_minutes( $request ) {
 				? apply_filters( 'edmm_meeting_notes_link', '<a href="' . $meeting_notes_url . '" aria-label="Notes for ' . $formatted_date . '">View Notes</a>' )
 				: '<span class="sr-text screen-reader-text">Notes not available</span>';
 
+			$tag_terms = get_the_terms( get_the_ID(), 'edmm_meeting_tag' );
+			$tag_names = ( $tag_terms && ! is_wp_error( $tag_terms ) )
+				? implode( ', ', wp_list_pluck( $tag_terms, 'name' ) )
+				: '';
+
 			$meetings[] = array(
 				'title'  => get_the_title(),
 				'date'   => $formatted_date,
@@ -219,6 +258,7 @@ function get_meeting_minutes( $request ) {
 					? 'Meeting not held'
 					: $agenda_item,
 				'notes'  => $notes_item,
+				'tags'   => $tag_names,
 			);
 		}
 		wp_reset_postdata();
@@ -245,10 +285,12 @@ function get_meeting_minutes( $request ) {
 function meeting_minutes_shortcode( $atts ) {
     $atts = shortcode_atts( array(
         'included_years'       => '',
+        'tags'                 => '',
         'hide_title'           => 'false',
         'hide_date'            => 'false',
         'hide_agenda'          => 'false',
         'hide_notes'           => 'false',
+        'hide_tags'            => 'false',
         'held_date_format'     => 'Y/m/d',
         'not_held_date_format' => 'Y/m',
         'class'                => '',
@@ -256,6 +298,7 @@ function meeting_minutes_shortcode( $atts ) {
     ), $atts, 'edmm_meeting_minutes' );
 
     $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] )
+        . '&tags=' . urlencode( $atts['tags'] )
         . '&held_date_format=' . urlencode( $atts['held_date_format'] )
         . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
         . '&posts_per_page=' . absint( $atts['posts_per_page'] );
@@ -295,6 +338,9 @@ function meeting_minutes_shortcode( $atts ) {
                 if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
                     table += '<th scope="col">Notes</th>';
                 }
+                if ('<?php echo esc_js( $atts['hide_tags'] ); ?>' !== 'true') {
+                    table += '<th scope="col">Tags</th>';
+                }
                 table += '</tr></thead><tbody>';
 
                 data.meetings.forEach(meeting => {
@@ -310,6 +356,9 @@ function meeting_minutes_shortcode( $atts ) {
                     }
                     if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
                         table += '<td data-label="Notes">' + meeting.notes + '</td>';
+                    }
+                    if ('<?php echo esc_js( $atts['hide_tags'] ); ?>' !== 'true') {
+                        table += '<td data-label="Tags">' + (meeting.tags || '') + '</td>';
                     }
                     table += '</tr>';
                 });
