@@ -247,9 +247,12 @@ function get_meeting_minutes( $request ) {
 				: '<span class="sr-text screen-reader-text">Notes not available</span>';
 
 			$tag_terms = get_the_terms( get_the_ID(), 'edmm_meeting_tag' );
-			$tag_names = ( $tag_terms && ! is_wp_error( $tag_terms ) )
-				? implode( ', ', wp_list_pluck( $tag_terms, 'name' ) )
-				: '';
+			$tags_data = array();
+			if ( $tag_terms && ! is_wp_error( $tag_terms ) ) {
+				foreach ( $tag_terms as $term ) {
+					$tags_data[] = array( 'name' => $term->name, 'slug' => $term->slug );
+				}
+			}
 
 			$meetings[] = array(
 				'title'  => get_the_title(),
@@ -258,7 +261,7 @@ function get_meeting_minutes( $request ) {
 					? 'Meeting not held'
 					: $agenda_item,
 				'notes'  => $notes_item,
-				'tags'   => $tag_names,
+				'tags'   => $tags_data,
 			);
 		}
 		wp_reset_postdata();
@@ -299,7 +302,6 @@ function meeting_minutes_shortcode( $atts ) {
     ), $atts, 'edmm_meeting_minutes' );
 
     $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] )
-        . '&tags=' . urlencode( $atts['tags'] )
         . '&held_date_format=' . urlencode( $atts['held_date_format'] )
         . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
         . '&posts_per_page=' . absint( $atts['posts_per_page'] );
@@ -316,6 +318,7 @@ function meeting_minutes_shortcode( $atts ) {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let currentPage = 1;
+            let activeTagFilter = '<?php echo esc_js( $atts['tags'] ); ?>';
             const apiUrl = '<?php echo esc_url_raw( $api_url ); ?>';
             const maxSlots = 7;
             const postsPerPage = <?php echo absint( $atts['posts_per_page'] ); ?>;
@@ -359,7 +362,14 @@ function meeting_minutes_shortcode( $atts ) {
                         table += '<td data-label="Notes">' + meeting.notes + '</td>';
                     }
                     if ('<?php echo esc_js( $atts['hide_tags'] ); ?>' !== 'true') {
-                        table += '<td data-label="<?php echo esc_js( $atts['tags_label'] ); ?>">' + (meeting.tags || '') + '</td>';
+                        let tagButtons = '';
+                        if (meeting.tags && meeting.tags.length) {
+                            meeting.tags.forEach(tag => {
+                                const isActive = activeTagFilter === tag.slug;
+                                tagButtons += '<button type="button" class="edmm-tag-filter' + (isActive ? ' active' : '') + '" data-slug="' + tag.slug + '" aria-pressed="' + isActive + '">' + tag.name + '</button>';
+                            });
+                        }
+                        table += '<td data-label="<?php echo esc_js( $atts['tags_label'] ); ?>">' + tagButtons + '</td>';
                     }
                     table += '</tr>';
                 });
@@ -418,6 +428,16 @@ function meeting_minutes_shortcode( $atts ) {
                     });
                 });
 
+                // Add tag filter click handlers
+                document.getElementById(uid + '-table').querySelectorAll('.edmm-tag-filter').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const slug = this.getAttribute('data-slug');
+                        activeTagFilter = (activeTagFilter === slug) ? '' : slug;
+                        currentPage = 1;
+                        fetchMeetings();
+                    });
+                });
+
                 // Focus on the first link in the table
                 if (refocus) {
                     setTimeout(() => {
@@ -467,7 +487,10 @@ function meeting_minutes_shortcode( $atts ) {
             const fetchMeetings = (refocus) => {
                 refocus = refocus || false;
 
-                const urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
+                let urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
+                if (activeTagFilter) {
+                    urlWithPage += '&tags=' + encodeURIComponent(activeTagFilter);
+                }
                 fetch(urlWithPage)
                     .then(response => {
                         if (!response.ok) {
@@ -504,6 +527,22 @@ function meeting_minutes_shortcode( $atts ) {
         .edmm-pagination-button[disabled] {
             background-color: #ccc;
             cursor: not-allowed;
+        }
+
+        .edmm-tag-filter {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 2px;
+            border: 1px solid #007bff;
+            border-radius: 3px;
+            background-color: transparent;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 0.875em;
+        }
+        .edmm-tag-filter.active {
+            background-color: #007bff;
+            color: white;
         }
 
         .edmm-meeting-minutes-table {
