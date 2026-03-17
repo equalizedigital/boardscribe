@@ -260,17 +260,22 @@ function meeting_minutes_shortcode( $atts ) {
         . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
         . '&posts_per_page=' . absint( $atts['posts_per_page'] );
 
+    static $instance = 0;
+    $instance++;
+    $uid = 'edmm-instance-' . $instance;
+
     ob_start();
     ?>
-    <div id="edmm-meeting-minutes-table"></div>
-    <div id="edmm-pagination"></div>
-    <div id="pagination-info" aria-live="polite" aria-atomic="true" style="position: absolute; left: -9999px;"></div>
+    <div id="<?php echo esc_attr( $uid ); ?>-table" class="edmm-meeting-minutes-table-wrapper"></div>
+    <div id="<?php echo esc_attr( $uid ); ?>-pagination" class="edmm-pagination"></div>
+    <div id="<?php echo esc_attr( $uid ); ?>-info" class="edmm-pagination-info" aria-live="polite" aria-atomic="true" style="position: absolute; left: -9999px;"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let currentPage = 1;
             const apiUrl = '<?php echo esc_url_raw( $api_url ); ?>';
             const maxSlots = 7;
             const postsPerPage = <?php echo absint( $atts['posts_per_page'] ); ?>;
+            const uid = '<?php echo esc_js( $uid ); ?>';
 
             const renderTable = (data, refocus = false) => {
                 refocus = refocus || false;
@@ -310,14 +315,14 @@ function meeting_minutes_shortcode( $atts ) {
                 });
                 table += '</tbody></table>';
 
-                document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
+                document.getElementById(uid + '-table').innerHTML = table;
 
                 // Update aria-live region with pagination info
                 const totalEntries = data.total_entries;
                 const startEntry = (currentPage - 1) * postsPerPage + 1;
                 const endEntry = Math.min(currentPage * postsPerPage, totalEntries);
                 const paginationInfo = `Showing ${startEntry} to ${endEntry} of ${totalEntries} entries`;
-                document.getElementById('pagination-info').textContent = paginationInfo;
+                document.getElementById(uid + '-info').textContent = paginationInfo;
 
                 // Pagination HTML
                 let pagination = '';
@@ -349,10 +354,10 @@ function meeting_minutes_shortcode( $atts ) {
                     pagination += '</div></nav>';
                 }
 
-                document.getElementById('edmm-pagination').innerHTML = pagination;
+                document.getElementById(uid + '-pagination').innerHTML = pagination;
 
                 // Add event listeners to buttons
-                document.querySelectorAll('#edmm-pagination button').forEach(button => {
+                document.getElementById(uid + '-pagination').querySelectorAll('button').forEach(button => {
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         const targetPage = parseInt(this.getAttribute('data-page'));
@@ -366,7 +371,7 @@ function meeting_minutes_shortcode( $atts ) {
                 // Focus on the first link in the table
                 if (refocus) {
                     setTimeout(() => {
-                        document.querySelector('.edmm-meeting-minutes-table')?.focus();
+                        document.getElementById(uid + '-table').querySelector('.edmm-meeting-minutes-table')?.focus();
                     }, 100);
                 }
 
