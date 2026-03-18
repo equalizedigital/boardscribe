@@ -166,9 +166,10 @@ function get_meeting_minutes( $request ) {
     $page           = isset($params['page']) ? absint($params['page']) : 1;
     $posts_per_page = isset($params['posts_per_page']) ? absint($params['posts_per_page']) : 20;
 
-    $held_date_format = isset($params['held_date_format']) ? sanitize_text_field($params['held_date_format']) : 'Y/m/d';
+    $held_date_format     = isset($params['held_date_format']) ? sanitize_text_field($params['held_date_format']) : 'Y/m/d';
     $not_held_date_format = isset($params['not_held_date_format']) ? sanitize_text_field($params['not_held_date_format']) : 'Y/m';
-    $tags = isset($params['tags']) ? sanitize_text_field($params['tags']) : '';
+    $tags                 = isset($params['tags']) ? sanitize_text_field($params['tags']) : '';
+	$tags_filter          = isset($params['tags_filter']) ? sanitize_text_field($params['tags_filter']) : '';
 
     $args = array(
         'post_type'      => 'edmm_meeting_minutes',
@@ -206,14 +207,26 @@ function get_meeting_minutes( $request ) {
         $args['meta_query'][] = $year_queries;
     }
 
-    if ( ! empty( $tags ) ) {
-        $args['tax_query'] = array(
-            array(
-                'taxonomy' => 'edmm_meeting_tag',
-                'field'    => 'slug',
-                'terms'    => array_map( 'trim', explode( ',', $tags ) ),
-            ),
+    $tax_query = array( 'relation' => 'AND' );
+
+    if ( ! empty( $tags_filter ) ) {
+        $tax_query[] = array(
+            'taxonomy' => 'edmm_meeting_tag',
+            'field'    => 'slug',
+            'terms'    => array_map( 'trim', explode( ',', $tags_filter ) ),
         );
+    }
+
+    if ( ! empty( $tags ) ) {
+        $tax_query[] = array(
+            'taxonomy' => 'edmm_meeting_tag',
+            'field'    => 'slug',
+            'terms'    => array_map( 'trim', explode( ',', $tags ) ),
+        );
+    }
+
+    if ( count( $tax_query ) > 1 ) {
+        $args['tax_query'] = $tax_query;
     }
 
     $query = new \WP_Query( $args );
@@ -293,8 +306,9 @@ function meeting_minutes_shortcode( $atts ) {
         'hide_date'            => 'false',
         'hide_agenda'          => 'false',
         'hide_notes'           => 'false',
-        'hide_tags'            => 'false',
-        'tags_label'           => 'Tags',
+        'hide_tags'            => 'true',
+        'tags_label'           => 'Tags', // only used if hide_tags is false.
+		'tags_filter'          => '', // outputs items only with this tag slug.
         'held_date_format'     => 'Y/m/d',
         'not_held_date_format' => 'Y/m',
         'class'                => '',
@@ -304,7 +318,8 @@ function meeting_minutes_shortcode( $atts ) {
     $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] )
         . '&held_date_format=' . urlencode( $atts['held_date_format'] )
         . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
-        . '&posts_per_page=' . absint( $atts['posts_per_page'] );
+        . '&posts_per_page=' . absint( $atts['posts_per_page'] )
+        . ( ! empty( $atts['tags_filter'] ) ? '&tags_filter=' . urlencode( $atts['tags_filter'] ) : '' );
 
     static $instance = 0;
     $instance++;
