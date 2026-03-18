@@ -548,15 +548,15 @@ function meeting_minutes_shortcode( $atts ) {
             display: inline-block;
             padding: 2px 8px;
             margin: 2px;
-            border: 1px solid #007bff;
+            border: 1px solid #0056b3;
             border-radius: 3px;
             background-color: transparent;
-            color: #007bff;
+            color: #0056b3;
             cursor: pointer;
             font-size: 0.875em;
         }
         .edmm-category-filter.active {
-            background-color: #007bff;
+            background-color: #0056b3;
             color: white;
         }
 
