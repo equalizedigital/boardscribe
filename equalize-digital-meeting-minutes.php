@@ -169,7 +169,7 @@ function get_meeting_minutes( $request ) {
     $held_date_format     = isset($params['held_date_format']) ? sanitize_text_field($params['held_date_format']) : 'Y/m/d';
     $not_held_date_format = isset($params['not_held_date_format']) ? sanitize_text_field($params['not_held_date_format']) : 'Y/m';
     $tags                 = isset($params['tags']) ? sanitize_text_field($params['tags']) : '';
-	$category_filter          = isset($params['category_filter']) ? sanitize_text_field($params['category_filter']) : '';
+	$category_filter      = isset($params['category_filter']) ? sanitize_text_field($params['category_filter']) : '';
 
     $args = array(
         'post_type'      => 'edmm_meeting_minutes',
@@ -333,7 +333,7 @@ function meeting_minutes_shortcode( $atts ) {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let currentPage = 1;
-            let activeCategoryFilter = '<?php echo esc_js( $atts['tags'] ); ?>';
+            let activeCategoryFilter = '<?php echo esc_js( $atts['category_filter'] ); ?>';
             const apiUrl = '<?php echo esc_url_raw( $api_url ); ?>';
             const maxSlots = 7;
             const postsPerPage = <?php echo absint( $atts['posts_per_page'] ); ?>;
@@ -504,7 +504,7 @@ function meeting_minutes_shortcode( $atts ) {
 
                 let urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
                 if (activeCategoryFilter) {
-                    urlWithPage += '&tags=' + encodeURIComponent(activeCategoryFilter);
+                    urlWithPage += '&category_filter=' + encodeURIComponent(activeCategoryFilter);
                 }
                 fetch(urlWithPage)
                     .then(response => {
