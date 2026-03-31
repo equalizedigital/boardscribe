@@ -37,7 +37,7 @@ class MeetingMinutes {
 		$args = [
 			'label'         => __( 'Meeting Minute', 'edmm' ),
 			'labels'        => $labels,
-			'supports'      => [ 'title', 'editor' ],
+			'supports'      => [ 'title' ],
 			'public'        => false,
 			'rewrite'       => false,
 			'has_archive'   => false,

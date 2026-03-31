@@ -22,6 +22,68 @@ class MetaBox {
 		add_action( 'init', [ $this, 'register_post_meta' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_box' ] );
 		add_action( 'save_post_edmm_meeting_minutes', [ $this, 'save_meta' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+	}
+
+	/**
+	 * Enqueues the WordPress media library and the meta box picker script
+	 * on the Meeting Minutes add/edit screen.
+	 *
+	 * @param string $hook The current admin page hook.
+	 * @return void
+	 */
+	public function enqueue_scripts( string $hook ): void {
+		if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ], true ) ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+		if ( ! $screen || 'edmm_meeting_minutes' !== $screen->post_type ) {
+			return;
+		}
+
+		wp_enqueue_media();
+
+		wp_register_script( 'edmm-meta-box', false, [ 'media-upload' ], EDMM_VERSION, true );
+		wp_enqueue_script( 'edmm-meta-box' );
+		wp_add_inline_script( 'edmm-meta-box', $this->get_media_picker_script() );
+	}
+
+	/**
+	 * Returns the inline JavaScript for the media library URL picker.
+	 *
+	 * @return string
+	 */
+	private function get_media_picker_script(): string {
+		return <<<'JS'
+document.addEventListener( 'DOMContentLoaded', function () {
+	document.querySelectorAll( '.edmm-media-button' ).forEach( function ( button ) {
+		button.addEventListener( 'click', function ( e ) {
+			e.preventDefault();
+
+			var targetId = this.dataset.target;
+			var title    = this.dataset.title;
+			var insert   = this.dataset.insert;
+
+			var frame = wp.media( {
+				title:    title,
+				button:   { text: insert },
+				multiple: false,
+			} );
+
+			frame.on( 'select', function () {
+				var attachment = frame.state().get( 'selection' ).first().toJSON();
+				var field = document.getElementById( targetId );
+				if ( field ) {
+					field.value = attachment.url;
+				}
+			} );
+
+			frame.open();
+		} );
+	} );
+} );
+JS;
 	}
 
 	/**
@@ -141,6 +203,13 @@ class MetaBox {
 							class="large-text"
 							placeholder="https://"
 						/>
+						<button
+							type="button"
+							class="button edmm-media-button"
+							data-target="edmm_meeting_agenda_url"
+							data-title="<?php esc_attr_e( 'Choose Agenda File', 'edmm' ); ?>"
+							data-insert="<?php esc_attr_e( 'Use this file', 'edmm' ); ?>"
+						><?php esc_html_e( 'Media Library', 'edmm' ); ?></button>
 					</td>
 				</tr>
 				<tr>
@@ -156,6 +225,13 @@ class MetaBox {
 							class="large-text"
 							placeholder="https://"
 						/>
+						<button
+							type="button"
+							class="button edmm-media-button"
+							data-target="edmm_meeting_notes_url"
+							data-title="<?php esc_attr_e( 'Choose Notes File', 'edmm' ); ?>"
+							data-insert="<?php esc_attr_e( 'Use this file', 'edmm' ); ?>"
+						><?php esc_html_e( 'Media Library', 'edmm' ); ?></button>
 					</td>
 				</tr>
 				<tr>
