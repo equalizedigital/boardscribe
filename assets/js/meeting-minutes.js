@@ -1,3 +1,9 @@
+// Registry for extra columns. Add-ons (e.g. Pro) push column definitions here
+// before DOMContentLoaded so they are included in the initial render.
+//
+// Each entry: { key: string, label: string, renderCell: function(meeting) → string }
+window.edmmExtraColumns = window.edmmExtraColumns || [];
+
 ( function () {
 	'use strict';
 
@@ -72,6 +78,10 @@
 				table += '<th scope="col">' + labelMinutes + '</th>';
 			}
 
+			window.edmmExtraColumns.forEach( function ( col ) {
+				table += '<th scope="col">' + col.label + '</th>';
+			} );
+
 			table += '</tr></thead><tbody>';
 
 			data.meetings.forEach( function ( meeting ) {
@@ -88,6 +98,12 @@
 				if ( ! instanceCfg.hideMinutes ) {
 					table += '<td data-label="' + labelMinutes + '">' + meeting.minutes + '</td>';
 				}
+
+				window.edmmExtraColumns.forEach( function ( col ) {
+					const cell = col.renderCell ? col.renderCell( meeting ) : ( meeting[ col.key ] || '' );
+					table += '<td data-label="' + col.label + '">' + cell + '</td>';
+				} );
+
 				table += '</tr>';
 			} );
 
