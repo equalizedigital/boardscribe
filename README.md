@@ -13,6 +13,7 @@ The **Equalize Digital Meeting Minutes** plugin allows you to manage and display
 
 ### Features
 - Custom post type for meeting minutes.
+- Non-hierarchical taxonomy (tags) for categorising meeting minutes.
 - ACF (Advanced Custom Fields) integration for additional meeting metadata (date, agenda URL, notes URL).
 - REST API route for fetching meeting minutes.
 - A shortcode to display meeting minutes in a table with pagination.
@@ -35,10 +36,13 @@ The plugin provides the `[edmm_meeting_minutes]` shortcode, which you can use to
 
 ### Shortcode Attributes
 - `included_years`: Comma-separated list of years to include in the table (e.g., "2022,2023"). Default: empty (shows all years).
+- `tags`: Comma-separated list of meeting tag slugs to filter by (e.g., "board,annual"). Default: empty (shows all tags).
 - `hide_title`: Hides the "Title" column if set to `true`. Default: `false`.
 - `hide_date`: Hides the "Date" column if set to `true`. Default: `false`.
 - `hide_agenda`: Hides the "Agenda" column if set to `true`. Default: `false`.
 - `hide_notes`: Hides the "Notes" column if set to `true`. Default: `false`.
+- `hide_tags`: Hides the "Tags" column if set to `true`. Default: `false`.
+- `tags_label`: Custom label for the "Tags" column header (also used as the `data-label` on mobile). Default: `Tags`.
 - `held_date_format`: The format for dates of meetings that were held. Uses standard PHP date format (e.g., `Y/m/d`). Default: `Y/m/d`.
 - `not_held_date_format`: The format for dates of meetings that were not held. Uses standard PHP date format (e.g., `Y/m`). Default: `Y/m`.
 - `class`: Adds a custom CSS class to the `<table>` element. Default: empty.
@@ -51,6 +55,7 @@ The plugin exposes a custom REST API endpoint for retrieving meeting minutes:
   - `page`: Page number for pagination.
   - `posts_per_page`: Number of posts per page.
   - `included_years`: Comma-separated list of years.
+  - `tags`: Comma-separated list of meeting tag slugs to filter by.
   - `held_date_format`: Date format for meetings that were held.
   - `not_held_date_format`: Date format for meetings that were not held.
 
@@ -58,6 +63,12 @@ The plugin exposes a custom REST API endpoint for retrieving meeting minutes:
 ```
 GET https://yourdomain.com/wp-json/edmm/v1/meeting-minutes/?included_years=2023&posts_per_page=10&page=1
 ```
+
+## Taxonomy
+
+The plugin registers a **Meeting Tags** taxonomy (`edmm_meeting_tag`) for the Meeting Minutes post type. Tags are non-hierarchical and can be managed from the Meeting Minutes admin screen. Use them to group or categorise meetings (e.g., "Board", "Annual", "Special Session").
+
+Tag slugs are used when filtering via the `tags` shortcode attribute or the `tags` REST API parameter.
 
 ## Meta Fields
 If the Advanced Custom Fields (ACF) plugin is active, the plugin adds the following fields to the Meeting Minutes custom post type:

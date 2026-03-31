@@ -43,6 +43,29 @@ function register_meeting_minutes_cpt() {
 add_action( 'init', __NAMESPACE__ . '\register_meeting_minutes_cpt' );
 
 /**
+ * Registers the 'Meeting Category' taxonomy for the Meeting Minutes post type.
+ *
+ * @return void
+ */
+function register_meeting_minutes_taxonomy() {
+    $labels = array(
+        'name'          => _x( 'Meeting Categories', 'Taxonomy General Name', 'edmm' ),
+        'singular_name' => _x( 'Meeting Category', 'Taxonomy Singular Name', 'edmm' ),
+        'menu_name'     => __( 'Meeting Categories', 'edmm' ),
+    );
+
+    register_taxonomy( 'edmm_meeting_category', 'edmm_meeting_minutes', array(
+        'labels'       => $labels,
+        'hierarchical' => true,
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_rest' => true,
+        'rewrite'      => false,
+    ) );
+}
+add_action( 'init', __NAMESPACE__ . '\register_meeting_minutes_taxonomy' );
+
+/**
  * Adds ACF meta fields for the 'Meeting Minutes' post type.
  *
  * This function checks if the Advanced Custom Fields (ACF) plugin is active,
@@ -143,8 +166,10 @@ function get_meeting_minutes( $request ) {
     $page           = isset($params['page']) ? absint($params['page']) : 1;
     $posts_per_page = isset($params['posts_per_page']) ? absint($params['posts_per_page']) : 20;
 
-    $held_date_format = isset($params['held_date_format']) ? sanitize_text_field($params['held_date_format']) : 'Y/m/d';
+    $held_date_format     = isset($params['held_date_format']) ? sanitize_text_field($params['held_date_format']) : 'Y/m/d';
     $not_held_date_format = isset($params['not_held_date_format']) ? sanitize_text_field($params['not_held_date_format']) : 'Y/m';
+    $tags                 = isset($params['tags']) ? sanitize_text_field($params['tags']) : '';
+	$category_filter      = isset($params['category_filter']) ? sanitize_text_field($params['category_filter']) : '';
 
     $args = array(
         'post_type'      => 'edmm_meeting_minutes',
@@ -182,6 +207,28 @@ function get_meeting_minutes( $request ) {
         $args['meta_query'][] = $year_queries;
     }
 
+    $tax_query = array( 'relation' => 'AND' );
+
+    if ( ! empty( $category_filter ) ) {
+        $tax_query[] = array(
+            'taxonomy' => 'edmm_meeting_category',
+            'field'    => 'slug',
+            'terms'    => array_map( 'trim', explode( ',', $category_filter ) ),
+        );
+    }
+
+    if ( ! empty( $tags ) ) {
+        $tax_query[] = array(
+            'taxonomy' => 'edmm_meeting_category',
+            'field'    => 'slug',
+            'terms'    => array_map( 'trim', explode( ',', $tags ) ),
+        );
+    }
+
+    if ( count( $tax_query ) > 1 ) {
+        $args['tax_query'] = $tax_query;
+    }
+
     $query = new \WP_Query( $args );
     $meetings = array();
 
@@ -212,13 +259,22 @@ function get_meeting_minutes( $request ) {
 				? apply_filters( 'edmm_meeting_notes_link', '<a href="' . $meeting_notes_url . '" aria-label="Notes for ' . $formatted_date . '">View Notes</a>' )
 				: '<span class="sr-text screen-reader-text">Notes not available</span>';
 
+			$category_terms = get_the_terms( get_the_ID(), 'edmm_meeting_category' );
+			$categories_data = array();
+			if ( $category_terms && ! is_wp_error( $category_terms ) ) {
+				foreach ( $category_terms as $term ) {
+					$categories_data[] = array( 'name' => $term->name, 'slug' => $term->slug, 'parent' => $term->parent );
+				}
+			}
+
 			$meetings[] = array(
-				'title'  => get_the_title(),
-				'date'   => $formatted_date,
-				'agenda' => $meeting_not_held
+				'title'      => get_the_title(),
+				'date'       => $formatted_date,
+				'agenda'     => $meeting_not_held
 					? 'Meeting not held'
 					: $agenda_item,
-				'notes'  => $notes_item,
+				'notes'      => $notes_item,
+				'categories' => $categories_data,
 			);
 		}
 		wp_reset_postdata();
@@ -245,10 +301,14 @@ function get_meeting_minutes( $request ) {
 function meeting_minutes_shortcode( $atts ) {
     $atts = shortcode_atts( array(
         'included_years'       => '',
+        'tags'                 => '',
         'hide_title'           => 'false',
         'hide_date'            => 'false',
         'hide_agenda'          => 'false',
         'hide_notes'           => 'false',
+        'hide_categories'      => 'true',
+        'categories_label'     => 'Categories', // only used if hide_categories is false.
+		'category_filter'      => '', // outputs items only with this category slug.
         'held_date_format'     => 'Y/m/d',
         'not_held_date_format' => 'Y/m',
         'class'                => '',
@@ -258,19 +318,26 @@ function meeting_minutes_shortcode( $atts ) {
     $api_url = rest_url( 'edmm/v1/meeting-minutes/' ) . '?included_years=' . urlencode( $atts['included_years'] )
         . '&held_date_format=' . urlencode( $atts['held_date_format'] )
         . '&not_held_date_format=' . urlencode( $atts['not_held_date_format'] )
-        . '&posts_per_page=' . absint( $atts['posts_per_page'] );
+        . '&posts_per_page=' . absint( $atts['posts_per_page'] )
+        . ( ! empty( $atts['category_filter'] ) ? '&category_filter=' . urlencode( $atts['category_filter'] ) : '' );
+
+    static $instance = 0;
+    $instance++;
+    $uid = 'edmm-instance-' . $instance;
 
     ob_start();
     ?>
-    <div id="edmm-meeting-minutes-table"></div>
-    <div id="edmm-pagination"></div>
-    <div id="pagination-info" aria-live="polite" aria-atomic="true" style="position: absolute; left: -9999px;"></div>
+    <div id="<?php echo esc_attr( $uid ); ?>-table" class="edmm-meeting-minutes-table-wrapper"></div>
+    <div id="<?php echo esc_attr( $uid ); ?>-pagination" class="edmm-pagination"></div>
+    <div id="<?php echo esc_attr( $uid ); ?>-info" class="edmm-pagination-info" aria-live="polite" aria-atomic="true" style="position: absolute; left: -9999px;"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let currentPage = 1;
+            let activeCategoryFilter = '<?php echo esc_js( $atts['category_filter'] ); ?>';
             const apiUrl = '<?php echo esc_url_raw( $api_url ); ?>';
             const maxSlots = 7;
             const postsPerPage = <?php echo absint( $atts['posts_per_page'] ); ?>;
+            const uid = '<?php echo esc_js( $uid ); ?>';
 
             const renderTable = (data, refocus = false) => {
                 refocus = refocus || false;
@@ -290,6 +357,9 @@ function meeting_minutes_shortcode( $atts ) {
                 if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
                     table += '<th scope="col">Notes</th>';
                 }
+                if ('<?php echo esc_js( $atts['hide_categories'] ); ?>' !== 'true') {
+                    table += '<th scope="col"><?php echo esc_js( $atts['categories_label'] ); ?></th>';
+                }
                 table += '</tr></thead><tbody>';
 
                 data.meetings.forEach(meeting => {
@@ -306,18 +376,28 @@ function meeting_minutes_shortcode( $atts ) {
                     if ('<?php echo esc_js( $atts['hide_notes'] ); ?>' !== 'true') {
                         table += '<td data-label="Notes">' + meeting.notes + '</td>';
                     }
+                    if ('<?php echo esc_js( $atts['hide_categories'] ); ?>' !== 'true') {
+                        let categoryButtons = '';
+                        if (meeting.categories && meeting.categories.length) {
+                            meeting.categories.forEach(category => {
+                                const isActive = activeCategoryFilter === category.slug;
+                                categoryButtons += '<button type="button" class="edmm-category-filter' + (isActive ? ' active' : '') + '" data-slug="' + category.slug + '" aria-pressed="' + isActive + '">' + category.name + '</button>';
+                            });
+                        }
+                        table += '<td data-label="<?php echo esc_js( $atts['categories_label'] ); ?>">' + categoryButtons + '</td>';
+                    }
                     table += '</tr>';
                 });
                 table += '</tbody></table>';
 
-                document.getElementById('edmm-meeting-minutes-table').innerHTML = table;
+                document.getElementById(uid + '-table').innerHTML = table;
 
                 // Update aria-live region with pagination info
                 const totalEntries = data.total_entries;
                 const startEntry = (currentPage - 1) * postsPerPage + 1;
                 const endEntry = Math.min(currentPage * postsPerPage, totalEntries);
                 const paginationInfo = `Showing ${startEntry} to ${endEntry} of ${totalEntries} entries`;
-                document.getElementById('pagination-info').textContent = paginationInfo;
+                document.getElementById(uid + '-info').textContent = paginationInfo;
 
                 // Pagination HTML
                 let pagination = '';
@@ -349,10 +429,10 @@ function meeting_minutes_shortcode( $atts ) {
                     pagination += '</div></nav>';
                 }
 
-                document.getElementById('edmm-pagination').innerHTML = pagination;
+                document.getElementById(uid + '-pagination').innerHTML = pagination;
 
                 // Add event listeners to buttons
-                document.querySelectorAll('#edmm-pagination button').forEach(button => {
+                document.getElementById(uid + '-pagination').querySelectorAll('button').forEach(button => {
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         const targetPage = parseInt(this.getAttribute('data-page'));
@@ -363,10 +443,20 @@ function meeting_minutes_shortcode( $atts ) {
                     });
                 });
 
+                // Add category filter click handlers
+                document.getElementById(uid + '-table').querySelectorAll('.edmm-category-filter').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const slug = this.getAttribute('data-slug');
+                        activeCategoryFilter = (activeCategoryFilter === slug) ? '' : slug;
+                        currentPage = 1;
+                        fetchMeetings();
+                    });
+                });
+
                 // Focus on the first link in the table
                 if (refocus) {
                     setTimeout(() => {
-                        document.querySelector('.edmm-meeting-minutes-table')?.focus();
+                        document.getElementById(uid + '-table').querySelector('.edmm-meeting-minutes-table')?.focus();
                     }, 100);
                 }
 
@@ -412,7 +502,10 @@ function meeting_minutes_shortcode( $atts ) {
             const fetchMeetings = (refocus) => {
                 refocus = refocus || false;
 
-                const urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
+                let urlWithPage = apiUrl + '&page=' + encodeURIComponent(currentPage);
+                if (activeCategoryFilter) {
+                    urlWithPage += '&category_filter=' + encodeURIComponent(activeCategoryFilter);
+                }
                 fetch(urlWithPage)
                     .then(response => {
                         if (!response.ok) {
@@ -449,6 +542,22 @@ function meeting_minutes_shortcode( $atts ) {
         .edmm-pagination-button[disabled] {
             background-color: #ccc;
             cursor: not-allowed;
+        }
+
+        .edmm-category-filter {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 2px;
+            border: 1px solid #0056b3;
+            border-radius: 3px;
+            background-color: transparent;
+            color: #0056b3;
+            cursor: pointer;
+            font-size: 0.875em;
+        }
+        .edmm-category-filter.active {
+            background-color: #0056b3;
+            color: white;
         }
 
         .edmm-meeting-minutes-table {
