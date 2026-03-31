@@ -135,6 +135,13 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			shortcode += ' not_held_date_format="' + notHeldFormat + '"';
 		}
 
+		[ 'title_label', 'date_label', 'agenda_label', 'notes_label', 'agenda_link_label', 'notes_link_label' ].forEach( function ( key ) {
+			const val = ( data.get( key ) || '' ).trim();
+			if ( val ) {
+				shortcode += ' ' + key + '="' + val + '"';
+			}
+		} );
+
 		[ 'hide_title', 'hide_date', 'hide_agenda', 'hide_notes' ].forEach( function ( key ) {
 			if ( data.get( key ) === 'true' ) {
 				shortcode += ' ' + key + '="true"';
@@ -288,6 +295,55 @@ JS;
 									value="Y/m"
 									class="regular-text"
 								/>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Column Labels', 'edmm' ); ?></th>
+							<td>
+								<?php
+								$label_fields = [
+									'title_label'  => __( 'Title', 'edmm' ),
+									'date_label'   => __( 'Date', 'edmm' ),
+									'agenda_label' => __( 'Agenda', 'edmm' ),
+									'notes_label'  => __( 'Notes', 'edmm' ),
+								];
+								foreach ( $label_fields as $key => $default ) :
+								?>
+								<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+									<span style="width:60px;"><?php echo esc_html( $default ); ?></span>
+									<input
+										type="text"
+										name="<?php echo esc_attr( $key ); ?>"
+										class="regular-text"
+										placeholder="<?php echo esc_attr( $default ); ?>"
+									/>
+								</label>
+								<?php endforeach; ?>
+								<p class="description"><?php esc_html_e( 'Leave blank to use the default label.', 'edmm' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Link Labels', 'edmm' ); ?></th>
+							<td>
+								<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+									<span style="width:60px;"><?php esc_html_e( 'Agenda', 'edmm' ); ?></span>
+									<input
+										type="text"
+										name="agenda_link_label"
+										class="regular-text"
+										placeholder="<?php esc_attr_e( 'View Agenda', 'edmm' ); ?>"
+									/>
+								</label>
+								<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+									<span style="width:60px;"><?php esc_html_e( 'Notes', 'edmm' ); ?></span>
+									<input
+										type="text"
+										name="notes_link_label"
+										class="regular-text"
+										placeholder="<?php esc_attr_e( 'View Notes', 'edmm' ); ?>"
+									/>
+								</label>
+								<p class="description"><?php esc_html_e( 'Text shown inside each link. Leave blank to use the default.', 'edmm' ); ?></p>
 							</td>
 						</tr>
 						<tr>

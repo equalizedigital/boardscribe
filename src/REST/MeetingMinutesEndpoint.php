@@ -56,6 +56,14 @@ class MeetingMinutesEndpoint {
 					'default'           => '',
 					'sanitize_callback' => 'sanitize_text_field',
 				],
+				'agenda_link_label'   => [
+					'default'           => '',
+					'sanitize_callback' => 'sanitize_text_field',
+				],
+				'notes_link_label'    => [
+					'default'           => '',
+					'sanitize_callback' => 'sanitize_text_field',
+				],
 			],
 		] );
 	}
@@ -72,6 +80,8 @@ class MeetingMinutesEndpoint {
 		$held_date_format     = $request->get_param( 'held_date_format' );
 		$not_held_date_format = $request->get_param( 'not_held_date_format' );
 		$included_years       = $request->get_param( 'included_years' );
+		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ?: __( 'View Agenda', 'edmm' );
+		$notes_link_label     = $request->get_param( 'notes_link_label' ) ?: __( 'View Notes', 'edmm' );
 
 		$args = [
 			'post_type'      => 'edmm_meeting_minutes',
@@ -145,7 +155,7 @@ class MeetingMinutesEndpoint {
 							/* translators: %s: meeting date */
 							__( 'Agenda for %s', 'edmm' ),
 							wp_strip_all_tags( $formatted_date )
-						) ) . '">' . esc_html__( 'View Agenda', 'edmm' ) . '</a>'
+						) ) . '">' . esc_html( $agenda_link_label ) . '</a>'
 					)
 					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'edmm' ) . '</span>';
 
@@ -156,7 +166,7 @@ class MeetingMinutesEndpoint {
 							/* translators: %s: meeting date */
 							__( 'Notes for %s', 'edmm' ),
 							wp_strip_all_tags( $formatted_date )
-						) ) . '">' . esc_html__( 'View Notes', 'edmm' ) . '</a>'
+						) ) . '">' . esc_html( $notes_link_label ) . '</a>'
 					)
 					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Notes not available', 'edmm' ) . '</span>';
 

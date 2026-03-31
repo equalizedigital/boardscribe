@@ -31,11 +31,19 @@
 			+ '?included_years=' + encodeURIComponent( instanceCfg.includedYears || '' )
 			+ '&held_date_format=' + encodeURIComponent( instanceCfg.heldDateFormat || 'Y/m/d' )
 			+ '&not_held_date_format=' + encodeURIComponent( instanceCfg.notHeldDateFormat || 'Y/m' )
-			+ '&posts_per_page=' + encodeURIComponent( postsPerPage );
+			+ '&posts_per_page=' + encodeURIComponent( postsPerPage )
+			+ '&agenda_link_label=' + encodeURIComponent( instanceCfg.agendaLinkLabel || '' )
+			+ '&notes_link_label=' + encodeURIComponent( instanceCfg.notesLinkLabel || '' );
 
 		// ----------------------------------------------------------------
 		// Rendering
 		// ----------------------------------------------------------------
+
+		// Resolve column labels: instance override → i18n global → hard-coded fallback.
+		const labelTitle  = instanceCfg.titleLabel  || i18n.colTitle  || 'Title';
+		const labelDate   = instanceCfg.dateLabel   || i18n.colDate   || 'Date';
+		const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || 'Agenda';
+		const labelNotes  = instanceCfg.notesLabel  || i18n.colNotes  || 'Notes';
 
 		function renderTable( data, refocus ) {
 			refocus = refocus || false;
@@ -45,16 +53,16 @@
 				+ '<thead class="desktop"><tr>';
 
 			if ( ! instanceCfg.hideTitle ) {
-				table += '<th scope="col">' + ( i18n.colTitle || 'Title' ) + '</th>';
+				table += '<th scope="col">' + labelTitle + '</th>';
 			}
 			if ( ! instanceCfg.hideDate ) {
-				table += '<th scope="col">' + ( i18n.colDate || 'Date' ) + '</th>';
+				table += '<th scope="col">' + labelDate + '</th>';
 			}
 			if ( ! instanceCfg.hideAgenda ) {
-				table += '<th scope="col">' + ( i18n.colAgenda || 'Agenda' ) + '</th>';
+				table += '<th scope="col">' + labelAgenda + '</th>';
 			}
 			if ( ! instanceCfg.hideNotes ) {
-				table += '<th scope="col">' + ( i18n.colNotes || 'Notes' ) + '</th>';
+				table += '<th scope="col">' + labelNotes + '</th>';
 			}
 
 			table += '</tr></thead><tbody>';
@@ -62,16 +70,16 @@
 			data.meetings.forEach( function ( meeting ) {
 				table += '<tr>';
 				if ( ! instanceCfg.hideTitle ) {
-					table += '<td data-label="' + ( i18n.colTitle || 'Title' ) + '" scope="row">' + meeting.title + '</td>';
+					table += '<td data-label="' + labelTitle + '" scope="row">' + meeting.title + '</td>';
 				}
 				if ( ! instanceCfg.hideDate ) {
-					table += '<td data-label="' + ( i18n.colDate || 'Date' ) + '">' + meeting.date + '</td>';
+					table += '<td data-label="' + labelDate + '">' + meeting.date + '</td>';
 				}
 				if ( ! instanceCfg.hideAgenda ) {
-					table += '<td data-label="' + ( i18n.colAgenda || 'Agenda' ) + '">' + meeting.agenda + '</td>';
+					table += '<td data-label="' + labelAgenda + '">' + meeting.agenda + '</td>';
 				}
 				if ( ! instanceCfg.hideNotes ) {
-					table += '<td data-label="' + ( i18n.colNotes || 'Notes' ) + '">' + meeting.notes + '</td>';
+					table += '<td data-label="' + labelNotes + '">' + meeting.notes + '</td>';
 				}
 				table += '</tr>';
 			} );
