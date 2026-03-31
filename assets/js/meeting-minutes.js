@@ -39,7 +39,8 @@
 			+ '&not_held_date_format=' + encodeURIComponent( instanceCfg.notHeldDateFormat || 'Y/m' )
 			+ '&posts_per_page=' + encodeURIComponent( postsPerPage )
 			+ '&agenda_link_label=' + encodeURIComponent( instanceCfg.agendaLinkLabel || '' )
-			+ '&notes_link_label=' + encodeURIComponent( instanceCfg.notesLinkLabel || '' );
+			+ '&minutes_link_label=' + encodeURIComponent( instanceCfg.minutesLinkLabel || '' )
+			+ '&category=' + encodeURIComponent( instanceCfg.category || '' );
 
 		// ----------------------------------------------------------------
 		// Rendering
@@ -49,7 +50,7 @@
 		const labelTitle  = instanceCfg.titleLabel  || i18n.colTitle  || 'Title';
 		const labelDate   = instanceCfg.dateLabel   || i18n.colDate   || 'Date';
 		const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || 'Agenda';
-		const labelNotes  = instanceCfg.notesLabel  || i18n.colNotes  || 'Notes';
+		const labelMinutes = instanceCfg.minutesLabel || i18n.colMinutes || 'Minutes';
 
 		function renderTable( data, refocus ) {
 			refocus = refocus || false;
@@ -67,8 +68,8 @@
 			if ( ! instanceCfg.hideAgenda ) {
 				table += '<th scope="col">' + labelAgenda + '</th>';
 			}
-			if ( ! instanceCfg.hideNotes ) {
-				table += '<th scope="col">' + labelNotes + '</th>';
+			if ( ! instanceCfg.hideMinutes ) {
+				table += '<th scope="col">' + labelMinutes + '</th>';
 			}
 
 			table += '</tr></thead><tbody>';
@@ -84,8 +85,8 @@
 				if ( ! instanceCfg.hideAgenda ) {
 					table += '<td data-label="' + labelAgenda + '">' + meeting.agenda + '</td>';
 				}
-				if ( ! instanceCfg.hideNotes ) {
-					table += '<td data-label="' + labelNotes + '">' + meeting.notes + '</td>';
+				if ( ! instanceCfg.hideMinutes ) {
+					table += '<td data-label="' + labelMinutes + '">' + meeting.minutes + '</td>';
 				}
 				table += '</tr>';
 			} );

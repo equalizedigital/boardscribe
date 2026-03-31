@@ -135,14 +135,14 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			shortcode += ' not_held_date_format="' + notHeldFormat + '"';
 		}
 
-		[ 'title_label', 'date_label', 'agenda_label', 'notes_label', 'agenda_link_label', 'notes_link_label' ].forEach( function ( key ) {
+		[ 'title_label', 'date_label', 'agenda_label', 'minutes_label', 'agenda_link_label', 'minutes_link_label' ].forEach( function ( key ) {
 			const val = ( data.get( key ) || '' ).trim();
 			if ( val ) {
 				shortcode += ' ' + key + '="' + val + '"';
 			}
 		} );
 
-		[ 'hide_title', 'hide_date', 'hide_agenda', 'hide_notes' ].forEach( function ( key ) {
+		[ 'hide_title', 'hide_date', 'hide_agenda', 'hide_minutes' ].forEach( function ( key ) {
 			if ( data.get( key ) === 'true' ) {
 				shortcode += ' ' + key + '="true"';
 			}
@@ -305,7 +305,7 @@ JS;
 									'title_label'  => __( 'Title', 'edmm' ),
 									'date_label'   => __( 'Date', 'edmm' ),
 									'agenda_label' => __( 'Agenda', 'edmm' ),
-									'notes_label'  => __( 'Notes', 'edmm' ),
+									'minutes_label'  => __( 'Minutes', 'edmm' ),
 								];
 								foreach ( $label_fields as $key => $default ) :
 								?>
@@ -335,12 +335,12 @@ JS;
 									/>
 								</label>
 								<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-									<span style="width:60px;"><?php esc_html_e( 'Notes', 'edmm' ); ?></span>
+									<span style="width:60px;"><?php esc_html_e( 'Minutes', 'edmm' ); ?></span>
 									<input
 										type="text"
-										name="notes_link_label"
+										name="minutes_link_label"
 										class="regular-text"
-										placeholder="<?php esc_attr_e( 'View Notes', 'edmm' ); ?>"
+										placeholder="<?php esc_attr_e( 'View Minutes', 'edmm' ); ?>"
 									/>
 								</label>
 								<p class="description"><?php esc_html_e( 'Text shown inside each link. Leave blank to use the default.', 'edmm' ); ?></p>
@@ -354,7 +354,7 @@ JS;
 									'hide_title'  => __( 'Title', 'edmm' ),
 									'hide_date'   => __( 'Date', 'edmm' ),
 									'hide_agenda' => __( 'Agenda', 'edmm' ),
-									'hide_notes'  => __( 'Notes', 'edmm' ),
+									'hide_minutes'  => __( 'Minutes', 'edmm' ),
 								];
 								foreach ( $columns as $key => $label ) :
 								?>

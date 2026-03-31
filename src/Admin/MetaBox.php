@@ -111,9 +111,9 @@ JS;
 			'sanitize_callback' => 'esc_url_raw',
 		] ) );
 
-		register_post_meta( 'edmm_meeting_minutes', 'edmm_meeting_notes_url', array_merge( $common, [
+		register_post_meta( 'edmm_meeting_minutes', 'edmm_meeting_minutes_url', array_merge( $common, [
 			'type'              => 'string',
-			'description'       => __( 'URL to the meeting notes document.', 'edmm' ),
+			'description'       => __( 'URL to the meeting minutes document.', 'edmm' ),
 			'sanitize_callback' => 'esc_url_raw',
 		] ) );
 
@@ -159,7 +159,7 @@ JS;
 	public function render_meta_box( \WP_Post $post ): void {
 		$meeting_date       = get_post_meta( $post->ID, 'edmm_meeting_date', true );
 		$meeting_agenda_url = get_post_meta( $post->ID, 'edmm_meeting_agenda_url', true );
-		$meeting_notes_url  = get_post_meta( $post->ID, 'edmm_meeting_notes_url', true );
+		$meeting_minutes_url  = get_post_meta( $post->ID, 'edmm_meeting_minutes_url', true );
 		$meeting_not_held   = get_post_meta( $post->ID, 'edmm_meeting_not_held', true );
 
 		wp_nonce_field( 'edmm_save_meeting_meta', 'edmm_meeting_meta_nonce' );
@@ -214,22 +214,22 @@ JS;
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="edmm_meeting_notes_url"><?php esc_html_e( 'Notes URL', 'edmm' ); ?></label>
+						<label for="edmm_meeting_minutes_url"><?php esc_html_e( 'Minutes URL', 'edmm' ); ?></label>
 					</th>
 					<td>
 						<input
 							type="url"
-							id="edmm_meeting_notes_url"
-							name="edmm_meeting_notes_url"
-							value="<?php echo esc_attr( $meeting_notes_url ); ?>"
+							id="edmm_meeting_minutes_url"
+							name="edmm_meeting_minutes_url"
+							value="<?php echo esc_attr( $meeting_minutes_url ); ?>"
 							class="large-text"
 							placeholder="https://"
 						/>
 						<button
 							type="button"
 							class="button edmm-media-button"
-							data-target="edmm_meeting_notes_url"
-							data-title="<?php esc_attr_e( 'Choose Notes File', 'edmm' ); ?>"
+							data-target="edmm_meeting_minutes_url"
+							data-title="<?php esc_attr_e( 'Choose Minutes File', 'edmm' ); ?>"
 							data-insert="<?php esc_attr_e( 'Use this file', 'edmm' ); ?>"
 						><?php esc_html_e( 'Media Library', 'edmm' ); ?></button>
 					</td>
@@ -302,9 +302,9 @@ JS;
 			update_post_meta( $post_id, 'edmm_meeting_agenda_url', esc_url_raw( wp_unslash( $_POST['edmm_meeting_agenda_url'] ) ) );
 		}
 
-		// Notes URL.
-		if ( isset( $_POST['edmm_meeting_notes_url'] ) ) {
-			update_post_meta( $post_id, 'edmm_meeting_notes_url', esc_url_raw( wp_unslash( $_POST['edmm_meeting_notes_url'] ) ) );
+		// Minutes URL.
+		if ( isset( $_POST['edmm_meeting_minutes_url'] ) ) {
+			update_post_meta( $post_id, 'edmm_meeting_minutes_url', esc_url_raw( wp_unslash( $_POST['edmm_meeting_minutes_url'] ) ) );
 		}
 
 		// Not held — checkbox is absent when unchecked.

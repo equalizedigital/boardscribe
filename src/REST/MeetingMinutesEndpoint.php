@@ -56,11 +56,15 @@ class MeetingMinutesEndpoint {
 					'default'           => '',
 					'sanitize_callback' => 'sanitize_text_field',
 				],
+				'category'            => [
+					'default'           => '',
+					'sanitize_callback' => 'sanitize_text_field',
+				],
 				'agenda_link_label'   => [
 					'default'           => '',
 					'sanitize_callback' => 'sanitize_text_field',
 				],
-				'notes_link_label'    => [
+				'minutes_link_label'    => [
 					'default'           => '',
 					'sanitize_callback' => 'sanitize_text_field',
 				],
@@ -81,7 +85,7 @@ class MeetingMinutesEndpoint {
 		$not_held_date_format = $request->get_param( 'not_held_date_format' );
 		$included_years       = $request->get_param( 'included_years' );
 		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ?: __( 'View Agenda', 'edmm' );
-		$notes_link_label     = $request->get_param( 'notes_link_label' ) ?: __( 'View Notes', 'edmm' );
+		$minutes_link_label     = $request->get_param( 'minutes_link_label' ) ?: __( 'View Minutes', 'edmm' );
 
 		$args = [
 			'post_type'      => 'edmm_meeting_minutes',
@@ -137,7 +141,7 @@ class MeetingMinutesEndpoint {
 				$meeting_date       = get_post_meta( $post_id, 'edmm_meeting_date', true );
 				$meeting_not_held   = (bool) get_post_meta( $post_id, 'edmm_meeting_not_held', true );
 				$meeting_agenda_url = get_post_meta( $post_id, 'edmm_meeting_agenda_url', true );
-				$meeting_notes_url  = get_post_meta( $post_id, 'edmm_meeting_notes_url', true );
+				$meeting_minutes_url  = get_post_meta( $post_id, 'edmm_meeting_minutes_url', true );
 
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 					error_log( 'EDMM: Raw meeting date for post ' . $post_id . ': ' . $meeting_date );
@@ -160,23 +164,23 @@ class MeetingMinutesEndpoint {
 					)
 					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'edmm' ) . '</span>';
 
-				$notes_item = $meeting_notes_url
+				$minutes_item = $meeting_minutes_url
 					? apply_filters(
-						'edmm_meeting_notes_link',
-						'<a href="' . esc_url( $meeting_notes_url ) . '" aria-label="' . esc_attr( sprintf(
-							/* translators: 1: link label e.g. "View Notes", 2: meeting date */
+						'edmm_meeting_minutes_link',
+						'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr( sprintf(
+							/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
 							__( '%1$s for %2$s', 'edmm' ),
-							$notes_link_label,
+							$minutes_link_label,
 							wp_strip_all_tags( $formatted_date )
-						) ) . '">' . esc_html( $notes_link_label ) . '</a>'
+						) ) . '">' . esc_html( $minutes_link_label ) . '</a>'
 					)
-					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Notes not available', 'edmm' ) . '</span>';
+					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'edmm' ) . '</span>';
 
 				$row = [
 					'title'  => get_the_title(),
 					'date'   => $formatted_date,
 					'agenda' => $meeting_not_held ? esc_html__( 'Meeting not held', 'edmm' ) : $agenda_item,
-					'notes'  => $notes_item,
+					'minutes' => $minutes_item,
 				];
 
 				/**
