@@ -22,7 +22,13 @@
 			return;
 		}
 
-		let currentPage  = 1;
+		// Query param name for this instance, e.g. "edmm_page_1".
+		const pageParam = 'edmm_page_' + id.replace( 'edmm_', '' );
+
+		// Read the initial page from the URL so shared/bookmarked links work.
+		const initParams = new URLSearchParams( window.location.search );
+		let currentPage  = parseInt( initParams.get( pageParam ), 10 ) || 1;
+
 		const maxSlots   = 7;
 		const postsPerPage = instanceCfg.postsPerPage || 20;
 
@@ -151,6 +157,7 @@
 					const targetPage = parseInt( this.getAttribute( 'data-page' ), 10 );
 					if ( ! isNaN( targetPage ) && targetPage >= 1 && targetPage <= data.max_num_pages ) {
 						currentPage = targetPage;
+						updateUrl( targetPage );
 						fetchMeetings( true );
 					}
 				} );
@@ -200,6 +207,31 @@
 
 			return slots;
 		}
+
+		// ----------------------------------------------------------------
+		// URL state
+		// ----------------------------------------------------------------
+
+		function updateUrl( page ) {
+			const params = new URLSearchParams( window.location.search );
+			if ( page <= 1 ) {
+				params.delete( pageParam );
+			} else {
+				params.set( pageParam, page );
+			}
+			const qs = params.toString();
+			history.pushState( { [pageParam]: page }, '', qs ? '?' + qs : window.location.pathname );
+		}
+
+		// Sync this instance when the user navigates back/forward.
+		window.addEventListener( 'popstate', function () {
+			const params = new URLSearchParams( window.location.search );
+			const popped = parseInt( params.get( pageParam ), 10 ) || 1;
+			if ( popped !== currentPage ) {
+				currentPage = popped;
+				fetchMeetings( false );
+			}
+		} );
 
 		// ----------------------------------------------------------------
 		// Data fetching
