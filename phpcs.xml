@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ruleset name="Equalize Digital Meeting Minutes">
+    <description>WordPress coding standards for the Meeting Minutes plugin.</description>
+
+    <!-- Files to check -->
+    <file>.</file>
+
+    <!-- Exclude non-PHP directories -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+
+    <!-- Use WordPress coding standards -->
+    <rule ref="WordPress">
+        <!-- Allow short array syntax -->
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+    </rule>
+
+    <!-- Require PHP 7.4+ -->
+    <config name="minimum_supported_wp_version" value="6.0"/>
+    <config name="testVersion" value="7.4-"/>
+
+    <!-- Plugin-specific text domain -->
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array" value="edmm"/>
+        </properties>
+    </rule>
+</ruleset>
