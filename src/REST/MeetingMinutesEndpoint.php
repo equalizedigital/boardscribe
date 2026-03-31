@@ -152,8 +152,9 @@ class MeetingMinutesEndpoint {
 					? apply_filters(
 						'edmm_meeting_agenda_link',
 						'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr( sprintf(
-							/* translators: %s: meeting date */
-							__( 'Agenda for %s', 'edmm' ),
+							/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
+							__( '%1$s for %2$s', 'edmm' ),
+							$agenda_link_label,
 							wp_strip_all_tags( $formatted_date )
 						) ) . '">' . esc_html( $agenda_link_label ) . '</a>'
 					)
@@ -163,8 +164,9 @@ class MeetingMinutesEndpoint {
 					? apply_filters(
 						'edmm_meeting_notes_link',
 						'<a href="' . esc_url( $meeting_notes_url ) . '" aria-label="' . esc_attr( sprintf(
-							/* translators: %s: meeting date */
-							__( 'Notes for %s', 'edmm' ),
+							/* translators: 1: link label e.g. "View Notes", 2: meeting date */
+							__( '%1$s for %2$s', 'edmm' ),
+							$notes_link_label,
 							wp_strip_all_tags( $formatted_date )
 						) ) . '">' . esc_html( $notes_link_label ) . '</a>'
 					)
