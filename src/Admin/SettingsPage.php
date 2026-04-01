@@ -72,14 +72,6 @@ class SettingsPage {
 			'edmm-settings',
 			'edmm_advanced_section'
 		);
-
-		/**
-		 * Fires after the default settings fields are registered.
-		 * Pro plugin can use this to add additional settings fields.
-		 *
-		 * @param string $page The settings page slug.
-		 */
-		do_action( 'edmm_settings_fields', 'edmm-settings' );
 	}
 
 	/**
@@ -423,6 +415,15 @@ JS;
 				submit_button();
 				?>
 			</form>
+
+			<?php
+			/**
+			 * Fires inside the settings page after the main form.
+			 * Pro plugin uses this to render additional sections (e.g. license management)
+			 * that have their own form and don't use the WordPress Settings API.
+			 */
+			do_action( 'edmm_settings_fields' );
+			?>
 		</div>
 		<?php
 	}
