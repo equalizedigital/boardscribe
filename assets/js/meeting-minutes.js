@@ -79,7 +79,11 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 			}
 
 			window.edmmExtraColumns.forEach( function ( col ) {
-				table += '<th scope="col">' + col.label + '</th>';
+				var hidden = typeof col.hidden === 'function' ? col.hidden( instanceCfg ) : false;
+				if ( ! hidden ) {
+					var label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
+					table += '<th scope="col">' + label + '</th>';
+				}
 			} );
 
 			table += '</tr></thead><tbody>';
@@ -100,8 +104,12 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 				}
 
 				window.edmmExtraColumns.forEach( function ( col ) {
-					const cell = col.renderCell ? col.renderCell( meeting ) : ( meeting[ col.key ] || '' );
-					table += '<td data-label="' + col.label + '">' + cell + '</td>';
+					var hidden = typeof col.hidden === 'function' ? col.hidden( instanceCfg ) : false;
+					if ( ! hidden ) {
+						var label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
+						var cell  = col.renderCell ? col.renderCell( meeting, instanceCfg ) : ( meeting[ col.key ] || '' );
+						table += '<td data-label="' + label + '">' + cell + '</td>';
+					}
 				} );
 
 				table += '</tr>';

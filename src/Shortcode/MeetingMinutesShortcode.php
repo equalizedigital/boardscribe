@@ -179,6 +179,16 @@ class MeetingMinutesShortcode {
 			'postsPerPage'      => absint( $atts['posts_per_page'] ),
 		];
 
+		/**
+		 * Filters the per-instance config array before it is JSON-encoded into
+		 * the data-config attribute. Pro plugin uses this to append its own
+		 * settings (e.g. hide_location, location_label).
+		 *
+		 * @param array $instance_config The instance configuration array.
+		 * @param array $atts            The resolved shortcode attributes.
+		 */
+		$instance_config = apply_filters( 'edmm_shortcode_instance_config', $instance_config, $atts );
+
 		ob_start();
 		?>
 		<div
