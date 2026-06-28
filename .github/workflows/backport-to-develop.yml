@@ -1,0 +1,119 @@
+name: Automatic Backport to Develop
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  create-backport-pr:
+    # Only run if the PR was actually merged (not just closed)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get merged branch name
+        id: get-branch
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          # Get the head branch name and repo from the merged PR
+          echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "head-repo=$HEAD_REPO" >> $GITHUB_OUTPUT
+          echo "Merged branch: $BRANCH_NAME from $HEAD_REPO"
+
+      - name: Check if branch exists
+        id: check-branch
+        env:
+          HEAD_REF: ${{ steps.get-branch.outputs.branch-name }}
+          HEAD_REPO: ${{ steps.get-branch.outputs.head-repo }}
+        run: |
+          # Check if the branch still exists on the fork remote
+          if git ls-remote "https://github.com/${HEAD_REPO}.git" "refs/heads/${HEAD_REF}" | grep -q "refs/heads/${HEAD_REF}"; then
+            echo "branch-exists=true" >> $GITHUB_OUTPUT
+            echo "Branch $HEAD_REF exists in $HEAD_REPO and can be used for backport"
+          else
+            echo "branch-exists=false" >> $GITHUB_OUTPUT
+            echo "Branch $HEAD_REF no longer exists in $HEAD_REPO, cannot create backport PR"
+          fi
+
+      - name: Create backport PR
+        if: steps.check-branch.outputs.branch-exists == 'true'
+        uses: actions/github-script@v7
+        env:
+          BRANCH_NAME: ${{ steps.get-branch.outputs.branch-name }}
+          ORIGINAL_PR_NUMBER: ${{ github.event.pull_request.number }}
+          ORIGINAL_PR_TITLE: ${{ github.event.pull_request.title }}
+          ORIGINAL_PR_BODY: ${{ github.event.pull_request.body }}
+          ORIGINAL_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branchName = process.env.BRANCH_NAME;
+            const originalPrNumber = process.env.ORIGINAL_PR_NUMBER;
+            const originalPrTitle = process.env.ORIGINAL_PR_TITLE;
+            const originalPrBody = process.env.ORIGINAL_PR_BODY || '';
+            const originalPrAuthor = process.env.ORIGINAL_PR_AUTHOR;
+
+            // Create the backport PR
+            try {
+              const response = await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `[Backport] ${originalPrTitle}`,
+                head: branchName,
+                base: 'develop',
+                body: `## Automatic Backport\n\nThis is an automatic backport of PR #${originalPrNumber} by @${originalPrAuthor} to the \`develop\` branch.\n\n### Original PR Details:\n${originalPrBody}\n\n---\n*This PR was created automatically when #${originalPrNumber} was merged into \`main\`.*`,
+                maintainer_can_modify: true
+              });
+
+              console.log(`✅ Successfully created backport PR #${response.data.number}`);
+              console.log(`🔗 PR URL: ${response.data.html_url}`);
+
+              // Add labels to the backport PR
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: response.data.number,
+                labels: ['backport', 'automated']
+              });
+
+            } catch (error) {
+              console.error('❌ Failed to create backport PR:', error.message);
+
+              // Check if it's a conflict or other specific error
+              if (error.message.includes('No commits between')) {
+                console.log('ℹ️ The branch is already up to date with develop - no backport needed');
+              } else if (
+                error.status === 422 &&
+                error.response &&
+                Array.isArray(error.response.data?.errors) &&
+                error.response.data.errors.some(e =>
+                  e.message && e.message.includes('A pull request already exists')
+                )
+              ) {
+                console.log('ℹ️ A pull request already exists for this branch to develop');
+              } else {
+                // Re-throw for other errors to fail the workflow
+                throw error;
+              }
+            }
+
+      - name: Handle missing branch
+        if: steps.check-branch.outputs.branch-exists == 'false'
+        run: |
+          echo "⚠️ Cannot create backport PR because the source branch no longer exists."
+          echo "This typically happens when the branch was deleted after merging."
+          echo "If a backport to develop is needed, it should be done manually."

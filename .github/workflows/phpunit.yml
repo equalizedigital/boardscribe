@@ -1,0 +1,92 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.PUBLIC_REPO_ACCESS || secrets.GITHUB_TOKEN }}"}}'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php_version: '8.1'
+            wp_version: '6.2'
+            multisite: false
+
+          - php_version: '8.1'
+            wp_version: 'latest'
+            multisite: false
+
+          - php_version: '8.2'
+            wp_version: 'latest'
+            multisite: false
+
+    name: "Test: PHP ${{ matrix.php_version }} | WP ${{ matrix.wp_version }}"
+
+    continue-on-error: ${{ matrix.wp_version == 'trunk' }}
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=10s --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+          ini-values: zend.assertions=1, error_reporting=-1, display_errors=On
+          coverage: none
+          github-token: ${{ secrets.PUBLIC_REPO_ACCESS || secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_ACCESS || secrets.GITHUB_TOKEN }}
+
+      - name: Configure Composer to use PAT
+        run: composer config --global --auth github-oauth.github.com ${{ secrets.PUBLIC_REPO_ACCESS || secrets.GITHUB_TOKEN }}
+
+      - name: "Composer: remove the PHP platform requirement"
+        run: composer config --unset platform.php
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: "highest"
+          composer-options: "yoast/wp-test-utils --with-dependencies"
+          custom-cache-suffix: $(date -u -d "-0 month -$(($(date +%d)-3)) days" "+%F")
+          github-token: ${{ secrets.PUBLIC_REPO_ACCESS || secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_ACCESS || secrets.GITHUB_TOKEN }}
+
+      - name: Install SVN
+        run: |
+          if ! command -v svn &> /dev/null; then
+            echo "Installing SVN..."
+            sudo apt-get update --allow-releaseinfo-change || { echo "Failed to update package lists"; exit 1; }
+            sudo apt-get install -y subversion || { echo "Failed to install SVN"; exit 1; }
+          else
+            echo "SVN is already installed"
+          fi
+
+      - name: Install WP
+        shell: bash
+        run: tests/bin/install-wp-tests.sh wordpress_tests root '' 127.0.0.1:3306 ${{ matrix.wp_version }}
+
+      - name: Run tests
+        run: composer test
