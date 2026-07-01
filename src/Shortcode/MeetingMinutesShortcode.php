@@ -178,7 +178,7 @@ class MeetingMinutesShortcode {
 			'category'          => sanitize_text_field( $atts['category'] ?? '' ),
 			'heldDateFormat'    => $atts['held_date_format'],
 			'notHeldDateFormat' => $atts['not_held_date_format'],
-			'tableClass'        => $atts['class'],
+			'tableClass'        => $this->sanitize_class_list( $atts['class'] ),
 			'postsPerPage'      => absint( $atts['posts_per_page'] ),
 		];
 
@@ -210,5 +210,21 @@ class MeetingMinutesShortcode {
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Sanitizes a space-separated list of HTML class names.
+	 *
+	 * The `class` shortcode attribute is rendered client-side into the
+	 * table markup's class attribute via string concatenation, so it must
+	 * be restricted to safe class-name characters before it ever reaches
+	 * the instance config to prevent stored XSS via the shortcode attribute.
+	 *
+	 * @param string $class_list Raw, space-separated class names.
+	 * @return string Sanitized, space-separated class names.
+	 */
+	private function sanitize_class_list( string $class_list ): string {
+		$classes = array_map( 'sanitize_html_class', explode( ' ', $class_list ) );
+		return implode( ' ', array_filter( $classes ) );
 	}
 }
