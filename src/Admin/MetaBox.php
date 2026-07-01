@@ -96,7 +96,12 @@ JS;
 		$common = [
 			'single'        => true,
 			'show_in_rest'  => true,
-			'auth_callback' => fn( $allowed, $meta_key, $object_id ) => current_user_can( 'edit_post', $object_id ),
+			// $object_id is 0 when the REST API is authorizing meta for a post
+			// that doesn't exist yet (e.g. new-post autosave), so fall back to
+			// the general capability check in that case.
+			'auth_callback' => fn( $allowed, $meta_key, $object_id ) => $object_id
+				? current_user_can( 'edit_post', $object_id )
+				: current_user_can( 'edit_posts' ),
 		];
 
 		register_post_meta(
