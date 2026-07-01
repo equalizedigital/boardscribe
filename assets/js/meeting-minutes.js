@@ -2,7 +2,8 @@
 // before DOMContentLoaded so they are included in the initial render.
 //
 // Each entry: { key: string, label: string, renderCell: function(meeting) → string }
-// renderCell()'s return value is inserted directly as HTML - it must escape
+// renderCell()'s return value, and label/getLabel()'s return value (used as
+// raw column header HTML), are inserted directly as HTML - each must escape
 // any untrusted data itself before returning.
 window.edmmExtraColumns = window.edmmExtraColumns || [];
 
