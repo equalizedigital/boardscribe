@@ -1,8 +1,13 @@
 name: Security
 
 on:
-  # Run on all pushes and on all pull requests.
+  # Only run on push for direct pushes to main - PR branches are already
+  # covered by pull_request below, and an unrestricted push trigger runs
+  # this workflow twice per PR commit (once per event type, each with a
+  # different github.ref so they don't share a concurrency group).
   push:
+    branches:
+      - main
   pull_request:
   # Also run this workflow every Monday at 6:00.
   schedule:
