@@ -176,6 +176,40 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	}
 
 	/**
+	 * A held meeting with no minutes URL gets the "not available" markup.
+	 *
+	 * Mirrors test_missing_agenda_url_falls_back_to_not_available() -
+	 * the agenda/minutes code paths are nearly identical, so a
+	 * copy-paste bug in one wouldn't be caught without covering both.
+	 */
+	public function test_missing_minutes_url_falls_back_to_not_available(): void {
+		$post_id = $this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
+
+		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
+
+		$this->assertStringContainsString( 'Minutes not available', $row['minutes'] );
+	}
+
+	/**
+	 * A held meeting with a minutes URL gets a link built from it.
+	 *
+	 * Mirrors test_agenda_url_produces_a_link().
+	 */
+	public function test_minutes_url_produces_a_link(): void {
+		$post_id = $this->create_meeting(
+			[
+				'edmm_meeting_date'        => '2024-03-15',
+				'edmm_meeting_minutes_url' => 'https://example.com/minutes.pdf',
+			]
+		);
+
+		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
+
+		$this->assertStringContainsString( 'href="https://example.com/minutes.pdf"', $row['minutes'] );
+		$this->assertStringContainsString( 'View Minutes', $row['minutes'] );
+	}
+
+	/**
 	 * Calling build_meeting_row() with no $request (e.g. from a future
 	 * non-REST caller like a CSV export) does not throw.
 	 */
@@ -193,17 +227,15 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	public function test_row_data_filter_is_applied(): void {
 		$post_id = $this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
 
-		add_filter(
-			'edmm_meeting_row_data',
-			static function ( array $row ): array {
-				$row['custom_field'] = 'custom_value';
-				return $row;
-			}
-		);
+		$callback = static function ( array $row ): array {
+			$row['custom_field'] = 'custom_value';
+			return $row;
+		};
+		add_filter( 'edmm_meeting_row_data', $callback );
 
 		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
 
-		remove_all_filters( 'edmm_meeting_row_data' );
+		remove_filter( 'edmm_meeting_row_data', $callback );
 
 		$this->assertSame( 'custom_value', $row['custom_field'] );
 	}
