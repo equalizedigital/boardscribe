@@ -12,6 +12,21 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 	const apiBaseUrl = cfg.apiUrl || '';
 
 	/**
+	 * Escapes a string for safe use inside an HTML attribute value.
+	 *
+	 * @param {string} value - The raw value to escape.
+	 * @return {string} The escaped value.
+	 */
+	function escapeAttr( value ) {
+		return String( value )
+			.replace( /&/g, '&amp;' )
+			.replace( /"/g, '&quot;' )
+			.replace( /'/g, '&#039;' )
+			.replace( /</g, '&lt;' )
+			.replace( />/g, '&gt;' );
+	}
+
+	/**
 	 * Initialises a single meeting minutes table instance.
 	 *
 	 * @param {HTMLElement} container - The .edmm-meeting-minutes-wrap element.
@@ -91,16 +106,16 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 			data.meetings.forEach( function( meeting ) {
 				table += '<tr>';
 				if ( ! instanceCfg.hideTitle ) {
-					table += '<td data-label="' + labelTitle + '" scope="row">' + meeting.title + '</td>';
+					table += '<td data-label="' + escapeAttr( labelTitle ) + '" scope="row">' + meeting.title + '</td>';
 				}
 				if ( ! instanceCfg.hideDate ) {
-					table += '<td data-label="' + labelDate + '">' + meeting.date + '</td>';
+					table += '<td data-label="' + escapeAttr( labelDate ) + '">' + meeting.date + '</td>';
 				}
 				if ( ! instanceCfg.hideAgenda ) {
-					table += '<td data-label="' + labelAgenda + '">' + meeting.agenda + '</td>';
+					table += '<td data-label="' + escapeAttr( labelAgenda ) + '">' + meeting.agenda + '</td>';
 				}
 				if ( ! instanceCfg.hideMinutes ) {
-					table += '<td data-label="' + labelMinutes + '">' + meeting.minutes + '</td>';
+					table += '<td data-label="' + escapeAttr( labelMinutes ) + '">' + meeting.minutes + '</td>';
 				}
 
 				window.edmmExtraColumns.forEach( function( col ) {
@@ -108,7 +123,7 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 					if ( ! hidden ) {
 						const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
 						const cell = col.renderCell ? col.renderCell( meeting, instanceCfg ) : ( meeting[ col.key ] || '' );
-						table += '<td data-label="' + label + '">' + cell + '</td>';
+						table += '<td data-label="' + escapeAttr( label ) + '">' + cell + '</td>';
 					}
 				} );
 
