@@ -16,6 +16,11 @@
         <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
     </rule>
 
+    <!-- src/ uses namespaced, PSR-4-style class files, not the legacy class-*.php convention -->
+    <rule ref="WordPress.Files.FileName">
+        <exclude-pattern>*/src/*</exclude-pattern>
+    </rule>
+
     <!-- Require PHP 7.4+ -->
     <config name="minimum_supported_wp_version" value="6.0"/>
     <config name="testVersion" value="7.4-"/>

@@ -294,13 +294,13 @@ JS;
 							<td>
 								<?php
 								$label_fields = [
-									'title_label'  => __( 'Title', 'edmm' ),
-									'date_label'   => __( 'Date', 'edmm' ),
-									'agenda_label' => __( 'Agenda', 'edmm' ),
-									'minutes_label'  => __( 'Minutes', 'edmm' ),
+									'title_label'   => __( 'Title', 'edmm' ),
+									'date_label'    => __( 'Date', 'edmm' ),
+									'agenda_label'  => __( 'Agenda', 'edmm' ),
+									'minutes_label' => __( 'Minutes', 'edmm' ),
 								];
 								foreach ( $label_fields as $key => $default ) :
-								?>
+									?>
 								<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
 									<span style="width:60px;"><?php echo esc_html( $default ); ?></span>
 									<input
@@ -343,13 +343,13 @@ JS;
 							<td>
 								<?php
 								$columns = [
-									'hide_title'  => __( 'Title', 'edmm' ),
-									'hide_date'   => __( 'Date', 'edmm' ),
-									'hide_agenda' => __( 'Agenda', 'edmm' ),
-									'hide_minutes'  => __( 'Minutes', 'edmm' ),
+									'hide_title'   => __( 'Title', 'edmm' ),
+									'hide_date'    => __( 'Date', 'edmm' ),
+									'hide_agenda'  => __( 'Agenda', 'edmm' ),
+									'hide_minutes' => __( 'Minutes', 'edmm' ),
 								];
 								foreach ( $columns as $key => $label ) :
-								?>
+									?>
 								<label style="display:block; margin-bottom:4px;">
 									<input
 										type="checkbox"

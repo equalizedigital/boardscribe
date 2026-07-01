@@ -31,45 +31,49 @@ class MeetingMinutesEndpoint {
 	 * @return void
 	 */
 	public function register_route(): void {
-		register_rest_route( 'edmm/v1', '/meeting-minutes/', [
-			'methods'             => 'GET',
-			'callback'            => [ $this, 'get_meeting_minutes' ],
-			'permission_callback' => '__return_true', // Public data — meeting minutes are public records.
-			'args'                => [
-				'page'                => [
-					'default'           => 1,
-					'sanitize_callback' => 'absint',
+		register_rest_route(
+			'edmm/v1',
+			'/meeting-minutes/',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ $this, 'get_meeting_minutes' ],
+				'permission_callback' => '__return_true', // Public data — meeting minutes are public records.
+				'args'                => [
+					'page'                 => [
+						'default'           => 1,
+						'sanitize_callback' => 'absint',
+					],
+					'posts_per_page'       => [
+						'default'           => 20,
+						'sanitize_callback' => 'absint',
+					],
+					'held_date_format'     => [
+						'default'           => 'Y/m/d',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'not_held_date_format' => [
+						'default'           => 'Y/m',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'included_years'       => [
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'category'             => [
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'agenda_link_label'    => [
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'minutes_link_label'   => [
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
 				],
-				'posts_per_page'      => [
-					'default'           => 20,
-					'sanitize_callback' => 'absint',
-				],
-				'held_date_format'    => [
-					'default'           => 'Y/m/d',
-					'sanitize_callback' => 'sanitize_text_field',
-				],
-				'not_held_date_format' => [
-					'default'           => 'Y/m',
-					'sanitize_callback' => 'sanitize_text_field',
-				],
-				'included_years'      => [
-					'default'           => '',
-					'sanitize_callback' => 'sanitize_text_field',
-				],
-				'category'            => [
-					'default'           => '',
-					'sanitize_callback' => 'sanitize_text_field',
-				],
-				'agenda_link_label'   => [
-					'default'           => '',
-					'sanitize_callback' => 'sanitize_text_field',
-				],
-				'minutes_link_label'    => [
-					'default'           => '',
-					'sanitize_callback' => 'sanitize_text_field',
-				],
-			],
-		] );
+			]
+		);
 	}
 
 	/**
@@ -84,18 +88,18 @@ class MeetingMinutesEndpoint {
 		$held_date_format     = $request->get_param( 'held_date_format' );
 		$not_held_date_format = $request->get_param( 'not_held_date_format' );
 		$included_years       = $request->get_param( 'included_years' );
-		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ?: __( 'View Agenda', 'edmm' );
-		$minutes_link_label     = $request->get_param( 'minutes_link_label' ) ?: __( 'View Minutes', 'edmm' );
+		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'edmm' );
+		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'edmm' );
 
 		$args = [
 			'post_type'      => 'edmm_meeting_minutes',
 			'post_status'    => 'publish',
 			'posts_per_page' => $posts_per_page,
 			'paged'          => $page,
-			'meta_key'       => 'edmm_meeting_date',
+			'meta_key'       => 'edmm_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
 			'orderby'        => 'meta_value',
 			'order'          => 'DESC',
-			'meta_query'     => [
+			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
 				'relation' => 'AND',
 				[
 					'key'     => 'edmm_meeting_date',
@@ -109,7 +113,7 @@ class MeetingMinutesEndpoint {
 			$year_queries = [ 'relation' => 'OR' ];
 
 			foreach ( $years as $year ) {
-				$year = intval( $year );
+				$year           = intval( $year );
 				$year_queries[] = [
 					'key'     => 'edmm_meeting_date',
 					'value'   => [ $year . '-01-01', $year . '-12-31' ],
@@ -138,12 +142,13 @@ class MeetingMinutesEndpoint {
 				$query->the_post();
 				$post_id = get_the_ID();
 
-				$meeting_date       = get_post_meta( $post_id, 'edmm_meeting_date', true );
-				$meeting_not_held   = (bool) get_post_meta( $post_id, 'edmm_meeting_not_held', true );
-				$meeting_agenda_url = get_post_meta( $post_id, 'edmm_meeting_agenda_url', true );
-				$meeting_minutes_url  = get_post_meta( $post_id, 'edmm_meeting_minutes_url', true );
+				$meeting_date        = get_post_meta( $post_id, 'edmm_meeting_date', true );
+				$meeting_not_held    = (bool) get_post_meta( $post_id, 'edmm_meeting_not_held', true );
+				$meeting_agenda_url  = get_post_meta( $post_id, 'edmm_meeting_agenda_url', true );
+				$meeting_minutes_url = get_post_meta( $post_id, 'edmm_meeting_minutes_url', true );
 
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional, gated behind WP_DEBUG for troubleshooting date parsing.
 					error_log( 'EDMM: Raw meeting date for post ' . $post_id . ': ' . $meeting_date );
 				}
 
@@ -155,31 +160,35 @@ class MeetingMinutesEndpoint {
 				$agenda_item = $meeting_agenda_url
 					? apply_filters(
 						'edmm_meeting_agenda_link',
-						'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr( sprintf(
+						'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr(
+							sprintf(
 							/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-							__( '%1$s for %2$s', 'edmm' ),
-							$agenda_link_label,
-							wp_strip_all_tags( $formatted_date )
-						) ) . '">' . esc_html( $agenda_link_label ) . '</a>'
+								__( '%1$s for %2$s', 'edmm' ),
+								$agenda_link_label,
+								wp_strip_all_tags( $formatted_date )
+							)
+						) . '">' . esc_html( $agenda_link_label ) . '</a>'
 					)
 					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'edmm' ) . '</span>';
 
 				$minutes_item = $meeting_minutes_url
 					? apply_filters(
 						'edmm_meeting_minutes_link',
-						'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr( sprintf(
+						'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr(
+							sprintf(
 							/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
-							__( '%1$s for %2$s', 'edmm' ),
-							$minutes_link_label,
-							wp_strip_all_tags( $formatted_date )
-						) ) . '">' . esc_html( $minutes_link_label ) . '</a>'
+								__( '%1$s for %2$s', 'edmm' ),
+								$minutes_link_label,
+								wp_strip_all_tags( $formatted_date )
+							)
+						) . '">' . esc_html( $minutes_link_label ) . '</a>'
 					)
 					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'edmm' ) . '</span>';
 
 				$row = [
-					'title'  => get_the_title(),
-					'date'   => $formatted_date,
-					'agenda' => $meeting_not_held ? esc_html__( 'Meeting not held', 'edmm' ) : $agenda_item,
+					'title'   => get_the_title(),
+					'date'    => $formatted_date,
+					'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'edmm' ) : $agenda_item,
 					'minutes' => $minutes_item,
 				];
 
@@ -231,7 +240,7 @@ class MeetingMinutesEndpoint {
 
 		foreach ( [ 'Y-m-d', 'Ymd', 'd/m/Y', 'm/d/Y' ] as $format ) {
 			$date = \DateTime::createFromFormat( $format, $date_string );
-			if ( $date !== false ) {
+			if ( false !== $date ) {
 				return $date;
 			}
 		}

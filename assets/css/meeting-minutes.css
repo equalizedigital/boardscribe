@@ -1,67 +1,67 @@
 .edmm-pagination-buttons {
-    display: flex;
-    gap: 5px;
+	display: flex;
+	gap: 5px;
 }
 
 .edmm-pagination-button {
-    padding: 5px 10px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
+	padding: 5px 10px;
+	border: none;
+	background-color: #007bff;
+	color: white;
+	cursor: pointer;
 }
 
 .edmm-pagination-button.current {
-    background-color: #0056b3;
+	background-color: #0056b3;
 }
 
 .edmm-pagination-button[disabled] {
-    background-color: #ccc;
-    cursor: not-allowed;
+	background-color: #ccc;
+	cursor: not-allowed;
 }
 
 .edmm-meeting-minutes-table {
-    width: 100%;
-    border-collapse: collapse;
+	width: 100%;
+	border-collapse: collapse;
 }
 
 .edmm-meeting-minutes-table th,
 .edmm-meeting-minutes-table td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #ddd;
+	padding: 8px;
+	text-align: left;
+	border: 1px solid #ddd;
 }
 
 /* Stacking layout on small screens */
 @media only screen and (max-width: 768px) {
-    .edmm-meeting-minutes-table,
-    .edmm-meeting-minutes-table thead,
-    .edmm-meeting-minutes-table tbody,
-    .edmm-meeting-minutes-table th,
-    .edmm-meeting-minutes-table td,
-    .edmm-meeting-minutes-table tr {
-        display: block;
-    }
+	.edmm-meeting-minutes-table,
+	.edmm-meeting-minutes-table thead,
+	.edmm-meeting-minutes-table tbody,
+	.edmm-meeting-minutes-table th,
+	.edmm-meeting-minutes-table td,
+	.edmm-meeting-minutes-table tr {
+		display: block;
+	}
 
-    .edmm-meeting-minutes-table thead {
-        display: none;
-    }
+	.edmm-meeting-minutes-table thead {
+		display: none;
+	}
 
-    .edmm-meeting-minutes-table tr {
-        margin-bottom: 10px;
-    }
+	.edmm-meeting-minutes-table tr {
+		margin-bottom: 10px;
+	}
 
-    .edmm-meeting-minutes-table td {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: left;
-    }
+	.edmm-meeting-minutes-table td {
+		display: flex;
+		justify-content: space-between;
+		padding: 10px;
+		border: 1px solid #ddd;
+		text-align: left;
+	}
 
-    .edmm-meeting-minutes-table td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        text-transform: uppercase;
-    }
+	.edmm-meeting-minutes-table td::before {
+		content: attr(data-label);
+		font-weight: bold;
+		text-transform: uppercase;
+	}
 }

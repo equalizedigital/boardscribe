@@ -7,7 +7,6 @@
 
 namespace EqualizeDigital\MeetingMinutes\Shortcode;
 
-
 /**
  * Registers the [edmm_meeting_minutes] shortcode and manages
  * conditional asset enqueuing.
@@ -95,24 +94,28 @@ class MeetingMinutesShortcode {
 			return;
 		}
 
-		wp_localize_script( 'edmm-meeting-minutes', 'edmmConfig', [
-			'apiUrl' => rest_url( 'edmm/v1/meeting-minutes/' ),
-			'i18n'   => [
-				'colTitle'        => __( 'Title', 'edmm' ),
-				'colDate'         => __( 'Date', 'edmm' ),
-				'colAgenda'       => __( 'Agenda', 'edmm' ),
-				'colMinutes'        => __( 'Minutes', 'edmm' ),
-				'previous'        => __( 'Previous', 'edmm' ),
-				'next'            => __( 'Next', 'edmm' ),
-				'previousPage'    => __( 'Previous Page', 'edmm' ),
-				'nextPage'        => __( 'Next Page', 'edmm' ),
-				'pagination'      => __( 'Pagination', 'edmm' ),
-				/* translators: %s: page number */
-				'pageNum'         => __( 'Page %s', 'edmm' ),
-				/* translators: 1: first entry number, 2: last entry number, 3: total entries */
-				'showingEntries'  => __( 'Showing %1$s to %2$s of %3$s entries', 'edmm' ),
-			],
-		] );
+		wp_localize_script(
+			'edmm-meeting-minutes',
+			'edmmConfig',
+			[
+				'apiUrl' => rest_url( 'edmm/v1/meeting-minutes/' ),
+				'i18n'   => [
+					'colTitle'       => __( 'Title', 'edmm' ),
+					'colDate'        => __( 'Date', 'edmm' ),
+					'colAgenda'      => __( 'Agenda', 'edmm' ),
+					'colMinutes'     => __( 'Minutes', 'edmm' ),
+					'previous'       => __( 'Previous', 'edmm' ),
+					'next'           => __( 'Next', 'edmm' ),
+					'previousPage'   => __( 'Previous Page', 'edmm' ),
+					'nextPage'       => __( 'Next Page', 'edmm' ),
+					'pagination'     => __( 'Pagination', 'edmm' ),
+					/* translators: %s: page number */
+					'pageNum'        => __( 'Page %s', 'edmm' ),
+					/* translators: 1: first entry number, 2: last entry number, 3: total entries */
+					'showingEntries' => __( 'Showing %1$s to %2$s of %3$s entries', 'edmm' ),
+				],
+			]
+		);
 
 		self::$localized = true;
 	}
@@ -129,13 +132,13 @@ class MeetingMinutesShortcode {
 			'hide_title'           => 'false',
 			'hide_date'            => 'false',
 			'hide_agenda'          => 'false',
-			'hide_minutes'           => 'false',
+			'hide_minutes'         => 'false',
 			'title_label'          => '',
 			'date_label'           => '',
 			'agenda_label'         => '',
-			'minutes_label'          => '',
+			'minutes_label'        => '',
 			'agenda_link_label'    => '',
-			'minutes_link_label'     => '',
+			'minutes_link_label'   => '',
 			'held_date_format'     => 'Y/m/d',
 			'not_held_date_format' => 'Y/m',
 			'class'                => '',
@@ -156,7 +159,7 @@ class MeetingMinutesShortcode {
 		$this->enqueue_assets();
 
 		// Generate a unique instance ID for this shortcode invocation.
-		self::$instance_count++;
+		++self::$instance_count;
 		$instance_id = 'edmm_' . self::$instance_count;
 
 		$instance_config = [
@@ -165,13 +168,13 @@ class MeetingMinutesShortcode {
 			'hideTitle'         => filter_var( $atts['hide_title'], FILTER_VALIDATE_BOOLEAN ),
 			'hideDate'          => filter_var( $atts['hide_date'], FILTER_VALIDATE_BOOLEAN ),
 			'hideAgenda'        => filter_var( $atts['hide_agenda'], FILTER_VALIDATE_BOOLEAN ),
-			'hideMinutes'         => filter_var( $atts['hide_minutes'], FILTER_VALIDATE_BOOLEAN ),
+			'hideMinutes'       => filter_var( $atts['hide_minutes'], FILTER_VALIDATE_BOOLEAN ),
 			'titleLabel'        => sanitize_text_field( $atts['title_label'] ),
 			'dateLabel'         => sanitize_text_field( $atts['date_label'] ),
 			'agendaLabel'       => sanitize_text_field( $atts['agenda_label'] ),
-			'minutesLabel'        => sanitize_text_field( $atts['minutes_label'] ),
+			'minutesLabel'      => sanitize_text_field( $atts['minutes_label'] ),
 			'agendaLinkLabel'   => sanitize_text_field( $atts['agenda_link_label'] ),
-			'minutesLinkLabel'    => sanitize_text_field( $atts['minutes_link_label'] ),
+			'minutesLinkLabel'  => sanitize_text_field( $atts['minutes_link_label'] ),
 			'category'          => sanitize_text_field( $atts['category'] ?? '' ),
 			'heldDateFormat'    => $atts['held_date_format'],
 			'notHeldDateFormat' => $atts['not_held_date_format'],

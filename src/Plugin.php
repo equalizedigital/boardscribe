@@ -94,17 +94,17 @@ class Plugin {
 	/**
 	 * Retrieves a single plugin setting with fallback to defaults.
 	 *
-	 * @param string $key     The setting key.
-	 * @param mixed  $default Optional override default (falls back to DEFAULTS constant).
+	 * @param string $key           The setting key.
+	 * @param mixed  $default_value Optional override default (falls back to DEFAULTS constant).
 	 * @return mixed
 	 */
-	public static function get_setting( string $key, $default = null ) {
+	public static function get_setting( string $key, $default_value = null ) {
 		$settings = get_option( 'edmm_settings', [] );
 		if ( isset( $settings[ $key ] ) ) {
 			return $settings[ $key ];
 		}
-		if ( null !== $default ) {
-			return $default;
+		if ( null !== $default_value ) {
+			return $default_value;
 		}
 		return self::DEFAULTS[ $key ] ?? null;
 	}
