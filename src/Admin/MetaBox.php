@@ -99,29 +99,57 @@ JS;
 			'auth_callback' => fn() => current_user_can( 'edit_posts' ),
 		];
 
-		register_post_meta( 'edmm_meeting_minutes', 'edmm_meeting_date', array_merge( $common, [
-			'type'              => 'string',
-			'description'       => __( 'Meeting date in Y-m-d format.', 'edmm' ),
-			'sanitize_callback' => 'sanitize_text_field',
-		] ) );
+		register_post_meta(
+			'edmm_meeting_minutes',
+			'edmm_meeting_date',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'Meeting date in Y-m-d format.', 'edmm' ),
+					'sanitize_callback' => 'sanitize_text_field',
+				]
+			)
+		);
 
-		register_post_meta( 'edmm_meeting_minutes', 'edmm_meeting_agenda_url', array_merge( $common, [
-			'type'              => 'string',
-			'description'       => __( 'URL to the meeting agenda document.', 'edmm' ),
-			'sanitize_callback' => 'esc_url_raw',
-		] ) );
+		register_post_meta(
+			'edmm_meeting_minutes',
+			'edmm_meeting_agenda_url',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'URL to the meeting agenda document.', 'edmm' ),
+					'sanitize_callback' => 'esc_url_raw',
+				]
+			)
+		);
 
-		register_post_meta( 'edmm_meeting_minutes', 'edmm_meeting_minutes_url', array_merge( $common, [
-			'type'              => 'string',
-			'description'       => __( 'URL to the meeting minutes document.', 'edmm' ),
-			'sanitize_callback' => 'esc_url_raw',
-		] ) );
+		register_post_meta(
+			'edmm_meeting_minutes',
+			'edmm_meeting_minutes_url',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'URL to the meeting minutes document.', 'edmm' ),
+					'sanitize_callback' => 'esc_url_raw',
+				]
+			)
+		);
 
-		register_post_meta( 'edmm_meeting_minutes', 'edmm_meeting_not_held', array_merge( $common, [
-			'type'              => 'string',
-			'description'       => __( 'Whether the meeting was not held.', 'edmm' ),
-			'sanitize_callback' => 'sanitize_text_field',
-		] ) );
+		register_post_meta(
+			'edmm_meeting_minutes',
+			'edmm_meeting_not_held',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'Whether the meeting was not held.', 'edmm' ),
+					'sanitize_callback' => 'sanitize_text_field',
+				]
+			)
+		);
 	}
 
 	/**
@@ -157,10 +185,10 @@ JS;
 	 * @return void
 	 */
 	public function render_meta_box( \WP_Post $post ): void {
-		$meeting_date       = get_post_meta( $post->ID, 'edmm_meeting_date', true );
-		$meeting_agenda_url = get_post_meta( $post->ID, 'edmm_meeting_agenda_url', true );
-		$meeting_minutes_url  = get_post_meta( $post->ID, 'edmm_meeting_minutes_url', true );
-		$meeting_not_held   = get_post_meta( $post->ID, 'edmm_meeting_not_held', true );
+		$meeting_date        = get_post_meta( $post->ID, 'edmm_meeting_date', true );
+		$meeting_agenda_url  = get_post_meta( $post->ID, 'edmm_meeting_agenda_url', true );
+		$meeting_minutes_url = get_post_meta( $post->ID, 'edmm_meeting_minutes_url', true );
+		$meeting_not_held    = get_post_meta( $post->ID, 'edmm_meeting_not_held', true );
 
 		wp_nonce_field( 'edmm_save_meeting_meta', 'edmm_meeting_meta_nonce' );
 

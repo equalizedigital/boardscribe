@@ -5,6 +5,9 @@
     <!-- Files to check -->
     <file>.</file>
 
+    <!-- Only check PHP; JS/CSS have their own dedicated linters (wp-scripts lint-js, etc.) -->
+    <arg name="extensions" value="php"/>
+
     <!-- Exclude non-PHP directories -->
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/node_modules/*</exclude-pattern>
@@ -14,6 +17,11 @@
     <rule ref="WordPress">
         <!-- Allow short array syntax -->
         <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+    </rule>
+
+    <!-- src/ uses namespaced, PSR-4-style class files, not the legacy class-*.php convention -->
+    <rule ref="WordPress.Files.FileName">
+        <exclude-pattern>*/src/*</exclude-pattern>
     </rule>
 
     <!-- Require PHP 7.4+ -->
