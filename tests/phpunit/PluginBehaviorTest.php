@@ -74,6 +74,18 @@ class PluginBehaviorTest extends TestCase {
 	}
 
 	/**
+	 * When edmm_settings exists but doesn't contain the requested key,
+	 * it still falls back to the DEFAULTS constant - this is a
+	 * different path than "no option at all" (array key miss on an
+	 * existing array, vs. get_option()'s own default kicking in).
+	 */
+	public function test_get_setting_falls_back_to_defaults_when_option_exists_without_key(): void {
+		update_option( 'edmm_settings', [ 'some_other_setting' => 'irrelevant' ] );
+
+		$this->assertSame( 0, Plugin::get_setting( 'delete_on_uninstall' ) );
+	}
+
+	/**
 	 * A stored value takes priority over both the caller-supplied
 	 * default and the DEFAULTS constant.
 	 */
