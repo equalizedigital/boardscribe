@@ -232,13 +232,22 @@ class MeetingMinutesEndpoint {
 	 *
 	 * Rejects backslashes so a caller cannot force otherwise-reserved
 	 * format characters to be output as literal text via DateTime's
-	 * escape syntax.
+	 * escape syntax. Also caps the length to avoid feeding pathologically
+	 * long strings into DateTime::format() once per result row.
 	 *
-	 * @param string $value The raw held_date_format/not_held_date_format value.
+	 * No type hint on $value: REST validate_callbacks can receive
+	 * non-string raw request values (e.g. an array from a repeated query
+	 * param), and a strict type hint would throw a TypeError instead of
+	 * just failing validation.
+	 *
+	 * @param mixed $value The raw held_date_format/not_held_date_format value.
 	 * @return bool
 	 */
-	public static function validate_date_format( string $value ): bool {
-		return (bool) preg_match( '/^[A-Za-z0-9\/\-.: ,]*$/', $value );
+	public static function validate_date_format( $value ): bool {
+		if ( ! is_string( $value ) ) {
+			return false;
+		}
+		return strlen( $value ) <= 32 && (bool) preg_match( '/^[A-Za-z0-9\/\-.: ,]*$/', $value );
 	}
 
 	/**
