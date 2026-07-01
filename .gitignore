@@ -1,0 +1,24 @@
+# Exclude these files from the git repo
+.sass-cache/
+package-lock.json
+
+# Hidden system files
+*.DS_Store
+*[Tt]humbs.db
+*.Trashes
+prepros-6.config
+vendor
+node_modules
+build
+dist
+.env
+
+.phpunit.result.cache
+
+# Exclude coverage reports
+coverage/
+
+# Local only working files
+*.log
+*.sql
+docs-local

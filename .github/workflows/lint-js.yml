@@ -1,0 +1,74 @@
+name: Lint JS
+
+on:
+  # Run on pushes to select branches and on all pull requests.
+  push:
+    branches:
+      - main
+      - develop
+      - trunk
+      - 'feature/**'
+      - 'release/**'
+      - 'hotfix/[0-9]+.[0-9]+*'
+  pull_request:
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
+
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    name: "Lint: JS"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      # The lint stage doesn't run the unit tests or use code style, so no need for PHPUnit, WPCS or phpcompatibility.
+      - name: 'Install NPM packages'
+        run: npm install --ignore-scripts
+
+      - name: Get only files changed in this PR
+        id: changed-files
+        uses: actions/github-script@v6
+        with:
+          script: |
+            if (!context.payload.pull_request) {
+              core.warning("No pull request context available. Skipping changed files retrieval.");
+              core.setOutput('files', '');
+              return '';
+            }
+
+            const changedFiles = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+              }
+            );
+            const jsFiles = changedFiles
+              .filter(file => file.status !== 'removed')
+              .map(file => file.filename)
+              .filter(filename => filename.endsWith('.js'))
+              .join(' ');
+
+            core.setOutput('files', jsFiles);
+            return jsFiles;
+
+      # If this is a PR then lint only js changed in the PR, if not a PR then lint them all.
+      - name: Run eslint
+        run: npx wp-scripts lint-js ${{ steps.changed-files.outputs.files || '' }}
