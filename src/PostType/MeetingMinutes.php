@@ -53,6 +53,17 @@ class MeetingMinutes {
 		];
 
 		/**
+		 * Filters the edmm_meeting_minutes CPT registration args.
+		 *
+		 * Pro plugin uses this to enable public/rewrite/archive support (e.g.
+		 * for an auto-generated archive page or RSS feed) or to change
+		 * capability_type for a custom approval-workflow capability set.
+		 *
+		 * @param array $args The register_post_type() args.
+		 */
+		$args = apply_filters( 'edmm_cpt_args', $args );
+
+		/**
 		 * Fires before the Meeting Minutes CPT is registered.
 		 * Use this hook to register taxonomies that need to bind to the CPT.
 		 */
