@@ -31,6 +31,55 @@ class MeetingMinutesEndpoint {
 	 * @return void
 	 */
 	public function register_route(): void {
+		$args = [
+			'page'                 => [
+				'default'           => 1,
+				'sanitize_callback' => 'absint',
+			],
+			'posts_per_page'       => [
+				'default'           => 20,
+				'sanitize_callback' => 'absint',
+			],
+			'held_date_format'     => [
+				'default'           => 'Y/m/d',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => [ __CLASS__, 'validate_date_format' ],
+			],
+			'not_held_date_format' => [
+				'default'           => 'Y/m',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => [ __CLASS__, 'validate_date_format' ],
+			],
+			'included_years'       => [
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
+			'category'             => [
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
+			'agenda_link_label'    => [
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
+			'minutes_link_label'   => [
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
+		];
+
+		/**
+		 * Filters the registered args schema for the meeting-minutes REST
+		 * route before it's registered.
+		 *
+		 * Pro plugin uses this to add new params (e.g. full-text search,
+		 * a date range) to this same route, rather than standing up a
+		 * separate route that would need to duplicate the query logic.
+		 *
+		 * @param array $args The REST route args schema.
+		 */
+		$args = apply_filters( 'edmm_rest_route_args', $args );
+
 		register_rest_route(
 			'edmm/v1',
 			'/meeting-minutes/',
@@ -38,42 +87,7 @@ class MeetingMinutesEndpoint {
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_meeting_minutes' ],
 				'permission_callback' => '__return_true', // Public data — meeting minutes are public records.
-				'args'                => [
-					'page'                 => [
-						'default'           => 1,
-						'sanitize_callback' => 'absint',
-					],
-					'posts_per_page'       => [
-						'default'           => 20,
-						'sanitize_callback' => 'absint',
-					],
-					'held_date_format'     => [
-						'default'           => 'Y/m/d',
-						'sanitize_callback' => 'sanitize_text_field',
-						'validate_callback' => [ __CLASS__, 'validate_date_format' ],
-					],
-					'not_held_date_format' => [
-						'default'           => 'Y/m',
-						'sanitize_callback' => 'sanitize_text_field',
-						'validate_callback' => [ __CLASS__, 'validate_date_format' ],
-					],
-					'included_years'       => [
-						'default'           => '',
-						'sanitize_callback' => 'sanitize_text_field',
-					],
-					'category'             => [
-						'default'           => '',
-						'sanitize_callback' => 'sanitize_text_field',
-					],
-					'agenda_link_label'    => [
-						'default'           => '',
-						'sanitize_callback' => 'sanitize_text_field',
-					],
-					'minutes_link_label'   => [
-						'default'           => '',
-						'sanitize_callback' => 'sanitize_text_field',
-					],
-				],
+				'args'                => $args,
 			]
 		);
 	}
@@ -142,67 +156,17 @@ class MeetingMinutesEndpoint {
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
-				$post_id = get_the_ID();
 
-				$meeting_date        = get_post_meta( $post_id, 'edmm_meeting_date', true );
-				$meeting_not_held    = (bool) get_post_meta( $post_id, 'edmm_meeting_not_held', true );
-				$meeting_agenda_url  = get_post_meta( $post_id, 'edmm_meeting_agenda_url', true );
-				$meeting_minutes_url = get_post_meta( $post_id, 'edmm_meeting_minutes_url', true );
-
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional, gated behind WP_DEBUG for troubleshooting date parsing.
-					error_log( 'EDMM: Raw meeting date for post ' . $post_id . ': ' . $meeting_date );
-				}
-
-				$date_object    = $this->parse_date( $meeting_date );
-				$formatted_date = $date_object
-					? esc_html( $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format ) )
-					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'edmm' ) . '</span>';
-
-				$agenda_item = $meeting_agenda_url
-					? apply_filters(
-						'edmm_meeting_agenda_link',
-						'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr(
-							sprintf(
-							/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-								__( '%1$s for %2$s', 'edmm' ),
-								$agenda_link_label,
-								wp_strip_all_tags( $formatted_date )
-							)
-						) . '">' . esc_html( $agenda_link_label ) . '</a>'
-					)
-					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'edmm' ) . '</span>';
-
-				$minutes_item = $meeting_minutes_url
-					? apply_filters(
-						'edmm_meeting_minutes_link',
-						'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr(
-							sprintf(
-							/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
-								__( '%1$s for %2$s', 'edmm' ),
-								$minutes_link_label,
-								wp_strip_all_tags( $formatted_date )
-							)
-						) . '">' . esc_html( $minutes_link_label ) . '</a>'
-					)
-					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'edmm' ) . '</span>';
-
-				$row = [
-					'title'   => esc_html( get_the_title() ),
-					'date'    => $formatted_date,
-					'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'edmm' ) : $agenda_item,
-					'minutes' => $minutes_item,
-				];
-
-				/**
-				 * Filters a single meeting row before it is added to the response.
-				 * Pro plugin can add extra fields (e.g., category, attachments).
-				 *
-				 * @param array    $row     The meeting row data.
-				 * @param int      $post_id The post ID.
-				 * @param \WP_REST_Request $request The REST request.
-				 */
-				$meetings[] = apply_filters( 'edmm_meeting_row_data', $row, $post_id, $request );
+				$meetings[] = $this->build_meeting_row(
+					get_the_ID(),
+					[
+						'held_date_format'     => $held_date_format,
+						'not_held_date_format' => $not_held_date_format,
+						'agenda_link_label'    => $agenda_link_label,
+						'minutes_link_label'   => $minutes_link_label,
+					],
+					$request
+				);
 			}
 			wp_reset_postdata();
 		}
@@ -224,6 +188,93 @@ class MeetingMinutesEndpoint {
 		$response = apply_filters( 'edmm_rest_response', $response, $request );
 
 		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * Builds the public-facing row data for a single meeting minutes post.
+	 *
+	 * Extracted so Pro plugin features that need the exact same
+	 * escaped/formatted output as this endpoint (CSV/PDF export, an iCal
+	 * feed, a "most recent meeting" widget) can call this directly instead
+	 * of re-implementing the same escaping logic themselves.
+	 *
+	 * @param int                   $post_id     The meeting minutes post ID.
+	 * @param array                 $format_args {
+	 *    Formatting options.
+	 *
+	 *     @type string $held_date_format     PHP date() format for held meetings.
+	 *     @type string $not_held_date_format PHP date() format for not-held meetings.
+	 *     @type string $agenda_link_label    Link text for the agenda link.
+	 *     @type string $minutes_link_label   Link text for the minutes link.
+	 * }
+	 * @param \WP_REST_Request|null $request     The originating REST request, if any.
+	 * @return array
+	 */
+	public function build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array {
+		$held_date_format     = $format_args['held_date_format'] ?? 'Y/m/d';
+		$not_held_date_format = $format_args['not_held_date_format'] ?? 'Y/m';
+		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'edmm' );
+		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'edmm' );
+
+		$meeting_date        = get_post_meta( $post_id, 'edmm_meeting_date', true );
+		$meeting_not_held    = (bool) get_post_meta( $post_id, 'edmm_meeting_not_held', true );
+		$meeting_agenda_url  = get_post_meta( $post_id, 'edmm_meeting_agenda_url', true );
+		$meeting_minutes_url = get_post_meta( $post_id, 'edmm_meeting_minutes_url', true );
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional, gated behind WP_DEBUG for troubleshooting date parsing.
+			error_log( 'EDMM: Raw meeting date for post ' . $post_id . ': ' . $meeting_date );
+		}
+
+		$date_object    = $this->parse_date( $meeting_date );
+		$formatted_date = $date_object
+			? esc_html( $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format ) )
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'edmm' ) . '</span>';
+
+		$agenda_item = $meeting_agenda_url
+			? apply_filters(
+				'edmm_meeting_agenda_link',
+				'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr(
+					sprintf(
+					/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
+						__( '%1$s for %2$s', 'edmm' ),
+						$agenda_link_label,
+						wp_strip_all_tags( $formatted_date )
+					)
+				) . '">' . esc_html( $agenda_link_label ) . '</a>'
+			)
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'edmm' ) . '</span>';
+
+		$minutes_item = $meeting_minutes_url
+			? apply_filters(
+				'edmm_meeting_minutes_link',
+				'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr(
+					sprintf(
+					/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
+						__( '%1$s for %2$s', 'edmm' ),
+						$minutes_link_label,
+						wp_strip_all_tags( $formatted_date )
+					)
+				) . '">' . esc_html( $minutes_link_label ) . '</a>'
+			)
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'edmm' ) . '</span>';
+
+		$row = [
+			'title'   => esc_html( get_the_title( $post_id ) ),
+			'date'    => $formatted_date,
+			'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'edmm' ) : $agenda_item,
+			'minutes' => $minutes_item,
+		];
+
+		/**
+		 * Filters a single meeting row before it is added to the response.
+		 * Pro plugin can add extra fields (e.g., category, attachments).
+		 *
+		 * @param array                  $row     The meeting row data.
+		 * @param int                    $post_id The post ID.
+		 * @param \WP_REST_Request|null $request  The REST request, if any.
+		 */
+		return apply_filters( 'edmm_meeting_row_data', $row, $post_id, $request );
 	}
 
 	/**

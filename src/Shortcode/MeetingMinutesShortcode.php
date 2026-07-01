@@ -200,6 +200,17 @@ class MeetingMinutesShortcode {
 			class="edmm-meeting-minutes-wrap"
 			data-config="<?php echo esc_attr( wp_json_encode( $instance_config ) ); ?>"
 		>
+			<?php
+			/**
+			 * Fires inside the shortcode wrapper, before the table container.
+			 * Pro plugin can use this to render e.g. a search box, a date
+			 * range picker, or an "add to calendar" button.
+			 *
+			 * @param string $instance_id The unique instance ID for this shortcode invocation.
+			 * @param array  $atts        The resolved shortcode attributes.
+			 */
+			do_action( 'edmm_before_table', $instance_id, $atts );
+			?>
 			<div id="edmm-table-<?php echo esc_attr( $instance_id ); ?>" class="edmm-table-container"></div>
 			<div id="edmm-pagination-<?php echo esc_attr( $instance_id ); ?>" class="edmm-pagination-container"></div>
 			<div
@@ -209,6 +220,17 @@ class MeetingMinutesShortcode {
 				aria-atomic="true"
 				style="position: absolute; left: -9999px;"
 			></div>
+			<?php
+			/**
+			 * Fires inside the shortcode wrapper, after the table container.
+			 * Pro plugin can use this to render e.g. a comment/feedback form
+			 * or a print button.
+			 *
+			 * @param string $instance_id The unique instance ID for this shortcode invocation.
+			 * @param array  $atts        The resolved shortcode attributes.
+			 */
+			do_action( 'edmm_after_table', $instance_id, $atts );
+			?>
 		</div>
 		<?php
 		return ob_get_clean();
