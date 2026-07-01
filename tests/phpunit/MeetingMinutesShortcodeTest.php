@@ -42,10 +42,14 @@ class MeetingMinutesShortcodeTest extends TestCase {
 	 * @return array<string, mixed>
 	 */
 	private function get_instance_config( string $html ): array {
-		$this->assertMatchesRegularExpression( '/data-config="([^"]*)"/', $html );
-		preg_match( '/data-config="([^"]*)"/', $html, $matches );
-		$json = html_entity_decode( $matches[1], ENT_QUOTES );
-		return json_decode( $json, true );
+		$matched = preg_match( '/data-config="([^"]*)"/', $html, $matches );
+		$this->assertSame( 1, $matched, 'The data-config attribute was not found in the HTML.' );
+
+		$json   = html_entity_decode( $matches[1], ENT_QUOTES );
+		$config = json_decode( $json, true );
+		$this->assertIsArray( $config );
+
+		return $config;
 	}
 
 	/**
