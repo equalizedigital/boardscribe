@@ -5,6 +5,9 @@
     <!-- Files to check -->
     <file>.</file>
 
+    <!-- Only check PHP; JS/CSS have their own dedicated linters (wp-scripts lint-js, etc.) -->
+    <arg name="extensions" value="php"/>
+
     <!-- Exclude non-PHP directories -->
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/node_modules/*</exclude-pattern>
