@@ -107,7 +107,13 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 
 		$this->assertCount( 2, $data['meetings'] );
 		$this->assertSame( 3, $data['total_entries'] );
-		$this->assertSame( 2, $data['max_num_pages'] );
+		// assertEquals, not assertSame: WP_Query::$max_num_pages is
+		// ceil()'d, which returns float in PHP - whether that surfaces as
+		// int or float here varies by WP core version (confirmed via CI:
+		// WP 6.2 returns float(2.0), WP latest returns int(2)). The
+		// number of pages being 2 is the contract; the PHP-level type
+		// isn't.
+		$this->assertEquals( 2, $data['max_num_pages'] );
 	}
 
 	/**
