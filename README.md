@@ -1,71 +1,108 @@
 # Equalize Digital Meeting Minutes
 
 **Contributors**: Equalize Digital
-**Requires at least**: 5.0
-**Tested up to**: 6.6
+**Requires at least**: 6.0
+**Tested up to**: 6.7
 **Stable tag**: 1.0.0
+**Requires PHP**: 7.4
 **License**: GPLv2 or later
 **License URI**: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Description
 
-The **Equalize Digital Meeting Minutes** plugin allows you to manage and display meeting minutes on your WordPress website. It registers a custom post type for storing meeting minutes and provides a shortcode to display them in a paginated table. It also integrates with ACF for adding meta fields and creates a custom REST API endpoint for retrieving meeting minute entries.
+The **Equalize Digital Meeting Minutes** plugin lets you manage and display meeting minutes as a custom post type. No third-party dependencies required — all meta fields use native WordPress storage. A built-in REST API endpoint and JavaScript table renderer power the front-end display via a simple shortcode.
 
 ### Features
-- Custom post type for meeting minutes.
-- ACF (Advanced Custom Fields) integration for additional meeting metadata (date, agenda URL, notes URL).
-- REST API route for fetching meeting minutes.
-- A shortcode to display meeting minutes in a table with pagination.
+
+- Custom post type for meeting minutes with native meta boxes (no ACF required).
+- Shortcode builder in the admin settings page generates a ready-to-copy shortcode.
+- Paginated, accessible table display via `[edmm_meeting_minutes]` shortcode.
+- Supports multiple shortcodes on the same page, each independently configured.
+- REST API endpoint (`/wp-json/edmm/v1/meeting-minutes/`) for fetching meeting minutes.
+- Responsive stacking layout on small screens with accessible column labels.
 
 ## Installation
 
 1. Upload the plugin files to the `/wp-content/plugins/equalize-digital-meeting-minutes` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Use the provided shortcode `[edmm_meeting_minutes]` to display meeting minutes on any page or post.
+2. Activate the plugin through the **Plugins** screen in WordPress.
+3. Add meetings via **Meeting Minutes > Add New** in the admin menu.
+4. Use the **Meeting Minutes > Settings** page to build your shortcode, then paste it into any page or post.
 
 ## Shortcode
 
-The plugin provides the `[edmm_meeting_minutes]` shortcode, which you can use to display meeting minutes in a paginated table. The shortcode comes with several attributes to customize the output.
-
-### Shortcode Example
-
-```php
-[edmm_meeting_minutes included_years="2022,2023" hide_title="false" posts_per_page="5"]
 ```
+[edmm_meeting_minutes]
+```
+
+Use the **Settings > Shortcode Builder** to generate the shortcode with your preferred options. You can also write the shortcode manually using the attributes below.
 
 ### Shortcode Attributes
-- `included_years`: Comma-separated list of years to include in the table (e.g., "2022,2023"). Default: empty (shows all years).
-- `hide_title`: Hides the "Title" column if set to `true`. Default: `false`.
-- `hide_date`: Hides the "Date" column if set to `true`. Default: `false`.
-- `hide_agenda`: Hides the "Agenda" column if set to `true`. Default: `false`.
-- `hide_notes`: Hides the "Notes" column if set to `true`. Default: `false`.
-- `held_date_format`: The format for dates of meetings that were held. Uses standard PHP date format (e.g., `Y/m/d`). Default: `Y/m/d`.
-- `not_held_date_format`: The format for dates of meetings that were not held. Uses standard PHP date format (e.g., `Y/m`). Default: `Y/m`.
-- `class`: Adds a custom CSS class to the `<table>` element. Default: empty.
-- `posts_per_page`: The number of meeting entries to display per page. Default: `20`.
 
-## REST API
-The plugin exposes a custom REST API endpoint for retrieving meeting minutes:
-- Endpoint: `/wp-json/edmm/v1/meeting-minutes/`
-- Parameters:
-  - `page`: Page number for pagination.
-  - `posts_per_page`: Number of posts per page.
-  - `included_years`: Comma-separated list of years.
-  - `held_date_format`: Date format for meetings that were held.
-  - `not_held_date_format`: Date format for meetings that were not held.
+| Attribute | Default | Description |
+|---|---|---|
+| `included_years` | *(all)* | Comma-separated years to display (e.g. `2023,2024`). Leave blank for all years. |
+| `posts_per_page` | `20` | Number of entries per page. |
+| `held_date_format` | `Y/m/d` | PHP date format for meetings that were held. |
+| `not_held_date_format` | `Y/m` | PHP date format for meetings that were not held. |
+| `hide_title` | `false` | Set to `true` to hide the Title column. |
+| `hide_date` | `false` | Set to `true` to hide the Date column. |
+| `hide_agenda` | `false` | Set to `true` to hide the Agenda column. |
+| `hide_notes` | `false` | Set to `true` to hide the Notes column. |
+| `class` | *(none)* | Custom CSS class added to the `<table>` element. |
 
-### Example API Call
+### Example
+
 ```
-GET https://yourdomain.com/wp-json/edmm/v1/meeting-minutes/?included_years=2023&posts_per_page=10&page=1
+[edmm_meeting_minutes included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]
 ```
 
 ## Meta Fields
-If the Advanced Custom Fields (ACF) plugin is active, the plugin adds the following fields to the Meeting Minutes custom post type:
 
-- **Meeting Date**: A required date picker field to enter the date of the meeting.
-- **Meeting Agenda URL**: A URL field for adding a link to the meeting agenda.
-- **Meeting Notes URL**: A URL field for adding a link to the meeting notes.
-- **Meeting Not Held**: A true/false field to mark whether the meeting was held.
+Each meeting minute post has four native meta fields:
+
+- **Meeting Date** — Required. Date the meeting occurred (`YYYY-MM-DD`).
+- **Agenda URL** — Link to the meeting agenda document.
+- **Notes URL** — Link to the meeting notes document.
+- **Meeting Not Held** — Checkbox to mark that a scheduled meeting did not take place.
+
+## REST API
+
+The plugin exposes a public REST API endpoint for fetching meeting minutes data. This is intentional — meeting minutes are public records.
+
+**Endpoint:** `GET /wp-json/edmm/v1/meeting-minutes/`
+
+| Parameter | Default | Description |
+|---|---|---|
+| `page` | `1` | Page number for pagination. |
+| `posts_per_page` | `20` | Number of results per page. |
+| `included_years` | *(all)* | Comma-separated years filter. |
+| `held_date_format` | `Y/m/d` | Date format for held meetings. |
+| `not_held_date_format` | `Y/m` | Date format for not-held meetings. |
+
+**Example:**
+
+```
+GET https://yourdomain.com/wp-json/edmm/v1/meeting-minutes/?included_years=2024&posts_per_page=10&page=1
+```
+
+## Developer Hooks
+
+The plugin exposes several hooks for extending functionality:
+
+| Hook | Type | Description |
+|---|---|---|
+| `edmm_loaded` | action | Fires after all components are registered. Entry point for add-ons. |
+| `edmm_shortcode_atts` | filter | Filter default shortcode attributes. |
+| `edmm_rest_query_args` | filter | Filter WP_Query args in the REST endpoint. |
+| `edmm_rest_response` | filter | Filter the full REST response array. |
+| `edmm_meeting_row_data` | filter | Filter a single meeting row before it is returned. |
+| `edmm_meta_fields` | action | Fires inside the meta box after the default fields. |
+| `edmm_save_meeting_meta` | action | Fires after default meta fields are saved. |
+| `edmm_after_register_cpt` | action | Fires after the CPT is registered. |
+| `edmm_shortcode_builder_fields` | action | Fires inside the shortcode builder form. |
+| `edmm_settings_fields` | action | Fires after default settings fields are registered. |
+| `edmm_use_native_meta_boxes` | filter | Return `false` to replace the native meta box UI. |
 
 ## License
+
 This plugin is licensed under the GPLv2 or later.

@@ -1,0 +1,29 @@
+{
+	"name": "equalize-digital-meeting-minutes",
+	"version": "1.0.0",
+	"description": "Build tooling, tests, and linting for the Equalize Digital Meeting Minutes plugin",
+	"private": true,
+	"scripts": {
+		"prepare": "husky",
+		"lint-staged-precommit": "lint-staged",
+		"linting": "./vendor/bin/phpcs && npm run lint:js",
+		"lint:php": "./vendor/bin/phpcs",
+		"lint:php:fix": "./vendor/bin/phpcbf",
+		"lint:js": "wp-scripts lint-js assets/js",
+		"lint:js:fix": "wp-scripts lint-js assets/js --fix",
+		"test:php": "./scripts/setup-phpunit.sh",
+		"test:php:run": "docker compose exec phpunit vendor/bin/phpunit",
+		"test:php:coverage": "docker compose exec phpunit vendor/bin/phpunit --coverage-clover=./coverage/clover.xml --coverage-html=./coverage/html",
+		"test:php:stop": "docker compose stop"
+	},
+	"lint-staged": {
+		"*.php": "./vendor/bin/phpcs",
+		"*.js": "wp-scripts lint-js"
+	},
+	"devDependencies": {
+		"@wordpress/eslint-plugin": "^17.5.0",
+		"@wordpress/scripts": "^31.0.0",
+		"husky": "^9.0.6",
+		"lint-staged": "^15.2.2"
+	}
+}
