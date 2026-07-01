@@ -50,12 +50,12 @@ class MeetingMinutesEndpoint {
 					'held_date_format'     => [
 						'default'           => 'Y/m/d',
 						'sanitize_callback' => 'sanitize_text_field',
-						'validate_callback' => [ $this, 'validate_date_format' ],
+						'validate_callback' => [ __CLASS__, 'validate_date_format' ],
 					],
 					'not_held_date_format' => [
 						'default'           => 'Y/m',
 						'sanitize_callback' => 'sanitize_text_field',
-						'validate_callback' => [ $this, 'validate_date_format' ],
+						'validate_callback' => [ __CLASS__, 'validate_date_format' ],
 					],
 					'included_years'       => [
 						'default'           => '',
@@ -237,7 +237,7 @@ class MeetingMinutesEndpoint {
 	 * @param string $value The raw held_date_format/not_held_date_format value.
 	 * @return bool
 	 */
-	public function validate_date_format( string $value ): bool {
+	public static function validate_date_format( string $value ): bool {
 		return (bool) preg_match( '/^[A-Za-z0-9\/\-.: ,]*$/', $value );
 	}
 
