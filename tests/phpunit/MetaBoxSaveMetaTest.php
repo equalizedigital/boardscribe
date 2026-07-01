@@ -83,11 +83,19 @@ class MetaBoxSaveMetaTest extends TestCase {
 	/**
 	 * A valid nonce but a user without edit_post capability for this
 	 * post is rejected.
+	 *
+	 * The nonce must be generated for the same user whose capability is
+	 * under test (a subscriber, who can't edit this post) - reusing the
+	 * editor's nonce from set_up() while switching to a different user
+	 * would fail wp_verify_nonce() first, meaning the capability check
+	 * this test claims to cover would never actually run.
 	 */
 	public function test_user_without_capability_saves_nothing(): void {
-		wp_set_current_user( 0 ); // Logged out - no capabilities at all.
+		$subscriber_id = self::factory()->user->create( [ 'role' => 'subscriber' ] );
+		wp_set_current_user( $subscriber_id );
 
-		$_POST['edmm_meeting_date'] = '2024-03-15';
+		$_POST['edmm_meeting_meta_nonce'] = wp_create_nonce( 'edmm_save_meeting_meta' );
+		$_POST['edmm_meeting_date']       = '2024-03-15';
 
 		$this->meta_box->save_meta( $this->post_id );
 
@@ -133,24 +141,26 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 * The agenda URL is run through esc_url_raw() before saving.
 	 */
 	public function test_agenda_url_is_sanitized(): void {
-		$_POST['edmm_meeting_agenda_url'] = 'https://example.com/agenda.pdf"><script>alert(1)</script>';
+		$input                            = 'https://example.com/agenda.pdf"><script>alert(1)</script>';
+		$_POST['edmm_meeting_agenda_url'] = $input;
 
 		$this->meta_box->save_meta( $this->post_id );
 
 		$saved = get_post_meta( $this->post_id, 'edmm_meeting_agenda_url', true );
-		$this->assertStringNotContainsString( '<script>', $saved );
+		$this->assertSame( esc_url_raw( $input ), $saved );
 	}
 
 	/**
 	 * The minutes URL is run through esc_url_raw() before saving.
 	 */
 	public function test_minutes_url_is_sanitized(): void {
-		$_POST['edmm_meeting_minutes_url'] = 'javascript:alert(1)';
+		$input                             = 'javascript:alert(1)';
+		$_POST['edmm_meeting_minutes_url'] = $input;
 
 		$this->meta_box->save_meta( $this->post_id );
 
 		$saved = get_post_meta( $this->post_id, 'edmm_meeting_minutes_url', true );
-		$this->assertStringNotContainsString( 'javascript:', $saved );
+		$this->assertSame( esc_url_raw( $input ), $saved );
 	}
 
 	/**
