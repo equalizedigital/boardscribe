@@ -1,0 +1,122 @@
+<?php
+/**
+ * Tests for MeetingMinutesShortcode::render().
+ *
+ * @package EqualizeDigital\MeetingMinutes
+ */
+
+use EqualizeDigital\MeetingMinutes\Shortcode\MeetingMinutesShortcode;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
+
+/**
+ * Covers the shortcode's public render() contract - in particular the
+ * class-attribute sanitization (stored XSS fix) and the date-format
+ * validation/fallback (fix for the shortcode silently breaking the
+ * whole table when given an invalid held_date_format/not_held_date_format).
+ *
+ * sanitize_class_list()/sanitize_date_format() are private, so these
+ * tests go through the public render() output rather than reflection -
+ * that keeps the tests tied to the actual observable contract.
+ */
+class MeetingMinutesShortcodeTest extends TestCase {
+
+	/**
+	 * The shortcode instance under test.
+	 *
+	 * @var MeetingMinutesShortcode
+	 */
+	private MeetingMinutesShortcode $shortcode;
+
+	/**
+	 * Sets up a fresh shortcode instance for each test.
+	 */
+	public function set_up(): void {
+		parent::set_up();
+		$this->shortcode = new MeetingMinutesShortcode();
+	}
+
+	/**
+	 * Decodes the instance config JSON out of a render() output string.
+	 *
+	 * @param string $html The HTML returned by render().
+	 * @return array<string, mixed>
+	 */
+	private function get_instance_config( string $html ): array {
+		$this->assertMatchesRegularExpression( '/data-config="([^"]*)"/', $html );
+		preg_match( '/data-config="([^"]*)"/', $html, $matches );
+		$json = html_entity_decode( $matches[1], ENT_QUOTES );
+		return json_decode( $json, true );
+	}
+
+	/**
+	 * A `class` attribute containing an attribute-breakout attempt is
+	 * reduced to safe class-name characters only.
+	 *
+	 * Note: sanitize_html_class() strips per-token to safe class-name
+	 * characters, but harmless-looking words like "onmouseover" remain
+	 * as a (meaningless but inert) class name - what actually matters is
+	 * that no attribute-breakout characters (", <, >, =, (, )) survive,
+	 * since those are what would let the value escape the class="..."
+	 * attribute context it's rendered into client-side.
+	 */
+	public function test_class_attribute_is_sanitized(): void {
+		$html   = $this->shortcode->render( [ 'class' => 'foo" onmouseover="alert(1)' ] );
+		$config = $this->get_instance_config( $html );
+
+		foreach ( [ '"', '<', '>', '=', '(', ')' ] as $dangerous_char ) {
+			$this->assertStringNotContainsString( $dangerous_char, $config['tableClass'] );
+		}
+	}
+
+	/**
+	 * A plain, valid class list passes through unchanged.
+	 */
+	public function test_valid_class_attribute_is_preserved(): void {
+		$html   = $this->shortcode->render( [ 'class' => 'my-custom-class another-class' ] );
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( 'my-custom-class another-class', $config['tableClass'] );
+	}
+
+	/**
+	 * An invalid held_date_format falls back to the default rather than
+	 * reaching the REST call and breaking the whole table.
+	 */
+	public function test_invalid_held_date_format_falls_back_to_default(): void {
+		$html   = $this->shortcode->render( [ 'held_date_format' => '\\<\\s\\c\\r\\i\\p\\t\\>' ] );
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( 'Y/m/d', $config['heldDateFormat'] );
+	}
+
+	/**
+	 * An invalid not_held_date_format falls back to its default too.
+	 */
+	public function test_invalid_not_held_date_format_falls_back_to_default(): void {
+		$html   = $this->shortcode->render( [ 'not_held_date_format' => '<script>' ] );
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( 'Y/m', $config['notHeldDateFormat'] );
+	}
+
+	/**
+	 * A valid custom date format is preserved rather than replaced.
+	 */
+	public function test_valid_date_format_is_preserved(): void {
+		$html   = $this->shortcode->render( [ 'held_date_format' => 'F j, Y' ] );
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( 'F j, Y', $config['heldDateFormat'] );
+	}
+
+	/**
+	 * Each shortcode invocation gets a unique instance ID, so multiple
+	 * instances on the same page don't collide.
+	 */
+	public function test_multiple_instances_get_unique_ids(): void {
+		$first_config  = $this->get_instance_config( $this->shortcode->render( [] ) );
+		$second_config = $this->get_instance_config( $this->shortcode->render( [] ) );
+
+		$this->assertNotSame( $first_config['instanceId'], $second_config['instanceId'] );
+	}
+}
