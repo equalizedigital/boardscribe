@@ -38,10 +38,15 @@ class MeetingMinutes {
 			'label'         => __( 'Meeting Minute', 'edmm' ),
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
+			// No public single/archive templates — meeting minutes are only ever
+			// displayed via the [edmm_meeting_minutes] shortcode's own REST endpoint.
 			'public'        => false,
 			'rewrite'       => false,
 			'has_archive'   => false,
 			'show_ui'       => true,
+			// Intentionally still exposes the default /wp/v2/edmm_meeting_minutes
+			// REST route (needed for the block editor meta box UI); this is fine
+			// since published meeting minutes are meant to be public records.
 			'show_in_rest'  => true,
 			'menu_position' => 5,
 			'menu_icon'     => 'dashicons-calendar',

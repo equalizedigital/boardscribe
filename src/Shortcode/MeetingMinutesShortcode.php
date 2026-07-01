@@ -7,6 +7,8 @@
 
 namespace EqualizeDigital\MeetingMinutes\Shortcode;
 
+use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
+
 /**
  * Registers the [edmm_meeting_minutes] shortcode and manages
  * conditional asset enqueuing.
@@ -176,8 +178,8 @@ class MeetingMinutesShortcode {
 			'agendaLinkLabel'   => sanitize_text_field( $atts['agenda_link_label'] ),
 			'minutesLinkLabel'  => sanitize_text_field( $atts['minutes_link_label'] ),
 			'category'          => sanitize_text_field( $atts['category'] ?? '' ),
-			'heldDateFormat'    => $atts['held_date_format'],
-			'notHeldDateFormat' => $atts['not_held_date_format'],
+			'heldDateFormat'    => $this->sanitize_date_format( $atts['held_date_format'], $defaults['held_date_format'] ),
+			'notHeldDateFormat' => $this->sanitize_date_format( $atts['not_held_date_format'], $defaults['not_held_date_format'] ),
 			'tableClass'        => $this->sanitize_class_list( $atts['class'] ),
 			'postsPerPage'      => absint( $atts['posts_per_page'] ),
 		];
@@ -226,5 +228,23 @@ class MeetingMinutesShortcode {
 	private function sanitize_class_list( string $class_list ): string {
 		$classes = array_map( 'sanitize_html_class', explode( ' ', $class_list ) );
 		return implode( ' ', array_filter( $classes ) );
+	}
+
+	/**
+	 * Sanitizes a date format shortcode attribute and falls back to the
+	 * given default if it fails the same allow-list the REST endpoint
+	 * enforces (MeetingMinutesEndpoint::validate_date_format()).
+	 *
+	 * Without this, an invalid shortcode attribute would still reach the
+	 * REST fetch, get rejected with a 400, and silently fail to render
+	 * the whole table client-side.
+	 *
+	 * @param string $value   Raw held_date_format/not_held_date_format attribute.
+	 * @param string $default_value Fallback value if $value is invalid.
+	 * @return string
+	 */
+	private function sanitize_date_format( string $value, string $default_value ): string {
+		$value = sanitize_text_field( $value );
+		return MeetingMinutesEndpoint::validate_date_format( $value ) ? $value : $default_value;
 	}
 }
