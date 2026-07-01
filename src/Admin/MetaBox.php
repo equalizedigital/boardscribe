@@ -96,7 +96,7 @@ JS;
 		$common = [
 			'single'        => true,
 			'show_in_rest'  => true,
-			'auth_callback' => fn() => current_user_can( 'edit_posts' ),
+			'auth_callback' => fn( $allowed, $meta_key, $object_id ) => current_user_can( 'edit_post', $object_id ),
 		];
 
 		register_post_meta(

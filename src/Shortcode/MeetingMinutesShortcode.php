@@ -176,8 +176,8 @@ class MeetingMinutesShortcode {
 			'agendaLinkLabel'   => sanitize_text_field( $atts['agenda_link_label'] ),
 			'minutesLinkLabel'  => sanitize_text_field( $atts['minutes_link_label'] ),
 			'category'          => sanitize_text_field( $atts['category'] ?? '' ),
-			'heldDateFormat'    => $atts['held_date_format'],
-			'notHeldDateFormat' => $atts['not_held_date_format'],
+			'heldDateFormat'    => sanitize_text_field( $atts['held_date_format'] ),
+			'notHeldDateFormat' => sanitize_text_field( $atts['not_held_date_format'] ),
 			'tableClass'        => $this->sanitize_class_list( $atts['class'] ),
 			'postsPerPage'      => absint( $atts['posts_per_page'] ),
 		];

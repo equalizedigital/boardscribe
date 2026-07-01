@@ -50,10 +50,12 @@ class MeetingMinutesEndpoint {
 					'held_date_format'     => [
 						'default'           => 'Y/m/d',
 						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => [ $this, 'validate_date_format' ],
 					],
 					'not_held_date_format' => [
 						'default'           => 'Y/m',
 						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => [ $this, 'validate_date_format' ],
 					],
 					'included_years'       => [
 						'default'           => '',
@@ -154,7 +156,7 @@ class MeetingMinutesEndpoint {
 
 				$date_object    = $this->parse_date( $meeting_date );
 				$formatted_date = $date_object
-					? $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format )
+					? esc_html( $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format ) )
 					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'edmm' ) . '</span>';
 
 				$agenda_item = $meeting_agenda_url
@@ -186,7 +188,7 @@ class MeetingMinutesEndpoint {
 					: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'edmm' ) . '</span>';
 
 				$row = [
-					'title'   => get_the_title(),
+					'title'   => esc_html( get_the_title() ),
 					'date'    => $formatted_date,
 					'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'edmm' ) : $agenda_item,
 					'minutes' => $minutes_item,
@@ -222,6 +224,21 @@ class MeetingMinutesEndpoint {
 		$response = apply_filters( 'edmm_rest_response', $response, $request );
 
 		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * Validates that a date format string only contains recognized PHP
+	 * date() format characters and safe literal separators.
+	 *
+	 * Rejects backslashes so a caller cannot force otherwise-reserved
+	 * format characters to be output as literal text via DateTime's
+	 * escape syntax.
+	 *
+	 * @param string $value The raw held_date_format/not_held_date_format value.
+	 * @return bool
+	 */
+	public function validate_date_format( string $value ): bool {
+		return (bool) preg_match( '/^[A-Za-z0-9\/\-.: ,]*$/', $value );
 	}
 
 	/**

@@ -2,6 +2,8 @@
 // before DOMContentLoaded so they are included in the initial render.
 //
 // Each entry: { key: string, label: string, renderCell: function(meeting) → string }
+// renderCell()'s return value is inserted directly as HTML - it must escape
+// any untrusted data itself before returning.
 window.edmmExtraColumns = window.edmmExtraColumns || [];
 
 ( function() {
@@ -103,6 +105,12 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 
 			table += '</tr></thead><tbody>';
 
+			// Cell content below (meeting.title, meeting.date, meeting.agenda,
+			// meeting.minutes, and any Pro-registered renderCell() output) is
+			// inserted as trusted, pre-escaped HTML by contract - the REST
+			// endpoint escapes title/date server-side, and agenda/minutes are
+			// pre-built escaped <a> markup. Any new field or extra-column
+			// renderCell() must escape its own output before returning it here.
 			data.meetings.forEach( function( meeting ) {
 				table += '<tr>';
 				if ( ! instanceCfg.hideTitle ) {
