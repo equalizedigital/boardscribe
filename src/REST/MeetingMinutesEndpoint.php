@@ -286,6 +286,12 @@ class MeetingMinutesEndpoint {
 	 * escape syntax. Also caps the length to avoid feeding pathologically
 	 * long strings into DateTime::format() once per result row.
 	 *
+	 * Requires at least one character: an empty string would otherwise
+	 * pass (trivially matching zero repetitions) and silently produce a
+	 * blank date instead of falling back to the field's own default -
+	 * notably when sanitize_text_field() strips a disallowed value like
+	 * "<script>" down to "" before it ever reaches this check.
+	 *
 	 * No type hint on $value: REST validate_callbacks can receive
 	 * non-string raw request values (e.g. an array from a repeated query
 	 * param), and a strict type hint would throw a TypeError instead of
@@ -298,7 +304,7 @@ class MeetingMinutesEndpoint {
 		if ( ! is_string( $value ) ) {
 			return false;
 		}
-		return strlen( $value ) <= 32 && (bool) preg_match( '/^[A-Za-z0-9\/\-.: ,]*$/', $value );
+		return strlen( $value ) <= 32 && (bool) preg_match( '/^[A-Za-z0-9\/\-.: ,]+$/', $value );
 	}
 
 	/**

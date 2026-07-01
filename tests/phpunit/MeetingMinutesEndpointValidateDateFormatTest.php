@@ -36,8 +36,20 @@ class MeetingMinutesEndpointValidateDateFormatTest extends TestCase {
 			'default held format'     => [ 'Y/m/d' ],
 			'default not-held format' => [ 'Y/m' ],
 			'with time and dashes'    => [ 'Y-m-d H:i:s' ],
-			'empty string'            => [ '' ],
 		];
+	}
+
+	/**
+	 * An empty string is rejected rather than accepted, since a
+	 * REST/shortcode caller only sees the field's own default applied
+	 * when the param is omitted entirely - an explicit empty value must
+	 * fail validation, or it would silently produce a blank date instead
+	 * of falling back to the default. This also matters because
+	 * sanitize_text_field() reduces a disallowed value like "<script>"
+	 * down to "" before validate_date_format() ever sees it.
+	 */
+	public function test_rejects_empty_string(): void {
+		$this->assertFalse( MeetingMinutesEndpoint::validate_date_format( '' ) );
 	}
 
 	/**
