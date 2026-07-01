@@ -31,12 +31,31 @@ class SettingsPageSanitizeSettingsTest extends TestCase {
 
 	/**
 	 * When the checkbox key is present in the input, it's normalized to
-	 * integer 1 regardless of the submitted value.
+	 * integer 1 regardless of the submitted value - the code only
+	 * checks isset(), not the value itself.
+	 *
+	 * @dataProvider provide_present_checkbox_values
+	 * @param mixed $value The submitted value for the present key.
 	 */
-	public function test_present_checkbox_normalizes_to_1(): void {
-		$result = $this->settings_page->sanitize_settings( [ 'delete_on_uninstall' => 'on' ] );
+	public function test_present_checkbox_normalizes_to_1( $value ): void {
+		$result = $this->settings_page->sanitize_settings( [ 'delete_on_uninstall' => $value ] );
 
 		$this->assertSame( 1, $result['delete_on_uninstall'] );
+	}
+
+	/**
+	 * Data provider of "present" values isset() considers set.
+	 *
+	 * @return array<string, array{0: mixed}>
+	 */
+	public function provide_present_checkbox_values(): array {
+		return [
+			'checkbox on value' => [ 'on' ],
+			'string zero'       => [ '0' ],
+			'empty string'      => [ '' ],
+			'boolean false'     => [ false ],
+			'integer zero'      => [ 0 ],
+		];
 	}
 
 	/**
