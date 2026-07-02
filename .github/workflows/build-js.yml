@@ -28,7 +28,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          # Read-only workflow; don't leave the token in the git config.
+          persist-credentials: false
 
       - name: Cache Node.js modules
         uses: actions/cache@v4
