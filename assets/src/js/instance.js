@@ -9,7 +9,17 @@ import { defaultFocus } from './defaults/focus';
  * @param {HTMLElement} container - The .edmm-meeting-minutes-wrap element.
  */
 export function initInstance( container ) {
-	const instanceCfg = JSON.parse( container.dataset.config || '{}' );
+	// A malformed data-config must only break its own instance - an
+	// uncaught throw here would abort the forEach in the bootstrap and
+	// leave every later instance on the page uninitialised.
+	let instanceCfg;
+	try {
+		instanceCfg = JSON.parse( container.dataset.config || '{}' );
+	} catch ( error ) {
+		// eslint-disable-next-line no-console -- Surface config failures for debugging; there is no other error-reporting mechanism here.
+		console.error( 'EDMM: invalid instance config:', error );
+		return;
+	}
 	const id = instanceCfg.instanceId;
 
 	const tableEl = document.getElementById( 'edmm-table-' + id );
@@ -62,7 +72,11 @@ export function initInstance( container ) {
 		maxNumPages = parseInt( data.max_num_pages, 10 ) || maxNumPages;
 
 		template.render( data, instanceCfg, tableEl );
-		( template.renderInfo || defaultRenderInfo )( data, instanceCfg, infoEl );
+		// Template renderInfo overrides can't be assumed to null-check the
+		// element the way the core default does.
+		if ( infoEl ) {
+			( template.renderInfo || defaultRenderInfo )( data, instanceCfg, infoEl );
+		}
 		( template.renderPagination || defaultRenderPagination )( data, instanceCfg, paginationEl, goToPage );
 
 		// Shift focus into the list when pagination is clicked.
