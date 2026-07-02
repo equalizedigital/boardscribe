@@ -228,6 +228,6 @@ JS;
 			return;
 		}
 
-		include EDMM_DIR . 'partials/settings-page.php';
+		require EDMM_DIR . 'partials/settings-page.php';
 	}
 }

@@ -219,7 +219,7 @@ JS;
 		 */
 		do_action( 'edmm_before_meta_box_fields', $post );
 
-		include EDMM_DIR . 'partials/meta-box.php';
+		require EDMM_DIR . 'partials/meta-box.php';
 	}
 
 	/**

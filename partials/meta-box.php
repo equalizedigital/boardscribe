@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					type="url"
 					id="edmm_meeting_agenda_url"
 					name="edmm_meeting_agenda_url"
-					value="<?php echo esc_attr( $meeting_agenda_url ); ?>"
+					value="<?php echo esc_url( $meeting_agenda_url ); ?>"
 					class="large-text"
 					placeholder="https://"
 				/>
@@ -59,7 +59,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					type="url"
 					id="edmm_meeting_minutes_url"
 					name="edmm_meeting_minutes_url"
-					value="<?php echo esc_attr( $meeting_minutes_url ); ?>"
+					value="<?php echo esc_url( $meeting_minutes_url ); ?>"
 					class="large-text"
 					placeholder="https://"
 				/>
