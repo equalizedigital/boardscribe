@@ -1,5 +1,5 @@
-import { defaultRenderInfo } from './defaults/render-info';
-import { defaultRenderPagination } from './defaults/render-pagination';
+import { defaultRenderInfo } from './defaults/renderInfo';
+import { defaultRenderPagination } from './defaults/renderPagination';
 import { defaultBuildRequestUrl } from './defaults/request';
 import { defaultFocus } from './defaults/focus';
 

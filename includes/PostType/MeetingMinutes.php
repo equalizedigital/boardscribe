@@ -15,6 +15,8 @@ class MeetingMinutes {
 	/**
 	 * Hooks the CPT registration into WordPress init.
 	 *
+	 * @since x.x.x
+	 *
 	 * @return void
 	 */
 	public function register(): void {
@@ -23,6 +25,8 @@ class MeetingMinutes {
 
 	/**
 	 * Registers the edmm_meeting_minutes custom post type.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -53,27 +57,30 @@ class MeetingMinutes {
 		];
 
 		/**
-		 * Filters the edmm_meeting_minutes CPT registration args.
+		 * Filters the edmm_meeting_minutes CPT registration args. Pro plugin uses
+		 * this to enable public/rewrite/archive support or a custom capability_type.
 		 *
-		 * Pro plugin uses this to enable public/rewrite/archive support (e.g.
-		 * for an auto-generated archive page or RSS feed) or to change
-		 * capability_type for a custom approval-workflow capability set.
+		 * @since x.x.x
 		 *
 		 * @param array $args The register_post_type() args.
 		 */
 		$args = apply_filters( 'edmm_cpt_args', $args );
 
 		/**
-		 * Fires before the Meeting Minutes CPT is registered.
-		 * Use this hook to register taxonomies that need to bind to the CPT.
+		 * Fires before the Meeting Minutes CPT is registered. Register taxonomies
+		 * that need to bind to the CPT here.
+		 *
+		 * @since x.x.x
 		 */
 		do_action( 'edmm_before_register_cpt' );
 
 		register_post_type( 'edmm_meeting_minutes', $args );
 
 		/**
-		 * Fires after the Meeting Minutes CPT is registered.
-		 * Use this hook to register taxonomies or rewrite rules.
+		 * Fires after the Meeting Minutes CPT is registered. Register taxonomies
+		 * or rewrite rules here.
+		 *
+		 * @since x.x.x
 		 */
 		do_action( 'edmm_after_register_cpt' );
 	}
