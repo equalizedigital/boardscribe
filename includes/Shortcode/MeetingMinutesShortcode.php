@@ -32,6 +32,8 @@ class MeetingMinutesShortcode {
 	/**
 	 * Hooks shortcode and asset enqueuing into WordPress.
 	 *
+	 * @since x.x.x
+	 *
 	 * @return void
 	 */
 	public function register(): void {
@@ -40,10 +42,11 @@ class MeetingMinutesShortcode {
 	}
 
 	/**
-	 * Enqueues assets early (wp_enqueue_scripts) when the shortcode is
-	 * detected in the current post content. This is the preferred path.
-	 * Page builders that render shortcodes late will be handled by the
+	 * Enqueues assets early when the shortcode is detected in the current post
+	 * content. Page builders that render shortcodes late are handled by the
 	 * fallback enqueue inside render().
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -57,6 +60,8 @@ class MeetingMinutesShortcode {
 	/**
 	 * Registers and enqueues the plugin stylesheet and script.
 	 * Safe to call multiple times — WordPress deduplicates by handle.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -88,6 +93,8 @@ class MeetingMinutesShortcode {
 		/**
 		 * Fires after the plugin assets are enqueued.
 		 * Pro plugin can enqueue its own assets here.
+		 *
+		 * @since x.x.x
 		 */
 		do_action( 'edmm_enqueue_assets' );
 	}
@@ -95,6 +102,8 @@ class MeetingMinutesShortcode {
 	/**
 	 * Calls wp_localize_script once per page load to pass global
 	 * config and i18n strings to the JavaScript.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -132,6 +141,8 @@ class MeetingMinutesShortcode {
 	/**
 	 * Renders the [edmm_meeting_minutes] shortcode output.
 	 *
+	 * @since x.x.x
+	 *
 	 * @param array $atts Shortcode attributes.
 	 * @return string HTML output.
 	 */
@@ -158,6 +169,8 @@ class MeetingMinutesShortcode {
 		/**
 		 * Filters the recognized shortcode attribute defaults.
 		 * Pro plugin can add additional attributes (e.g., category).
+		 *
+		 * @since x.x.x
 		 *
 		 * @param array $defaults The default attribute values.
 		 */
@@ -201,6 +214,8 @@ class MeetingMinutesShortcode {
 		 * the data-config attribute. Pro plugin uses this to append its own
 		 * settings (e.g. hide_location, location_label).
 		 *
+		 * @since x.x.x
+		 *
 		 * @param array $instance_config The instance configuration array.
 		 * @param array $atts            The resolved shortcode attributes.
 		 */
@@ -217,6 +232,8 @@ class MeetingMinutesShortcode {
 			 * Fires inside the shortcode wrapper, before the table container.
 			 * Pro plugin can use this to render e.g. a search box, a date
 			 * range picker, or an "add to calendar" button.
+			 *
+			 * @since x.x.x
 			 *
 			 * @param string $instance_id The unique instance ID for this shortcode invocation.
 			 * @param array  $atts        The resolved shortcode attributes.
@@ -238,6 +255,8 @@ class MeetingMinutesShortcode {
 			 * Pro plugin can use this to render e.g. a comment/feedback form
 			 * or a print button.
 			 *
+			 * @since x.x.x
+			 *
 			 * @param string $instance_id The unique instance ID for this shortcode invocation.
 			 * @param array  $atts        The resolved shortcode attributes.
 			 */
@@ -256,6 +275,8 @@ class MeetingMinutesShortcode {
 	 * be restricted to safe class-name characters before it ever reaches
 	 * the instance config to prevent stored XSS via the shortcode attribute.
 	 *
+	 * @since x.x.x
+	 *
 	 * @param string $class_list Raw, space-separated class names.
 	 * @return string Sanitized, space-separated class names.
 	 */
@@ -272,6 +293,8 @@ class MeetingMinutesShortcode {
 	 * Without this, an invalid shortcode attribute would still reach the
 	 * REST fetch, get rejected with a 400, and silently fail to render
 	 * the whole table client-side.
+	 *
+	 * @since x.x.x
 	 *
 	 * @param string $value   Raw held_date_format/not_held_date_format attribute.
 	 * @param string $default_value Fallback value if $value is invalid.
