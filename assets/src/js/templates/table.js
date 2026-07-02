@@ -11,27 +11,33 @@ export const tableTemplate = {
 		const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || 'Agenda';
 		const labelMinutes = instanceCfg.minutesLabel || i18n.colMinutes || 'Minutes';
 
-		const tableClass = instanceCfg.tableClass || '';
+		// The class list and core labels are already sanitized server-side
+		// (sanitize_class_list()/sanitize_text_field() in the shortcode),
+		// but escape at the insertion point too so values injected via the
+		// edmm_shortcode_instance_config filter get the same treatment.
+		const tableClass = escapeAttr( instanceCfg.tableClass || '' );
 		let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + tableClass + '">' +
 			'<thead class="desktop"><tr>';
 
 		if ( ! instanceCfg.hideTitle ) {
-			table += '<th scope="col">' + labelTitle + '</th>';
+			table += '<th scope="col">' + escapeAttr( labelTitle ) + '</th>';
 		}
 		if ( ! instanceCfg.hideDate ) {
-			table += '<th scope="col">' + labelDate + '</th>';
+			table += '<th scope="col">' + escapeAttr( labelDate ) + '</th>';
 		}
 		if ( ! instanceCfg.hideAgenda ) {
-			table += '<th scope="col">' + labelAgenda + '</th>';
+			table += '<th scope="col">' + escapeAttr( labelAgenda ) + '</th>';
 		}
 		if ( ! instanceCfg.hideMinutes ) {
-			table += '<th scope="col">' + labelMinutes + '</th>';
+			table += '<th scope="col">' + escapeAttr( labelMinutes ) + '</th>';
 		}
 
 		window.edmmExtraColumns.forEach( function( col ) {
 			const hidden = typeof col.hidden === 'function' ? col.hidden( instanceCfg ) : false;
 			if ( ! hidden ) {
-				const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
+				// Deliberately NOT escaped: label/getLabel() are raw header
+				// HTML by documented contract - the registrant escapes.
+				const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : ( col.label || '' );
 				table += '<th scope="col">' + label + '</th>';
 			}
 		} );
@@ -66,7 +72,7 @@ export const tableTemplate = {
 			window.edmmExtraColumns.forEach( function( col ) {
 				const hidden = typeof col.hidden === 'function' ? col.hidden( instanceCfg ) : false;
 				if ( ! hidden ) {
-					const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
+					const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : ( col.label || '' );
 					const cell = col.renderCell ? col.renderCell( meeting, instanceCfg ) : ( meeting[ col.key ] || '' );
 					table += '<td data-label="' + escapeAttr( label ) + '">' + cell + '</td>';
 				}
