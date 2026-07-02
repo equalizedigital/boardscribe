@@ -23,6 +23,16 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 //   focus( container, instanceCfg )                             - optional.
 //       Move focus after a pagination-triggered re-render. The default
 //       focuses the first [tabindex="0"] element in the container.
+//   buildRequestUrl( instanceCfg, page )                        - optional.
+//       Return the URL to fetch instead of the default query string -
+//       core still performs the fetch, error handling, and JSON parsing.
+//   request( instanceCfg, page )                                - optional.
+//       Fully replace the request: return a Promise resolving to the data
+//       passed to the renderers (different route, POST, multiple requests).
+//       Takes precedence over buildRequestUrl. If the resolved data doesn't
+//       keep the core shape, override the renderers that consume it; keep
+//       numeric max_num_pages/current_page if relying on core pagination
+//       or goToPage() navigation.
 //
 // All rendered output is inserted as raw HTML - templates must escape any
 // untrusted data themselves (window.edmmEscapeAttr is available for this).
@@ -217,6 +227,26 @@ window.edmmTemplates = window.edmmTemplates || {};
 	}
 
 	/**
+	 * Builds the default REST request URL for a page of meetings.
+	 * Used when a template doesn't override buildRequestUrl or request.
+	 *
+	 * @param {Object} instanceCfg - The per-instance configuration.
+	 * @param {number} page        - The 1-based page number to request.
+	 * @return {string} The URL to fetch.
+	 */
+	function defaultBuildRequestUrl( instanceCfg, page ) {
+		return apiBaseUrl +
+			'?included_years=' + encodeURIComponent( instanceCfg.includedYears || '' ) +
+			'&held_date_format=' + encodeURIComponent( instanceCfg.heldDateFormat || 'Y/m/d' ) +
+			'&not_held_date_format=' + encodeURIComponent( instanceCfg.notHeldDateFormat || 'Y/m' ) +
+			'&posts_per_page=' + encodeURIComponent( instanceCfg.postsPerPage || 20 ) +
+			'&agenda_link_label=' + encodeURIComponent( instanceCfg.agendaLinkLabel || '' ) +
+			'&minutes_link_label=' + encodeURIComponent( instanceCfg.minutesLinkLabel || '' ) +
+			'&category=' + encodeURIComponent( instanceCfg.category || '' ) +
+			'&page=' + encodeURIComponent( page );
+	}
+
+	/**
 	 * Moves focus into the rendered list after a pagination click.
 	 *
 	 * @param {HTMLElement} container - The list container element.
@@ -291,18 +321,6 @@ window.edmmTemplates = window.edmmTemplates || {};
 		let currentPage = parseInt( initParams.get( pageParam ), 10 ) || 1;
 		let maxNumPages = 1;
 
-		const postsPerPage = instanceCfg.postsPerPage || 20;
-
-		// Build the base API URL for this instance.
-		const apiUrl = apiBaseUrl +
-			'?included_years=' + encodeURIComponent( instanceCfg.includedYears || '' ) +
-			'&held_date_format=' + encodeURIComponent( instanceCfg.heldDateFormat || 'Y/m/d' ) +
-			'&not_held_date_format=' + encodeURIComponent( instanceCfg.notHeldDateFormat || 'Y/m' ) +
-			'&posts_per_page=' + encodeURIComponent( postsPerPage ) +
-			'&agenda_link_label=' + encodeURIComponent( instanceCfg.agendaLinkLabel || '' ) +
-			'&minutes_link_label=' + encodeURIComponent( instanceCfg.minutesLinkLabel || '' ) +
-			'&category=' + encodeURIComponent( instanceCfg.category || '' );
-
 		/**
 		 * Navigates this instance to the given page: updates the URL and
 		 * refetches. Passed to the template's pagination renderer.
@@ -321,7 +339,9 @@ window.edmmTemplates = window.edmmTemplates || {};
 
 		function renderInstance( data, refocus ) {
 			refocus = refocus || false;
-			maxNumPages = data.max_num_pages;
+			// Tolerate template-defined response shapes that omit
+			// max_num_pages - goToPage() keeps its last known bound.
+			maxNumPages = parseInt( data.max_num_pages, 10 ) || maxNumPages;
 
 			template.render( data, instanceCfg, tableEl );
 			( template.renderInfo || defaultRenderInfo )( data, instanceCfg, infoEl );
@@ -359,15 +379,19 @@ window.edmmTemplates = window.edmmTemplates || {};
 		function fetchMeetings( refocus ) {
 			refocus = refocus || false;
 
-			const url = apiUrl + '&page=' + encodeURIComponent( currentPage );
+			// A template can take over the request entirely (request), or
+			// just point the default fetch elsewhere (buildRequestUrl).
+			const request = template.request
+				? template.request( instanceCfg, currentPage )
+				: fetch( ( template.buildRequestUrl || defaultBuildRequestUrl )( instanceCfg, currentPage ) )
+					.then( function( response ) {
+						if ( ! response.ok ) {
+							throw new Error( 'Network response was not ok: ' + response.statusText );
+						}
+						return response.json();
+					} );
 
-			fetch( url )
-				.then( function( response ) {
-					if ( ! response.ok ) {
-						throw new Error( 'Network response was not ok: ' + response.statusText );
-					}
-					return response.json();
-				} )
+			request
 				.then( function( data ) {
 					renderInstance( data, refocus );
 				} )
