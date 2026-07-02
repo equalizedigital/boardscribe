@@ -10,7 +10,7 @@ const path = require( 'path' );
 module.exports = {
 	...defaultConfig,
 	entry: {
-		'meeting-minutes': path.resolve( __dirname, 'assets/src/js/index.js' ),
+		'meeting-minutes': path.resolve( __dirname, 'src/js/index.js' ),
 	},
 	output: {
 		...defaultConfig.output,

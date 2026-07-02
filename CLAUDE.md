@@ -16,14 +16,14 @@ This repo is the **free, WordPress.org-distributed** half of a freemium product.
 
 ```
 equalize-digital-meeting-minutes.php   Plugin bootstrap (constants, requires, plugins_loaded hook)
-src/
+includes/
   Plugin.php                           Singleton; boots all components, fires edmm_loaded (Pro's entry point)
   PostType/MeetingMinutes.php          CPT registration
   Admin/MetaBox.php                    Native meta box UI + save handling
   Admin/SettingsPage.php               Settings page + shortcode builder UI
   REST/MeetingMinutesEndpoint.php      /edmm/v1/meeting-minutes/ REST route + query/row building
   Shortcode/MeetingMinutesShortcode.php Shortcode registration, asset enqueuing, instance config
-assets/src/js/                         Frontend source modules (ES modules, bundled by webpack)
+src/js/                                Frontend source modules (ES modules, bundled by webpack)
   index.js                             Entry: exposes window globals, registers table template, bootstraps
   registries.js                        window.edmmExtraColumns/edmmTemplates setup + the template contract docs
   config.js                            Reads window.edmmConfig (i18n, REST base URL)
@@ -58,8 +58,8 @@ Keep this list current when adding or removing hooks — it's the primary refere
 | `edmm_save_meeting_meta` | action | `Admin/MetaBox.php` | Fires after the default meta fields are saved — save Pro's own meta here. |
 | `edmm_shortcode_builder_fields` | action | `Admin/SettingsPage.php` | Add fields to the shortcode builder UI. |
 | `edmm_settings_fields` | action | `Admin/SettingsPage.php` | Add sections to the settings page outside the Settings API (e.g. license management). |
-| `window.edmmExtraColumns` (JS, not a WP hook) | registry | `assets/src/js/registries.js` | Push `{ key, label, renderCell }` objects before `DOMContentLoaded` to add table columns. `renderCell()`/`label` output is inserted as raw HTML — must escape untrusted data itself. |
-| `window.edmmTemplates` (JS, not a WP hook) | registry | `assets/src/js/registries.js` | Display-template registry, keyed by template name; selected per instance via the shortcode's `template=""` attribute. A template provides `render( data, instanceCfg, container )` (required) plus optional `renderPagination`/`renderInfo`/`focus` overrides and optional request-side overrides — `buildRequestUrl( instanceCfg, page )` to point the default fetch at a different/extended URL, or `request( instanceCfg, page )` returning a Promise to replace the request entirely (pairs with the server-side `edmm_rest_route_args`/`edmm_rest_query_args` filters). Anything not overridden keeps the core implementation (default REST query, pagination buttons, URL state, aria-live info). The built-in table is registered here as `table`; unknown names fall back to it. Output is raw HTML — templates must escape untrusted data (`window.edmmEscapeAttr` is exposed for this). |
+| `window.edmmExtraColumns` (JS, not a WP hook) | registry | `src/js/registries.js` | Push `{ key, label, renderCell }` objects before `DOMContentLoaded` to add table columns. `renderCell()`/`label` output is inserted as raw HTML — must escape untrusted data itself. |
+| `window.edmmTemplates` (JS, not a WP hook) | registry | `src/js/registries.js` | Display-template registry, keyed by template name; selected per instance via the shortcode's `template=""` attribute. A template provides `render( data, instanceCfg, container )` (required) plus optional `renderPagination`/`renderInfo`/`focus` overrides and optional request-side overrides — `buildRequestUrl( instanceCfg, page )` to point the default fetch at a different/extended URL, or `request( instanceCfg, page )` returning a Promise to replace the request entirely (pairs with the server-side `edmm_rest_route_args`/`edmm_rest_query_args` filters). Anything not overridden keeps the core implementation (default REST query, pagination buttons, URL state, aria-live info). The built-in table is registered here as `table`; unknown names fall back to it. Output is raw HTML — templates must escape untrusted data (`window.edmmEscapeAttr` is exposed for this). |
 | `template` shortcode attribute | config | `Shortcode/MeetingMinutesShortcode.php` | Names the `window.edmmTemplates` entry an instance renders with (sanitized with `sanitize_key()`, passed through `data-config`). Free ships only `table`; Pro registers accordion/card-grid/timeline templates and they become selectable with no further PHP changes. |
 | `edmm_cpt_args` | filter | `PostType/MeetingMinutes.php` | Modify CPT registration args (e.g. enable `public`/`rewrite`/`has_archive`, or a custom `capability_type`) before `register_post_type()`. |
 | `edmm_rest_route_args` | filter | `REST/MeetingMinutesEndpoint.php` | Add new params to the `/edmm/v1/meeting-minutes/` route's registered args schema (e.g. full-text search, a date range) instead of registering a duplicate route. |
@@ -80,12 +80,12 @@ npm start                           # webpack watch mode during JS development
 composer lint                       # php-parallel-lint (syntax check)
 composer check-cs                   # phpcs (WordPress Coding Standards) — CI's "CS" check
 composer fix-cs                     # phpcbf (auto-fix what's fixable)
-npm run lint:js                     # eslint over assets/src + webpack.config.js — CI's "Lint: JS" check
+npm run lint:js                     # eslint over src/js + webpack.config.js — CI's "Lint: JS" check
 
 composer test                       # phpunit (requires ./scripts/setup-phpunit.sh first, or Docker via npm run test:php)
 ```
 
-The frontend JS is bundled from `assets/src/js/` to `assets/build/` via `wp-scripts build` with a small `webpack.config.js` overriding entry/output paths (the wp-scripts defaults clash with `src/` holding PHP) and dropping `DependencyExtractionWebpackPlugin` — no `*.asset.php` is emitted. `@wordpress/*` imports resolve to `wp.*` globals via a hand-maintained `externals` map in `webpack.config.js`; each entry there needs its matching `wp-*` handle in the `wp_enqueue_script()` dependency list in `MeetingMinutesShortcode.php` (the enqueue uses `EDMM_VERSION` for cache-busting). Frontend JS uses `__()` from `@wordpress/i18n` with the `edmm` text domain; `wp_set_script_translations( 'edmm-meeting-minutes', 'edmm' )` after the enqueue loads the JSON translation files for those calls. Because `assets/build/` is gitignored, any release/deploy packaging **must run `npm run build`** — shipping a zip without it means a 404'd script and an empty table.
+The frontend JS is bundled from `src/js/` to `assets/build/` via `wp-scripts build` with a small `webpack.config.js` overriding entry/output paths (the wp-scripts defaults clash with `assets/build/` as the target) and dropping `DependencyExtractionWebpackPlugin` — no `*.asset.php` is emitted. `@wordpress/*` imports resolve to `wp.*` globals via a hand-maintained `externals` map in `webpack.config.js`; each entry there needs its matching `wp-*` handle in the `wp_enqueue_script()` dependency list in `MeetingMinutesShortcode.php` (the enqueue uses `EDMM_VERSION` for cache-busting). Frontend JS uses `__()` from `@wordpress/i18n` with the `edmm` text domain; `wp_set_script_translations( 'edmm-meeting-minutes', 'edmm' )` after the enqueue loads the JSON translation files for those calls. Because `assets/build/` is gitignored, any release/deploy packaging **must run `npm run build`** — shipping a zip without it means a 404'd script and an empty table.
 
 `phpcs.xml` is scoped to `.php` files only (`<arg name="extensions" value="php"/>`) — JS/CSS have their own dedicated linters and must not be re-added to PHPCS's scope; WordPress's PHP-oriented sniffs actively conflict with the JS style enforced by ESLint (e.g. `function (` vs `function(`).
 

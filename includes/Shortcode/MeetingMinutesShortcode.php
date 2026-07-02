@@ -68,7 +68,7 @@ class MeetingMinutesShortcode {
 			EDMM_VERSION
 		);
 
-		// The bundle is built from assets/src/js/ by `npm run build` and is
+		// The bundle is built from src/js/ by `npm run build` and is
 		// not committed. @wordpress/* imports resolve to wp.* globals via
 		// the externals map in webpack.config.js — this dependency list is
 		// maintained by hand and must stay in sync with that map.

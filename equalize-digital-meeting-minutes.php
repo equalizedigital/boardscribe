@@ -45,12 +45,12 @@ define( 'EDMM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMM_URL', plugin_dir_url( __FILE__ ) );
 
 // Load all classes.
-require_once EDMM_DIR . 'src/PostType/MeetingMinutes.php';
-require_once EDMM_DIR . 'src/Admin/MetaBox.php';
-require_once EDMM_DIR . 'src/Admin/SettingsPage.php';
-require_once EDMM_DIR . 'src/REST/MeetingMinutesEndpoint.php';
-require_once EDMM_DIR . 'src/Shortcode/MeetingMinutesShortcode.php';
-require_once EDMM_DIR . 'src/Plugin.php';
+require_once EDMM_DIR . 'includes/PostType/MeetingMinutes.php';
+require_once EDMM_DIR . 'includes/Admin/MetaBox.php';
+require_once EDMM_DIR . 'includes/Admin/SettingsPage.php';
+require_once EDMM_DIR . 'includes/REST/MeetingMinutesEndpoint.php';
+require_once EDMM_DIR . 'includes/Shortcode/MeetingMinutesShortcode.php';
+require_once EDMM_DIR . 'includes/Plugin.php';
 
 // Boot the plugin.
 add_action(
