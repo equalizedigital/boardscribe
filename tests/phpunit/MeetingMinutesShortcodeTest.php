@@ -114,6 +114,37 @@ class MeetingMinutesShortcodeTest extends TestCase {
 	}
 
 	/**
+	 * With no template attribute, the config carries an empty template
+	 * name, which the JS resolves to the built-in table template.
+	 */
+	public function test_template_defaults_to_empty(): void {
+		$config = $this->get_instance_config( $this->shortcode->render( [] ) );
+
+		$this->assertSame( '', $config['template'] );
+	}
+
+	/**
+	 * The template attribute is reduced to a sanitized key, so markup or
+	 * attribute-breakout characters can't reach the data-config JSON.
+	 */
+	public function test_template_attribute_is_sanitized_to_a_key(): void {
+		$html   = $this->shortcode->render( [ 'template' => 'Card-Grid"><script>' ] );
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( 'card-gridscript', $config['template'] );
+	}
+
+	/**
+	 * A well-formed template name passes through unchanged.
+	 */
+	public function test_valid_template_attribute_is_preserved(): void {
+		$html   = $this->shortcode->render( [ 'template' => 'accordion' ] );
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( 'accordion', $config['template'] );
+	}
+
+	/**
 	 * Each shortcode invocation gets a unique instance ID, so multiple
 	 * instances on the same page don't collide.
 	 */
