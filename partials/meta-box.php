@@ -91,8 +91,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 		<?php
 		/**
-		 * Fires after the default meta box fields are rendered.
-		 * Pro plugin can use this to append additional fields.
+		 * Fires after the default meta box fields are rendered. Pro plugin can
+		 * use this to append additional fields.
+		 *
+		 * @since x.x.x
 		 *
 		 * @param \WP_Post $post The current post.
 		 */

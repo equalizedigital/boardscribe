@@ -16,6 +16,8 @@ class MetaBox {
 	/**
 	 * Hooks meta registration and meta box into WordPress.
 	 *
+	 * @since x.x.x
+	 *
 	 * @return void
 	 */
 	public function register(): void {
@@ -26,8 +28,9 @@ class MetaBox {
 	}
 
 	/**
-	 * Enqueues the WordPress media library and the meta box picker script
-	 * on the Meeting Minutes add/edit screen.
+	 * Enqueues the media library and the meta box picker script.
+	 *
+	 * @since x.x.x
 	 *
 	 * @param string $hook The current admin page hook.
 	 * @return void
@@ -51,6 +54,8 @@ class MetaBox {
 
 	/**
 	 * Returns the inline JavaScript for the media library URL picker.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return string
 	 */
@@ -87,8 +92,9 @@ JS;
 	}
 
 	/**
-	 * Registers all four meeting meta fields so they are available
-	 * in the REST API and the block editor.
+	 * Registers the four meeting meta fields for the REST API and block editor.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -160,12 +166,16 @@ JS;
 	/**
 	 * Registers the Meeting Details meta box on the edit screen.
 	 *
+	 * @since x.x.x
+	 *
 	 * @return void
 	 */
 	public function add_meta_box(): void {
 		/**
-		 * Filters whether to show the native meta box UI.
-		 * Pro plugin (or other integrations) can return false to replace this with their own UI.
+		 * Filters whether to show the native meta box UI. Return false to replace
+		 * it with a custom UI.
+		 *
+		 * @since x.x.x
 		 *
 		 * @param bool $show Whether to show the native meta box.
 		 */
@@ -186,6 +196,8 @@ JS;
 	/**
 	 * Renders the Meeting Details meta box HTML.
 	 *
+	 * @since x.x.x
+	 *
 	 * @param \WP_Post $post The current post object.
 	 * @return void
 	 */
@@ -198,8 +210,10 @@ JS;
 		wp_nonce_field( 'edmm_save_meeting_meta', 'edmm_meeting_meta_nonce' );
 
 		/**
-		 * Fires before the default meta box fields are rendered.
-		 * Pro plugin can use this to prepend additional fields.
+		 * Fires before the default meta box fields are rendered. Pro plugin can
+		 * use this to prepend additional fields.
+		 *
+		 * @since x.x.x
 		 *
 		 * @param \WP_Post $post The current post.
 		 */
@@ -210,6 +224,8 @@ JS;
 
 	/**
 	 * Saves the meeting meta fields on post save.
+	 *
+	 * @since x.x.x
 	 *
 	 * @param int $post_id The post ID being saved.
 	 * @return void
@@ -255,8 +271,10 @@ JS;
 		update_post_meta( $post_id, 'edmm_meeting_not_held', $not_held );
 
 		/**
-		 * Fires after the default meta fields are saved.
-		 * Pro plugin can hook here to save additional meta.
+		 * Fires after the default meta fields are saved. Pro plugin can hook here
+		 * to save additional meta.
+		 *
+		 * @since x.x.x
 		 *
 		 * @param int $post_id The post ID.
 		 */
