@@ -145,6 +145,7 @@ class MeetingMinutesShortcode {
 			'not_held_date_format' => 'Y/m',
 			'class'                => '',
 			'posts_per_page'       => 20,
+			'template'             => '',
 		];
 
 		/**
@@ -182,6 +183,10 @@ class MeetingMinutesShortcode {
 			'notHeldDateFormat' => $this->sanitize_date_format( $atts['not_held_date_format'], $defaults['not_held_date_format'] ),
 			'tableClass'        => $this->sanitize_class_list( $atts['class'] ),
 			'postsPerPage'      => absint( $atts['posts_per_page'] ),
+			// Display template name, resolved client-side against the
+			// window.edmmTemplates registry; unknown/empty names fall back
+			// to the built-in table template.
+			'template'          => sanitize_key( $atts['template'] ),
 		];
 
 		/**
