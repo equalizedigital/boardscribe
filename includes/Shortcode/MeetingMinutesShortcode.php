@@ -68,13 +68,20 @@ class MeetingMinutesShortcode {
 			EDMM_VERSION
 		);
 
+		// The bundle is built from src/js/ by `npm run build` and is
+		// not committed. @wordpress/* imports resolve to wp.* globals via
+		// the externals map in webpack.config.js — this dependency list is
+		// maintained by hand and must stay in sync with that map.
 		wp_enqueue_script(
 			'edmm-meeting-minutes',
-			EDMM_URL . 'assets/js/meeting-minutes.js',
-			[],
+			EDMM_URL . 'assets/build/meeting-minutes.js',
+			[ 'wp-escape-html', 'wp-i18n' ],
 			EDMM_VERSION,
 			true // Load in footer.
 		);
+
+		// Load the JS translation files (JSON) for __() calls in the bundle.
+		wp_set_script_translations( 'edmm-meeting-minutes', 'edmm' );
 
 		$this->localize_script();
 

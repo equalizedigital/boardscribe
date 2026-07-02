@@ -13,15 +13,18 @@
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/tests/*</exclude-pattern>
 
+    <!-- Generated build artifacts (webpack bundle output) -->
+    <exclude-pattern>*/assets/build/*</exclude-pattern>
+
     <!-- Use WordPress coding standards -->
     <rule ref="WordPress">
         <!-- Allow short array syntax -->
         <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
     </rule>
 
-    <!-- src/ uses namespaced, PSR-4-style class files, not the legacy class-*.php convention -->
+    <!-- includes/ uses namespaced, PSR-4-style class files, not the legacy class-*.php convention -->
     <rule ref="WordPress.Files.FileName">
-        <exclude-pattern>*/src/*</exclude-pattern>
+        <exclude-pattern>*/includes/*</exclude-pattern>
     </rule>
 
     <!-- Require PHP 7.4+ -->
