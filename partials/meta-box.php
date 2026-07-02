@@ -3,6 +3,12 @@
  * Meeting Details meta box fields markup.
  *
  * @package EqualizeDigital\MeetingMinutes
+ *
+ * @var string   $meeting_date        Meeting date meta value.
+ * @var string   $meeting_agenda_url  Agenda URL meta value.
+ * @var string   $meeting_minutes_url Minutes URL meta value.
+ * @var string   $meeting_not_held    Whether the meeting was not held.
+ * @var \WP_Post $post                The current post.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
