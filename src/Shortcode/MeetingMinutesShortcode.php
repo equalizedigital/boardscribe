@@ -68,11 +68,22 @@ class MeetingMinutesShortcode {
 			EDMM_VERSION
 		);
 
+		// The bundle is built from assets/src/js/ by `npm run build` and is
+		// not committed - the generated .asset.php carries a content-hash
+		// version (and any dependencies) for cache busting.
+		$asset_file = EDMM_DIR . 'assets/build/meeting-minutes.asset.php';
+		$asset      = file_exists( $asset_file )
+			? require $asset_file
+			: [
+				'dependencies' => [],
+				'version'      => EDMM_VERSION,
+			];
+
 		wp_enqueue_script(
 			'edmm-meeting-minutes',
-			EDMM_URL . 'assets/js/meeting-minutes.js',
-			[],
-			EDMM_VERSION,
+			EDMM_URL . 'assets/build/meeting-minutes.js',
+			$asset['dependencies'],
+			$asset['version'],
 			true // Load in footer.
 		);
 
