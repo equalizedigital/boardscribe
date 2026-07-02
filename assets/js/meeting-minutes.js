@@ -7,12 +7,34 @@
 // any untrusted data itself before returning.
 window.edmmExtraColumns = window.edmmExtraColumns || [];
 
+// Registry for display templates. Add-ons (e.g. Pro) assign template objects
+// here, keyed by template name, before DOMContentLoaded. An instance selects
+// its template via the shortcode's template="" attribute; unknown or missing
+// names fall back to the built-in "table" template.
+//
+// Template contract:
+//   render( data, instanceCfg, container )                      - required.
+//       Render the meetings list into container (data is the REST response).
+//   renderPagination( data, instanceCfg, container, goToPage )  - optional.
+//       Replace the default pagination controls. Call goToPage( n ) to
+//       navigate; core handles URL state and refetching.
+//   renderInfo( data, instanceCfg, element )                    - optional.
+//       Replace the default aria-live "Showing X to Y of Z" text.
+//   focus( container, instanceCfg )                             - optional.
+//       Move focus after a pagination-triggered re-render. The default
+//       focuses the first [tabindex="0"] element in the container.
+//
+// All rendered output is inserted as raw HTML - templates must escape any
+// untrusted data themselves (window.edmmEscapeAttr is available for this).
+window.edmmTemplates = window.edmmTemplates || {};
+
 ( function() {
 	'use strict';
 
 	const cfg = window.edmmConfig || {};
 	const i18n = cfg.i18n || {};
 	const apiBaseUrl = cfg.apiUrl || '';
+	const maxSlots = 7;
 
 	/**
 	 * Escapes a string for safe use inside an HTML attribute value.
@@ -29,55 +51,18 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 			.replace( />/g, '&gt;' );
 	}
 
-	/**
-	 * Initialises a single meeting minutes table instance.
-	 *
-	 * @param {HTMLElement} container - The .edmm-meeting-minutes-wrap element.
-	 */
-	function initInstance( container ) {
-		const instanceCfg = JSON.parse( container.dataset.config || '{}' );
-		const id = instanceCfg.instanceId;
+	// Exposed so add-on templates/columns can reuse the same vetted escaping
+	// instead of re-implementing it (and risking divergence from fixes here).
+	window.edmmEscapeAttr = escapeAttr;
 
-		const tableEl = document.getElementById( 'edmm-table-' + id );
-		const paginationEl = document.getElementById( 'edmm-pagination-' + id );
-		const infoEl = document.getElementById( 'edmm-info-' + id );
-
-		if ( ! tableEl || ! paginationEl ) {
-			return;
-		}
-
-		// Query param name for this instance, e.g. "edmm_page_1".
-		const pageParam = 'edmm_page_' + id.replace( 'edmm_', '' );
-
-		// Read the initial page from the URL so shared/bookmarked links work.
-		const initParams = new URLSearchParams( window.location.search );
-		let currentPage = parseInt( initParams.get( pageParam ), 10 ) || 1;
-
-		const maxSlots = 7;
-		const postsPerPage = instanceCfg.postsPerPage || 20;
-
-		// Build the base API URL for this instance.
-		const apiUrl = apiBaseUrl +
-			'?included_years=' + encodeURIComponent( instanceCfg.includedYears || '' ) +
-			'&held_date_format=' + encodeURIComponent( instanceCfg.heldDateFormat || 'Y/m/d' ) +
-			'&not_held_date_format=' + encodeURIComponent( instanceCfg.notHeldDateFormat || 'Y/m' ) +
-			'&posts_per_page=' + encodeURIComponent( postsPerPage ) +
-			'&agenda_link_label=' + encodeURIComponent( instanceCfg.agendaLinkLabel || '' ) +
-			'&minutes_link_label=' + encodeURIComponent( instanceCfg.minutesLinkLabel || '' ) +
-			'&category=' + encodeURIComponent( instanceCfg.category || '' );
-
-		// ----------------------------------------------------------------
-		// Rendering
-		// ----------------------------------------------------------------
-
-		// Resolve column labels: instance override → i18n global → hard-coded fallback.
-		const labelTitle = instanceCfg.titleLabel || i18n.colTitle || 'Title';
-		const labelDate = instanceCfg.dateLabel || i18n.colDate || 'Date';
-		const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || 'Agenda';
-		const labelMinutes = instanceCfg.minutesLabel || i18n.colMinutes || 'Minutes';
-
-		function renderTable( data, refocus ) {
-			refocus = refocus || false;
+	// The built-in "table" template.
+	window.edmmTemplates.table = window.edmmTemplates.table || {
+		render( data, instanceCfg, container ) {
+			// Resolve column labels: instance override → i18n global → hard-coded fallback.
+			const labelTitle = instanceCfg.titleLabel || i18n.colTitle || 'Title';
+			const labelDate = instanceCfg.dateLabel || i18n.colDate || 'Date';
+			const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || 'Agenda';
+			const labelMinutes = instanceCfg.minutesLabel || i18n.colMinutes || 'Minutes';
 
 			const tableClass = instanceCfg.tableClass || '';
 			let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + tableClass + '">' +
@@ -140,126 +125,215 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 			} );
 
 			table += '</tbody></table>';
-			tableEl.innerHTML = table;
+			container.innerHTML = table;
+		},
+	};
 
-			// Update the off-screen aria-live region with pagination info.
-			const totalEntries = data.total_entries;
-			const startEntry = ( ( currentPage - 1 ) * postsPerPage ) + 1;
-			const endEntry = Math.min( currentPage * postsPerPage, totalEntries );
-
-			if ( infoEl ) {
-				const template = i18n.showingEntries || 'Showing %1$s to %2$s of %3$s entries';
-				infoEl.textContent = template
-					.replace( '%1$s', startEntry )
-					.replace( '%2$s', endEntry )
-					.replace( '%3$s', totalEntries );
-			}
-
-			// Build pagination controls.
-			let pagination = '';
-			if ( data.max_num_pages > 1 ) {
-				pagination += '<nav aria-label="' + ( i18n.pagination || 'Pagination' ) + '">' +
-					'<div class="edmm-pagination-buttons">';
-
-				if ( data.current_page > 1 ) {
-					pagination += '<button type="button" class="edmm-pagination-button prev"' +
-						' aria-label="' + ( i18n.previousPage || 'Previous Page' ) + '"' +
-						' data-page="' + ( data.current_page - 1 ) + '">' +
-						( i18n.previous || 'Previous' ) +
-						'</button>';
-				}
-
-				const slots = calculatePaginationSlots( data.current_page, data.max_num_pages );
-
-				slots.forEach( function( slot ) {
-					if ( slot === '...' ) {
-						pagination += '<span class="pagination-ellipsis">...</span>';
-					} else {
-						const isCurrent = slot === data.current_page;
-						const label = ( i18n.pageNum || 'Page %s' ).replace( '%s', slot );
-						pagination += '<button type="button"' +
-							' class="edmm-pagination-button' + ( isCurrent ? ' current' : '' ) + '"' +
-							' data-page="' + slot + '"' +
-							' aria-label="' + label + '"' +
-							( isCurrent ? ' aria-current="true"' : '' ) +
-							'>' + slot + '</button>';
-					}
-				} );
-
-				if ( data.current_page < data.max_num_pages ) {
-					pagination += '<button type="button" class="edmm-pagination-button next"' +
-						' aria-label="' + ( i18n.nextPage || 'Next Page' ) + '"' +
-						' data-page="' + ( data.current_page + 1 ) + '">' +
-						( i18n.next || 'Next' ) +
-						'</button>';
-				}
-
-				pagination += '</div></nav>';
-			}
-
-			paginationEl.innerHTML = pagination;
-
-			// Attach click handlers to all pagination buttons in this instance.
-			paginationEl.querySelectorAll( 'button' ).forEach( function( button ) {
-				button.addEventListener( 'click', function( e ) {
-					e.preventDefault();
-					const targetPage = parseInt( this.getAttribute( 'data-page' ), 10 );
-					if ( ! isNaN( targetPage ) && targetPage >= 1 && targetPage <= data.max_num_pages ) {
-						currentPage = targetPage;
-						updateUrl( targetPage );
-						fetchMeetings( true );
-					}
-				} );
-			} );
-
-			// Shift focus to the table when pagination is clicked.
-			if ( refocus ) {
-				setTimeout( function() {
-					const tbl = tableEl.querySelector( '.edmm-meeting-minutes-table' );
-					if ( tbl ) {
-						tbl.focus();
-					}
-				}, 100 );
-			}
+	/**
+	 * Updates the off-screen aria-live region with pagination info.
+	 * Default implementation, used when a template doesn't override renderInfo.
+	 *
+	 * @param {Object}      data        - The REST response data.
+	 * @param {Object}      instanceCfg - The per-instance configuration.
+	 * @param {HTMLElement} element     - The aria-live info element.
+	 */
+	function defaultRenderInfo( data, instanceCfg, element ) {
+		if ( ! element ) {
+			return;
 		}
 
-		// ----------------------------------------------------------------
-		// Pagination slot calculation
-		// ----------------------------------------------------------------
+		const postsPerPage = instanceCfg.postsPerPage || 20;
+		const totalEntries = data.total_entries;
+		const startEntry = ( ( data.current_page - 1 ) * postsPerPage ) + 1;
+		const endEntry = Math.min( data.current_page * postsPerPage, totalEntries );
 
-		function calculatePaginationSlots( current, total ) {
-			const slots = [ 1 ];
+		const template = i18n.showingEntries || 'Showing %1$s to %2$s of %3$s entries';
+		element.textContent = template
+			.replace( '%1$s', startEntry )
+			.replace( '%2$s', endEntry )
+			.replace( '%3$s', totalEntries );
+	}
 
-			if ( total <= maxSlots ) {
-				for ( let i = 2; i <= total; i++ ) {
-					slots.push( i );
+	/**
+	 * Builds the default pagination controls and wires them to goToPage().
+	 * Used when a template doesn't override renderPagination.
+	 *
+	 * @param {Object}      data        - The REST response data.
+	 * @param {Object}      instanceCfg - The per-instance configuration.
+	 * @param {HTMLElement} element     - The pagination container element.
+	 * @param {Function}    goToPage    - Navigates to the given page number.
+	 */
+	function defaultRenderPagination( data, instanceCfg, element, goToPage ) {
+		let pagination = '';
+		if ( data.max_num_pages > 1 ) {
+			pagination += '<nav aria-label="' + ( i18n.pagination || 'Pagination' ) + '">' +
+				'<div class="edmm-pagination-buttons">';
+
+			if ( data.current_page > 1 ) {
+				pagination += '<button type="button" class="edmm-pagination-button prev"' +
+					' aria-label="' + ( i18n.previousPage || 'Previous Page' ) + '"' +
+					' data-page="' + ( data.current_page - 1 ) + '">' +
+					( i18n.previous || 'Previous' ) +
+					'</button>';
+			}
+
+			const slots = calculatePaginationSlots( data.current_page, data.max_num_pages );
+
+			slots.forEach( function( slot ) {
+				if ( slot === '...' ) {
+					pagination += '<span class="pagination-ellipsis">...</span>';
+				} else {
+					const isCurrent = slot === data.current_page;
+					const label = ( i18n.pageNum || 'Page %s' ).replace( '%s', slot );
+					pagination += '<button type="button"' +
+						' class="edmm-pagination-button' + ( isCurrent ? ' current' : '' ) + '"' +
+						' data-page="' + slot + '"' +
+						' aria-label="' + label + '"' +
+						( isCurrent ? ' aria-current="true"' : '' ) +
+						'>' + slot + '</button>';
 				}
-				return slots;
+			} );
+
+			if ( data.current_page < data.max_num_pages ) {
+				pagination += '<button type="button" class="edmm-pagination-button next"' +
+					' aria-label="' + ( i18n.nextPage || 'Next Page' ) + '"' +
+					' data-page="' + ( data.current_page + 1 ) + '">' +
+					( i18n.next || 'Next' ) +
+					'</button>';
 			}
 
-			if ( current > 3 ) {
-				slots.push( '...' );
-			}
+			pagination += '</div></nav>';
+		}
 
-			const start = Math.max( 2, current - 1 );
-			const end = Math.min( current + 1, total - 1 );
+		element.innerHTML = pagination;
 
-			for ( let i = start; i <= end; i++ ) {
+		// Attach click handlers to all pagination buttons in this instance.
+		element.querySelectorAll( 'button' ).forEach( function( button ) {
+			button.addEventListener( 'click', function( e ) {
+				e.preventDefault();
+				goToPage( parseInt( this.getAttribute( 'data-page' ), 10 ) );
+			} );
+		} );
+	}
+
+	/**
+	 * Moves focus into the rendered list after a pagination click.
+	 *
+	 * @param {HTMLElement} container - The list container element.
+	 */
+	function defaultFocus( container ) {
+		const target = container.querySelector( '[tabindex="0"]' );
+		if ( target ) {
+			target.focus();
+		}
+	}
+
+	function calculatePaginationSlots( current, total ) {
+		const slots = [ 1 ];
+
+		if ( total <= maxSlots ) {
+			for ( let i = 2; i <= total; i++ ) {
 				slots.push( i );
 			}
-
-			if ( current < total - 2 ) {
-				slots.push( '...' );
-			}
-
-			slots.push( total );
-
 			return slots;
 		}
 
-		// ----------------------------------------------------------------
-		// URL state
-		// ----------------------------------------------------------------
+		if ( current > 3 ) {
+			slots.push( '...' );
+		}
+
+		const start = Math.max( 2, current - 1 );
+		const end = Math.min( current + 1, total - 1 );
+
+		for ( let i = start; i <= end; i++ ) {
+			slots.push( i );
+		}
+
+		if ( current < total - 2 ) {
+			slots.push( '...' );
+		}
+
+		slots.push( total );
+
+		return slots;
+	}
+
+	/**
+	 * Initialises a single meeting minutes instance.
+	 *
+	 * @param {HTMLElement} container - The .edmm-meeting-minutes-wrap element.
+	 */
+	function initInstance( container ) {
+		const instanceCfg = JSON.parse( container.dataset.config || '{}' );
+		const id = instanceCfg.instanceId;
+
+		const tableEl = document.getElementById( 'edmm-table-' + id );
+		const paginationEl = document.getElementById( 'edmm-pagination-' + id );
+		const infoEl = document.getElementById( 'edmm-info-' + id );
+
+		if ( ! tableEl || ! paginationEl ) {
+			return;
+		}
+
+		// Resolve this instance's display template; unknown or missing
+		// names fall back to the built-in table.
+		const requested = instanceCfg.template;
+		const registered = requested && window.edmmTemplates[ requested ];
+		const template = ( registered && typeof registered.render === 'function' )
+			? registered
+			: window.edmmTemplates.table;
+
+		// Query param name for this instance, e.g. "edmm_page_1".
+		const pageParam = 'edmm_page_' + id.replace( 'edmm_', '' );
+
+		// Read the initial page from the URL so shared/bookmarked links work.
+		const initParams = new URLSearchParams( window.location.search );
+		let currentPage = parseInt( initParams.get( pageParam ), 10 ) || 1;
+		let maxNumPages = 1;
+
+		const postsPerPage = instanceCfg.postsPerPage || 20;
+
+		// Build the base API URL for this instance.
+		const apiUrl = apiBaseUrl +
+			'?included_years=' + encodeURIComponent( instanceCfg.includedYears || '' ) +
+			'&held_date_format=' + encodeURIComponent( instanceCfg.heldDateFormat || 'Y/m/d' ) +
+			'&not_held_date_format=' + encodeURIComponent( instanceCfg.notHeldDateFormat || 'Y/m' ) +
+			'&posts_per_page=' + encodeURIComponent( postsPerPage ) +
+			'&agenda_link_label=' + encodeURIComponent( instanceCfg.agendaLinkLabel || '' ) +
+			'&minutes_link_label=' + encodeURIComponent( instanceCfg.minutesLinkLabel || '' ) +
+			'&category=' + encodeURIComponent( instanceCfg.category || '' );
+
+		/**
+		 * Navigates this instance to the given page: updates the URL and
+		 * refetches. Passed to the template's pagination renderer.
+		 *
+		 * @param {number} targetPage - The 1-based page number to show.
+		 */
+		function goToPage( targetPage ) {
+			targetPage = parseInt( targetPage, 10 );
+			if ( isNaN( targetPage ) || targetPage < 1 || targetPage > maxNumPages ) {
+				return;
+			}
+			currentPage = targetPage;
+			updateUrl( targetPage );
+			fetchMeetings( true );
+		}
+
+		function renderInstance( data, refocus ) {
+			refocus = refocus || false;
+			maxNumPages = data.max_num_pages;
+
+			template.render( data, instanceCfg, tableEl );
+			( template.renderInfo || defaultRenderInfo )( data, instanceCfg, infoEl );
+			( template.renderPagination || defaultRenderPagination )( data, instanceCfg, paginationEl, goToPage );
+
+			// Shift focus into the list when pagination is clicked.
+			if ( refocus ) {
+				setTimeout( function() {
+					( template.focus || defaultFocus )( tableEl, instanceCfg );
+				}, 100 );
+			}
+		}
 
 		function updateUrl( page ) {
 			const params = new URLSearchParams( window.location.search );
@@ -282,10 +356,6 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 			}
 		} );
 
-		// ----------------------------------------------------------------
-		// Data fetching
-		// ----------------------------------------------------------------
-
 		function fetchMeetings( refocus ) {
 			refocus = refocus || false;
 
@@ -299,7 +369,7 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 					return response.json();
 				} )
 				.then( function( data ) {
-					renderTable( data, refocus );
+					renderInstance( data, refocus );
 				} )
 				.catch( function( error ) {
 					// eslint-disable-next-line no-console -- Surface fetch failures for debugging; there is no other error-reporting mechanism here.
@@ -311,10 +381,7 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 		fetchMeetings();
 	}
 
-	// ----------------------------------------------------------------
-	// Bootstrap — initialise all instances when the DOM is ready.
-	// ----------------------------------------------------------------
-
+	// Initialise all instances when the DOM is ready.
 	document.addEventListener( 'DOMContentLoaded', function() {
 		document.querySelectorAll( '.edmm-meeting-minutes-wrap' ).forEach( initInstance );
 	} );
