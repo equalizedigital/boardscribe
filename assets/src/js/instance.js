@@ -33,7 +33,7 @@ export function initInstance( container ) {
 
 	// Read the initial page from the URL so shared/bookmarked links work.
 	const initParams = new URLSearchParams( window.location.search );
-	let currentPage = parseInt( initParams.get( pageParam ), 10 ) || 1;
+	let currentPage = Math.max( 1, parseInt( initParams.get( pageParam ), 10 ) || 1 );
 	let maxNumPages = 1;
 
 	/**
@@ -87,7 +87,7 @@ export function initInstance( container ) {
 	// Sync this instance when the user navigates back/forward.
 	window.addEventListener( 'popstate', function() {
 		const params = new URLSearchParams( window.location.search );
-		const popped = parseInt( params.get( pageParam ), 10 ) || 1;
+		const popped = Math.max( 1, parseInt( params.get( pageParam ), 10 ) || 1 );
 		if ( popped !== currentPage ) {
 			currentPage = popped;
 			fetchMeetings( false );
