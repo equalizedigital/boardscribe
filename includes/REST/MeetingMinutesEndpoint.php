@@ -19,6 +19,8 @@ class MeetingMinutesEndpoint {
 	/**
 	 * Hooks REST route registration into WordPress.
 	 *
+	 * @since x.x.x
+	 *
 	 * @return void
 	 */
 	public function register(): void {
@@ -27,6 +29,8 @@ class MeetingMinutesEndpoint {
 
 	/**
 	 * Registers the custom REST route.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -69,12 +73,11 @@ class MeetingMinutesEndpoint {
 		];
 
 		/**
-		 * Filters the registered args schema for the meeting-minutes REST
-		 * route before it's registered.
+		 * Filters the registered args schema for the meeting-minutes REST route.
+		 * Pro plugin uses this to add new params (e.g. full-text search, a date
+		 * range) to this route instead of duplicating it.
 		 *
-		 * Pro plugin uses this to add new params (e.g. full-text search,
-		 * a date range) to this same route, rather than standing up a
-		 * separate route that would need to duplicate the query logic.
+		 * @since x.x.x
 		 *
 		 * @param array $args The REST route args schema.
 		 */
@@ -94,6 +97,8 @@ class MeetingMinutesEndpoint {
 
 	/**
 	 * Handles GET requests to the meeting minutes endpoint.
+	 *
+	 * @since x.x.x
 	 *
 	 * @param \WP_REST_Request $request The REST request object.
 	 * @return \WP_REST_Response
@@ -145,6 +150,8 @@ class MeetingMinutesEndpoint {
 		 * Filters the WP_Query args before querying meeting minutes.
 		 * Pro plugin can add taxonomy queries, additional meta filters, etc.
 		 *
+		 * @since x.x.x
+		 *
 		 * @param array            $args    The WP_Query args.
 		 * @param \WP_REST_Request $request The REST request.
 		 */
@@ -182,6 +189,8 @@ class MeetingMinutesEndpoint {
 		 * Filters the full REST response before it is returned.
 		 * Pro plugin can add top-level fields (e.g., available categories).
 		 *
+		 * @since x.x.x
+		 *
 		 * @param array            $response The response data.
 		 * @param \WP_REST_Request $request  The REST request.
 		 */
@@ -197,6 +206,8 @@ class MeetingMinutesEndpoint {
 	 * escaped/formatted output as this endpoint (CSV/PDF export, an iCal
 	 * feed, a "most recent meeting" widget) can call this directly instead
 	 * of re-implementing the same escaping logic themselves.
+	 *
+	 * @since x.x.x
 	 *
 	 * @param int                   $post_id     The meeting minutes post ID.
 	 * @param array                 $format_args {
@@ -270,6 +281,8 @@ class MeetingMinutesEndpoint {
 		 * Filters a single meeting row before it is added to the response.
 		 * Pro plugin can add extra fields (e.g., category, attachments).
 		 *
+		 * @since x.x.x
+		 *
 		 * @param array                  $row     The meeting row data.
 		 * @param int                    $post_id The post ID.
 		 * @param \WP_REST_Request|null $request  The REST request, if any.
@@ -297,6 +310,8 @@ class MeetingMinutesEndpoint {
 	 * param), and a strict type hint would throw a TypeError instead of
 	 * just failing validation.
 	 *
+	 * @since x.x.x
+	 *
 	 * @param mixed $value The raw held_date_format/not_held_date_format value.
 	 * @return bool
 	 */
@@ -312,6 +327,8 @@ class MeetingMinutesEndpoint {
 	 *
 	 * Supports Y-m-d (native/ISO), Ymd (ACF default), d/m/Y and m/d/Y
 	 * to handle data previously stored by ACF with varying format settings.
+	 *
+	 * @since x.x.x
 	 *
 	 * @param string $date_string The raw date string from post meta.
 	 * @return \DateTime|null
