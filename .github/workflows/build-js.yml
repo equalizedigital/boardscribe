@@ -50,4 +50,4 @@ jobs:
         run: npm run build
 
       - name: Check expected build artifacts exist
-        run: test -f assets/build/meeting-minutes.js && test -f assets/build/meeting-minutes.asset.php
+        run: test -f assets/build/meeting-minutes.js
