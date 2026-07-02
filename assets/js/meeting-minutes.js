@@ -157,8 +157,8 @@ window.edmmTemplates = window.edmmTemplates || {};
 		}
 
 		const postsPerPage = instanceCfg.postsPerPage || 20;
-		const totalEntries = data.total_entries;
-		const startEntry = ( ( data.current_page - 1 ) * postsPerPage ) + 1;
+		const totalEntries = data.total_entries || 0;
+		const startEntry = totalEntries === 0 ? 0 : ( ( data.current_page - 1 ) * postsPerPage ) + 1;
 		const endEntry = Math.min( data.current_page * postsPerPage, totalEntries );
 
 		const template = i18n.showingEntries || 'Showing %1$s to %2$s of %3$s entries';
