@@ -1,4 +1,5 @@
 import { escapeAttribute, escapeHTML } from '@wordpress/escape-html';
+import { __ } from '@wordpress/i18n';
 import { i18n } from '../config';
 
 // The built-in "table" display template, registered as
@@ -6,10 +7,10 @@ import { i18n } from '../config';
 export const tableTemplate = {
 	render( data, instanceCfg, container ) {
 		// Resolve column labels: instance override → i18n global → hard-coded fallback.
-		const labelTitle = instanceCfg.titleLabel || i18n.colTitle || 'Title';
-		const labelDate = instanceCfg.dateLabel || i18n.colDate || 'Date';
-		const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || 'Agenda';
-		const labelMinutes = instanceCfg.minutesLabel || i18n.colMinutes || 'Minutes';
+		const labelTitle = instanceCfg.titleLabel || i18n.colTitle || __( 'Title', 'edmm' );
+		const labelDate = instanceCfg.dateLabel || i18n.colDate || __( 'Date', 'edmm' );
+		const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || __( 'Agenda', 'edmm' );
+		const labelMinutes = instanceCfg.minutesLabel || i18n.colMinutes || __( 'Minutes', 'edmm' );
 
 		// The class list and core labels are already sanitized server-side
 		// (sanitize_class_list()/sanitize_text_field() in the shortcode),

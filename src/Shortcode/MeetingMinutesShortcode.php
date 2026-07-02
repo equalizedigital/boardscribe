@@ -75,10 +75,13 @@ class MeetingMinutesShortcode {
 		wp_enqueue_script(
 			'edmm-meeting-minutes',
 			EDMM_URL . 'assets/build/meeting-minutes.js',
-			[ 'wp-escape-html' ],
+			[ 'wp-escape-html', 'wp-i18n' ],
 			EDMM_VERSION,
 			true // Load in footer.
 		);
+
+		// Load the JS translation files (JSON) for __() calls in the bundle.
+		wp_set_script_translations( 'edmm-meeting-minutes', 'edmm' );
 
 		$this->localize_script();
 

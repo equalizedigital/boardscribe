@@ -26,5 +26,6 @@ module.exports = {
 	// the wp_enqueue_script() dependency list in MeetingMinutesShortcode.php.
 	externals: {
 		'@wordpress/escape-html': [ 'wp', 'escapeHtml' ],
+		'@wordpress/i18n': [ 'wp', 'i18n' ],
 	},
 };

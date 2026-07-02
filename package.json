@@ -25,6 +25,7 @@
 	"devDependencies": {
 		"@wordpress/escape-html": "^3.50.0",
 		"@wordpress/eslint-plugin": "^17.5.0",
+		"@wordpress/i18n": "^6.23.0",
 		"@wordpress/scripts": "^31.0.0",
 		"husky": "^9.0.6",
 		"lint-staged": "^15.2.2"
