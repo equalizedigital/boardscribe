@@ -72,12 +72,13 @@ class MeetingMinutesShortcode {
 		// not committed - the generated .asset.php carries a content-hash
 		// version (and any dependencies) for cache busting.
 		$asset_file = EDMM_DIR . 'assets/build/meeting-minutes.asset.php';
-		$asset      = file_exists( $asset_file )
-			? require $asset_file
-			: [
+		$asset      = file_exists( $asset_file ) ? require $asset_file : null;
+		if ( ! is_array( $asset ) ) {
+			$asset = [
 				'dependencies' => [],
 				'version'      => EDMM_VERSION,
 			];
+		}
 
 		wp_enqueue_script(
 			'edmm-meeting-minutes',
