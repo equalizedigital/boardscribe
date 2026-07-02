@@ -69,13 +69,13 @@ class MeetingMinutesShortcode {
 		);
 
 		// The bundle is built from assets/src/js/ by `npm run build` and is
-		// not committed. The dependency list is maintained by hand: keep it
-		// in sync with the generated assets/build/meeting-minutes.asset.php
-		// whenever a new @wordpress/* package is imported in the JS.
+		// not committed. @wordpress/* imports resolve to wp.* globals via
+		// the externals map in webpack.config.js — this dependency list is
+		// maintained by hand and must stay in sync with that map.
 		wp_enqueue_script(
 			'edmm-meeting-minutes',
 			EDMM_URL . 'assets/build/meeting-minutes.js',
-			[],
+			[ 'wp-escape-html' ],
 			EDMM_VERSION,
 			true // Load in footer.
 		);

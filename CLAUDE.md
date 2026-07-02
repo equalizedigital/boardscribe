@@ -86,7 +86,7 @@ npm run lint:js                     # eslint over assets/src + webpack.config.js
 composer test                       # phpunit (requires ./scripts/setup-phpunit.sh first, or Docker via npm run test:php)
 ```
 
-The frontend JS is bundled from `assets/src/js/` to `assets/build/` via `wp-scripts build` with a small `webpack.config.js` overriding entry/output paths (the wp-scripts defaults clash with `src/` holding PHP). The enqueue reads the generated `meeting-minutes.asset.php` for the cache-busting version. Because `assets/build/` is gitignored, any release/deploy packaging **must run `npm run build`** — shipping a zip without it means a 404'd script and an empty table.
+The frontend JS is bundled from `assets/src/js/` to `assets/build/` via `wp-scripts build` with a small `webpack.config.js` overriding entry/output paths (the wp-scripts defaults clash with `src/` holding PHP) and dropping `DependencyExtractionWebpackPlugin` — no `*.asset.php` is emitted. `@wordpress/*` imports resolve to `wp.*` globals via a hand-maintained `externals` map in `webpack.config.js`; each entry there needs its matching `wp-*` handle in the `wp_enqueue_script()` dependency list in `MeetingMinutesShortcode.php` (the enqueue uses `EDMM_VERSION` for cache-busting). Because `assets/build/` is gitignored, any release/deploy packaging **must run `npm run build`** — shipping a zip without it means a 404'd script and an empty table.
 
 `phpcs.xml` is scoped to `.php` files only (`<arg name="extensions" value="php"/>`) — JS/CSS have their own dedicated linters and must not be re-added to PHPCS's scope; WordPress's PHP-oriented sniffs actively conflict with the JS style enforced by ESLint (e.g. `function (` vs `function(`).
 
