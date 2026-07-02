@@ -225,7 +225,7 @@ window.edmmTemplates = window.edmmTemplates || {};
 		element.querySelectorAll( 'button' ).forEach( function( button ) {
 			button.addEventListener( 'click', function( e ) {
 				e.preventDefault();
-				goToPage( parseInt( this.getAttribute( 'data-page' ), 10 ) );
+				goToPage( parseInt( button.getAttribute( 'data-page' ), 10 ) );
 			} );
 		} );
 	}
