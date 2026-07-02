@@ -22,6 +22,8 @@ class SettingsPage {
 	/**
 	 * Hooks settings registration and admin menu into WordPress.
 	 *
+	 * @since x.x.x
+	 *
 	 * @return void
 	 */
 	public function register(): void {
@@ -32,6 +34,8 @@ class SettingsPage {
 
 	/**
 	 * Adds the Settings submenu under the Meeting Minutes CPT menu.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -48,6 +52,8 @@ class SettingsPage {
 
 	/**
 	 * Registers only the persistent plugin settings (not shortcode builder values).
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */
@@ -77,6 +83,8 @@ class SettingsPage {
 	/**
 	 * Enqueues the inline shortcode builder script on the settings page.
 	 *
+	 * @since x.x.x
+	 *
 	 * @param string $hook The current admin page hook.
 	 * @return void
 	 */
@@ -91,6 +99,8 @@ class SettingsPage {
 
 	/**
 	 * Returns the inline JavaScript for the shortcode builder.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return string
 	 */
@@ -171,6 +181,8 @@ JS;
 	/**
 	 * Renders the delete on uninstall settings field.
 	 *
+	 * @since x.x.x
+	 *
 	 * @return void
 	 */
 	public function render_delete_on_uninstall(): void {
@@ -193,6 +205,8 @@ JS;
 	/**
 	 * Sanitizes settings before saving.
 	 *
+	 * @since x.x.x
+	 *
 	 * @param array $input Raw input from the settings form.
 	 * @return array Sanitized settings.
 	 */
@@ -204,6 +218,8 @@ JS;
 
 	/**
 	 * Renders the settings page HTML.
+	 *
+	 * @since x.x.x
 	 *
 	 * @return void
 	 */

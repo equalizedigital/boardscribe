@@ -176,6 +176,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 				/**
 				 * Fires inside the shortcode builder form after the default fields.
 				 * Pro plugin can add additional builder fields here.
+				 *
+				 * @since x.x.x
 				 */
 				do_action( 'edmm_shortcode_builder_fields' );
 				?>
@@ -216,9 +218,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php
 	/**
-	 * Fires inside the settings page after the main form.
-	 * Pro plugin uses this to render additional sections (e.g. license management)
-	 * that have their own form and don't use the WordPress Settings API.
+	 * Fires inside the settings page after the main form. Pro plugin uses this
+	 * for sections with their own form (e.g. license management) that don't use
+	 * the Settings API.
+	 *
+	 * @since x.x.x
 	 */
 	do_action( 'edmm_settings_fields' );
 	?>
