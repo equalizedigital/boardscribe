@@ -27,7 +27,6 @@ assets/src/js/                         Frontend source modules (ES modules, bund
   index.js                             Entry: exposes window globals, registers table template, bootstraps
   registries.js                        window.edmmExtraColumns/edmmTemplates setup + the template contract docs
   config.js                            Reads window.edmmConfig (i18n, REST base URL)
-  escape.js                            escapeAttr() (exposed as window.edmmEscapeAttr)
   templates/table.js                   Built-in "table" display template
   defaults/                            Core fallbacks a template inherits unless it overrides them
     render-info.js / render-pagination.js / request.js / focus.js

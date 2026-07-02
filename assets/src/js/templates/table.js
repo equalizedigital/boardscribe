@@ -1,4 +1,4 @@
-import { escapeAttr } from '../escape';
+import { escapeAttribute, escapeHTML } from '@wordpress/escape-html';
 import { i18n } from '../config';
 
 // The built-in "table" display template, registered as
@@ -15,21 +15,21 @@ export const tableTemplate = {
 		// (sanitize_class_list()/sanitize_text_field() in the shortcode),
 		// but escape at the insertion point too so values injected via the
 		// edmm_shortcode_instance_config filter get the same treatment.
-		const tableClass = escapeAttr( instanceCfg.tableClass || '' );
+		const tableClass = escapeAttribute( instanceCfg.tableClass || '' );
 		let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + tableClass + '">' +
 			'<thead class="desktop"><tr>';
 
 		if ( ! instanceCfg.hideTitle ) {
-			table += '<th scope="col">' + escapeAttr( labelTitle ) + '</th>';
+			table += '<th scope="col">' + escapeHTML( labelTitle ) + '</th>';
 		}
 		if ( ! instanceCfg.hideDate ) {
-			table += '<th scope="col">' + escapeAttr( labelDate ) + '</th>';
+			table += '<th scope="col">' + escapeHTML( labelDate ) + '</th>';
 		}
 		if ( ! instanceCfg.hideAgenda ) {
-			table += '<th scope="col">' + escapeAttr( labelAgenda ) + '</th>';
+			table += '<th scope="col">' + escapeHTML( labelAgenda ) + '</th>';
 		}
 		if ( ! instanceCfg.hideMinutes ) {
-			table += '<th scope="col">' + escapeAttr( labelMinutes ) + '</th>';
+			table += '<th scope="col">' + escapeHTML( labelMinutes ) + '</th>';
 		}
 
 		window.edmmExtraColumns.forEach( function( col ) {
@@ -37,8 +37,8 @@ export const tableTemplate = {
 			if ( ! hidden ) {
 				// Deliberately NOT escaped: label/getLabel() are raw header
 				// HTML by documented contract - the registrant escapes.
-				const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : ( col.label || '' );
-				table += '<th scope="col">' + label + '</th>';
+				const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
+				table += '<th scope="col">' + ( label || '' ) + '</th>';
 			}
 		} );
 
@@ -57,24 +57,24 @@ export const tableTemplate = {
 		meetings.forEach( function( meeting ) {
 			table += '<tr>';
 			if ( ! instanceCfg.hideTitle ) {
-				table += '<td data-label="' + escapeAttr( labelTitle ) + '" scope="row">' + meeting.title + '</td>';
+				table += '<td data-label="' + escapeAttribute( labelTitle ) + '" scope="row">' + meeting.title + '</td>';
 			}
 			if ( ! instanceCfg.hideDate ) {
-				table += '<td data-label="' + escapeAttr( labelDate ) + '">' + meeting.date + '</td>';
+				table += '<td data-label="' + escapeAttribute( labelDate ) + '">' + meeting.date + '</td>';
 			}
 			if ( ! instanceCfg.hideAgenda ) {
-				table += '<td data-label="' + escapeAttr( labelAgenda ) + '">' + meeting.agenda + '</td>';
+				table += '<td data-label="' + escapeAttribute( labelAgenda ) + '">' + meeting.agenda + '</td>';
 			}
 			if ( ! instanceCfg.hideMinutes ) {
-				table += '<td data-label="' + escapeAttr( labelMinutes ) + '">' + meeting.minutes + '</td>';
+				table += '<td data-label="' + escapeAttribute( labelMinutes ) + '">' + meeting.minutes + '</td>';
 			}
 
 			window.edmmExtraColumns.forEach( function( col ) {
 				const hidden = typeof col.hidden === 'function' ? col.hidden( instanceCfg ) : false;
 				if ( ! hidden ) {
-					const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : ( col.label || '' );
+					const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
 					const cell = col.renderCell ? col.renderCell( meeting, instanceCfg ) : ( meeting[ col.key ] || '' );
-					table += '<td data-label="' + escapeAttr( label ) + '">' + cell + '</td>';
+					table += '<td data-label="' + escapeAttribute( label || '' ) + '">' + cell + '</td>';
 				}
 			} );
 

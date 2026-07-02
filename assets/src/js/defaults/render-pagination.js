@@ -1,4 +1,4 @@
-import { escapeAttr } from '../escape';
+import { escapeAttribute, escapeHTML } from '@wordpress/escape-html';
 import { i18n } from '../config';
 
 const maxSlots = 7;
@@ -52,14 +52,14 @@ export function calculatePaginationSlots( current, total ) {
 export function defaultRenderPagination( data, instanceCfg, element, goToPage ) {
 	let pagination = '';
 	if ( data.max_num_pages > 1 ) {
-		pagination += '<nav aria-label="' + escapeAttr( i18n.pagination || 'Pagination' ) + '">' +
+		pagination += '<nav aria-label="' + escapeAttribute( i18n.pagination || 'Pagination' ) + '">' +
 			'<div class="edmm-pagination-buttons">';
 
 		if ( data.current_page > 1 ) {
 			pagination += '<button type="button" class="edmm-pagination-button prev"' +
-				' aria-label="' + escapeAttr( i18n.previousPage || 'Previous Page' ) + '"' +
+				' aria-label="' + escapeAttribute( i18n.previousPage || 'Previous Page' ) + '"' +
 				' data-page="' + ( data.current_page - 1 ) + '">' +
-				escapeAttr( i18n.previous || 'Previous' ) +
+				escapeHTML( i18n.previous || 'Previous' ) +
 				'</button>';
 		}
 
@@ -70,7 +70,7 @@ export function defaultRenderPagination( data, instanceCfg, element, goToPage ) 
 				pagination += '<span class="pagination-ellipsis">...</span>';
 			} else {
 				const isCurrent = slot === data.current_page;
-				const label = escapeAttr( ( i18n.pageNum || 'Page %s' ).replace( '%s', slot ) );
+				const label = escapeAttribute( ( i18n.pageNum || 'Page %s' ).replace( '%s', slot ) );
 				pagination += '<button type="button"' +
 					' class="edmm-pagination-button' + ( isCurrent ? ' current' : '' ) + '"' +
 					' data-page="' + slot + '"' +
@@ -82,9 +82,9 @@ export function defaultRenderPagination( data, instanceCfg, element, goToPage ) 
 
 		if ( data.current_page < data.max_num_pages ) {
 			pagination += '<button type="button" class="edmm-pagination-button next"' +
-				' aria-label="' + escapeAttr( i18n.nextPage || 'Next Page' ) + '"' +
+				' aria-label="' + escapeAttribute( i18n.nextPage || 'Next Page' ) + '"' +
 				' data-page="' + ( data.current_page + 1 ) + '">' +
-				escapeAttr( i18n.next || 'Next' ) +
+				escapeHTML( i18n.next || 'Next' ) +
 				'</button>';
 		}
 
