@@ -13,6 +13,9 @@
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/tests/*</exclude-pattern>
 
+    <!-- Generated build artifacts (webpack emits an .asset.php per bundle) -->
+    <exclude-pattern>*/assets/build/*</exclude-pattern>
+
     <!-- Use WordPress coding standards -->
     <rule ref="WordPress">
         <!-- Allow short array syntax -->
