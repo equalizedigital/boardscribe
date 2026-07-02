@@ -107,7 +107,11 @@ window.edmmTemplates = window.edmmTemplates || {};
 			// endpoint escapes title/date server-side, and agenda/minutes are
 			// pre-built escaped <a> markup. Any new field or extra-column
 			// renderCell() must escape its own output before returning it here.
-			data.meetings.forEach( function( meeting ) {
+			//
+			// Tolerate malformed responses (e.g. an edmm_rest_response filter
+			// emptying the payload) rather than throwing mid-render.
+			const meetings = ( data && Array.isArray( data.meetings ) ) ? data.meetings : [];
+			meetings.forEach( function( meeting ) {
 				table += '<tr>';
 				if ( ! instanceCfg.hideTitle ) {
 					table += '<td data-label="' + escapeAttr( labelTitle ) + '" scope="row">' + meeting.title + '</td>';
@@ -338,6 +342,9 @@ window.edmmTemplates = window.edmmTemplates || {};
 		}
 
 		function renderInstance( data, refocus ) {
+			if ( ! data ) {
+				return;
+			}
 			refocus = refocus || false;
 			// Tolerate template-defined response shapes that omit
 			// max_num_pages - goToPage() keeps its last known bound.
