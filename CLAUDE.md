@@ -29,7 +29,7 @@ src/js/                                Frontend source modules (ES modules, bund
   config.js                            Reads window.edmmConfig (i18n, REST base URL)
   templates/table.js                   Built-in "table" display template
   defaults/                            Core fallbacks a template inherits unless it overrides them
-    render-info.js / render-pagination.js / request.js / focus.js
+    renderInfo.js / renderPagination.js / request.js / focus.js
   instance.js                          Per-shortcode-instance controller (template resolution, URL state, fetch)
 assets/build/                          Bundled output (GITIGNORED — run `npm run build`; release packaging must build)
 assets/css/meeting-minutes.css         Frontend styles
