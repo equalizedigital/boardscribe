@@ -180,14 +180,14 @@ window.edmmTemplates = window.edmmTemplates || {};
 	function defaultRenderPagination( data, instanceCfg, element, goToPage ) {
 		let pagination = '';
 		if ( data.max_num_pages > 1 ) {
-			pagination += '<nav aria-label="' + ( i18n.pagination || 'Pagination' ) + '">' +
+			pagination += '<nav aria-label="' + escapeAttr( i18n.pagination || 'Pagination' ) + '">' +
 				'<div class="edmm-pagination-buttons">';
 
 			if ( data.current_page > 1 ) {
 				pagination += '<button type="button" class="edmm-pagination-button prev"' +
-					' aria-label="' + ( i18n.previousPage || 'Previous Page' ) + '"' +
+					' aria-label="' + escapeAttr( i18n.previousPage || 'Previous Page' ) + '"' +
 					' data-page="' + ( data.current_page - 1 ) + '">' +
-					( i18n.previous || 'Previous' ) +
+					escapeAttr( i18n.previous || 'Previous' ) +
 					'</button>';
 			}
 
@@ -198,7 +198,7 @@ window.edmmTemplates = window.edmmTemplates || {};
 					pagination += '<span class="pagination-ellipsis">...</span>';
 				} else {
 					const isCurrent = slot === data.current_page;
-					const label = ( i18n.pageNum || 'Page %s' ).replace( '%s', slot );
+					const label = escapeAttr( ( i18n.pageNum || 'Page %s' ).replace( '%s', slot ) );
 					pagination += '<button type="button"' +
 						' class="edmm-pagination-button' + ( isCurrent ? ' current' : '' ) + '"' +
 						' data-page="' + slot + '"' +
@@ -210,9 +210,9 @@ window.edmmTemplates = window.edmmTemplates || {};
 
 			if ( data.current_page < data.max_num_pages ) {
 				pagination += '<button type="button" class="edmm-pagination-button next"' +
-					' aria-label="' + ( i18n.nextPage || 'Next Page' ) + '"' +
+					' aria-label="' + escapeAttr( i18n.nextPage || 'Next Page' ) + '"' +
 					' data-page="' + ( data.current_page + 1 ) + '">' +
-					( i18n.next || 'Next' ) +
+					escapeAttr( i18n.next || 'Next' ) +
 					'</button>';
 			}
 
