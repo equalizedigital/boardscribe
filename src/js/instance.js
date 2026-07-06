@@ -34,9 +34,15 @@ export function initInstance( container ) {
 	// names fall back to the built-in table.
 	const requested = instanceCfg.template;
 	const registered = requested && window.edmmTemplates[ requested ];
-	const template = ( registered && typeof registered.render === 'function' )
-		? registered
-		: window.edmmTemplates.table;
+	const isValidTemplate = !! ( registered && typeof registered.render === 'function' );
+	const template = isValidTemplate ? registered : window.edmmTemplates.table;
+
+	// The template name actually rendering, after the fallback above -
+	// distinct from instanceCfg.template, which may be blank/unrecognized.
+	// Templates use this to add a dedicated "edmm-template-<name>" class to
+	// their own root element(s), so a site can target one template's output
+	// in CSS without needing the class="" shortcode attribute.
+	instanceCfg.resolvedTemplate = isValidTemplate ? requested : 'table';
 
 	// Query param name for this instance, e.g. "edmm_page_1".
 	const pageParam = 'edmm_page_' + id.replace( 'edmm_', '' );
