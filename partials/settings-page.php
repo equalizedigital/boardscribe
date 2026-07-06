@@ -198,6 +198,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</td>
 				</tr>
 				<tr>
+					<th scope="row"><?php esc_html_e( 'Equal Column Widths', 'edmm' ); ?></th>
+					<td>
+						<label>
+							<input
+								type="checkbox"
+								name="equal_columns"
+								value="true"
+							/>
+							<?php esc_html_e( 'Force all columns to the same width', 'edmm' ); ?>
+						</label>
+						<p class="description"><?php esc_html_e( 'Helps align columns consistently for vertical rhythm across rows.', 'edmm' ); ?></p>
+					</td>
+				</tr>
+				<tr>
 					<th scope="row">
 						<label for="edmm_builder_class"><?php esc_html_e( 'Custom CSS Class', 'edmm' ); ?></label>
 					</th>

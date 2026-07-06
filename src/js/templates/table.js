@@ -18,7 +18,8 @@ export const tableTemplate = {
 		// edmm_shortcode_instance_config filter get the same treatment.
 		const tableClass = escapeAttribute( instanceCfg.tableClass || '' );
 		const templateClass = escapeAttribute( 'edmm-template-' + ( instanceCfg.resolvedTemplate || 'table' ) );
-		let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + templateClass + ' ' + tableClass + '">' +
+		const equalColumnsClass = instanceCfg.equalColumns ? 'edmm-equal-columns' : '';
+		let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
 			'<thead class="desktop"><tr>';
 
 		if ( ! instanceCfg.hideTitle ) {
