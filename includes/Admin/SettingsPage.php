@@ -125,17 +125,34 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		const seen = new Set();
 
 		Array.from( form.elements ).forEach( function ( el ) {
-			if ( ! el.name || el.disabled || seen.has( el.name ) ) {
+			if ( ! el.name || el.disabled ) {
 				return;
 			}
-			seen.add( el.name );
 
-			if ( 'checkbox' === el.type ) {
+			// Checkboxes/radios: only the checked option should count, and
+			// for a radio group that means skipping unchecked options
+			// without marking the group "seen" - otherwise whichever same-
+			// named option happens to come first in the DOM (checked or
+			// not) would win instead of the actually-checked one.
+			if ( 'checkbox' === el.type || 'radio' === el.type ) {
+				if ( seen.has( el.name ) ) {
+					return;
+				}
 				if ( el.checked ) {
-					shortcode += ' ' + el.name + '="' + ( el.value || 'true' ).replace( /"/g, '&quot;' ) + '"';
+					seen.add( el.name );
+					// A checkbox with no value="" attribute defaults to "on"
+					// in the DOM, not "" - hasAttribute() is what actually
+					// distinguishes "no value given" from "value is on".
+					const boolValue = el.hasAttribute( 'value' ) ? el.value : 'true';
+					shortcode += ' ' + el.name + '="' + boolValue.replace( /"/g, '&quot;' ) + '"';
 				}
 				return;
 			}
+
+			if ( seen.has( el.name ) ) {
+				return;
+			}
+			seen.add( el.name );
 
 			const val = ( el.value || '' ).trim();
 			const defaultVal = el.hasAttribute( 'data-default' ) ? el.getAttribute( 'data-default' ) : '';
