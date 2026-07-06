@@ -256,7 +256,8 @@ class MeetingMinutesEndpoint {
 		 * @param int    $post_id          The post ID.
 		 * @param bool   $meeting_not_held Whether the meeting is marked not held.
 		 */
-		$formatted_date = apply_filters( 'edmm_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
+		$filtered_date  = apply_filters( 'edmm_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
+		$formatted_date = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
 
 		$agenda_item = $meeting_agenda_url
 			? apply_filters(
