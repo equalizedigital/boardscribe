@@ -36,12 +36,12 @@
    however many columns exist (no explicit widths needed), giving every
    column the same width for consistent vertical rhythm. Cell content
    wraps instead of forcing a column wider than its even share. */
-.edmm-equal-columns {
+.edmm-meeting-minutes-table.edmm-equal-columns {
     table-layout: fixed;
 }
 
-.edmm-equal-columns th,
-.edmm-equal-columns td {
+.edmm-meeting-minutes-table.edmm-equal-columns th,
+.edmm-meeting-minutes-table.edmm-equal-columns td {
     overflow-wrap: break-word;
 }
 

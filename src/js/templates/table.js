@@ -13,48 +13,69 @@ import { i18n } from '../config';
  * re-implementing the same column-building logic, which would otherwise
  * need to be kept in sync by hand across two codebases.
  *
+ * As a public API any external caller can invoke directly (not just this
+ * bundle's own render(), which already normalizes its inputs), this
+ * defensively normalizes meetings/instanceCfg/window.edmmExtraColumns and
+ * falls back to '' for missing meeting fields, rather than throwing or
+ * rendering literal "undefined" text.
+ *
  * @param {Array}  meetings    - Meeting row objects from the REST response.
  * @param {Object} instanceCfg - The per-instance configuration.
  * @return {string} The rendered <table> HTML.
  */
 export function buildTableHtml( meetings, instanceCfg ) {
+	const safeMeetings = Array.isArray( meetings ) ? meetings : [];
+	const cfg = instanceCfg || {};
+	const extraColumns = window.edmmExtraColumns || [];
+
 	// Resolve column labels: instance override → i18n global → hard-coded fallback.
-	const labelTitle = instanceCfg.titleLabel || i18n.colTitle || __( 'Title', 'edmm' );
-	const labelDate = instanceCfg.dateLabel || i18n.colDate || __( 'Date', 'edmm' );
-	const labelAgenda = instanceCfg.agendaLabel || i18n.colAgenda || __( 'Agenda', 'edmm' );
-	const labelMinutes = instanceCfg.minutesLabel || i18n.colMinutes || __( 'Minutes', 'edmm' );
+	const labelTitle = cfg.titleLabel || i18n.colTitle || __( 'Title', 'edmm' );
+	const labelDate = cfg.dateLabel || i18n.colDate || __( 'Date', 'edmm' );
+	const labelAgenda = cfg.agendaLabel || i18n.colAgenda || __( 'Agenda', 'edmm' );
+	const labelMinutes = cfg.minutesLabel || i18n.colMinutes || __( 'Minutes', 'edmm' );
 
 	// The class list and core labels are already sanitized server-side
 	// (sanitize_class_list()/sanitize_text_field() in the shortcode),
 	// but escape at the insertion point too so values injected via the
 	// edmm_shortcode_instance_config filter get the same treatment.
-	const tableClass = escapeAttribute( instanceCfg.tableClass || '' );
-	const templateClass = escapeAttribute( 'edmm-template-' + ( instanceCfg.resolvedTemplate || 'table' ) );
-	const equalColumnsClass = instanceCfg.equalColumns ? 'edmm-equal-columns' : '';
+	const tableClass = escapeAttribute( cfg.tableClass || '' );
+	const templateClass = escapeAttribute( 'edmm-template-' + ( cfg.resolvedTemplate || 'table' ) );
+	const equalColumnsClass = cfg.equalColumns ? 'edmm-equal-columns' : '';
 	let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
 		'<thead class="desktop"><tr>';
 
-	if ( ! instanceCfg.hideTitle ) {
+	if ( ! cfg.hideTitle ) {
 		table += '<th scope="col">' + escapeHTML( labelTitle ) + '</th>';
 	}
-	if ( ! instanceCfg.hideDate ) {
+	if ( ! cfg.hideDate ) {
 		table += '<th scope="col">' + escapeHTML( labelDate ) + '</th>';
 	}
-	if ( ! instanceCfg.hideAgenda ) {
+	if ( ! cfg.hideAgenda ) {
 		table += '<th scope="col">' + escapeHTML( labelAgenda ) + '</th>';
 	}
-	if ( ! instanceCfg.hideMinutes ) {
+	if ( ! cfg.hideMinutes ) {
 		table += '<th scope="col">' + escapeHTML( labelMinutes ) + '</th>';
 	}
 
-	window.edmmExtraColumns.forEach( function( col ) {
-		const hidden = typeof col.hidden === 'function' ? col.hidden( instanceCfg ) : false;
-		if ( ! hidden ) {
-			// Deliberately NOT escaped: label/getLabel() are raw header
-			// HTML by documented contract - the registrant escapes.
-			const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
-			table += '<th scope="col">' + ( label || '' ) + '</th>';
-		}
+	// hidden()/getLabel() only depend on cfg, not on any one meeting, so
+	// resolve the visible extra columns once here rather than recomputing
+	// them for every row below - this is now the shared helper Pro
+	// templates may call once per section, each with its own row set.
+	const visibleExtraColumns = extraColumns
+		.filter( function( col ) {
+			return ! ( typeof col.hidden === 'function' ? col.hidden( cfg ) : false );
+		} )
+		.map( function( col ) {
+			return {
+				col,
+				// Deliberately NOT escaped: label/getLabel() are raw header
+				// HTML by documented contract - the registrant escapes.
+				label: typeof col.getLabel === 'function' ? col.getLabel( cfg ) : col.label,
+			};
+		} );
+
+	visibleExtraColumns.forEach( function( entry ) {
+		table += '<th scope="col">' + ( entry.label || '' ) + '</th>';
 	} );
 
 	table += '</tr></thead><tbody>';
@@ -65,28 +86,28 @@ export function buildTableHtml( meetings, instanceCfg ) {
 	// endpoint escapes title/date server-side, and agenda/minutes are
 	// pre-built escaped <a> markup. Any new field or extra-column
 	// renderCell() must escape its own output before returning it here.
-	meetings.forEach( function( meeting ) {
-		table += '<tr>';
-		if ( ! instanceCfg.hideTitle ) {
-			table += '<td data-label="' + escapeAttribute( labelTitle ) + '" scope="row">' + meeting.title + '</td>';
-		}
-		if ( ! instanceCfg.hideDate ) {
-			table += '<td data-label="' + escapeAttribute( labelDate ) + '">' + meeting.date + '</td>';
-		}
-		if ( ! instanceCfg.hideAgenda ) {
-			table += '<td data-label="' + escapeAttribute( labelAgenda ) + '">' + meeting.agenda + '</td>';
-		}
-		if ( ! instanceCfg.hideMinutes ) {
-			table += '<td data-label="' + escapeAttribute( labelMinutes ) + '">' + meeting.minutes + '</td>';
+	safeMeetings.forEach( function( meeting ) {
+		if ( ! meeting ) {
+			return;
 		}
 
-		window.edmmExtraColumns.forEach( function( col ) {
-			const hidden = typeof col.hidden === 'function' ? col.hidden( instanceCfg ) : false;
-			if ( ! hidden ) {
-				const label = typeof col.getLabel === 'function' ? col.getLabel( instanceCfg ) : col.label;
-				const cell = col.renderCell ? col.renderCell( meeting, instanceCfg ) : ( meeting[ col.key ] || '' );
-				table += '<td data-label="' + escapeAttribute( label || '' ) + '">' + cell + '</td>';
-			}
+		table += '<tr>';
+		if ( ! cfg.hideTitle ) {
+			table += '<td data-label="' + escapeAttribute( labelTitle ) + '" scope="row">' + ( meeting.title || '' ) + '</td>';
+		}
+		if ( ! cfg.hideDate ) {
+			table += '<td data-label="' + escapeAttribute( labelDate ) + '">' + ( meeting.date || '' ) + '</td>';
+		}
+		if ( ! cfg.hideAgenda ) {
+			table += '<td data-label="' + escapeAttribute( labelAgenda ) + '">' + ( meeting.agenda || '' ) + '</td>';
+		}
+		if ( ! cfg.hideMinutes ) {
+			table += '<td data-label="' + escapeAttribute( labelMinutes ) + '">' + ( meeting.minutes || '' ) + '</td>';
+		}
+
+		visibleExtraColumns.forEach( function( entry ) {
+			const cell = entry.col.renderCell ? entry.col.renderCell( meeting, cfg ) : ( meeting[ entry.col.key ] || '' );
+			table += '<td data-label="' + escapeAttribute( entry.label || '' ) + '">' + cell + '</td>';
 		} );
 
 		table += '</tr>';
