@@ -17,7 +17,8 @@ export const tableTemplate = {
 		// but escape at the insertion point too so values injected via the
 		// edmm_shortcode_instance_config filter get the same treatment.
 		const tableClass = escapeAttribute( instanceCfg.tableClass || '' );
-		let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + tableClass + '">' +
+		const templateClass = escapeAttribute( 'edmm-template-' + ( instanceCfg.resolvedTemplate || 'table' ) );
+		let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + templateClass + ' ' + tableClass + '">' +
 			'<thead class="desktop"><tr>';
 
 		if ( ! instanceCfg.hideTitle ) {

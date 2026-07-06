@@ -44,6 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							id="edmm_builder_posts_per_page"
 							name="posts_per_page"
 							value="20"
+							data-default="20"
 							min="1"
 							max="100"
 							class="small-text"
@@ -60,6 +61,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							id="edmm_builder_held_date_format"
 							name="held_date_format"
 							value="Y/m/d"
+							data-default="Y/m/d"
 							class="regular-text"
 						/>
 						<p class="description">
@@ -83,6 +85,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							id="edmm_builder_not_held_date_format"
 							name="not_held_date_format"
 							value="Y/m"
+							data-default="Y/m"
 							class="regular-text"
 						/>
 					</td>
@@ -91,12 +94,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<th scope="row"><?php esc_html_e( 'Column Labels', 'edmm' ); ?></th>
 					<td>
 						<?php
-						$label_fields = [
-							'title_label'   => __( 'Title', 'edmm' ),
-							'date_label'    => __( 'Date', 'edmm' ),
-							'agenda_label'  => __( 'Agenda', 'edmm' ),
-							'minutes_label' => __( 'Minutes', 'edmm' ),
-						];
+						/**
+						 * Filters the column-label builder fields (name => default label).
+						 * Each entry renders a text input named $key with $value as both
+						 * its placeholder and its display default. Pro plugin uses this
+						 * to add its own column labels (location, livestream, etc.) to
+						 * this same section instead of duplicating it.
+						 *
+						 * @since x.x.x
+						 *
+						 * @param array $label_fields Map of field name to default label.
+						 */
+						$label_fields = apply_filters(
+							'edmm_shortcode_builder_label_fields',
+							[
+								'title_label'   => __( 'Title', 'edmm' ),
+								'date_label'    => __( 'Date', 'edmm' ),
+								'agenda_label'  => __( 'Agenda', 'edmm' ),
+								'minutes_label' => __( 'Minutes', 'edmm' ),
+							]
+						);
+						// A misbehaving filter callback returning a non-array
+						// would otherwise throw a PHP warning and drop this
+						// whole section instead of failing gracefully.
+						$label_fields = is_array( $label_fields ) ? $label_fields : [];
 						foreach ( $label_fields as $key => $default ) :
 							?>
 						<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
@@ -140,12 +161,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<th scope="row"><?php esc_html_e( 'Hide Columns', 'edmm' ); ?></th>
 					<td>
 						<?php
-						$columns = [
-							'hide_title'   => __( 'Title', 'edmm' ),
-							'hide_date'    => __( 'Date', 'edmm' ),
-							'hide_agenda'  => __( 'Agenda', 'edmm' ),
-							'hide_minutes' => __( 'Minutes', 'edmm' ),
-						];
+						/**
+						 * Filters the hide-column builder fields (name => label).
+						 * Each entry renders a checkbox named $key that adds
+						 * $key="true" to the shortcode when checked. Pro plugin
+						 * uses this to add its own hide toggles (location,
+						 * livestream, etc.) to this same section instead of
+						 * duplicating it.
+						 *
+						 * @since x.x.x
+						 *
+						 * @param array $columns Map of field name to checkbox label.
+						 */
+						$columns = apply_filters(
+							'edmm_shortcode_builder_hide_fields',
+							[
+								'hide_title'   => __( 'Title', 'edmm' ),
+								'hide_date'    => __( 'Date', 'edmm' ),
+								'hide_agenda'  => __( 'Agenda', 'edmm' ),
+								'hide_minutes' => __( 'Minutes', 'edmm' ),
+							]
+						);
+						// See the same guard on $label_fields above.
+						$columns = is_array( $columns ) ? $columns : [];
 						foreach ( $columns as $key => $label ) :
 							?>
 						<label style="display:block; margin-bottom:4px;">
@@ -176,6 +214,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 				/**
 				 * Fires inside the shortcode builder form after the default fields.
 				 * Pro plugin can add additional builder fields here.
+				 *
+				 * Added fields are automatically picked up by the generic builder
+				 * script in SettingsPage::get_builder_script() - no matching JS
+				 * needed on the Pro side. A checked checkbox becomes
+				 * name="value-or-true"; any other field becomes name="value"
+				 * whenever its value is non-empty and differs from its
+				 * data-default attribute (defaults to "" when omitted).
 				 *
 				 * @since x.x.x
 				 */

@@ -100,6 +100,13 @@ class SettingsPage {
 	/**
 	 * Returns the inline JavaScript for the shortcode builder.
 	 *
+	 * Walks every named form field generically (rather than a hardcoded
+	 * field list) so fields the Pro plugin adds via the
+	 * edmm_shortcode_builder_fields action are automatically included in
+	 * the generated shortcode - see the doc comment on that action in
+	 * partials/settings-page.php for the naming convention Pro fields need
+	 * to follow.
+	 *
 	 * @since x.x.x
 	 *
 	 * @return string
@@ -114,46 +121,53 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	if ( ! form || ! output ) return;
 
 	function buildShortcode() {
-		const data   = new FormData( form );
 		let shortcode = '[edmm_meeting_minutes';
+		const seen = new Set();
 
-		const years = data.get( 'included_years' ) || '';
-		if ( years.trim() ) {
-			shortcode += ' included_years="' + years.trim() + '"';
+		// WordPress shortcode parsing never decodes HTML entities in
+		// attribute values, so entity-escaping quotes alone doesn't stop a
+		// literal "]" in a free-text field from prematurely closing the
+		// generated shortcode - it has to be stripped instead.
+		function sanitizeValue( value ) {
+			return value.replace( /[[\]]/g, '' ).replace( /"/g, '&quot;' );
 		}
 
-		const postsPerPage = parseInt( data.get( 'posts_per_page' ), 10 );
-		if ( postsPerPage && postsPerPage !== 20 ) {
-			shortcode += ' posts_per_page="' + postsPerPage + '"';
-		}
+		Array.from( form.elements ).forEach( function ( el ) {
+			if ( ! el.name || el.disabled ) {
+				return;
+			}
 
-		const heldFormat = data.get( 'held_date_format' ) || '';
-		if ( heldFormat && heldFormat !== 'Y/m/d' ) {
-			shortcode += ' held_date_format="' + heldFormat + '"';
-		}
+			// Checkboxes/radios: only the checked option should count, and
+			// for a radio group that means skipping unchecked options
+			// without marking the group "seen" - otherwise whichever same-
+			// named option happens to come first in the DOM (checked or
+			// not) would win instead of the actually-checked one.
+			if ( 'checkbox' === el.type || 'radio' === el.type ) {
+				if ( seen.has( el.name ) ) {
+					return;
+				}
+				if ( el.checked ) {
+					seen.add( el.name );
+					// A checkbox with no value="" attribute defaults to "on"
+					// in the DOM, not "" - hasAttribute() is what actually
+					// distinguishes "no value given" from "value is on".
+					const boolValue = el.hasAttribute( 'value' ) ? el.value : 'true';
+					shortcode += ' ' + el.name + '="' + sanitizeValue( boolValue ) + '"';
+				}
+				return;
+			}
 
-		const notHeldFormat = data.get( 'not_held_date_format' ) || '';
-		if ( notHeldFormat && notHeldFormat !== 'Y/m' ) {
-			shortcode += ' not_held_date_format="' + notHeldFormat + '"';
-		}
+			if ( seen.has( el.name ) ) {
+				return;
+			}
+			seen.add( el.name );
 
-		[ 'title_label', 'date_label', 'agenda_label', 'minutes_label', 'agenda_link_label', 'minutes_link_label' ].forEach( function ( key ) {
-			const val = ( data.get( key ) || '' ).trim();
-			if ( val ) {
-				shortcode += ' ' + key + '="' + val + '"';
+			const val = ( el.value || '' ).trim();
+			const defaultVal = el.hasAttribute( 'data-default' ) ? el.getAttribute( 'data-default' ) : '';
+			if ( val && val !== defaultVal ) {
+				shortcode += ' ' + el.name + '="' + sanitizeValue( val ) + '"';
 			}
 		} );
-
-		[ 'hide_title', 'hide_date', 'hide_agenda', 'hide_minutes' ].forEach( function ( key ) {
-			if ( data.get( key ) === 'true' ) {
-				shortcode += ' ' + key + '="true"';
-			}
-		} );
-
-		const cssClass = data.get( 'class' ) || '';
-		if ( cssClass.trim() ) {
-			shortcode += ' class="' + cssClass.trim() + '"';
-		}
 
 		shortcode += ']';
 		output.value = shortcode;
