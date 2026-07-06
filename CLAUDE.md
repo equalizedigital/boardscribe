@@ -49,6 +49,7 @@ Keep this list current when adding or removing hooks — it's the primary refere
 | `edmm_rest_query_args` | filter | `REST/MeetingMinutesEndpoint.php` | Modify the `WP_Query` args before querying meeting minutes. |
 | `edmm_meeting_agenda_link` / `edmm_meeting_minutes_link` | filter | `REST/MeetingMinutesEndpoint.php` | Override the built `<a>` markup for agenda/minutes links (used by Accessibility Checker Pro integration). |
 | `edmm_meeting_row_data` | filter | `REST/MeetingMinutesEndpoint.php` | Add/override fields on a single meeting's REST row data. |
+| `edmm_meeting_formatted_date` | filter | `REST/MeetingMinutesEndpoint.php` | Override the computed date display string before it's used in the date cell and in the agenda/minutes link aria-labels (used by Pro's per-meeting date display override — sort order is unaffected, it's driven by the raw `edmm_meeting_date` value). |
 | `edmm_rest_response` | filter | `REST/MeetingMinutesEndpoint.php` | Modify the full REST response before it's returned. |
 | `edmm_enqueue_assets` | action | `Shortcode/MeetingMinutesShortcode.php` | Fires after core CSS/JS enqueue — Pro enqueues its own assets here. |
 | `edmm_shortcode_atts` | filter | `Shortcode/MeetingMinutesShortcode.php` | Add new recognized shortcode attributes. |

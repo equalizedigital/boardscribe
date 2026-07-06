@@ -242,6 +242,22 @@ class MeetingMinutesEndpoint {
 			? esc_html( $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format ) )
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'edmm' ) . '</span>';
 
+		/**
+		 * Filters the formatted date string before it's used in the visible date
+		 * cell and in the agenda/minutes link aria-labels below. Pro plugin uses
+		 * this to substitute a per-meeting text override (e.g. "March Special",
+		 * "TBD") for the computed date, honored whenever set regardless of
+		 * held/not-held status. Sort order is unaffected — it's driven by the
+		 * raw edmm_meeting_date value, not this display string.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param string $formatted_date   The computed/escaped date display string.
+		 * @param int    $post_id          The post ID.
+		 * @param bool   $meeting_not_held Whether the meeting is marked not held.
+		 */
+		$formatted_date = apply_filters( 'edmm_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
+
 		$agenda_item = $meeting_agenda_url
 			? apply_filters(
 				'edmm_meeting_agenda_link',
