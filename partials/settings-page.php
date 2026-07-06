@@ -114,6 +114,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'minutes_label' => __( 'Minutes', 'edmm' ),
 							]
 						);
+						// A misbehaving filter callback returning a non-array
+						// would otherwise throw a PHP warning and drop this
+						// whole section instead of failing gracefully.
+						$label_fields = is_array( $label_fields ) ? $label_fields : [];
 						foreach ( $label_fields as $key => $default ) :
 							?>
 						<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
@@ -178,6 +182,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'hide_minutes' => __( 'Minutes', 'edmm' ),
 							]
 						);
+						// See the same guard on $label_fields above.
+						$columns = is_array( $columns ) ? $columns : [];
 						foreach ( $columns as $key => $label ) :
 							?>
 						<label style="display:block; margin-bottom:4px;">

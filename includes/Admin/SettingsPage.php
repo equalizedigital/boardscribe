@@ -124,6 +124,14 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		let shortcode = '[edmm_meeting_minutes';
 		const seen = new Set();
 
+		// WordPress shortcode parsing never decodes HTML entities in
+		// attribute values, so entity-escaping quotes alone doesn't stop a
+		// literal "]" in a free-text field from prematurely closing the
+		// generated shortcode - it has to be stripped instead.
+		function sanitizeValue( value ) {
+			return value.replace( /[[\]]/g, '' ).replace( /"/g, '&quot;' );
+		}
+
 		Array.from( form.elements ).forEach( function ( el ) {
 			if ( ! el.name || el.disabled ) {
 				return;
@@ -144,7 +152,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 					// in the DOM, not "" - hasAttribute() is what actually
 					// distinguishes "no value given" from "value is on".
 					const boolValue = el.hasAttribute( 'value' ) ? el.value : 'true';
-					shortcode += ' ' + el.name + '="' + boolValue.replace( /"/g, '&quot;' ) + '"';
+					shortcode += ' ' + el.name + '="' + sanitizeValue( boolValue ) + '"';
 				}
 				return;
 			}
@@ -157,7 +165,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			const val = ( el.value || '' ).trim();
 			const defaultVal = el.hasAttribute( 'data-default' ) ? el.getAttribute( 'data-default' ) : '';
 			if ( val && val !== defaultVal ) {
-				shortcode += ' ' + el.name + '="' + val.replace( /"/g, '&quot;' ) + '"';
+				shortcode += ' ' + el.name + '="' + sanitizeValue( val ) + '"';
 			}
 		} );
 
