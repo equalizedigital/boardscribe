@@ -164,6 +164,7 @@ class MeetingMinutesShortcode {
 			'class'                => '',
 			'posts_per_page'       => 20,
 			'template'             => '',
+			'equal_columns'        => 'false',
 		];
 
 		/**
@@ -207,6 +208,7 @@ class MeetingMinutesShortcode {
 			// window.edmmTemplates registry; unknown/empty names fall back
 			// to the built-in table template.
 			'template'          => sanitize_key( $atts['template'] ),
+			'equalColumns'      => filter_var( $atts['equal_columns'], FILTER_VALIDATE_BOOLEAN ),
 		];
 
 		/**

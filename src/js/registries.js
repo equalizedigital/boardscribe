@@ -49,4 +49,13 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 //
 // All rendered output is inserted as raw HTML - templates must escape any
 // untrusted data themselves (window.edmmEscapeAttr is available for this).
+//
+// window.edmmBuildTable( meetings, instanceCfg ) returns a standard <table>
+// (same columns, label resolution, hide*/tableClass handling, and
+// window.edmmExtraColumns support as the built-in "table" template) as an
+// HTML string. A template that renders multiple tables/sections (e.g. one
+// table per year) can call this per section instead of re-implementing the
+// same column-building logic - it already reads instanceCfg.resolvedTemplate
+// itself, so the returned table carries the calling template's own
+// edmm-template-<name> class.
 window.edmmTemplates = window.edmmTemplates || {};

@@ -32,6 +32,19 @@
     border: 1px solid #ddd;
 }
 
+/* table-layout: fixed splits the table's 100% width evenly across
+   however many columns exist (no explicit widths needed), giving every
+   column the same width for consistent vertical rhythm. Cell content
+   wraps instead of forcing a column wider than its even share. */
+.edmm-meeting-minutes-table.edmm-equal-columns {
+    table-layout: fixed;
+}
+
+.edmm-meeting-minutes-table.edmm-equal-columns th,
+.edmm-meeting-minutes-table.edmm-equal-columns td {
+    overflow-wrap: break-word;
+}
+
 /* Stacking layout on small screens */
 @media only screen and (max-width: 768px) {
     .edmm-meeting-minutes-table,
