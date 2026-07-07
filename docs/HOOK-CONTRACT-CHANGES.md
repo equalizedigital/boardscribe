@@ -29,7 +29,7 @@ add_filter( 'edmm_meeting_row_data', function ( array $row, int $post_id, ?\WP_R
 
 ---
 
-## `refactor/shortcode-field-registry` — five hooks removed, replaced by `edmm_shortcode_field_registry`
+## PR #19 — five hooks removed, replaced by `edmm_shortcode_field_registry`
 
 **Before:** shortcode-attribute defaults, REST args, and the settings-page builder UI were four independently hand-maintained lists, glued together by five separate hooks: `edmm_shortcode_atts` (filter — new shortcode attribute defaults), `edmm_shortcode_instance_config` (filter — new per-instance JS config keys), `edmm_shortcode_builder_fields` (action — raw-HTML escape hatch for wholly new builder rows), `edmm_shortcode_builder_label_fields` (filter — entries in the builder's "Column Labels" row), `edmm_shortcode_builder_hide_fields` (filter — entries in the builder's "Hide Columns" row).
 
