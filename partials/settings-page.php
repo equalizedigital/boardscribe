@@ -32,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		'column_labels' => [],
 		'link_labels'   => [],
 		'hide_columns'  => [],
+		'show_columns'  => [],
 	];
 	foreach ( $edmm_builder_fields as $edmm_builder_field ) {
 		$group = $edmm_builder_field['group'] ?? 'general';
@@ -45,6 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		'column_labels' => __( 'Column Labels', 'edmm' ),
 		'link_labels'   => __( 'Link Labels', 'edmm' ),
 		'hide_columns'  => __( 'Hide Columns', 'edmm' ),
+		'show_columns'  => __( 'Show Columns', 'edmm' ),
 	];
 	?>
 	<form id="edmm-shortcode-builder" onsubmit="return false;">
@@ -92,6 +94,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php foreach ( $edmm_builder_groups['hide_columns'] as $edmm_field ) : ?>
 							<?php $this->render_bundled_checkbox_field( $edmm_field ); ?>
 						<?php endforeach; ?>
+					</td>
+				</tr>
+				<?php endif; ?>
+
+				<?php if ( $edmm_builder_groups['show_columns'] ) : ?>
+				<tr>
+					<th scope="row"><?php echo esc_html( $edmm_bundled_group_titles['show_columns'] ); ?></th>
+					<td>
+						<?php foreach ( $edmm_builder_groups['show_columns'] as $edmm_field ) : ?>
+							<?php $this->render_bundled_checkbox_field( $edmm_field ); ?>
+						<?php endforeach; ?>
+						<p class="description"><?php esc_html_e( 'Enable additional Pro columns.', 'edmm' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>
