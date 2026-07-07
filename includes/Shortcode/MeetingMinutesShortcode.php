@@ -7,8 +7,6 @@
 
 namespace EqualizeDigital\MeetingMinutes\Shortcode;
 
-use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
-
 /**
  * Registers the [edmm_meeting_minutes] shortcode and manages
  * conditional asset enqueuing.
@@ -147,35 +145,12 @@ class MeetingMinutesShortcode {
 	 * @return string HTML output.
 	 */
 	public function render( array $atts ): string {
-		$defaults = [
-			'included_years'       => '',
-			'hide_title'           => 'false',
-			'hide_date'            => 'false',
-			'hide_agenda'          => 'false',
-			'hide_minutes'         => 'false',
-			'title_label'          => '',
-			'date_label'           => '',
-			'agenda_label'         => '',
-			'minutes_label'        => '',
-			'agenda_link_label'    => '',
-			'minutes_link_label'   => '',
-			'held_date_format'     => 'Y/m/d',
-			'not_held_date_format' => 'Y/m',
-			'class'                => '',
-			'posts_per_page'       => 20,
-			'template'             => '',
-			'equal_columns'        => 'false',
-		];
+		$fields = FieldRegistry::all();
 
-		/**
-		 * Filters the recognized shortcode attribute defaults.
-		 * Pro plugin can add additional attributes (e.g., category).
-		 *
-		 * @since x.x.x
-		 *
-		 * @param array $defaults The default attribute values.
-		 */
-		$defaults = apply_filters( 'edmm_shortcode_atts', $defaults );
+		$defaults = [];
+		foreach ( $fields as $field ) {
+			$defaults[ $field['key'] ] = $field['default'] ?? '';
+		}
 
 		$atts = shortcode_atts( $defaults, $atts, 'edmm_meeting_minutes' );
 
@@ -186,42 +161,16 @@ class MeetingMinutesShortcode {
 		++self::$instance_count;
 		$instance_id = 'edmm_' . self::$instance_count;
 
-		$instance_config = [
-			'instanceId'        => $instance_id,
-			'includedYears'     => $atts['included_years'],
-			'hideTitle'         => filter_var( $atts['hide_title'], FILTER_VALIDATE_BOOLEAN ),
-			'hideDate'          => filter_var( $atts['hide_date'], FILTER_VALIDATE_BOOLEAN ),
-			'hideAgenda'        => filter_var( $atts['hide_agenda'], FILTER_VALIDATE_BOOLEAN ),
-			'hideMinutes'       => filter_var( $atts['hide_minutes'], FILTER_VALIDATE_BOOLEAN ),
-			'titleLabel'        => sanitize_text_field( $atts['title_label'] ),
-			'dateLabel'         => sanitize_text_field( $atts['date_label'] ),
-			'agendaLabel'       => sanitize_text_field( $atts['agenda_label'] ),
-			'minutesLabel'      => sanitize_text_field( $atts['minutes_label'] ),
-			'agendaLinkLabel'   => sanitize_text_field( $atts['agenda_link_label'] ),
-			'minutesLinkLabel'  => sanitize_text_field( $atts['minutes_link_label'] ),
-			'category'          => sanitize_text_field( $atts['category'] ?? '' ),
-			'heldDateFormat'    => $this->sanitize_date_format( $atts['held_date_format'], $defaults['held_date_format'] ),
-			'notHeldDateFormat' => $this->sanitize_date_format( $atts['not_held_date_format'], $defaults['not_held_date_format'] ),
-			'tableClass'        => $this->sanitize_class_list( $atts['class'] ),
-			'postsPerPage'      => absint( $atts['posts_per_page'] ),
-			// Display template name, resolved client-side against the
-			// window.edmmTemplates registry; unknown/empty names fall back
-			// to the built-in table template.
-			'template'          => sanitize_key( $atts['template'] ),
-			'equalColumns'      => filter_var( $atts['equal_columns'], FILTER_VALIDATE_BOOLEAN ),
-		];
-
-		/**
-		 * Filters the per-instance config array before it is JSON-encoded into
-		 * the data-config attribute. Pro plugin uses this to append its own
-		 * settings (e.g. hide_location, location_label).
-		 *
-		 * @since x.x.x
-		 *
-		 * @param array $instance_config The instance configuration array.
-		 * @param array $atts            The resolved shortcode attributes.
-		 */
-		$instance_config = apply_filters( 'edmm_shortcode_instance_config', $instance_config, $atts );
+		// Every recognized attribute (free's own plus anything Pro/third
+		// parties added via edmm_shortcode_field_registry) is resolved into
+		// the instance config here, by type — see FieldRegistry::resolve_value().
+		// Display template name resolves client-side against the
+		// window.edmmTemplates registry; unknown/empty names fall back to
+		// the built-in table template.
+		$instance_config = [ 'instanceId' => $instance_id ];
+		foreach ( $fields as $field ) {
+			$instance_config[ FieldRegistry::config_key( $field ) ] = FieldRegistry::resolve_value( $field, $atts[ $field['key'] ] );
+		}
 
 		ob_start();
 		?>
@@ -267,43 +216,5 @@ class MeetingMinutesShortcode {
 		</div>
 		<?php
 		return ob_get_clean();
-	}
-
-	/**
-	 * Sanitizes a space-separated list of HTML class names.
-	 *
-	 * The `class` shortcode attribute is rendered client-side into the
-	 * table markup's class attribute via string concatenation, so it must
-	 * be restricted to safe class-name characters before it ever reaches
-	 * the instance config to prevent stored XSS via the shortcode attribute.
-	 *
-	 * @since x.x.x
-	 *
-	 * @param string $class_list Raw, space-separated class names.
-	 * @return string Sanitized, space-separated class names.
-	 */
-	private function sanitize_class_list( string $class_list ): string {
-		$classes = array_map( 'sanitize_html_class', explode( ' ', $class_list ) );
-		return implode( ' ', array_filter( $classes ) );
-	}
-
-	/**
-	 * Sanitizes a date format shortcode attribute and falls back to the
-	 * given default if it fails the same allow-list the REST endpoint
-	 * enforces (MeetingMinutesEndpoint::validate_date_format()).
-	 *
-	 * Without this, an invalid shortcode attribute would still reach the
-	 * REST fetch, get rejected with a 400, and silently fail to render
-	 * the whole table client-side.
-	 *
-	 * @since x.x.x
-	 *
-	 * @param string $value   Raw held_date_format/not_held_date_format attribute.
-	 * @param string $default_value Fallback value if $value is invalid.
-	 * @return string
-	 */
-	private function sanitize_date_format( string $value, string $default_value ): string {
-		$value = sanitize_text_field( $value );
-		return MeetingMinutesEndpoint::validate_date_format( $value ) ? $value : $default_value;
 	}
 }

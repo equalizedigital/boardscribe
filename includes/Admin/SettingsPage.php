@@ -8,6 +8,7 @@
 namespace EqualizeDigital\MeetingMinutes\Admin;
 
 use EqualizeDigital\MeetingMinutes\Plugin;
+use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
 
 /**
  * Registers and renders the Meeting Minutes settings page.
@@ -101,11 +102,11 @@ class SettingsPage {
 	 * Returns the inline JavaScript for the shortcode builder.
 	 *
 	 * Walks every named form field generically (rather than a hardcoded
-	 * field list) so fields the Pro plugin adds via the
-	 * edmm_shortcode_builder_fields action are automatically included in
-	 * the generated shortcode - see the doc comment on that action in
-	 * partials/settings-page.php for the naming convention Pro fields need
-	 * to follow.
+	 * field list) so fields any plugin adds via the
+	 * edmm_shortcode_field_registry filter (see FieldRegistry) are
+	 * automatically included in the generated shortcode - no matching JS
+	 * needed for a new field, as long as it follows this file's
+	 * data-default/checkbox-value conventions.
 	 *
 	 * @since x.x.x
 	 *
@@ -176,6 +177,22 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	form.addEventListener( 'input', buildShortcode );
 	form.addEventListener( 'change', buildShortcode );
 
+	// Wires up every "number_with_all" field (see FieldRegistry) generically:
+	// checking the toggle disables the number input and enables the paired
+	// hidden field (name="{key}" value="all"), so the generic walk above
+	// picks up the "all" value instead - no per-field JS needed.
+	document.querySelectorAll( '.edmm-builder-show-all-toggle' ).forEach( function ( toggle ) {
+		const numberInput = document.getElementById( toggle.dataset.numberInput );
+		const allHidden   = document.getElementById( toggle.dataset.allHidden );
+		if ( ! numberInput || ! allHidden ) return;
+
+		toggle.addEventListener( 'change', function () {
+			numberInput.disabled = toggle.checked;
+			allHidden.disabled   = ! toggle.checked;
+			buildShortcode();
+		} );
+	} );
+
 	if ( copyBtn ) {
 		copyBtn.addEventListener( 'click', function () {
 			output.select();
@@ -190,6 +207,158 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	buildShortcode();
 } );
 JS;
+	}
+
+	/**
+	 * Renders the standalone form control for a "general" group field —
+	 * these each get their own settings-table row in the partial.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array $field The field descriptor, see FieldRegistry::add_core_fields().
+	 * @return void
+	 */
+	public function render_field_control( array $field ): void {
+		$key     = $field['key'];
+		$id      = 'edmm_builder_' . $key;
+		$default = $field['default'] ?? '';
+
+		switch ( $field['type'] ) {
+			case FieldRegistry::TYPE_CHECKBOX:
+				?>
+				<label>
+					<input type="checkbox" name="<?php echo esc_attr( $key ); ?>" value="true" />
+					<?php echo esc_html( $field['label'] ?? '' ); ?>
+				</label>
+				<?php
+				break;
+
+			case FieldRegistry::TYPE_SELECT:
+				?>
+				<select id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $key ); ?>" data-default="<?php echo esc_attr( $default ); ?>">
+					<?php foreach ( ( $field['choices'] ?? [] ) as $value => $choice_label ) : ?>
+						<option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $choice_label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<?php
+				break;
+
+			case FieldRegistry::TYPE_NUMBER_WITH_ALL:
+				?>
+				<input
+					type="number"
+					id="<?php echo esc_attr( $id ); ?>"
+					name="<?php echo esc_attr( $key ); ?>"
+					value="<?php echo esc_attr( $default ); ?>"
+					data-default="<?php echo esc_attr( $default ); ?>"
+					min="1"
+					class="small-text"
+				/>
+				<label style="margin-left:8px;">
+					<input
+						type="checkbox"
+						class="edmm-builder-show-all-toggle"
+						data-number-input="<?php echo esc_attr( $id ); ?>"
+						data-all-hidden="<?php echo esc_attr( $id ); ?>_all"
+					/>
+					<?php esc_html_e( 'Show all', 'edmm' ); ?>
+				</label>
+				<input
+					type="hidden"
+					id="<?php echo esc_attr( $id ); ?>_all"
+					name="<?php echo esc_attr( $key ); ?>"
+					value="all"
+					disabled
+				/>
+				<?php
+				break;
+
+			case FieldRegistry::TYPE_TEXTAREA:
+				?>
+				<textarea
+					id="<?php echo esc_attr( $id ); ?>"
+					name="<?php echo esc_attr( $key ); ?>"
+					data-default="<?php echo esc_attr( $default ); ?>"
+					class="regular-text"
+				><?php echo esc_textarea( is_string( $default ) ? $default : '' ); ?></textarea>
+				<?php
+				break;
+
+			case FieldRegistry::TYPE_NUMBER:
+				?>
+				<input
+					type="number"
+					id="<?php echo esc_attr( $id ); ?>"
+					name="<?php echo esc_attr( $key ); ?>"
+					value="<?php echo esc_attr( $default ); ?>"
+					data-default="<?php echo esc_attr( $default ); ?>"
+					min="1"
+					class="small-text"
+				/>
+				<?php
+				break;
+
+			case FieldRegistry::TYPE_TEXT:
+			default:
+				?>
+				<input
+					type="text"
+					id="<?php echo esc_attr( $id ); ?>"
+					name="<?php echo esc_attr( $key ); ?>"
+					value="<?php echo esc_attr( is_string( $default ) ? $default : '' ); ?>"
+					data-default="<?php echo esc_attr( is_string( $default ) ? $default : '' ); ?>"
+					placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>"
+					class="regular-text"
+				/>
+				<?php
+				break;
+		}
+
+		if ( ! empty( $field['description'] ) ) {
+			echo '<p class="description">' . esc_html( $field['description'] ) . '</p>';
+		}
+	}
+
+	/**
+	 * Renders one mini text control for the "column_labels"/"link_labels"
+	 * groups, which bundle several fields into a single settings-table row.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array $field The field descriptor.
+	 * @return void
+	 */
+	public function render_bundled_text_field( array $field ): void {
+		$label = $field['label'] ?? '';
+		?>
+		<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+			<span style="width:60px;"><?php echo esc_html( $label ); ?></span>
+			<input
+				type="text"
+				name="<?php echo esc_attr( $field['key'] ); ?>"
+				class="regular-text"
+				placeholder="<?php echo esc_attr( $field['placeholder'] ?? $label ); ?>"
+			/>
+		</label>
+		<?php
+	}
+
+	/**
+	 * Renders one mini checkbox control for the "hide_columns" group,
+	 * which bundles several fields into a single settings-table row.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array $field The field descriptor.
+	 * @return void
+	 */
+	public function render_bundled_checkbox_field( array $field ): void {
+		?>
+		<label style="display:block; margin-bottom:4px;">
+			<input type="checkbox" name="<?php echo esc_attr( $field['key'] ); ?>" value="true" />
+			<?php echo esc_html( $field['label'] ?? '' ); ?>
+		</label>
+		<?php
 	}
 
 	/**
