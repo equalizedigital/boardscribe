@@ -22,12 +22,12 @@ cd <free-repo>
 npm run build   # -> assets/build/meeting-minutes.js
 composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/equalize-digital-meeting-minutes.zip
-STAGE=$(mktemp -d)/equalize-digital-meeting-minutes && mkdir -p "$STAGE"
-cp -r --parents \
+STAGE=$(mktemp -d)/equalize-digital-meeting-minutes && mkdir -p "$STAGE/assets"
+cp -r \
   equalize-digital-meeting-minutes.php uninstall.php readme.txt \
   includes partials languages vendor \
-  assets/build assets/css \
   "$STAGE"/
+cp -r assets/build assets/css "$STAGE/assets/"
 ( cd "$(dirname "$STAGE")" && zip -r "$OLDPWD/dist/equalize-digital-meeting-minutes.zip" equalize-digital-meeting-minutes )
 composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
@@ -42,13 +42,13 @@ cd <pro-repo>   # ../meeting-minutes-pro relative to the free repo
 npm run build   # -> build/index.js + build/index.asset.php
 composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/meeting-minutes-pro.zip
-STAGE=$(mktemp -d)/meeting-minutes-pro && mkdir -p "$STAGE"
-cp -r --parents \
+STAGE=$(mktemp -d)/meeting-minutes-pro && mkdir -p "$STAGE/assets" "$STAGE/src/js"
+cp -r \
   meeting-minutes-pro.php block.json readme.txt \
   includes partials build vendor \
-  assets/css \
-  src/js/admin src/js/front-end \
   "$STAGE"/
+cp -r assets/css "$STAGE/assets/"
+cp -r src/js/admin src/js/front-end "$STAGE/src/js/"
 ( cd "$(dirname "$STAGE")" && zip -r "$OLDPWD/dist/meeting-minutes-pro.zip" meeting-minutes-pro )
 composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
