@@ -44,14 +44,20 @@ define( 'EDMM_FILE', __FILE__ );
 define( 'EDMM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMM_URL', plugin_dir_url( __FILE__ ) );
 
-// Load all classes.
-require_once EDMM_DIR . 'includes/Shortcode/FieldRegistry.php';
-require_once EDMM_DIR . 'includes/PostType/MeetingMinutes.php';
-require_once EDMM_DIR . 'includes/Admin/MetaBox.php';
-require_once EDMM_DIR . 'includes/Admin/SettingsPage.php';
-require_once EDMM_DIR . 'includes/REST/MeetingMinutesEndpoint.php';
-require_once EDMM_DIR . 'includes/Shortcode/MeetingMinutesShortcode.php';
-require_once EDMM_DIR . 'includes/Plugin.php';
+// Autoloads all EqualizeDigital\MeetingMinutes\* classes under includes/
+// (PSR-4, see composer.json) - no per-class require_once line needed.
+if ( ! file_exists( EDMM_DIR . 'vendor/autoload.php' ) ) {
+	add_action(
+		'admin_notices',
+		function () {
+			echo '<div class="notice notice-error"><p>'
+			. esc_html__( 'Equalize Digital Meeting Minutes is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source.', 'edmm' )
+			. '</p></div>';
+		}
+	);
+	return;
+}
+require_once EDMM_DIR . 'vendor/autoload.php';
 
 // Boot the plugin.
 add_action(

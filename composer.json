@@ -13,6 +13,11 @@
     "require": {
         "php": ">=7.4"
     },
+    "autoload": {
+        "psr-4": {
+            "EqualizeDigital\\MeetingMinutes\\": "includes/"
+        }
+    },
     "require-dev": {
         "automattic/vipwpcs": "^3",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
