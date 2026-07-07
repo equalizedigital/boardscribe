@@ -7,6 +7,8 @@
 
 namespace EqualizeDigital\MeetingMinutes\REST;
 
+use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
+
 /**
  * Registers and handles the /edmm/v1/meeting-minutes/ REST endpoint.
  *
@@ -35,47 +37,41 @@ class MeetingMinutesEndpoint {
 	 * @return void
 	 */
 	public function register_route(): void {
+		// "page" is REST-only pagination, not a shortcode/builder/block
+		// field, so it isn't sourced from the field registry.
 		$args = [
-			'page'                 => [
+			'page' => [
 				'default'           => 1,
 				'sanitize_callback' => 'absint',
 			],
-			'posts_per_page'       => [
-				'default'           => 20,
-				'sanitize_callback' => 'absint',
-			],
-			'held_date_format'     => [
-				'default'           => 'Y/m/d',
-				'sanitize_callback' => 'sanitize_text_field',
-				'validate_callback' => [ __CLASS__, 'validate_date_format' ],
-			],
-			'not_held_date_format' => [
-				'default'           => 'Y/m',
-				'sanitize_callback' => 'sanitize_text_field',
-				'validate_callback' => [ __CLASS__, 'validate_date_format' ],
-			],
-			'included_years'       => [
-				'default'           => '',
-				'sanitize_callback' => 'sanitize_text_field',
-			],
-			'category'             => [
-				'default'           => '',
-				'sanitize_callback' => 'sanitize_text_field',
-			],
-			'agenda_link_label'    => [
-				'default'           => '',
-				'sanitize_callback' => 'sanitize_text_field',
-			],
-			'minutes_link_label'   => [
-				'default'           => '',
-				'sanitize_callback' => 'sanitize_text_field',
-			],
 		];
+
+		// Every field the registry flags rest_arg => true (shared with the
+		// shortcode attribute / instance config it's built from — see
+		// FieldRegistry::resolve_value()) becomes a REST route arg too.
+		foreach ( FieldRegistry::all() as $field ) {
+			if ( empty( $field['rest_arg'] ) ) {
+				continue;
+			}
+
+			$args[ $field['key'] ] = [
+				'default'           => $field['default'] ?? '',
+				'sanitize_callback' => static function ( $value ) use ( $field ) {
+					return FieldRegistry::resolve_value( $field, $value );
+				},
+			];
+
+			if ( ! empty( $field['validate_callback'] ) ) {
+				$args[ $field['key'] ]['validate_callback'] = $field['validate_callback'];
+			}
+		}
 
 		/**
 		 * Filters the registered args schema for the meeting-minutes REST route.
-		 * Pro plugin uses this to add new params (e.g. full-text search, a date
-		 * range) to this route instead of duplicating it.
+		 * Pro plugin uses this to add REST-only params that aren't backed by any
+		 * shortcode/builder/block field (e.g. full-text search) — fields that do
+		 * need a builder/block field should be registered on
+		 * edmm_shortcode_field_registry with rest_arg => true instead.
 		 *
 		 * @since x.x.x
 		 *

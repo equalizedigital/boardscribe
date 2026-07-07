@@ -11,6 +11,7 @@ use EqualizeDigital\MeetingMinutes\Admin\MetaBox;
 use EqualizeDigital\MeetingMinutes\Admin\SettingsPage;
 use EqualizeDigital\MeetingMinutes\PostType\MeetingMinutes as MeetingMinutesCPT;
 use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
 use EqualizeDigital\MeetingMinutes\Shortcode\MeetingMinutesShortcode;
 
 /**
@@ -64,6 +65,7 @@ class Plugin {
 	public function boot(): void {
 		load_plugin_textdomain( 'edmm', false, dirname( plugin_basename( EDMM_FILE ) ) . '/languages' );
 
+		( new FieldRegistry() )->register();
 		( new MeetingMinutesCPT() )->register();
 		( new MetaBox() )->register();
 		( new SettingsPage() )->register();

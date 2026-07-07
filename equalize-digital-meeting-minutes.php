@@ -45,6 +45,7 @@ define( 'EDMM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMM_URL', plugin_dir_url( __FILE__ ) );
 
 // Load all classes.
+require_once EDMM_DIR . 'includes/Shortcode/FieldRegistry.php';
 require_once EDMM_DIR . 'includes/PostType/MeetingMinutes.php';
 require_once EDMM_DIR . 'includes/Admin/MetaBox.php';
 require_once EDMM_DIR . 'includes/Admin/SettingsPage.php';
