@@ -332,13 +332,17 @@ JS;
 	 * @return void
 	 */
 	public function render_bundled_text_field( array $field ): void {
-		$label = $field['label'] ?? '';
+		$label   = $field['label'] ?? '';
+		$default = $field['default'] ?? '';
+		$default = is_string( $default ) ? $default : '';
 		?>
 		<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
 			<span style="width:60px;"><?php echo esc_html( $label ); ?></span>
 			<input
 				type="text"
 				name="<?php echo esc_attr( $field['key'] ); ?>"
+				value="<?php echo esc_attr( $default ); ?>"
+				data-default="<?php echo esc_attr( $default ); ?>"
 				class="regular-text"
 				placeholder="<?php echo esc_attr( $field['placeholder'] ?? $label ); ?>"
 			/>

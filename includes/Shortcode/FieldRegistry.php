@@ -60,7 +60,22 @@ class FieldRegistry {
 		// A third-party callback returning a non-array would otherwise
 		// throw a fatal TypeError against this method's array return type.
 		$fields = apply_filters( 'edmm_shortcode_field_registry', [] );
-		return is_array( $fields ) ? $fields : [];
+		$fields = is_array( $fields ) ? $fields : [];
+
+		// Two descriptors sharing the same key would otherwise render as
+		// two separate builder-UI controls with the same name="" attribute.
+		// Every other consumer (shortcode defaults, instance config, REST
+		// args) already resolves duplicates to whichever was registered
+		// last via plain array-key assignment - keep the builder UI
+		// consistent with that same last-one-wins behavior.
+		$by_key = [];
+		foreach ( $fields as $field ) {
+			if ( is_array( $field ) && isset( $field['key'] ) ) {
+				$by_key[ $field['key'] ] = $field;
+			}
+		}
+
+		return array_values( $by_key );
 	}
 
 	/**
@@ -116,8 +131,7 @@ class FieldRegistry {
 					'default'           => 'Y/m/d',
 					'description'       => __( 'PHP date() format. See php.net/manual/en/datetime.format.php for the full reference.', 'edmm' ),
 					'sanitize_callback' => static function ( $value ) {
-						$value = sanitize_text_field( (string) $value );
-						return MeetingMinutesEndpoint::validate_date_format( $value ) ? $value : 'Y/m/d';
+						return self::sanitize_date_format( $value, 'Y/m/d' );
 					},
 					'validate_callback' => [ MeetingMinutesEndpoint::class, 'validate_date_format' ],
 					'rest_arg'          => true,
@@ -129,8 +143,7 @@ class FieldRegistry {
 					'label'             => __( 'Not Held Date Format', 'edmm' ),
 					'default'           => 'Y/m',
 					'sanitize_callback' => static function ( $value ) {
-						$value = sanitize_text_field( (string) $value );
-						return MeetingMinutesEndpoint::validate_date_format( $value ) ? $value : 'Y/m';
+						return self::sanitize_date_format( $value, 'Y/m' );
 					},
 					'validate_callback' => [ MeetingMinutesEndpoint::class, 'validate_date_format' ],
 					'rest_arg'          => true,
@@ -326,6 +339,23 @@ class FieldRegistry {
 			return $field['block_attribute_key'];
 		}
 		return self::config_key( $field );
+	}
+
+	/**
+	 * Sanitizes a PHP date() format string, falling back to $default_value
+	 * if it fails MeetingMinutesEndpoint::validate_date_format() — shared
+	 * by the held_date_format and not_held_date_format field descriptors,
+	 * which differ only in their fallback value.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed  $value         Raw date-format value.
+	 * @param string $default_value Fallback value when invalid.
+	 * @return string
+	 */
+	public static function sanitize_date_format( $value, string $default_value ): string {
+		$value = sanitize_text_field( (string) $value );
+		return MeetingMinutesEndpoint::validate_date_format( $value ) ? $value : $default_value;
 	}
 
 	/**

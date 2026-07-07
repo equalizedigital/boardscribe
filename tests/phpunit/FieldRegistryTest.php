@@ -115,14 +115,24 @@ class FieldRegistryTest extends TestCase {
 	 * end through the dispatched REST request (not just the args schema).
 	 */
 	public function test_rest_arg_field_is_sanitized_on_the_real_route(): void {
-		$this->callback = static function ( array $fields ) {
+		// A sanitize_callback that records the raw value it was called
+		// with, so the assertion below proves the field's own callback
+		// actually ran during a real dispatched request - not just that
+		// the route accepted the request for some other reason.
+		$observed_raw_values = [];
+
+		$this->callback = static function ( array $fields ) use ( &$observed_raw_values ) {
 			$fields[] = [
-				'key'      => 'edmm_test_query_flag',
-				'type'     => 'number',
-				'group'    => 'general',
-				'label'    => 'Query Flag',
-				'default'  => 0,
-				'rest_arg' => true,
+				'key'               => 'edmm_test_query_flag',
+				'type'              => 'text',
+				'group'             => 'general',
+				'label'             => 'Query Flag',
+				'default'           => '',
+				'rest_arg'          => true,
+				'sanitize_callback' => function ( $value ) use ( &$observed_raw_values ) {
+					$observed_raw_values[] = $value;
+					return $value;
+				},
 			];
 			return $fields;
 		};
@@ -136,14 +146,16 @@ class FieldRegistryTest extends TestCase {
 		do_action( 'rest_api_init', $wp_rest_server );
 
 		$request = new \WP_REST_Request( 'GET', self::ROUTE );
-		$request->set_param( 'edmm_test_query_flag', '-5' );
+		$request->set_param( 'edmm_test_query_flag', 'raw-test-value' );
 
 		$response = rest_get_server()->dispatch( $request );
 
-		// A negative value sanitizes to 0 via absint() (the "number" type's
-		// default resolver), and the route accepts the request (200) -
-		// proving both the arg was registered and its sanitize_callback ran.
+		// Not assertSame on the whole array: WP_REST_Server can invoke a
+		// registered sanitize_callback more than once per dispatch (e.g.
+		// while preparing schema/response metadata) - what matters is that
+		// our real submitted value actually reached it at least once.
 		$this->assertSame( 200, $response->get_status() );
+		$this->assertContains( 'raw-test-value', $observed_raw_values );
 	}
 
 	/**

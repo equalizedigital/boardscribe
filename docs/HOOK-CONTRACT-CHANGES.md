@@ -37,6 +37,8 @@ add_filter( 'edmm_meeting_row_data', function ( array $row, int $post_id, ?\WP_R
 
 **Contract impact:** any callback still hooked to the five removed hooks stops running (`apply_filters()`/`do_action()` on an unregistered hook name is a silent no-op in WordPress — it does not error, so a callback written against the old contract will just quietly stop taking effect, not fail loudly). Every consumer needs to move to `edmm_shortcode_field_registry` before upgrading past this change.
 
+**Not a 1:1 replacement for `edmm_shortcode_builder_fields`'s raw-HTML use case:** the new registry only covers typed field descriptors (the six `FieldRegistry` types). `edmm_shortcode_builder_fields` was a bare `do_action()` some callers used to inject arbitrary custom markup/sections into the builder form (not just a labeled input/checkbox/select). There is no equivalent escape hatch in the new filter — a caller doing that needs a different approach (e.g. its own `admin_footer`/inline-script hook on the settings page) or to accept the field is intentionally unsupported by the registry.
+
 ```php
 // Before:
 add_filter( 'edmm_shortcode_atts', function ( array $defaults ) {
