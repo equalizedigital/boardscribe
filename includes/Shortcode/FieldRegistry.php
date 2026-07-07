@@ -57,7 +57,10 @@ class FieldRegistry {
 	 * @return array[] List of field descriptors, see add_core_fields().
 	 */
 	public static function all(): array {
-		return apply_filters( 'edmm_shortcode_field_registry', [] );
+		// A third-party callback returning a non-array would otherwise
+		// throw a fatal TypeError against this method's array return type.
+		$fields = apply_filters( 'edmm_shortcode_field_registry', [] );
+		return is_array( $fields ) ? $fields : [];
 	}
 
 	/**
@@ -250,6 +253,14 @@ class FieldRegistry {
 	 * @return mixed
 	 */
 	public static function resolve_value( array $field, $raw_value ) {
+		// A REST request can hand us an array for a param declared as a
+		// plain string (e.g. a repeated query param) - casting that to
+		// string below would throw an "Array to string conversion"
+		// notice, so normalize it to empty string up front instead.
+		if ( is_array( $raw_value ) ) {
+			$raw_value = '';
+		}
+
 		if ( ! empty( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
 			return call_user_func( $field['sanitize_callback'], $raw_value );
 		}

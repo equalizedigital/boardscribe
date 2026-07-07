@@ -145,4 +145,36 @@ class FieldRegistryTest extends TestCase {
 		// proving both the arg was registered and its sanitize_callback ran.
 		$this->assertSame( 200, $response->get_status() );
 	}
+
+	/**
+	 * A misbehaving third-party callback that returns a non-array doesn't
+	 * crash all() with a fatal TypeError - it's treated as no fields added.
+	 */
+	public function test_all_tolerates_a_misbehaving_filter_callback(): void {
+		$this->callback = static function () {
+			return null;
+		};
+		add_filter( 'edmm_shortcode_field_registry', $this->callback );
+
+		$fields = \EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry::all();
+
+		$this->assertIsArray( $fields );
+	}
+
+	/**
+	 * A REST request that hands resolve_value() an array (e.g. a repeated
+	 * query param bound to a scalar field) doesn't throw an "Array to
+	 * string conversion" notice - it normalizes to the type's empty value.
+	 */
+	public function test_resolve_value_normalizes_an_array_raw_value(): void {
+		$field = [
+			'key'     => 'edmm_test_array_input',
+			'type'    => 'text',
+			'default' => '',
+		];
+
+		$result = \EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry::resolve_value( $field, [ 'unexpected', 'array' ] );
+
+		$this->assertSame( '', $result );
+	}
 }

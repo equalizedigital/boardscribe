@@ -227,7 +227,7 @@ JS;
 			case FieldRegistry::TYPE_CHECKBOX:
 				?>
 				<label>
-					<input type="checkbox" name="<?php echo esc_attr( $key ); ?>" value="true" />
+					<input type="checkbox" name="<?php echo esc_attr( $key ); ?>" value="true" <?php checked( (bool) $default ); ?> />
 					<?php echo esc_html( $field['label'] ?? '' ); ?>
 				</label>
 				<?php
@@ -237,22 +237,24 @@ JS;
 				?>
 				<select id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $key ); ?>" data-default="<?php echo esc_attr( $default ); ?>">
 					<?php foreach ( ( $field['choices'] ?? [] ) as $value => $choice_label ) : ?>
-						<option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $choice_label ); ?></option>
+						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $default, $value ); ?>><?php echo esc_html( $choice_label ); ?></option>
 					<?php endforeach; ?>
 				</select>
 				<?php
 				break;
 
 			case FieldRegistry::TYPE_NUMBER_WITH_ALL:
+				$is_all = ( 'all' === $default || -1 === (int) $default );
 				?>
 				<input
 					type="number"
 					id="<?php echo esc_attr( $id ); ?>"
 					name="<?php echo esc_attr( $key ); ?>"
-					value="<?php echo esc_attr( $default ); ?>"
+					value="<?php echo esc_attr( $is_all ? '' : $default ); ?>"
 					data-default="<?php echo esc_attr( $default ); ?>"
 					min="1"
 					class="small-text"
+					<?php disabled( $is_all ); ?>
 				/>
 				<label style="margin-left:8px;">
 					<input
@@ -260,6 +262,7 @@ JS;
 						class="edmm-builder-show-all-toggle"
 						data-number-input="<?php echo esc_attr( $id ); ?>"
 						data-all-hidden="<?php echo esc_attr( $id ); ?>_all"
+						<?php checked( $is_all ); ?>
 					/>
 					<?php esc_html_e( 'Show all', 'edmm' ); ?>
 				</label>
@@ -268,7 +271,7 @@ JS;
 					id="<?php echo esc_attr( $id ); ?>_all"
 					name="<?php echo esc_attr( $key ); ?>"
 					value="all"
-					disabled
+					<?php disabled( ! $is_all ); ?>
 				/>
 				<?php
 				break;
@@ -353,9 +356,10 @@ JS;
 	 * @return void
 	 */
 	public function render_bundled_checkbox_field( array $field ): void {
+		$default = $field['default'] ?? false;
 		?>
 		<label style="display:block; margin-bottom:4px;">
-			<input type="checkbox" name="<?php echo esc_attr( $field['key'] ); ?>" value="true" />
+			<input type="checkbox" name="<?php echo esc_attr( $field['key'] ); ?>" value="true" <?php checked( (bool) $default ); ?> />
 			<?php echo esc_html( $field['label'] ?? '' ); ?>
 		</label>
 		<?php
