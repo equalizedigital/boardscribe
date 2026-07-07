@@ -86,7 +86,7 @@ class FieldRegistry {
 	 *
 	 *     @type string        $key                 Shortcode attribute / REST arg name (snake_case). Required.
 	 *     @type string        $type                One of the TYPE_* constants. Required.
-	 *     @type string        $group               One of: general, column_labels, hide_columns, link_labels.
+	 *     @type string        $group               One of: general, column_labels, hide_columns, show_columns, link_labels.
 	 *     @type string        $label               Human-readable label (builder UI caption/placeholder, block InspectorControl label).
 	 *     @type mixed         $default             Default shortcode-attribute value.
 	 *     @type array         $choices             Value => label options. Only used when type is TYPE_SELECT.
