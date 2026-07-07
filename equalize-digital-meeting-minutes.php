@@ -38,8 +38,7 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 	return;
 }
 
-// Plugin constants.
-define( 'EDMM_VERSION', '1.0.0' );
+// Plugin constants needed by the autoloader guard below.
 define( 'EDMM_FILE', __FILE__ );
 define( 'EDMM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMM_URL', plugin_dir_url( __FILE__ ) );
@@ -58,6 +57,13 @@ if ( ! file_exists( EDMM_DIR . 'vendor/autoload.php' ) ) {
 	return;
 }
 require_once EDMM_DIR . 'vendor/autoload.php';
+
+// EDMM_VERSION is defined only once the plugin can actually boot - the
+// Pro plugin's own bootstrap checks defined( 'EDMM_VERSION' ) as its
+// "is free active" signal, so defining it any earlier (e.g. alongside
+// the other constants above) would make Pro think free is active even
+// when the autoloader guard above just bailed.
+define( 'EDMM_VERSION', '1.0.0' );
 
 // Boot the plugin.
 add_action(
