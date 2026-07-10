@@ -1,259 +1,363 @@
-# Copyright (C) 2024 Equalize Digital
-# This file is distributed under the same license as the Equalize Digital Meeting Minutes plugin.
+# Copyright (C) 2026 Equalize Digital
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
 "Project-Id-Version: Equalize Digital Meeting Minutes 1.0.0\n"
-"Report-Msgid-Bugs-To: https://equalizedigital.com\n"
-"POT-Creation-Date: 2024-01-01T00:00:00+00:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/equalize-digital-meeting-minutes\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2024-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"X-Generator: WP-CLI 2.x\n"
+"POT-Creation-Date: 2026-07-10T14:45:38+01:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: edmm\n"
 
 #. Plugin Name of the plugin
+#: equalize-digital-meeting-minutes.php
 msgid "Equalize Digital Meeting Minutes"
 msgstr ""
 
 #. Plugin URI of the plugin
+#. Author URI of the plugin
+#: equalize-digital-meeting-minutes.php
 msgid "https://equalizedigital.com"
 msgstr ""
 
 #. Description of the plugin
+#: equalize-digital-meeting-minutes.php
 msgid "Manage and display meeting minutes as a custom post type with meta fields."
 msgstr ""
 
 #. Author of the plugin
+#: equalize-digital-meeting-minutes.php
 msgid "Equalize Digital"
 msgstr ""
 
-#. Author URI of the plugin
-msgid "https://equalizedigital.com"
-msgstr ""
-
-#: equalize-digital-meeting-minutes.php
+#. translators: 1: required PHP version, 2: current PHP version
+#: equalize-digital-meeting-minutes.php:31
 #, php-format
 msgid "Equalize Digital Meeting Minutes requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
 msgstr ""
 
-#: src/PostType/MeetingMinutes.php
+#: equalize-digital-meeting-minutes.php:53
+msgid "Equalize Digital Meeting Minutes is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
+msgstr ""
+
+#: includes/Admin/MetaBox.php:124
+msgid "Meeting date in Y-m-d format."
+msgstr ""
+
+#: includes/Admin/MetaBox.php:137
+msgid "URL to the meeting agenda document."
+msgstr ""
+
+#: includes/Admin/MetaBox.php:150
+msgid "URL to the meeting minutes document."
+msgstr ""
+
+#: includes/Admin/MetaBox.php:163
+msgid "Whether the meeting was not held."
+msgstr ""
+
+#: includes/Admin/MetaBox.php:192
+msgid "Meeting Details"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:50
+msgid "Meeting Minutes Settings"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:51
+msgid "Settings"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:78
+msgid "Advanced"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:85
+msgid "Delete Data on Uninstall"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:275
+msgid "Show all"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:398
+msgid "Remove all meeting minutes posts and plugin settings when this plugin is deleted."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:400
+msgid "Warning: this cannot be undone."
+msgstr ""
+
+#: includes/PostType/MeetingMinutes.php:39
 msgctxt "Post Type General Name"
 msgid "Meeting Minutes"
 msgstr ""
 
-#: src/PostType/MeetingMinutes.php
+#: includes/PostType/MeetingMinutes.php:40
 msgctxt "Post Type Singular Name"
 msgid "Meeting Minute"
 msgstr ""
 
-#: src/PostType/MeetingMinutes.php
+#: includes/PostType/MeetingMinutes.php:41
+msgid "Meeting Minutes"
+msgstr ""
+
+#: includes/PostType/MeetingMinutes.php:42
+#: includes/PostType/MeetingMinutes.php:46
 msgid "Meeting Minute"
 msgstr ""
 
-#: src/Admin/MetaBox.php
-msgid "Meeting date in Y-m-d format."
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "URL to the meeting agenda document."
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "URL to the meeting notes document."
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "Whether the meeting was not held."
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "Meeting Details"
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "Meeting Date"
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "Required. Format: YYYY-MM-DD"
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "Agenda URL"
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "Notes URL"
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "Meeting Not Held"
-msgstr ""
-
-#: src/Admin/MetaBox.php
-msgid "This meeting was not held"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Meeting Minutes Settings"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Settings"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Advanced"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Delete Data on Uninstall"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Remove all meeting minutes posts and plugin settings when this plugin is deleted."
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Warning: this cannot be undone."
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Shortcode Builder"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Filter by Years"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Comma-separated list of years. Leave blank to show all years."
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Records Per Page"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Date Format (Held)"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-#, php-format
-msgid "PHP date format. %s"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Format reference"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Date Format (Not Held)"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Hide Columns"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Title"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Date"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Agenda"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Notes"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Custom CSS Class"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Your Shortcode"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Copy"
-msgstr ""
-
-#: src/Admin/SettingsPage.php
-msgid "Copied!"
-msgstr ""
-
-#: src/REST/MeetingMinutesEndpoint.php
-msgid "Date not available"
-msgstr ""
-
-#: src/REST/MeetingMinutesEndpoint.php
-#, php-format
-msgid "Agenda for %s"
-msgstr ""
-
-#: src/REST/MeetingMinutesEndpoint.php
+#: includes/REST/MeetingMinutesEndpoint.php:112
+#: includes/REST/MeetingMinutesEndpoint.php:242
 msgid "View Agenda"
 msgstr ""
 
-#: src/REST/MeetingMinutesEndpoint.php
+#: includes/REST/MeetingMinutesEndpoint.php:113
+#: includes/REST/MeetingMinutesEndpoint.php:243
+msgid "View Minutes"
+msgstr ""
+
+#: includes/REST/MeetingMinutesEndpoint.php:258
+msgid "Date not available"
+msgstr ""
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date
+#. translators: 1: link label e.g. "View Minutes", 2: meeting date
+#: includes/REST/MeetingMinutesEndpoint.php:283
+#: includes/REST/MeetingMinutesEndpoint.php:297
+#, php-format
+msgid "%1$s for %2$s"
+msgstr ""
+
+#: includes/REST/MeetingMinutesEndpoint.php:289
 msgid "Agenda not available"
 msgstr ""
 
-#: src/REST/MeetingMinutesEndpoint.php
-#, php-format
-msgid "Notes for %s"
+#: includes/REST/MeetingMinutesEndpoint.php:303
+msgid "Minutes not available"
 msgstr ""
 
-#: src/REST/MeetingMinutesEndpoint.php
-msgid "View Notes"
-msgstr ""
-
-#: src/REST/MeetingMinutesEndpoint.php
-msgid "Notes not available"
-msgstr ""
-
-#: src/REST/MeetingMinutesEndpoint.php
+#: includes/REST/MeetingMinutesEndpoint.php:308
 msgid "Meeting not held"
 msgstr ""
 
-#: src/Shortcode/MeetingMinutesShortcode.php
+#: includes/Shortcode/FieldRegistry.php:116
+msgid "Included Years"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:119
+msgid "Comma-separated list of years. Leave blank to show all years."
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:126
+msgid "Posts Per Page"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:134
+msgid "Held Date Format"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:136
+msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:147
+msgid "Not Held Date Format"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:159
+msgid "Display Template"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:162
+msgid "Table (default)"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:163
+msgid "Timeline (grouped by year)"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:170
+msgid "Force all columns to the same width"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:172
+msgid "Helps align columns consistently for vertical rhythm across rows."
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:178
+msgid "Custom CSS Class"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:188
+#: includes/Shortcode/FieldRegistry.php:232
+#: includes/Shortcode/MeetingMinutesShortcode.php:123
+#: src/js/templates/table.js:32
+msgid "Title"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:195
+#: includes/Shortcode/FieldRegistry.php:239
+#: includes/Shortcode/MeetingMinutesShortcode.php:124
+#: src/js/templates/table.js:33
+msgid "Date"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:202
+#: includes/Shortcode/FieldRegistry.php:246
+#: includes/Shortcode/MeetingMinutesShortcode.php:125
+#: src/js/templates/table.js:34
+msgid "Agenda"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:253
+#: includes/Shortcode/MeetingMinutesShortcode.php:126
+#: src/js/templates/table.js:35
+msgid "Minutes"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:216
+msgid "Agenda Link Label"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "Minutes Link Label"
+msgstr ""
+
+#: includes/Shortcode/MeetingMinutesShortcode.php:127
+#: src/js/defaults/renderPagination.js:63
 msgid "Previous"
 msgstr ""
 
-#: src/Shortcode/MeetingMinutesShortcode.php
+#: includes/Shortcode/MeetingMinutesShortcode.php:128
+#: src/js/defaults/renderPagination.js:89
 msgid "Next"
 msgstr ""
 
-#: src/Shortcode/MeetingMinutesShortcode.php
+#: includes/Shortcode/MeetingMinutesShortcode.php:129
+#: src/js/defaults/renderPagination.js:61
 msgid "Previous Page"
 msgstr ""
 
-#: src/Shortcode/MeetingMinutesShortcode.php
+#: includes/Shortcode/MeetingMinutesShortcode.php:130
+#: src/js/defaults/renderPagination.js:87
 msgid "Next Page"
 msgstr ""
 
-#: src/Shortcode/MeetingMinutesShortcode.php
+#: includes/Shortcode/MeetingMinutesShortcode.php:131
+#: src/js/defaults/renderPagination.js:56
 msgid "Pagination"
 msgstr ""
 
-#: src/Shortcode/MeetingMinutesShortcode.php
-#, php-format
+#. translators: %s: page number
+#. translators: %s: page number.
+#: includes/Shortcode/MeetingMinutesShortcode.php:133
+#: src/js/defaults/renderPagination.js:75
+#, php-format,js-format
 msgid "Page %s"
 msgstr ""
 
-#: src/Shortcode/MeetingMinutesShortcode.php
-#, php-format
+#. translators: 1: first entry number, 2: last entry number, 3: total entries
+#. translators: %1$s: first entry number, %2$s: last entry number, %3$s: total number of entries.
+#: includes/Shortcode/MeetingMinutesShortcode.php:135
+#: src/js/defaults/renderInfo.js:23
+#, php-format,js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
+msgstr ""
+
+#: partials/meta-box.php:23
+msgid "Meeting Date"
+msgstr ""
+
+#: partials/meta-box.php:34
+msgid "Required. Format: YYYY-MM-DD"
+msgstr ""
+
+#: partials/meta-box.php:39
+msgid "Agenda URL"
+msgstr ""
+
+#: partials/meta-box.php:54
+msgid "Choose Agenda File"
+msgstr ""
+
+#: partials/meta-box.php:55
+#: partials/meta-box.php:77
+msgid "Use this file"
+msgstr ""
+
+#: partials/meta-box.php:56
+#: partials/meta-box.php:78
+msgid "Media Library"
+msgstr ""
+
+#: partials/meta-box.php:61
+msgid "Minutes URL"
+msgstr ""
+
+#: partials/meta-box.php:76
+msgid "Choose Minutes File"
+msgstr ""
+
+#: partials/meta-box.php:83
+msgid "Meeting Not Held"
+msgstr ""
+
+#: partials/meta-box.php:94
+msgid "This meeting was not held"
+msgstr ""
+
+#: partials/settings-page.php:16
+msgid "Shortcode Builder"
+msgstr ""
+
+#: partials/settings-page.php:17
+msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+msgstr ""
+
+#: partials/settings-page.php:46
+msgid "Column Labels"
+msgstr ""
+
+#: partials/settings-page.php:47
+msgid "Link Labels"
+msgstr ""
+
+#: partials/settings-page.php:48
+msgid "Hide Columns"
+msgstr ""
+
+#: partials/settings-page.php:49
+msgid "Show Columns"
+msgstr ""
+
+#: partials/settings-page.php:73
+msgid "Leave blank to use the default label."
+msgstr ""
+
+#: partials/settings-page.php:85
+msgid "Text shown inside each link. Leave blank to use the default."
+msgstr ""
+
+#: partials/settings-page.php:108
+msgid "Enable additional columns."
+msgstr ""
+
+#: partials/settings-page.php:116
+msgid "Your Shortcode"
+msgstr ""
+
+#: partials/settings-page.php:130
+#: partials/settings-page.php:133
+msgid "Copy"
+msgstr ""
+
+#: partials/settings-page.php:131
+msgid "Copied!"
 msgstr ""
