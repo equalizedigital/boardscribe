@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-10T14:45:38+01:00\n"
+"POT-Creation-Date: 2026-07-10T17:28:30+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: edmm\n"
@@ -81,15 +81,15 @@ msgstr ""
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:275
+#: includes/Admin/SettingsPage.php:292
 msgid "Show all"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:398
+#: includes/Admin/SettingsPage.php:415
 msgid "Remove all meeting minutes posts and plugin settings when this plugin is deleted."
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:400
+#: includes/Admin/SettingsPage.php:417
 msgid "Warning: this cannot be undone."
 msgstr ""
 
@@ -113,36 +113,36 @@ msgid "Meeting Minute"
 msgstr ""
 
 #: includes/REST/MeetingMinutesEndpoint.php:112
-#: includes/REST/MeetingMinutesEndpoint.php:242
+#: includes/REST/MeetingMinutesEndpoint.php:255
 msgid "View Agenda"
 msgstr ""
 
 #: includes/REST/MeetingMinutesEndpoint.php:113
-#: includes/REST/MeetingMinutesEndpoint.php:243
+#: includes/REST/MeetingMinutesEndpoint.php:256
 msgid "View Minutes"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:258
+#: includes/REST/MeetingMinutesEndpoint.php:271
 msgid "Date not available"
 msgstr ""
 
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
 #. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/MeetingMinutesEndpoint.php:283
-#: includes/REST/MeetingMinutesEndpoint.php:297
+#: includes/REST/MeetingMinutesEndpoint.php:296
+#: includes/REST/MeetingMinutesEndpoint.php:310
 #, php-format
 msgid "%1$s for %2$s"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:289
+#: includes/REST/MeetingMinutesEndpoint.php:302
 msgid "Agenda not available"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:303
+#: includes/REST/MeetingMinutesEndpoint.php:316
 msgid "Minutes not available"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:308
+#: includes/REST/MeetingMinutesEndpoint.php:321
 msgid "Meeting not held"
 msgstr ""
 
