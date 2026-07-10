@@ -35,7 +35,7 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest (verify with `unzip -l`):
-`equalize-digital-meeting-minutes.php`, `uninstall.php`, `readme.txt`, `languages/edmm.pot`, `partials/{meta-box,settings-page}.php`, `assets/build/meeting-minutes.js`, `assets/css/meeting-minutes.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/MeetingMinutes,REST/MeetingMinutesEndpoint,Shortcode/{FieldRegistry,MeetingMinutesShortcode}}.php`
+`equalize-digital-meeting-minutes.php`, `uninstall.php`, `readme.txt`, `languages/equalize-digital-meeting-minutes.pot`, `partials/{meta-box,settings-page}.php`, `assets/build/meeting-minutes.js`, `assets/css/meeting-minutes.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/MeetingMinutes,REST/MeetingMinutesEndpoint,Shortcode/{FieldRegistry,MeetingMinutesShortcode}}.php`
 
 ## Pro plugin
 
