@@ -22,3 +22,6 @@ coverage/
 *.log
 *.sql
 docs-local
+
+# Client data files must never be committed
+docs/*.csv
