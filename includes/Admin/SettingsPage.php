@@ -212,16 +212,20 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				}, 2000 );
 			};
 
-			output.select();
+			const legacyCopy = function () {
+				output.select();
+				if ( document.execCommand( 'copy' ) ) {
+					markCopied();
+				}
+			};
 
 			if ( navigator.clipboard && window.isSecureContext ) {
-				navigator.clipboard.writeText( output.value ).then( markCopied );
+				navigator.clipboard.writeText( output.value ).then( markCopied ).catch( legacyCopy );
 				return;
 			}
 
 			// Fallback for non-HTTPS admin screens.
-			document.execCommand( 'copy' );
-			markCopied();
+			legacyCopy();
 		} );
 	}
 
