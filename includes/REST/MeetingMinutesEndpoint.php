@@ -112,13 +112,26 @@ class MeetingMinutesEndpoint {
 		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'edmm' );
 		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'edmm' );
 
-		if ( $posts_per_page > 0 ) {
+		$posts_per_page = (int) $posts_per_page;
+
+		if ( -1 === $posts_per_page ) {
+			/**
+			 * Filters the absolute ceiling applied to "show all" (`-1`) requests.
+			 *
+			 * The endpoint is public, so even the shortcode builder's explicit
+			 * no-limit option must resolve to a bounded query — otherwise any
+			 * anonymous caller could request every record in one response.
+			 *
+			 * @since x.x.x
+			 *
+			 * @param int $absolute_max Upper bound substituted for -1. Default 500.
+			 */
+			$posts_per_page = (int) apply_filters( 'edmm_rest_absolute_max_per_page', 500 );
+		} elseif ( $posts_per_page > 0 ) {
 			/**
 			 * Filters the maximum number of meetings a single REST request may return.
 			 *
-			 * `-1` ("show all", the shortcode builder's explicit no-limit option) is
-			 * exempt from the cap; this only bounds arbitrary positive values sent
-			 * directly to the public endpoint.
+			 * Bounds arbitrary positive values sent directly to the public endpoint.
 			 *
 			 * @since x.x.x
 			 *
