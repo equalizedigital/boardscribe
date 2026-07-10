@@ -112,6 +112,21 @@ class MeetingMinutesEndpoint {
 		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'edmm' );
 		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'edmm' );
 
+		if ( $posts_per_page > 0 ) {
+			/**
+			 * Filters the maximum number of meetings a single REST request may return.
+			 *
+			 * `-1` ("show all", the shortcode builder's explicit no-limit option) is
+			 * exempt from the cap; this only bounds arbitrary positive values sent
+			 * directly to the public endpoint.
+			 *
+			 * @since x.x.x
+			 *
+			 * @param int $max_per_page Maximum posts_per_page. Default 100.
+			 */
+			$posts_per_page = min( $posts_per_page, (int) apply_filters( 'edmm_rest_max_per_page', 100 ) );
+		}
+
 		$args = [
 			'post_type'      => 'edmm_meeting_minutes',
 			'post_status'    => 'publish',

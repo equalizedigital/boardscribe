@@ -47,6 +47,7 @@ Keep this list current when adding or removing hooks — it's the primary refere
 | `edmm_loaded` | action | `Plugin.php` | Fires after all free components register. **Pro plugin's sole entry point.** |
 | `edmm_before_register_cpt` / `edmm_after_register_cpt` | action | `PostType/MeetingMinutes.php` | Register taxonomies that bind to the CPT (e.g. meeting series). |
 | `edmm_rest_query_args` | filter | `REST/MeetingMinutesEndpoint.php` | Modify the `WP_Query` args before querying meeting minutes. |
+| `edmm_rest_max_per_page` | filter | `REST/MeetingMinutesEndpoint.php` | Cap (default 100) on positive `posts_per_page` values sent to the public REST endpoint; `-1` ("show all" from the builder) is exempt. Raise it if a site legitimately needs bigger pages. |
 | `edmm_meeting_agenda_link` / `edmm_meeting_minutes_link` | filter | `REST/MeetingMinutesEndpoint.php` | Override the built `<a>` markup for agenda/minutes links (used by Accessibility Checker Pro integration). |
 | `edmm_meeting_row_data` | filter | `REST/MeetingMinutesEndpoint.php` | Add/override fields on a single meeting's REST row data. |
 | `edmm_meeting_formatted_date` | filter | `REST/MeetingMinutesEndpoint.php` | Override the computed date display string before it's used in the date cell and in the agenda/minutes link aria-labels (used by Pro's per-meeting date display override — sort order is unaffected, it's driven by the raw `edmm_meeting_date` value). |
