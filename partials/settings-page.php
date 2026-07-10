@@ -105,7 +105,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php foreach ( $edmm_builder_groups['show_columns'] as $edmm_field ) : ?>
 							<?php $this->render_bundled_checkbox_field( $edmm_field ); ?>
 						<?php endforeach; ?>
-						<p class="description"><?php esc_html_e( 'Enable additional Pro columns.', 'edmm' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Enable additional columns.', 'edmm' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>

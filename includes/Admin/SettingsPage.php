@@ -66,7 +66,11 @@ class SettingsPage {
 		register_setting(
 			'edmm_settings_group',
 			'edmm_settings',
-			[ 'sanitize_callback' => [ $this, 'sanitize_settings' ] ]
+			[
+				'type'              => 'array',
+				'default'           => Plugin::DEFAULTS,
+				'sanitize_callback' => [ $this, 'sanitize_settings' ],
+			]
 		);
 
 		add_settings_section(
