@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\REST;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
 
 /**

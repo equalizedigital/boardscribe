@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use EqualizeDigital\MeetingMinutes\Admin\MetaBox;
 use EqualizeDigital\MeetingMinutes\Admin\SettingsPage;
 use EqualizeDigital\MeetingMinutes\PostType\MeetingMinutes as MeetingMinutesCPT;

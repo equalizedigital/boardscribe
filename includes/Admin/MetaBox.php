@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Registers post meta and provides a native admin meta box UI
  * for the four Meeting Minutes meta fields.

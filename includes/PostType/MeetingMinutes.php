@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\PostType;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Registers and manages the edmm_meeting_minutes custom post type.
  */

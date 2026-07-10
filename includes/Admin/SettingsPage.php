@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use EqualizeDigital\MeetingMinutes\Plugin;
 use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
 

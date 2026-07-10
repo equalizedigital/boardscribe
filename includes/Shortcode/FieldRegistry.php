@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\Shortcode;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
 
 /**

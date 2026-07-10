@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\Shortcode;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Registers the [edmm_meeting_minutes] shortcode and manages
  * conditional asset enqueuing.
