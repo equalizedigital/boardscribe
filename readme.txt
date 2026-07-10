@@ -1,8 +1,8 @@
-=== Equalize Digital Meeting Minutes ===
+=== Meeting Minutes ===
 Contributors: equalizedigital
 Tags: meeting minutes, agenda, custom post type, shortcode, table
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 7.0
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -12,7 +12,7 @@ Manage and display meeting minutes for government bodies, HOAs, nonprofits, and 
 
 == Description ==
 
-**Equalize Digital Meeting Minutes** gives you a structured, accessible way to publish meeting minutes on your WordPress website. Built for government bodies, homeowners associations, nonprofits, school boards, and any organization that holds regular public meetings.
+**Meeting Minutes** gives you a structured, accessible way to publish meeting minutes on your WordPress website. Built for government bodies, homeowners associations, nonprofits, school boards, and any organization that holds regular public meetings.
 
 No third-party plugins required — all meta fields use native WordPress storage. A built-in shortcode builder helps you configure the display and copy a ready-to-paste shortcode in seconds.
 
@@ -72,7 +72,7 @@ The plugin exposes a full set of actions and filters for extending functionality
 
 == Installation ==
 
-1. Upload the plugin files to `/wp-content/plugins/equalize-digital-meeting-minutes`, or install through the WordPress plugins screen.
+1. Upload the plugin files to `/wp-content/plugins/meeting-minutes`, or install through the WordPress plugins screen.
 2. Activate the plugin through the **Plugins** screen in WordPress.
 3. Add meeting minutes via **Meeting Minutes > Add New** in the admin menu.
 4. Go to **Meeting Minutes > Settings** to build your shortcode, then paste it into any page or post.

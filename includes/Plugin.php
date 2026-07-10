@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use EqualizeDigital\MeetingMinutes\Admin\MetaBox;
 use EqualizeDigital\MeetingMinutes\Admin\SettingsPage;
 use EqualizeDigital\MeetingMinutes\PostType\MeetingMinutes as MeetingMinutesCPT;
@@ -63,7 +67,7 @@ class Plugin {
 	 * @return void
 	 */
 	public function boot(): void {
-		load_plugin_textdomain( 'edmm', false, dirname( plugin_basename( EDMM_FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'meeting-minutes', false, dirname( plugin_basename( EDMM_FILE ) ) . '/languages' );
 
 		( new FieldRegistry() )->register();
 		( new MeetingMinutesCPT() )->register();

@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\REST;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
 
 /**
@@ -105,8 +109,36 @@ class MeetingMinutesEndpoint {
 		$held_date_format     = $request->get_param( 'held_date_format' );
 		$not_held_date_format = $request->get_param( 'not_held_date_format' );
 		$included_years       = $request->get_param( 'included_years' );
-		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'edmm' );
-		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'edmm' );
+		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'meeting-minutes' );
+		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'meeting-minutes' );
+
+		$posts_per_page = (int) $posts_per_page;
+
+		if ( -1 === $posts_per_page ) {
+			/**
+			 * Filters the absolute ceiling applied to "show all" (`-1`) requests.
+			 *
+			 * The endpoint is public, so even the shortcode builder's explicit
+			 * no-limit option must resolve to a bounded query — otherwise any
+			 * anonymous caller could request every record in one response.
+			 *
+			 * @since x.x.x
+			 *
+			 * @param int $absolute_max Upper bound substituted for -1. Default 500.
+			 */
+			$posts_per_page = (int) apply_filters( 'edmm_rest_absolute_max_per_page', 500 );
+		} elseif ( $posts_per_page > 0 ) {
+			/**
+			 * Filters the maximum number of meetings a single REST request may return.
+			 *
+			 * Bounds arbitrary positive values sent directly to the public endpoint.
+			 *
+			 * @since x.x.x
+			 *
+			 * @param int $max_per_page Maximum posts_per_page. Default 100.
+			 */
+			$posts_per_page = min( $posts_per_page, (int) apply_filters( 'edmm_rest_max_per_page', 100 ) );
+		}
 
 		$args = [
 			'post_type'      => 'edmm_meeting_minutes',
@@ -220,8 +252,8 @@ class MeetingMinutesEndpoint {
 	public function build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array {
 		$held_date_format     = $format_args['held_date_format'] ?? 'Y/m/d';
 		$not_held_date_format = $format_args['not_held_date_format'] ?? 'Y/m';
-		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'edmm' );
-		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'edmm' );
+		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'meeting-minutes' );
+		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'meeting-minutes' );
 
 		$meeting_date        = get_post_meta( $post_id, 'edmm_meeting_date', true );
 		$meeting_not_held    = (bool) get_post_meta( $post_id, 'edmm_meeting_not_held', true );
@@ -236,7 +268,7 @@ class MeetingMinutesEndpoint {
 		$date_object    = $this->parse_date( $meeting_date );
 		$formatted_date = $date_object
 			? esc_html( $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format ) )
-			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'edmm' ) . '</span>';
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'meeting-minutes' ) . '</span>';
 
 		/**
 		 * Filters the formatted date string before it's used in the visible date
@@ -261,13 +293,13 @@ class MeetingMinutesEndpoint {
 				'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr(
 					sprintf(
 					/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-						__( '%1$s for %2$s', 'edmm' ),
+						__( '%1$s for %2$s', 'meeting-minutes' ),
 						$agenda_link_label,
 						wp_strip_all_tags( $formatted_date )
 					)
 				) . '">' . esc_html( $agenda_link_label ) . '</a>'
 			)
-			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'edmm' ) . '</span>';
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'meeting-minutes' ) . '</span>';
 
 		$minutes_item = $meeting_minutes_url
 			? apply_filters(
@@ -275,18 +307,18 @@ class MeetingMinutesEndpoint {
 				'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr(
 					sprintf(
 					/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
-						__( '%1$s for %2$s', 'edmm' ),
+						__( '%1$s for %2$s', 'meeting-minutes' ),
 						$minutes_link_label,
 						wp_strip_all_tags( $formatted_date )
 					)
 				) . '">' . esc_html( $minutes_link_label ) . '</a>'
 			)
-			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'edmm' ) . '</span>';
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'meeting-minutes' ) . '</span>';
 
 		$row = [
 			'title'   => esc_html( get_the_title( $post_id ) ),
 			'date'    => $formatted_date,
-			'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'edmm' ) : $agenda_item,
+			'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'meeting-minutes' ) : $agenda_item,
 			'minutes' => $minutes_item,
 		];
 

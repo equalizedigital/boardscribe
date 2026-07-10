@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\PostType;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Registers and manages the edmm_meeting_minutes custom post type.
  */
@@ -32,14 +36,14 @@ class MeetingMinutes {
 	 */
 	public function register_post_type(): void {
 		$labels = [
-			'name'           => _x( 'Meeting Minutes', 'Post Type General Name', 'edmm' ),
-			'singular_name'  => _x( 'Meeting Minute', 'Post Type Singular Name', 'edmm' ),
-			'menu_name'      => __( 'Meeting Minutes', 'edmm' ),
-			'name_admin_bar' => __( 'Meeting Minute', 'edmm' ),
+			'name'           => _x( 'Meeting Minutes', 'Post Type General Name', 'meeting-minutes' ),
+			'singular_name'  => _x( 'Meeting Minute', 'Post Type Singular Name', 'meeting-minutes' ),
+			'menu_name'      => __( 'Meeting Minutes', 'meeting-minutes' ),
+			'name_admin_bar' => __( 'Meeting Minute', 'meeting-minutes' ),
 		];
 
 		$args = [
-			'label'         => __( 'Meeting Minute', 'edmm' ),
+			'label'         => __( 'Meeting Minute', 'meeting-minutes' ),
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
 			// No public single/archive templates — meeting minutes are only ever

@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use EqualizeDigital\MeetingMinutes\Plugin;
 use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
 
@@ -43,8 +47,8 @@ class SettingsPage {
 	public function add_submenu_page(): void {
 		add_submenu_page(
 			'edit.php?post_type=edmm_meeting_minutes',
-			__( 'Meeting Minutes Settings', 'edmm' ),
-			__( 'Settings', 'edmm' ),
+			__( 'Meeting Minutes Settings', 'meeting-minutes' ),
+			__( 'Settings', 'meeting-minutes' ),
 			'manage_options',
 			'edmm-settings',
 			[ $this, 'render_page' ]
@@ -62,19 +66,23 @@ class SettingsPage {
 		register_setting(
 			'edmm_settings_group',
 			'edmm_settings',
-			[ 'sanitize_callback' => [ $this, 'sanitize_settings' ] ]
+			[
+				'type'              => 'array',
+				'default'           => Plugin::DEFAULTS,
+				'sanitize_callback' => [ $this, 'sanitize_settings' ],
+			]
 		);
 
 		add_settings_section(
 			'edmm_advanced_section',
-			__( 'Advanced', 'edmm' ),
+			__( 'Advanced', 'meeting-minutes' ),
 			'__return_empty_string',
 			'edmm-settings'
 		);
 
 		add_settings_field(
 			'delete_on_uninstall',
-			__( 'Delete Data on Uninstall', 'edmm' ),
+			__( 'Delete Data on Uninstall', 'meeting-minutes' ),
 			[ $this, 'render_delete_on_uninstall' ],
 			'edmm-settings',
 			'edmm_advanced_section'
@@ -95,7 +103,9 @@ class SettingsPage {
 		}
 
 		// Inline script — no separate file needed for a small builder.
-		wp_add_inline_script( 'jquery', $this->get_builder_script() );
+		wp_register_script( 'edmm-shortcode-builder', false, [], EDMM_VERSION, true );
+		wp_enqueue_script( 'edmm-shortcode-builder' );
+		wp_add_inline_script( 'edmm-shortcode-builder', $this->get_builder_script() );
 	}
 
 	/**
@@ -195,12 +205,27 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 	if ( copyBtn ) {
 		copyBtn.addEventListener( 'click', function () {
-			output.select();
-			document.execCommand( 'copy' );
-			copyBtn.textContent = copyBtn.dataset.copied;
-			setTimeout( function () {
-				copyBtn.textContent = copyBtn.dataset.copy;
-			}, 2000 );
+			const markCopied = function () {
+				copyBtn.textContent = copyBtn.dataset.copied;
+				setTimeout( function () {
+					copyBtn.textContent = copyBtn.dataset.copy;
+				}, 2000 );
+			};
+
+			const legacyCopy = function () {
+				output.select();
+				if ( document.execCommand( 'copy' ) ) {
+					markCopied();
+				}
+			};
+
+			if ( navigator.clipboard && window.isSecureContext ) {
+				navigator.clipboard.writeText( output.value ).then( markCopied ).catch( legacyCopy );
+				return;
+			}
+
+			// Fallback for non-HTTPS admin screens.
+			legacyCopy();
 		} );
 	}
 
@@ -264,7 +289,7 @@ JS;
 						data-all-hidden="<?php echo esc_attr( $id ); ?>_all"
 						<?php checked( $is_all ); ?>
 					/>
-					<?php esc_html_e( 'Show all', 'edmm' ); ?>
+					<?php esc_html_e( 'Show all', 'meeting-minutes' ); ?>
 				</label>
 				<input
 					type="hidden"
@@ -387,9 +412,9 @@ JS;
 				value="1"
 				<?php checked( 1, (int) $value ); ?>
 			/>
-			<?php esc_html_e( 'Remove all meeting minutes posts and plugin settings when this plugin is deleted.', 'edmm' ); ?>
+			<?php esc_html_e( 'Remove all meeting minutes posts and plugin settings when this plugin is deleted.', 'meeting-minutes' ); ?>
 		</label>
-		<p class="description" style="color:#d63638;"><?php esc_html_e( 'Warning: this cannot be undone.', 'edmm' ); ?></p>
+		<p class="description" style="color:#d63638;"><?php esc_html_e( 'Warning: this cannot be undone.', 'meeting-minutes' ); ?></p>
 		<?php
 	}
 

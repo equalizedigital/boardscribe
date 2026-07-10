@@ -7,6 +7,10 @@
 
 namespace EqualizeDigital\MeetingMinutes\Shortcode;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Registers the [edmm_meeting_minutes] shortcode and manages
  * conditional asset enqueuing.
@@ -84,7 +88,7 @@ class MeetingMinutesShortcode {
 		);
 
 		// Load the JS translation files (JSON) for __() calls in the bundle.
-		wp_set_script_translations( 'edmm-meeting-minutes', 'edmm' );
+		wp_set_script_translations( 'edmm-meeting-minutes', 'meeting-minutes' );
 
 		$this->localize_script();
 
@@ -116,19 +120,19 @@ class MeetingMinutesShortcode {
 			[
 				'apiUrl' => rest_url( 'edmm/v1/meeting-minutes/' ),
 				'i18n'   => [
-					'colTitle'       => __( 'Title', 'edmm' ),
-					'colDate'        => __( 'Date', 'edmm' ),
-					'colAgenda'      => __( 'Agenda', 'edmm' ),
-					'colMinutes'     => __( 'Minutes', 'edmm' ),
-					'previous'       => __( 'Previous', 'edmm' ),
-					'next'           => __( 'Next', 'edmm' ),
-					'previousPage'   => __( 'Previous Page', 'edmm' ),
-					'nextPage'       => __( 'Next Page', 'edmm' ),
-					'pagination'     => __( 'Pagination', 'edmm' ),
+					'colTitle'       => __( 'Title', 'meeting-minutes' ),
+					'colDate'        => __( 'Date', 'meeting-minutes' ),
+					'colAgenda'      => __( 'Agenda', 'meeting-minutes' ),
+					'colMinutes'     => __( 'Minutes', 'meeting-minutes' ),
+					'previous'       => __( 'Previous', 'meeting-minutes' ),
+					'next'           => __( 'Next', 'meeting-minutes' ),
+					'previousPage'   => __( 'Previous Page', 'meeting-minutes' ),
+					'nextPage'       => __( 'Next Page', 'meeting-minutes' ),
+					'pagination'     => __( 'Pagination', 'meeting-minutes' ),
 					/* translators: %s: page number */
-					'pageNum'        => __( 'Page %s', 'edmm' ),
+					'pageNum'        => __( 'Page %s', 'meeting-minutes' ),
 					/* translators: 1: first entry number, 2: last entry number, 3: total entries */
-					'showingEntries' => __( 'Showing %1$s to %2$s of %3$s entries', 'edmm' ),
+					'showingEntries' => __( 'Showing %1$s to %2$s of %3$s entries', 'meeting-minutes' ),
 				],
 			]
 		);

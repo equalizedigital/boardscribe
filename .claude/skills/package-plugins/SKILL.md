@@ -1,6 +1,6 @@
 ---
 name: package-plugins
-description: Build and zip the free (equalize-digital-meeting-minutes) and Pro (meeting-minutes-pro) plugins into deployable dist/ zips with the correct contents. Use when asked to package, zip, release, or deploy either plugin.
+description: Build and zip the free (repo equalize-digital-meeting-minutes, plugin slug meeting-minutes) and Pro (meeting-minutes-pro) plugins into deployable dist/ zips with the correct contents. Use when asked to package, zip, release, or deploy either plugin.
 ---
 
 # Package the free and/or Pro plugin into a deploy zip
@@ -11,7 +11,7 @@ Both repos ship as manually-built zips in each repo's gitignored `dist/`. There 
 
 1. **Always run the JS build first.** Built output is gitignored in both repos (`assets/build/` in free, `build/` in Pro). A zip missing it installs fine but renders an empty table / broken block editor with a 404'd script.
 2. **Always run `composer install --no-dev --optimize-autoloader` before staging, and a plain `composer install` again after zipping.** Both plugins bootstrap via a Composer PSR-4 autoloader (`vendor/autoload.php`) — a zip without it fatal-errors on activation. Neither plugin has a runtime Composer dependency (only `php` itself in `require`; everything else is `require-dev` tooling), so `--no-dev` leaves `vendor/` containing only Composer's own autoloader machinery (`vendor/autoload.php` + `vendor/composer/*`, no third-party library code) — safe to ship wholesale. The restore step afterward matters: skipping it silently drops phpcs/phpunit/etc. from the working tree for the rest of the session.
-3. The zip must contain a single top-level directory named exactly like the plugin slug (`equalize-digital-meeting-minutes/` or `meeting-minutes-pro/`) — WordPress derives the install path from it.
+3. The zip must contain a single top-level directory named exactly like the plugin slug (`meeting-minutes/` or `meeting-minutes-pro/`) — WordPress derives the install path from it.
 4. Never include: `node_modules/`, `tests/`, `docs/`, `dist/`, `scripts/`, dotfiles (`.git*`, `.eslintrc`, `.husky/`, `.editorconfig`), `composer.json`, `composer.lock`, `package*.json`, `phpunit*`, `phpcs.xml`, `webpack.config.js`, `docker-compose.yml`. (`vendor/` is now a required exception to the general "no dev-tooling directories" rule — see above.)
 5. In Pro, `src/js/admin/` and `src/js/front-end/` are **plain-file enqueues and MUST ship**; `src/js/block/` is bundler source and must NOT ship. In free, no `src/` ships at all (everything is bundled).
 6. **Run each plugin's whole bash block as a single script**, not line-by-line — `$STAGE` (and `$OLDPWD` inside the zip subshell) are shell variables/state that don't persist across separate command invocations.
@@ -22,20 +22,20 @@ Both repos ship as manually-built zips in each repo's gitignored `dist/`. There 
 cd <free-repo>
 npm run build   # -> assets/build/meeting-minutes.js
 composer install --no-dev --optimize-autoloader
-mkdir -p dist && rm -f dist/equalize-digital-meeting-minutes.zip
-STAGE=$(mktemp -d)/equalize-digital-meeting-minutes && mkdir -p "$STAGE/assets"
+mkdir -p dist && rm -f dist/meeting-minutes.zip
+STAGE=$(mktemp -d)/meeting-minutes && mkdir -p "$STAGE/assets"
 cp -r \
-  equalize-digital-meeting-minutes.php uninstall.php readme.txt \
+  meeting-minutes.php uninstall.php readme.txt LICENSE \
   includes partials languages vendor \
   "$STAGE"/
 cp -r assets/build assets/css "$STAGE/assets/"
-( cd "$(dirname "$STAGE")" && zip -r "$OLDPWD/dist/equalize-digital-meeting-minutes.zip" equalize-digital-meeting-minutes )
+( cd "$(dirname "$STAGE")" && zip -r "$OLDPWD/dist/meeting-minutes.zip" meeting-minutes )
 rm -rf "$(dirname "$STAGE")"
 composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest (verify with `unzip -l`):
-`equalize-digital-meeting-minutes.php`, `uninstall.php`, `readme.txt`, `languages/edmm.pot`, `partials/{meta-box,settings-page}.php`, `assets/build/meeting-minutes.js`, `assets/css/meeting-minutes.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/MeetingMinutes,REST/MeetingMinutesEndpoint,Shortcode/{FieldRegistry,MeetingMinutesShortcode}}.php`
+`meeting-minutes.php`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/meeting-minutes.pot`, `partials/{meta-box,settings-page}.php`, `assets/build/meeting-minutes.js`, `assets/css/meeting-minutes.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/MeetingMinutes,REST/MeetingMinutesEndpoint,Shortcode/{FieldRegistry,MeetingMinutesShortcode}}.php`
 
 ## Pro plugin
 

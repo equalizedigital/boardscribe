@@ -53,14 +53,14 @@ export function calculatePaginationSlots( current, total ) {
 export function defaultRenderPagination( data, instanceCfg, element, goToPage ) {
 	let pagination = '';
 	if ( data.max_num_pages > 1 ) {
-		pagination += '<nav aria-label="' + escapeAttribute( i18n.pagination || __( 'Pagination', 'edmm' ) ) + '">' +
+		pagination += '<nav aria-label="' + escapeAttribute( i18n.pagination || __( 'Pagination', 'meeting-minutes' ) ) + '">' +
 			'<div class="edmm-pagination-buttons">';
 
 		if ( data.current_page > 1 ) {
 			pagination += '<button type="button" class="edmm-pagination-button prev"' +
-				' aria-label="' + escapeAttribute( i18n.previousPage || __( 'Previous Page', 'edmm' ) ) + '"' +
+				' aria-label="' + escapeAttribute( i18n.previousPage || __( 'Previous Page', 'meeting-minutes' ) ) + '"' +
 				' data-page="' + ( data.current_page - 1 ) + '">' +
-				escapeHTML( i18n.previous || __( 'Previous', 'edmm' ) ) +
+				escapeHTML( i18n.previous || __( 'Previous', 'meeting-minutes' ) ) +
 				'</button>';
 		}
 
@@ -72,7 +72,7 @@ export function defaultRenderPagination( data, instanceCfg, element, goToPage ) 
 			} else {
 				const isCurrent = slot === data.current_page;
 				// translators: %s: page number.
-				const label = escapeAttribute( ( i18n.pageNum || __( 'Page %s', 'edmm' ) ).replace( '%s', slot ) );
+				const label = escapeAttribute( ( i18n.pageNum || __( 'Page %s', 'meeting-minutes' ) ).replace( '%s', slot ) );
 				pagination += '<button type="button"' +
 					' class="edmm-pagination-button' + ( isCurrent ? ' current' : '' ) + '"' +
 					' data-page="' + slot + '"' +
@@ -84,9 +84,9 @@ export function defaultRenderPagination( data, instanceCfg, element, goToPage ) 
 
 		if ( data.current_page < data.max_num_pages ) {
 			pagination += '<button type="button" class="edmm-pagination-button next"' +
-				' aria-label="' + escapeAttribute( i18n.nextPage || __( 'Next Page', 'edmm' ) ) + '"' +
+				' aria-label="' + escapeAttribute( i18n.nextPage || __( 'Next Page', 'meeting-minutes' ) ) + '"' +
 				' data-page="' + ( data.current_page + 1 ) + '">' +
-				escapeHTML( i18n.next || __( 'Next', 'edmm' ) ) +
+				escapeHTML( i18n.next || __( 'Next', 'meeting-minutes' ) ) +
 				'</button>';
 		}
 

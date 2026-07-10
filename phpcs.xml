@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Equalize Digital Meeting Minutes">
+<ruleset name="Meeting Minutes">
     <description>WordPress coding standards for the Meeting Minutes plugin.</description>
 
     <!-- Files to check -->
@@ -34,7 +34,20 @@
     <!-- Plugin-specific text domain -->
     <rule ref="WordPress.WP.I18n">
         <properties>
-            <property name="text_domain" type="array" value="edmm"/>
+            <property name="text_domain" type="array">
+                <element value="meeting-minutes"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Everything in the global namespace (variables in root-scope files, constants,
+         hooks) must carry the plugin prefix — Plugin Check enforces this too -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="edmm"/>
+                <element value="EqualizeDigital\MeetingMinutes"/>
+            </property>
         </properties>
     </rule>
 </ruleset>
