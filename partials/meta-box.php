@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<tbody>
 		<tr>
 			<th scope="row">
-				<label for="edmm_meeting_date"><?php esc_html_e( 'Meeting Date', 'edmm' ); ?> <span aria-hidden="true">*</span></label>
+				<label for="edmm_meeting_date"><?php esc_html_e( 'Meeting Date', 'meeting-minutes' ); ?> <span aria-hidden="true">*</span></label>
 			</th>
 			<td>
 				<input
@@ -31,12 +31,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 					required
 					class="regular-text"
 				/>
-				<p class="description"><?php esc_html_e( 'Required. Format: YYYY-MM-DD', 'edmm' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Required. Format: YYYY-MM-DD', 'meeting-minutes' ); ?></p>
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">
-				<label for="edmm_meeting_agenda_url"><?php esc_html_e( 'Agenda URL', 'edmm' ); ?></label>
+				<label for="edmm_meeting_agenda_url"><?php esc_html_e( 'Agenda URL', 'meeting-minutes' ); ?></label>
 			</th>
 			<td>
 				<input
@@ -51,14 +51,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					type="button"
 					class="button edmm-media-button"
 					data-target="edmm_meeting_agenda_url"
-					data-title="<?php esc_attr_e( 'Choose Agenda File', 'edmm' ); ?>"
-					data-insert="<?php esc_attr_e( 'Use this file', 'edmm' ); ?>"
-				><?php esc_html_e( 'Media Library', 'edmm' ); ?></button>
+					data-title="<?php esc_attr_e( 'Choose Agenda File', 'meeting-minutes' ); ?>"
+					data-insert="<?php esc_attr_e( 'Use this file', 'meeting-minutes' ); ?>"
+				><?php esc_html_e( 'Media Library', 'meeting-minutes' ); ?></button>
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">
-				<label for="edmm_meeting_minutes_url"><?php esc_html_e( 'Minutes URL', 'edmm' ); ?></label>
+				<label for="edmm_meeting_minutes_url"><?php esc_html_e( 'Minutes URL', 'meeting-minutes' ); ?></label>
 			</th>
 			<td>
 				<input
@@ -73,14 +73,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					type="button"
 					class="button edmm-media-button"
 					data-target="edmm_meeting_minutes_url"
-					data-title="<?php esc_attr_e( 'Choose Minutes File', 'edmm' ); ?>"
-					data-insert="<?php esc_attr_e( 'Use this file', 'edmm' ); ?>"
-				><?php esc_html_e( 'Media Library', 'edmm' ); ?></button>
+					data-title="<?php esc_attr_e( 'Choose Minutes File', 'meeting-minutes' ); ?>"
+					data-insert="<?php esc_attr_e( 'Use this file', 'meeting-minutes' ); ?>"
+				><?php esc_html_e( 'Media Library', 'meeting-minutes' ); ?></button>
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">
-				<?php esc_html_e( 'Meeting Not Held', 'edmm' ); ?>
+				<?php esc_html_e( 'Meeting Not Held', 'meeting-minutes' ); ?>
 			</th>
 			<td>
 				<label for="edmm_meeting_not_held">
@@ -91,7 +91,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						value="1"
 						<?php checked( '1', $meeting_not_held ); ?>
 					/>
-					<?php esc_html_e( 'This meeting was not held', 'edmm' ); ?>
+					<?php esc_html_e( 'This meeting was not held', 'meeting-minutes' ); ?>
 				</label>
 			</td>
 		</tr>

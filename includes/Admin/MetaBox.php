@@ -121,7 +121,7 @@ JS;
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'Meeting date in Y-m-d format.', 'edmm' ),
+					'description'       => __( 'Meeting date in Y-m-d format.', 'meeting-minutes' ),
 					'sanitize_callback' => 'sanitize_text_field',
 				]
 			)
@@ -134,7 +134,7 @@ JS;
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'URL to the meeting agenda document.', 'edmm' ),
+					'description'       => __( 'URL to the meeting agenda document.', 'meeting-minutes' ),
 					'sanitize_callback' => 'esc_url_raw',
 				]
 			)
@@ -147,7 +147,7 @@ JS;
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'URL to the meeting minutes document.', 'edmm' ),
+					'description'       => __( 'URL to the meeting minutes document.', 'meeting-minutes' ),
 					'sanitize_callback' => 'esc_url_raw',
 				]
 			)
@@ -160,7 +160,7 @@ JS;
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'Whether the meeting was not held.', 'edmm' ),
+					'description'       => __( 'Whether the meeting was not held.', 'meeting-minutes' ),
 					'sanitize_callback' => 'sanitize_text_field',
 				]
 			)
@@ -189,7 +189,7 @@ JS;
 
 		add_meta_box(
 			'edmm_meeting_details',
-			__( 'Meeting Details', 'edmm' ),
+			__( 'Meeting Details', 'meeting-minutes' ),
 			[ $this, 'render_meta_box' ],
 			'edmm_meeting_minutes',
 			'normal',

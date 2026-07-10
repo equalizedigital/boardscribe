@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Equalize Digital Meeting Minutes">
+<ruleset name="Meeting Minutes">
     <description>WordPress coding standards for the Meeting Minutes plugin.</description>
 
     <!-- Files to check -->
@@ -35,7 +35,7 @@
     <rule ref="WordPress.WP.I18n">
         <properties>
             <property name="text_domain" type="array">
-                <element value="edmm"/>
+                <element value="meeting-minutes"/>
             </property>
         </properties>
     </rule>

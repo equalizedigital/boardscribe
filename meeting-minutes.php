@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Equalize Digital Meeting Minutes
+ * Plugin Name:       Meeting Minutes
  * Plugin URI:        https://equalizedigital.com
  * Description:       Manage and display meeting minutes as a custom post type with meta fields.
  * Version:           1.0.0
@@ -8,7 +8,7 @@
  * Author URI:        https://equalizedigital.com
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       edmm
+ * Text Domain:       meeting-minutes
  * Domain Path:       /languages
  * Requires at least: 6.0
  * Requires PHP:      7.4
@@ -28,7 +28,7 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 			echo '<div class="notice notice-error"><p>'
 			. sprintf(
 				/* translators: 1: required PHP version, 2: current PHP version */
-				esc_html__( 'Equalize Digital Meeting Minutes requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host.', 'edmm' ),
+				esc_html__( 'Meeting Minutes requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host.', 'meeting-minutes' ),
 				'7.4',
 				PHP_VERSION
 			)
@@ -50,7 +50,7 @@ if ( ! file_exists( EDMM_DIR . 'vendor/autoload.php' ) ) {
 		'admin_notices',
 		function () {
 			echo '<div class="notice notice-error"><p>'
-			. esc_html__( 'Equalize Digital Meeting Minutes is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source.', 'edmm' )
+			. esc_html__( 'Meeting Minutes is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source.', 'meeting-minutes' )
 			. '</p></div>';
 		}
 	);
