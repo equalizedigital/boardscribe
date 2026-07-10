@@ -25,7 +25,7 @@ composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/equalize-digital-meeting-minutes.zip
 STAGE=$(mktemp -d)/equalize-digital-meeting-minutes && mkdir -p "$STAGE/assets"
 cp -r \
-  equalize-digital-meeting-minutes.php uninstall.php readme.txt \
+  equalize-digital-meeting-minutes.php uninstall.php readme.txt LICENSE \
   includes partials languages vendor \
   "$STAGE"/
 cp -r assets/build assets/css "$STAGE/assets/"
@@ -35,7 +35,7 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest (verify with `unzip -l`):
-`equalize-digital-meeting-minutes.php`, `uninstall.php`, `readme.txt`, `languages/edmm.pot`, `partials/{meta-box,settings-page}.php`, `assets/build/meeting-minutes.js`, `assets/css/meeting-minutes.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/MeetingMinutes,REST/MeetingMinutesEndpoint,Shortcode/{FieldRegistry,MeetingMinutesShortcode}}.php`
+`equalize-digital-meeting-minutes.php`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/edmm.pot`, `partials/{meta-box,settings-page}.php`, `assets/build/meeting-minutes.js`, `assets/css/meeting-minutes.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/MeetingMinutes,REST/MeetingMinutesEndpoint,Shortcode/{FieldRegistry,MeetingMinutesShortcode}}.php`
 
 ## Pro plugin
 
