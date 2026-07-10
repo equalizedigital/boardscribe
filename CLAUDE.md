@@ -1,6 +1,6 @@
-# Equalize Digital Meeting Minutes
+# Meeting Minutes (by Equalize Digital)
 
-WordPress plugin: manages meeting minutes as a custom post type (`edmm_meeting_minutes`), displayed via a `[edmm_meeting_minutes]` shortcode backed by a public REST endpoint. Native WordPress storage only — no ACF dependency (removed during the restructure; some docs still mention it, see Known Doc Staleness below).
+WordPress plugin — display name "Meeting Minutes", WP.org slug/text domain `meeting-minutes`, code prefix `edmm_`/`EDMM_`; the git repo keeps its historical `equalize-digital-meeting-minutes` name. Manages meeting minutes as a custom post type (`edmm_meeting_minutes`), displayed via a `[edmm_meeting_minutes]` shortcode backed by a public REST endpoint. Native WordPress storage only — no ACF dependency (removed during the restructure; some docs still mention it, see Known Doc Staleness below).
 
 ## This is the free plugin — Pro is a separate sibling repo
 
@@ -15,7 +15,7 @@ This repo is the **free, WordPress.org-distributed** half of a freemium product.
 ## Directory structure
 
 ```
-equalize-digital-meeting-minutes.php   Plugin bootstrap (constants, requires, plugins_loaded hook)
+meeting-minutes.php                    Plugin bootstrap (constants, requires, plugins_loaded hook)
 includes/
   Plugin.php                           Singleton; boots all components, fires edmm_loaded (Pro's entry point)
   PostType/MeetingMinutes.php          CPT registration
@@ -86,7 +86,7 @@ npm run lint:js                     # eslint over src/js + webpack.config.js —
 composer test                       # phpunit (requires ./scripts/setup-phpunit.sh first, or Docker via npm run test:php)
 ```
 
-The frontend JS is bundled from `src/js/` to `assets/build/` via `wp-scripts build` with a small `webpack.config.js` overriding entry/output paths (the wp-scripts defaults clash with `assets/build/` as the target) and dropping `DependencyExtractionWebpackPlugin` — no `*.asset.php` is emitted. `@wordpress/*` imports resolve to `wp.*` globals via a hand-maintained `externals` map in `webpack.config.js`; each entry there needs its matching `wp-*` handle in the `wp_enqueue_script()` dependency list in `MeetingMinutesShortcode.php` (the enqueue uses `EDMM_VERSION` for cache-busting). Frontend JS uses `__()` from `@wordpress/i18n` with the `edmm` text domain; `wp_set_script_translations( 'edmm-meeting-minutes', 'edmm' )` after the enqueue loads the JSON translation files for those calls. Because `assets/build/` is gitignored, any release/deploy packaging **must run `npm run build`** — shipping a zip without it means a 404'd script and an empty table.
+The frontend JS is bundled from `src/js/` to `assets/build/` via `wp-scripts build` with a small `webpack.config.js` overriding entry/output paths (the wp-scripts defaults clash with `assets/build/` as the target) and dropping `DependencyExtractionWebpackPlugin` — no `*.asset.php` is emitted. `@wordpress/*` imports resolve to `wp.*` globals via a hand-maintained `externals` map in `webpack.config.js`; each entry there needs its matching `wp-*` handle in the `wp_enqueue_script()` dependency list in `MeetingMinutesShortcode.php` (the enqueue uses `EDMM_VERSION` for cache-busting). Frontend JS uses `__()` from `@wordpress/i18n` with the `meeting-minutes` text domain; `wp_set_script_translations( 'edmm-meeting-minutes', 'meeting-minutes' )` after the enqueue loads the JSON translation files for those calls. Because `assets/build/` is gitignored, any release/deploy packaging **must run `npm run build`** — shipping a zip without it means a 404'd script and an empty table.
 
 `phpcs.xml` is scoped to `.php` files only (`<arg name="extensions" value="php"/>`) — JS/CSS have their own dedicated linters and must not be re-added to PHPCS's scope; WordPress's PHP-oriented sniffs actively conflict with the JS style enforced by ESLint (e.g. `function (` vs `function(`).
 
