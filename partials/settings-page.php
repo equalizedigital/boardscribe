@@ -35,11 +35,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 		'show_columns'  => [],
 	];
 	foreach ( $edmm_builder_fields as $edmm_builder_field ) {
-		$group = $edmm_builder_field['group'] ?? 'general';
-		if ( ! isset( $edmm_builder_groups[ $group ] ) ) {
-			$group = 'general';
+		$edmm_group = $edmm_builder_field['group'] ?? 'general';
+		if ( ! isset( $edmm_builder_groups[ $edmm_group ] ) ) {
+			$edmm_group = 'general';
 		}
-		$edmm_builder_groups[ $group ][] = $edmm_builder_field;
+		$edmm_builder_groups[ $edmm_group ][] = $edmm_builder_field;
 	}
 
 	$edmm_bundled_group_titles = [

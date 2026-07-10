@@ -13,14 +13,14 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-$settings = get_option( 'edmm_settings', [] );
+$edmm_settings = get_option( 'edmm_settings', [] );
 
-if ( empty( $settings['delete_on_uninstall'] ) ) {
+if ( empty( $edmm_settings['delete_on_uninstall'] ) ) {
 	return;
 }
 
 // Delete all meeting minutes posts and their associated meta.
-$meeting_minutes_post_ids = get_posts(
+$edmm_meeting_minutes_post_ids = get_posts(
 	[
 		'post_type'      => 'edmm_meeting_minutes',
 		'post_status'    => 'any',
@@ -29,8 +29,8 @@ $meeting_minutes_post_ids = get_posts(
 	]
 );
 
-foreach ( $meeting_minutes_post_ids as $meeting_minutes_post_id ) {
-	wp_delete_post( $meeting_minutes_post_id, true );
+foreach ( $edmm_meeting_minutes_post_ids as $edmm_meeting_minutes_post_id ) {
+	wp_delete_post( $edmm_meeting_minutes_post_id, true );
 }
 
 // Delete plugin settings.

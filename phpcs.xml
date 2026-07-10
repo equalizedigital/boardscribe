@@ -34,7 +34,20 @@
     <!-- Plugin-specific text domain -->
     <rule ref="WordPress.WP.I18n">
         <properties>
-            <property name="text_domain" type="array" value="edmm"/>
+            <property name="text_domain" type="array">
+                <element value="edmm"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Everything in the global namespace (variables in root-scope files, constants,
+         hooks) must carry the plugin prefix — Plugin Check enforces this too -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="edmm"/>
+                <element value="EqualizeDigital\MeetingMinutes"/>
+            </property>
         </properties>
     </rule>
 </ruleset>
