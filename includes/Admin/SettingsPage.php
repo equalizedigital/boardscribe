@@ -103,7 +103,9 @@ class SettingsPage {
 		}
 
 		// Inline script — no separate file needed for a small builder.
-		wp_add_inline_script( 'jquery', $this->get_builder_script() );
+		wp_register_script( 'edmm-shortcode-builder', false, [], EDMM_VERSION, true );
+		wp_enqueue_script( 'edmm-shortcode-builder' );
+		wp_add_inline_script( 'edmm-shortcode-builder', $this->get_builder_script() );
 	}
 
 	/**
@@ -203,12 +205,23 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 	if ( copyBtn ) {
 		copyBtn.addEventListener( 'click', function () {
+			const markCopied = function () {
+				copyBtn.textContent = copyBtn.dataset.copied;
+				setTimeout( function () {
+					copyBtn.textContent = copyBtn.dataset.copy;
+				}, 2000 );
+			};
+
 			output.select();
+
+			if ( navigator.clipboard && window.isSecureContext ) {
+				navigator.clipboard.writeText( output.value ).then( markCopied );
+				return;
+			}
+
+			// Fallback for non-HTTPS admin screens.
 			document.execCommand( 'copy' );
-			copyBtn.textContent = copyBtn.dataset.copied;
-			setTimeout( function () {
-				copyBtn.textContent = copyBtn.dataset.copy;
-			}, 2000 );
+			markCopied();
 		} );
 	}
 
