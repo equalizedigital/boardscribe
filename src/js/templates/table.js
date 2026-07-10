@@ -29,10 +29,10 @@ export function buildTableHtml( meetings, instanceCfg ) {
 	const extraColumns = window.edmmExtraColumns || [];
 
 	// Resolve column labels: instance override → i18n global → hard-coded fallback.
-	const labelTitle = cfg.titleLabel || i18n.colTitle || __( 'Title', 'edmm' );
-	const labelDate = cfg.dateLabel || i18n.colDate || __( 'Date', 'edmm' );
-	const labelAgenda = cfg.agendaLabel || i18n.colAgenda || __( 'Agenda', 'edmm' );
-	const labelMinutes = cfg.minutesLabel || i18n.colMinutes || __( 'Minutes', 'edmm' );
+	const labelTitle = cfg.titleLabel || i18n.colTitle || __( 'Title', 'equalize-digital-meeting-minutes' );
+	const labelDate = cfg.dateLabel || i18n.colDate || __( 'Date', 'equalize-digital-meeting-minutes' );
+	const labelAgenda = cfg.agendaLabel || i18n.colAgenda || __( 'Agenda', 'equalize-digital-meeting-minutes' );
+	const labelMinutes = cfg.minutesLabel || i18n.colMinutes || __( 'Minutes', 'equalize-digital-meeting-minutes' );
 
 	// The class list and core labels are already sanitized server-side
 	// (sanitize_class_list()/sanitize_text_field() in the shortcode),

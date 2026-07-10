@@ -43,8 +43,8 @@ class SettingsPage {
 	public function add_submenu_page(): void {
 		add_submenu_page(
 			'edit.php?post_type=edmm_meeting_minutes',
-			__( 'Meeting Minutes Settings', 'edmm' ),
-			__( 'Settings', 'edmm' ),
+			__( 'Meeting Minutes Settings', 'equalize-digital-meeting-minutes' ),
+			__( 'Settings', 'equalize-digital-meeting-minutes' ),
 			'manage_options',
 			'edmm-settings',
 			[ $this, 'render_page' ]
@@ -67,14 +67,14 @@ class SettingsPage {
 
 		add_settings_section(
 			'edmm_advanced_section',
-			__( 'Advanced', 'edmm' ),
+			__( 'Advanced', 'equalize-digital-meeting-minutes' ),
 			'__return_empty_string',
 			'edmm-settings'
 		);
 
 		add_settings_field(
 			'delete_on_uninstall',
-			__( 'Delete Data on Uninstall', 'edmm' ),
+			__( 'Delete Data on Uninstall', 'equalize-digital-meeting-minutes' ),
 			[ $this, 'render_delete_on_uninstall' ],
 			'edmm-settings',
 			'edmm_advanced_section'
@@ -264,7 +264,7 @@ JS;
 						data-all-hidden="<?php echo esc_attr( $id ); ?>_all"
 						<?php checked( $is_all ); ?>
 					/>
-					<?php esc_html_e( 'Show all', 'edmm' ); ?>
+					<?php esc_html_e( 'Show all', 'equalize-digital-meeting-minutes' ); ?>
 				</label>
 				<input
 					type="hidden"
@@ -387,9 +387,9 @@ JS;
 				value="1"
 				<?php checked( 1, (int) $value ); ?>
 			/>
-			<?php esc_html_e( 'Remove all meeting minutes posts and plugin settings when this plugin is deleted.', 'edmm' ); ?>
+			<?php esc_html_e( 'Remove all meeting minutes posts and plugin settings when this plugin is deleted.', 'equalize-digital-meeting-minutes' ); ?>
 		</label>
-		<p class="description" style="color:#d63638;"><?php esc_html_e( 'Warning: this cannot be undone.', 'edmm' ); ?></p>
+		<p class="description" style="color:#d63638;"><?php esc_html_e( 'Warning: this cannot be undone.', 'equalize-digital-meeting-minutes' ); ?></p>
 		<?php
 	}
 

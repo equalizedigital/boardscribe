@@ -20,7 +20,7 @@ export function defaultRenderInfo( data, instanceCfg, element ) {
 	const endEntry = Math.min( data.current_page * postsPerPage, totalEntries );
 
 	// translators: %1$s: first entry number, %2$s: last entry number, %3$s: total number of entries.
-	const template = i18n.showingEntries || __( 'Showing %1$s to %2$s of %3$s entries', 'edmm' );
+	const template = i18n.showingEntries || __( 'Showing %1$s to %2$s of %3$s entries', 'equalize-digital-meeting-minutes' );
 	element.textContent = template
 		.replace( '%1$s', startEntry )
 		.replace( '%2$s', endEntry )

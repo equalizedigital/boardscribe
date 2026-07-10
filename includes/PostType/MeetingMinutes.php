@@ -32,14 +32,14 @@ class MeetingMinutes {
 	 */
 	public function register_post_type(): void {
 		$labels = [
-			'name'           => _x( 'Meeting Minutes', 'Post Type General Name', 'edmm' ),
-			'singular_name'  => _x( 'Meeting Minute', 'Post Type Singular Name', 'edmm' ),
-			'menu_name'      => __( 'Meeting Minutes', 'edmm' ),
-			'name_admin_bar' => __( 'Meeting Minute', 'edmm' ),
+			'name'           => _x( 'Meeting Minutes', 'Post Type General Name', 'equalize-digital-meeting-minutes' ),
+			'singular_name'  => _x( 'Meeting Minute', 'Post Type Singular Name', 'equalize-digital-meeting-minutes' ),
+			'menu_name'      => __( 'Meeting Minutes', 'equalize-digital-meeting-minutes' ),
+			'name_admin_bar' => __( 'Meeting Minute', 'equalize-digital-meeting-minutes' ),
 		];
 
 		$args = [
-			'label'         => __( 'Meeting Minute', 'edmm' ),
+			'label'         => __( 'Meeting Minute', 'equalize-digital-meeting-minutes' ),
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
 			// No public single/archive templates — meeting minutes are only ever

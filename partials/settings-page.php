@@ -13,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="wrap">
 	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
-	<h2><?php esc_html_e( 'Shortcode Builder', 'edmm' ); ?></h2>
-	<p><?php esc_html_e( 'Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post.', 'edmm' ); ?></p>
+	<h2><?php esc_html_e( 'Shortcode Builder', 'equalize-digital-meeting-minutes' ); ?></h2>
+	<p><?php esc_html_e( 'Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post.', 'equalize-digital-meeting-minutes' ); ?></p>
 
 	<?php
 	/**
@@ -43,10 +43,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	}
 
 	$edmm_bundled_group_titles = [
-		'column_labels' => __( 'Column Labels', 'edmm' ),
-		'link_labels'   => __( 'Link Labels', 'edmm' ),
-		'hide_columns'  => __( 'Hide Columns', 'edmm' ),
-		'show_columns'  => __( 'Show Columns', 'edmm' ),
+		'column_labels' => __( 'Column Labels', 'equalize-digital-meeting-minutes' ),
+		'link_labels'   => __( 'Link Labels', 'equalize-digital-meeting-minutes' ),
+		'hide_columns'  => __( 'Hide Columns', 'equalize-digital-meeting-minutes' ),
+		'show_columns'  => __( 'Show Columns', 'equalize-digital-meeting-minutes' ),
 	];
 	?>
 	<form id="edmm-shortcode-builder" onsubmit="return false;">
@@ -70,7 +70,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php foreach ( $edmm_builder_groups['column_labels'] as $edmm_field ) : ?>
 							<?php $this->render_bundled_text_field( $edmm_field ); ?>
 						<?php endforeach; ?>
-						<p class="description"><?php esc_html_e( 'Leave blank to use the default label.', 'edmm' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Leave blank to use the default label.', 'equalize-digital-meeting-minutes' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>
@@ -82,7 +82,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php foreach ( $edmm_builder_groups['link_labels'] as $edmm_field ) : ?>
 							<?php $this->render_bundled_text_field( $edmm_field ); ?>
 						<?php endforeach; ?>
-						<p class="description"><?php esc_html_e( 'Text shown inside each link. Leave blank to use the default.', 'edmm' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Text shown inside each link. Leave blank to use the default.', 'equalize-digital-meeting-minutes' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>
@@ -105,7 +105,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php foreach ( $edmm_builder_groups['show_columns'] as $edmm_field ) : ?>
 							<?php $this->render_bundled_checkbox_field( $edmm_field ); ?>
 						<?php endforeach; ?>
-						<p class="description"><?php esc_html_e( 'Enable additional Pro columns.', 'edmm' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Enable additional Pro columns.', 'equalize-digital-meeting-minutes' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>
@@ -113,7 +113,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</table>
 	</form>
 
-	<h3><?php esc_html_e( 'Your Shortcode', 'edmm' ); ?></h3>
+	<h3><?php esc_html_e( 'Your Shortcode', 'equalize-digital-meeting-minutes' ); ?></h3>
 	<div style="display:flex; gap:8px; align-items:center; max-width:600px;">
 		<input
 			type="text"
@@ -127,10 +127,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 			type="button"
 			id="edmm-copy-shortcode"
 			class="button button-secondary"
-			data-copy="<?php esc_attr_e( 'Copy', 'edmm' ); ?>"
-			data-copied="<?php esc_attr_e( 'Copied!', 'edmm' ); ?>"
+			data-copy="<?php esc_attr_e( 'Copy', 'equalize-digital-meeting-minutes' ); ?>"
+			data-copied="<?php esc_attr_e( 'Copied!', 'equalize-digital-meeting-minutes' ); ?>"
 		>
-			<?php esc_html_e( 'Copy', 'edmm' ); ?>
+			<?php esc_html_e( 'Copy', 'equalize-digital-meeting-minutes' ); ?>
 		</button>
 	</div>
 

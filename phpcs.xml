@@ -34,7 +34,7 @@
     <!-- Plugin-specific text domain -->
     <rule ref="WordPress.WP.I18n">
         <properties>
-            <property name="text_domain" type="array" value="edmm"/>
+            <property name="text_domain" type="array" value="equalize-digital-meeting-minutes"/>
         </properties>
     </rule>
 </ruleset>

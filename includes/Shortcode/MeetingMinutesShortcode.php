@@ -84,7 +84,7 @@ class MeetingMinutesShortcode {
 		);
 
 		// Load the JS translation files (JSON) for __() calls in the bundle.
-		wp_set_script_translations( 'edmm-meeting-minutes', 'edmm' );
+		wp_set_script_translations( 'edmm-meeting-minutes', 'equalize-digital-meeting-minutes' );
 
 		$this->localize_script();
 
@@ -116,19 +116,19 @@ class MeetingMinutesShortcode {
 			[
 				'apiUrl' => rest_url( 'edmm/v1/meeting-minutes/' ),
 				'i18n'   => [
-					'colTitle'       => __( 'Title', 'edmm' ),
-					'colDate'        => __( 'Date', 'edmm' ),
-					'colAgenda'      => __( 'Agenda', 'edmm' ),
-					'colMinutes'     => __( 'Minutes', 'edmm' ),
-					'previous'       => __( 'Previous', 'edmm' ),
-					'next'           => __( 'Next', 'edmm' ),
-					'previousPage'   => __( 'Previous Page', 'edmm' ),
-					'nextPage'       => __( 'Next Page', 'edmm' ),
-					'pagination'     => __( 'Pagination', 'edmm' ),
+					'colTitle'       => __( 'Title', 'equalize-digital-meeting-minutes' ),
+					'colDate'        => __( 'Date', 'equalize-digital-meeting-minutes' ),
+					'colAgenda'      => __( 'Agenda', 'equalize-digital-meeting-minutes' ),
+					'colMinutes'     => __( 'Minutes', 'equalize-digital-meeting-minutes' ),
+					'previous'       => __( 'Previous', 'equalize-digital-meeting-minutes' ),
+					'next'           => __( 'Next', 'equalize-digital-meeting-minutes' ),
+					'previousPage'   => __( 'Previous Page', 'equalize-digital-meeting-minutes' ),
+					'nextPage'       => __( 'Next Page', 'equalize-digital-meeting-minutes' ),
+					'pagination'     => __( 'Pagination', 'equalize-digital-meeting-minutes' ),
 					/* translators: %s: page number */
-					'pageNum'        => __( 'Page %s', 'edmm' ),
+					'pageNum'        => __( 'Page %s', 'equalize-digital-meeting-minutes' ),
 					/* translators: 1: first entry number, 2: last entry number, 3: total entries */
-					'showingEntries' => __( 'Showing %1$s to %2$s of %3$s entries', 'edmm' ),
+					'showingEntries' => __( 'Showing %1$s to %2$s of %3$s entries', 'equalize-digital-meeting-minutes' ),
 				],
 			]
 		);
