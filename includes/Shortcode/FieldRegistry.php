@@ -2,21 +2,21 @@
 /**
  * Central registry for shortcode/builder/REST/block field descriptors.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-namespace EqualizeDigital\MeetingMinutes\Shortcode;
+namespace EqualizeDigital\BoardScribe\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
 
 /**
  * Single source of truth for every shortcode attribute this plugin
  * recognizes. Registers the free plugin's own fields on the
- * edmm_shortcode_field_registry filter, and provides the shared,
+ * edbs_shortcode_field_registry filter, and provides the shared,
  * type-based value resolvers that every consumer of that filter uses:
  * MeetingMinutesShortcode (attribute defaults + instance config),
  * MeetingMinutesEndpoint (REST args schema), the settings-page builder
@@ -44,13 +44,13 @@ class FieldRegistry {
 	 * @return void
 	 */
 	public function register(): void {
-		add_filter( 'edmm_shortcode_field_registry', [ __CLASS__, 'add_core_fields' ], 1 );
+		add_filter( 'edbs_shortcode_field_registry', [ __CLASS__, 'add_core_fields' ], 1 );
 	}
 
 	/**
 	 * Returns the merged field registry: the free plugin's own core
 	 * fields plus anything appended by Pro (or any other plugin) via
-	 * the edmm_shortcode_field_registry filter.
+	 * the edbs_shortcode_field_registry filter.
 	 *
 	 * Every call re-runs the full filter chain — there is no cached
 	 * state to invalidate, matching every other single-purpose filter
@@ -63,7 +63,7 @@ class FieldRegistry {
 	public static function all(): array {
 		// A third-party callback returning a non-array would otherwise
 		// throw a fatal TypeError against this method's array return type.
-		$fields = apply_filters( 'edmm_shortcode_field_registry', [] );
+		$fields = apply_filters( 'edbs_shortcode_field_registry', [] );
 		$fields = is_array( $fields ) ? $fields : [];
 
 		// Two descriptors sharing the same key would otherwise render as
@@ -113,17 +113,17 @@ class FieldRegistry {
 					'key'         => 'included_years',
 					'type'        => self::TYPE_TEXT,
 					'group'       => 'general',
-					'label'       => __( 'Included Years', 'meeting-minutes' ),
+					'label'       => __( 'Included Years', 'boardscribe' ),
 					'default'     => '',
 					'placeholder' => '2023,2024',
-					'description' => __( 'Comma-separated list of years. Leave blank to show all years.', 'meeting-minutes' ),
+					'description' => __( 'Comma-separated list of years. Leave blank to show all years.', 'boardscribe' ),
 					'rest_arg'    => true,
 				],
 				[
 					'key'      => 'posts_per_page',
 					'type'     => self::TYPE_NUMBER_WITH_ALL,
 					'group'    => 'general',
-					'label'    => __( 'Posts Per Page', 'meeting-minutes' ),
+					'label'    => __( 'Posts Per Page', 'boardscribe' ),
 					'default'  => 20,
 					'rest_arg' => true,
 				],
@@ -131,9 +131,9 @@ class FieldRegistry {
 					'key'               => 'held_date_format',
 					'type'              => self::TYPE_TEXT,
 					'group'             => 'general',
-					'label'             => __( 'Held Date Format', 'meeting-minutes' ),
+					'label'             => __( 'Held Date Format', 'boardscribe' ),
 					'default'           => 'Y/m/d',
-					'description'       => __( 'PHP date() format. See php.net/manual/en/datetime.format.php for the full reference.', 'meeting-minutes' ),
+					'description'       => __( 'PHP date() format. See php.net/manual/en/datetime.format.php for the full reference.', 'boardscribe' ),
 					'sanitize_callback' => static function ( $value ) {
 						return self::sanitize_date_format( $value, 'Y/m/d' );
 					},
@@ -144,7 +144,7 @@ class FieldRegistry {
 					'key'               => 'not_held_date_format',
 					'type'              => self::TYPE_TEXT,
 					'group'             => 'general',
-					'label'             => __( 'Not Held Date Format', 'meeting-minutes' ),
+					'label'             => __( 'Not Held Date Format', 'boardscribe' ),
 					'default'           => 'Y/m',
 					'sanitize_callback' => static function ( $value ) {
 						return self::sanitize_date_format( $value, 'Y/m' );
@@ -156,26 +156,26 @@ class FieldRegistry {
 					'key'     => 'template',
 					'type'    => self::TYPE_SELECT,
 					'group'   => 'general',
-					'label'   => __( 'Display Template', 'meeting-minutes' ),
+					'label'   => __( 'Display Template', 'boardscribe' ),
 					'default' => '',
 					'choices' => [
-						''              => __( 'Table (default)', 'meeting-minutes' ),
-						'year-timeline' => __( 'Timeline (grouped by year)', 'meeting-minutes' ),
+						''              => __( 'Table (default)', 'boardscribe' ),
+						'year-timeline' => __( 'Timeline (grouped by year)', 'boardscribe' ),
 					],
 				],
 				[
 					'key'         => 'equal_columns',
 					'type'        => self::TYPE_CHECKBOX,
 					'group'       => 'general',
-					'label'       => __( 'Force all columns to the same width', 'meeting-minutes' ),
+					'label'       => __( 'Force all columns to the same width', 'boardscribe' ),
 					'default'     => false,
-					'description' => __( 'Helps align columns consistently for vertical rhythm across rows.', 'meeting-minutes' ),
+					'description' => __( 'Helps align columns consistently for vertical rhythm across rows.', 'boardscribe' ),
 				],
 				[
 					'key'                 => 'class',
 					'type'                => self::TYPE_TEXT,
 					'group'               => 'general',
-					'label'               => __( 'Custom CSS Class', 'meeting-minutes' ),
+					'label'               => __( 'Custom CSS Class', 'boardscribe' ),
 					'default'             => '',
 					'sanitize_callback'   => [ __CLASS__, 'sanitize_class_list' ],
 					'config_key'          => 'tableClass',
@@ -185,35 +185,35 @@ class FieldRegistry {
 					'key'     => 'title_label',
 					'type'    => self::TYPE_TEXT,
 					'group'   => 'column_labels',
-					'label'   => __( 'Title', 'meeting-minutes' ),
+					'label'   => __( 'Title', 'boardscribe' ),
 					'default' => '',
 				],
 				[
 					'key'     => 'date_label',
 					'type'    => self::TYPE_TEXT,
 					'group'   => 'column_labels',
-					'label'   => __( 'Date', 'meeting-minutes' ),
+					'label'   => __( 'Date', 'boardscribe' ),
 					'default' => '',
 				],
 				[
 					'key'     => 'agenda_label',
 					'type'    => self::TYPE_TEXT,
 					'group'   => 'column_labels',
-					'label'   => __( 'Agenda', 'meeting-minutes' ),
+					'label'   => __( 'Agenda', 'boardscribe' ),
 					'default' => '',
 				],
 				[
 					'key'     => 'minutes_label',
 					'type'    => self::TYPE_TEXT,
 					'group'   => 'column_labels',
-					'label'   => __( 'Minutes', 'meeting-minutes' ),
+					'label'   => __( 'Minutes', 'boardscribe' ),
 					'default' => '',
 				],
 				[
 					'key'      => 'agenda_link_label',
 					'type'     => self::TYPE_TEXT,
 					'group'    => 'link_labels',
-					'label'    => __( 'Agenda Link Label', 'meeting-minutes' ),
+					'label'    => __( 'Agenda Link Label', 'boardscribe' ),
 					'default'  => '',
 					'rest_arg' => true,
 				],
@@ -221,7 +221,7 @@ class FieldRegistry {
 					'key'      => 'minutes_link_label',
 					'type'     => self::TYPE_TEXT,
 					'group'    => 'link_labels',
-					'label'    => __( 'Minutes Link Label', 'meeting-minutes' ),
+					'label'    => __( 'Minutes Link Label', 'boardscribe' ),
 					'default'  => '',
 					'rest_arg' => true,
 				],
@@ -229,28 +229,28 @@ class FieldRegistry {
 					'key'     => 'hide_title',
 					'type'    => self::TYPE_CHECKBOX,
 					'group'   => 'hide_columns',
-					'label'   => __( 'Title', 'meeting-minutes' ),
+					'label'   => __( 'Title', 'boardscribe' ),
 					'default' => false,
 				],
 				[
 					'key'     => 'hide_date',
 					'type'    => self::TYPE_CHECKBOX,
 					'group'   => 'hide_columns',
-					'label'   => __( 'Date', 'meeting-minutes' ),
+					'label'   => __( 'Date', 'boardscribe' ),
 					'default' => false,
 				],
 				[
 					'key'     => 'hide_agenda',
 					'type'    => self::TYPE_CHECKBOX,
 					'group'   => 'hide_columns',
-					'label'   => __( 'Agenda', 'meeting-minutes' ),
+					'label'   => __( 'Agenda', 'boardscribe' ),
 					'default' => false,
 				],
 				[
 					'key'     => 'hide_minutes',
 					'type'    => self::TYPE_CHECKBOX,
 					'group'   => 'hide_columns',
-					'label'   => __( 'Minutes', 'meeting-minutes' ),
+					'label'   => __( 'Minutes', 'boardscribe' ),
 					'default' => false,
 				],
 			],
@@ -296,7 +296,7 @@ class FieldRegistry {
 				// Not restricted to $field['choices'] - that list is only
 				// used to populate the builder UI's <select> options. A
 				// template name Pro/third parties register purely in JS
-				// (window.edmmTemplates) has no matching PHP-side choice to
+				// (window.edbsTemplates) has no matching PHP-side choice to
 				// validate against, so any well-formed key is accepted here,
 				// same as the pre-registry sanitize_key() behavior.
 				return sanitize_key( (string) $raw_value );

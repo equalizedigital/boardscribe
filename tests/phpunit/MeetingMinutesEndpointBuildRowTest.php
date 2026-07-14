@@ -2,10 +2,10 @@
 /**
  * Tests for MeetingMinutesEndpoint::build_meeting_row().
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -53,7 +53,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	private function create_meeting( array $meta = [], array $post_args = [] ): int {
 		$post_id = self::factory()->post->create(
 			array_merge(
-				[ 'post_type' => 'edmm_meeting_minutes' ],
+				[ 'post_type' => 'edbs_meeting_minutes' ],
 				$post_args
 			)
 		);
@@ -79,7 +79,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 		wp_set_current_user( $admin_id );
 
 		$post_id = $this->create_meeting(
-			[ 'edmm_meeting_date' => '2024-03-15' ],
+			[ 'edbs_meeting_date' => '2024-03-15' ],
 			[ 'post_title' => '<script>alert(1)</script>' ]
 		);
 
@@ -95,7 +95,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	 * A held meeting's date is formatted using held_date_format.
 	 */
 	public function test_held_meeting_date_uses_held_format(): void {
-		$post_id = $this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
+		$post_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
 
 		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
 
@@ -108,8 +108,8 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	public function test_not_held_meeting_date_uses_not_held_format(): void {
 		$post_id = $this->create_meeting(
 			[
-				'edmm_meeting_date'     => '2024-03-15',
-				'edmm_meeting_not_held' => '1',
+				'edbs_meeting_date'     => '2024-03-15',
+				'edbs_meeting_not_held' => '1',
 			]
 		);
 
@@ -136,9 +136,9 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	public function test_not_held_meeting_agenda_text(): void {
 		$post_id = $this->create_meeting(
 			[
-				'edmm_meeting_date'        => '2024-03-15',
-				'edmm_meeting_not_held'    => '1',
-				'edmm_meeting_agenda_url'  => 'https://example.com/agenda.pdf',
+				'edbs_meeting_date'        => '2024-03-15',
+				'edbs_meeting_not_held'    => '1',
+				'edbs_meeting_agenda_url'  => 'https://example.com/agenda.pdf',
 			]
 		);
 
@@ -151,7 +151,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	 * A held meeting with no agenda URL gets the "not available" markup.
 	 */
 	public function test_missing_agenda_url_falls_back_to_not_available(): void {
-		$post_id = $this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
+		$post_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
 
 		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
 
@@ -164,8 +164,8 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	public function test_agenda_url_produces_a_link(): void {
 		$post_id = $this->create_meeting(
 			[
-				'edmm_meeting_date'       => '2024-03-15',
-				'edmm_meeting_agenda_url' => 'https://example.com/agenda.pdf',
+				'edbs_meeting_date'       => '2024-03-15',
+				'edbs_meeting_agenda_url' => 'https://example.com/agenda.pdf',
 			]
 		);
 
@@ -183,7 +183,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	 * copy-paste bug in one wouldn't be caught without covering both.
 	 */
 	public function test_missing_minutes_url_falls_back_to_not_available(): void {
-		$post_id = $this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
+		$post_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
 
 		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
 
@@ -198,8 +198,8 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	public function test_minutes_url_produces_a_link(): void {
 		$post_id = $this->create_meeting(
 			[
-				'edmm_meeting_date'        => '2024-03-15',
-				'edmm_meeting_minutes_url' => 'https://example.com/minutes.pdf',
+				'edbs_meeting_date'        => '2024-03-15',
+				'edbs_meeting_minutes_url' => 'https://example.com/minutes.pdf',
 			]
 		);
 
@@ -214,7 +214,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	 * non-REST caller like a CSV export) does not throw.
 	 */
 	public function test_works_without_a_request_object(): void {
-		$post_id = $this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
+		$post_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
 
 		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args, null );
 
@@ -222,20 +222,20 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	}
 
 	/**
-	 * The edmm_meeting_row_data filter can add/override fields on the row.
+	 * The edbs_meeting_row_data filter can add/override fields on the row.
 	 */
 	public function test_row_data_filter_is_applied(): void {
-		$post_id = $this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
+		$post_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
 
 		$callback = static function ( array $row ): array {
 			$row['custom_field'] = 'custom_value';
 			return $row;
 		};
-		add_filter( 'edmm_meeting_row_data', $callback );
+		add_filter( 'edbs_meeting_row_data', $callback );
 
 		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
 
-		remove_filter( 'edmm_meeting_row_data', $callback );
+		remove_filter( 'edbs_meeting_row_data', $callback );
 
 		$this->assertSame( 'custom_value', $row['custom_field'] );
 	}

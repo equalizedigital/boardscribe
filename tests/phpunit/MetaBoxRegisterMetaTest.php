@@ -2,10 +2,10 @@
 /**
  * Tests for MetaBox::register_post_meta().
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\Admin\MetaBox;
+use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -36,7 +36,7 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 */
 	private function get_meta_args( string $meta_key ): array {
 		global $wp_meta_keys;
-		return $wp_meta_keys['post']['edmm_meeting_minutes'][ $meta_key ];
+		return $wp_meta_keys['post']['edbs_meeting_minutes'][ $meta_key ];
 	}
 
 	/**
@@ -45,9 +45,9 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 */
 	public function test_all_meta_keys_are_registered(): void {
 		global $wp_meta_keys;
-		$keys = array_keys( $wp_meta_keys['post']['edmm_meeting_minutes'] );
+		$keys = array_keys( $wp_meta_keys['post']['edbs_meeting_minutes'] );
 
-		foreach ( [ 'edmm_meeting_date', 'edmm_meeting_agenda_url', 'edmm_meeting_minutes_url', 'edmm_meeting_not_held' ] as $expected_key ) {
+		foreach ( [ 'edbs_meeting_date', 'edbs_meeting_agenda_url', 'edbs_meeting_minutes_url', 'edbs_meeting_not_held' ] as $expected_key ) {
 			$this->assertContains( $expected_key, $keys );
 		}
 	}
@@ -56,8 +56,8 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * Text-type fields use sanitize_text_field.
 	 */
 	public function test_text_fields_use_sanitize_text_field(): void {
-		$this->assertSame( 'sanitize_text_field', $this->get_meta_args( 'edmm_meeting_date' )['sanitize_callback'] );
-		$this->assertSame( 'sanitize_text_field', $this->get_meta_args( 'edmm_meeting_not_held' )['sanitize_callback'] );
+		$this->assertSame( 'sanitize_text_field', $this->get_meta_args( 'edbs_meeting_date' )['sanitize_callback'] );
+		$this->assertSame( 'sanitize_text_field', $this->get_meta_args( 'edbs_meeting_not_held' )['sanitize_callback'] );
 	}
 
 	/**
@@ -65,8 +65,8 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * at save time in MetaBox::save_meta().
 	 */
 	public function test_url_fields_use_esc_url_raw(): void {
-		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edmm_meeting_agenda_url' )['sanitize_callback'] );
-		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edmm_meeting_minutes_url' )['sanitize_callback'] );
+		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edbs_meeting_agenda_url' )['sanitize_callback'] );
+		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edbs_meeting_minutes_url' )['sanitize_callback'] );
 	}
 
 	/**
@@ -75,12 +75,12 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * even if they could edit posts of this type in general.
 	 */
 	public function test_auth_callback_denies_user_without_post_specific_capability(): void {
-		$post_id       = self::factory()->post->create( [ 'post_type' => 'edmm_meeting_minutes' ] );
+		$post_id       = self::factory()->post->create( [ 'post_type' => 'edbs_meeting_minutes' ] );
 		$subscriber_id = self::factory()->user->create( [ 'role' => 'subscriber' ] );
 		wp_set_current_user( $subscriber_id );
 
-		$auth_callback = $this->get_meta_args( 'edmm_meeting_date' )['auth_callback'];
-		$allowed       = $auth_callback( true, 'edmm_meeting_date', $post_id );
+		$auth_callback = $this->get_meta_args( 'edbs_meeting_date' )['auth_callback'];
+		$allowed       = $auth_callback( true, 'edbs_meeting_date', $post_id );
 
 		wp_set_current_user( 0 );
 
@@ -91,12 +91,12 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * With a real post ID, a user who can edit that post is allowed.
 	 */
 	public function test_auth_callback_allows_user_with_post_specific_capability(): void {
-		$post_id   = self::factory()->post->create( [ 'post_type' => 'edmm_meeting_minutes' ] );
+		$post_id   = self::factory()->post->create( [ 'post_type' => 'edbs_meeting_minutes' ] );
 		$editor_id = self::factory()->user->create( [ 'role' => 'editor' ] );
 		wp_set_current_user( $editor_id );
 
-		$auth_callback = $this->get_meta_args( 'edmm_meeting_date' )['auth_callback'];
-		$allowed       = $auth_callback( true, 'edmm_meeting_date', $post_id );
+		$auth_callback = $this->get_meta_args( 'edbs_meeting_date' )['auth_callback'];
+		$allowed       = $auth_callback( true, 'edbs_meeting_date', $post_id );
 
 		wp_set_current_user( 0 );
 
@@ -115,8 +115,8 @@ class MetaBoxRegisterMetaTest extends TestCase {
 		$editor_id = self::factory()->user->create( [ 'role' => 'editor' ] );
 		wp_set_current_user( $editor_id );
 
-		$auth_callback = $this->get_meta_args( 'edmm_meeting_date' )['auth_callback'];
-		$allowed       = $auth_callback( true, 'edmm_meeting_date', 0 );
+		$auth_callback = $this->get_meta_args( 'edbs_meeting_date' )['auth_callback'];
+		$allowed       = $auth_callback( true, 'edbs_meeting_date', 0 );
 
 		wp_set_current_user( 0 );
 
@@ -129,8 +129,8 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	public function test_auth_callback_denies_logged_out_user_with_zero_object_id(): void {
 		wp_set_current_user( 0 );
 
-		$auth_callback = $this->get_meta_args( 'edmm_meeting_date' )['auth_callback'];
-		$allowed       = $auth_callback( true, 'edmm_meeting_date', 0 );
+		$auth_callback = $this->get_meta_args( 'edbs_meeting_date' )['auth_callback'];
+		$allowed       = $auth_callback( true, 'edbs_meeting_date', 0 );
 
 		$this->assertFalse( $allowed );
 	}

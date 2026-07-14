@@ -5,17 +5,17 @@ import { i18n } from '../config';
 /**
  * Builds a <table> element's HTML for a list of meetings, honoring
  * instanceCfg's hide-column, label, and tableClass settings and any
- * Pro-registered window.edmmExtraColumns - the same column set,
+ * Pro-registered window.edbsExtraColumns - the same column set,
  * label-resolution, and escaping rules the built-in "table" template
  * uses. Exposed globally as
- * window.edmmBuildTable (see index.js) so Pro's own templates (e.g. one
+ * window.edbsBuildTable (see index.js) so Pro's own templates (e.g. one
  * that renders a separate table per year) can reuse this instead of
  * re-implementing the same column-building logic, which would otherwise
  * need to be kept in sync by hand across two codebases.
  *
  * As a public API any external caller can invoke directly (not just this
  * bundle's own render(), which already normalizes its inputs), this
- * defensively normalizes meetings/instanceCfg/window.edmmExtraColumns and
+ * defensively normalizes meetings/instanceCfg/window.edbsExtraColumns and
  * falls back to '' for missing meeting fields, rather than throwing or
  * rendering literal "undefined" text.
  *
@@ -26,22 +26,22 @@ import { i18n } from '../config';
 export function buildTableHtml( meetings, instanceCfg ) {
 	const safeMeetings = Array.isArray( meetings ) ? meetings : [];
 	const cfg = instanceCfg || {};
-	const extraColumns = window.edmmExtraColumns || [];
+	const extraColumns = window.edbsExtraColumns || [];
 
 	// Resolve column labels: instance override → i18n global → hard-coded fallback.
-	const labelTitle = cfg.titleLabel || i18n.colTitle || __( 'Title', 'meeting-minutes' );
-	const labelDate = cfg.dateLabel || i18n.colDate || __( 'Date', 'meeting-minutes' );
-	const labelAgenda = cfg.agendaLabel || i18n.colAgenda || __( 'Agenda', 'meeting-minutes' );
-	const labelMinutes = cfg.minutesLabel || i18n.colMinutes || __( 'Minutes', 'meeting-minutes' );
+	const labelTitle = cfg.titleLabel || i18n.colTitle || __( 'Title', 'boardscribe' );
+	const labelDate = cfg.dateLabel || i18n.colDate || __( 'Date', 'boardscribe' );
+	const labelAgenda = cfg.agendaLabel || i18n.colAgenda || __( 'Agenda', 'boardscribe' );
+	const labelMinutes = cfg.minutesLabel || i18n.colMinutes || __( 'Minutes', 'boardscribe' );
 
 	// The class list and core labels are already sanitized server-side
 	// (sanitize_class_list()/sanitize_text_field() in the shortcode),
 	// but escape at the insertion point too so values injected via the
-	// edmm_shortcode_instance_config filter get the same treatment.
+	// edbs_shortcode_instance_config filter get the same treatment.
 	const tableClass = escapeAttribute( cfg.tableClass || '' );
-	const templateClass = escapeAttribute( 'edmm-template-' + ( cfg.resolvedTemplate || 'table' ) );
-	const equalColumnsClass = cfg.equalColumns ? 'edmm-equal-columns' : '';
-	let table = '<table tabindex="0" class="edmm-meeting-minutes-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
+	const templateClass = escapeAttribute( 'edbs-template-' + ( cfg.resolvedTemplate || 'table' ) );
+	const equalColumnsClass = cfg.equalColumns ? 'edbs-equal-columns' : '';
+	let table = '<table tabindex="0" class="edbs-meeting-minutes-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
 		'<thead class="desktop"><tr>';
 
 	if ( ! cfg.hideTitle ) {
@@ -118,10 +118,10 @@ export function buildTableHtml( meetings, instanceCfg ) {
 }
 
 // The built-in "table" display template, registered as
-// window.edmmTemplates.table by the entry point.
+// window.edbsTemplates.table by the entry point.
 export const tableTemplate = {
 	render( data, instanceCfg, container ) {
-		// Tolerate malformed responses (e.g. an edmm_rest_response filter
+		// Tolerate malformed responses (e.g. an edbs_rest_response filter
 		// emptying the payload) rather than throwing mid-render.
 		const meetings = ( data && Array.isArray( data.meetings ) ) ? data.meetings : [];
 		container.innerHTML = buildTableHtml( meetings, instanceCfg );

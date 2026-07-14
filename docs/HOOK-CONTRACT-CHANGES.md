@@ -6,79 +6,93 @@ Newly *added* hooks (no compatibility concern, just new capability) are tracked 
 
 ---
 
-## PR #9 — `edmm_meeting_row_data`'s `$request` argument can now be `null`
+## PR #9 — `edbs_meeting_row_data`'s `$request` argument can now be `null`
 
-**Before:** `edmm_meeting_row_data` was only ever fired from inside `MeetingMinutesEndpoint::get_meeting_minutes()`, so the third argument (`$request`) was always a real `\WP_REST_Request` instance.
+**Before:** `edbs_meeting_row_data` was only ever fired from inside `MeetingMinutesEndpoint::get_meeting_minutes()`, so the third argument (`$request`) was always a real `\WP_REST_Request` instance.
 
 **After:** The per-row building logic was extracted into a new public method, `MeetingMinutesEndpoint::build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array`, specifically so Pro features that need the same escaped/formatted row data *outside* a REST request (CSV/PDF export, an iCal feed, a "most recent meeting" widget) can call it directly. When called this way, `$request` will be `null`.
 
-**Contract impact:** Any callback hooked to `edmm_meeting_row_data` that type-hints its third parameter as `\WP_REST_Request` (rather than `?\WP_REST_Request` or leaving it untyped) will throw a fatal `TypeError` the first time something calls `build_meeting_row()` outside the REST endpoint.
+**Contract impact:** Any callback hooked to `edbs_meeting_row_data` that type-hints its third parameter as `\WP_REST_Request` (rather than `?\WP_REST_Request` or leaving it untyped) will throw a fatal `TypeError` the first time something calls `build_meeting_row()` outside the REST endpoint.
 
 ```php
 // Before this change, safe:
-add_filter( 'edmm_meeting_row_data', function ( array $row, int $post_id, \WP_REST_Request $request ) { ... }, 10, 3 );
+add_filter( 'edbs_meeting_row_data', function ( array $row, int $post_id, \WP_REST_Request $request ) { ... }, 10, 3 );
 
 // Now required for compatibility:
-add_filter( 'edmm_meeting_row_data', function ( array $row, int $post_id, ?\WP_REST_Request $request ) { ... }, 10, 3 );
+add_filter( 'edbs_meeting_row_data', function ( array $row, int $post_id, ?\WP_REST_Request $request ) { ... }, 10, 3 );
 // or simply omit/relax the type hint and null-check before use.
 ```
 
-**Action for Pro before release:** grep Pro's codebase for `edmm_meeting_row_data` and confirm every callback either doesn't type-hint the third parameter, type-hints it nullable, or defensively checks `$request` before calling any `\WP_REST_Request` method on it.
+**Action for Pro before release:** grep Pro's codebase for `edbs_meeting_row_data` and confirm every callback either doesn't type-hint the third parameter, type-hints it nullable, or defensively checks `$request` before calling any `\WP_REST_Request` method on it.
 
 *(Flagged during review of PR #9 by Gemini Code Assist — as of that PR, `build_meeting_row()` passes `$request` through as `null` when the caller doesn't supply one, rather than substituting a dummy `\WP_REST_Request` instance. If that gets changed to always pass a real instance instead, update this doc.)*
 
 ---
 
-## PR #19 — five hooks removed, replaced by `edmm_shortcode_field_registry`
+## PR #19 — five hooks removed, replaced by `edbs_shortcode_field_registry`
 
-**Before:** shortcode-attribute defaults, REST args, and the settings-page builder UI were four independently hand-maintained lists, glued together by five separate hooks: `edmm_shortcode_atts` (filter — new shortcode attribute defaults), `edmm_shortcode_instance_config` (filter — new per-instance JS config keys), `edmm_shortcode_builder_fields` (action — raw-HTML escape hatch for wholly new builder rows), `edmm_shortcode_builder_label_fields` (filter — entries in the builder's "Column Labels" row), `edmm_shortcode_builder_hide_fields` (filter — entries in the builder's "Hide Columns" row).
+**Before:** shortcode-attribute defaults, REST args, and the settings-page builder UI were four independently hand-maintained lists, glued together by five separate hooks: `edbs_shortcode_atts` (filter — new shortcode attribute defaults), `edbs_shortcode_instance_config` (filter — new per-instance JS config keys), `edbs_shortcode_builder_fields` (action — raw-HTML escape hatch for wholly new builder rows), `edbs_shortcode_builder_label_fields` (filter — entries in the builder's "Column Labels" row), `edbs_shortcode_builder_hide_fields` (filter — entries in the builder's "Hide Columns" row).
 
-**After:** all five are removed — **no deprecation shim, this is a breaking change** — replaced by one filter, `edmm_shortcode_field_registry` (see `Shortcode/FieldRegistry.php` and the row in `CLAUDE.md`'s extension-point table). A callback on this filter returns an array of field *descriptors* instead of a bare label/default; free itself derives the shortcode default, instance-config value, REST arg (when opted in), and builder-UI row from each descriptor.
+**After:** all five are removed — **no deprecation shim, this is a breaking change** — replaced by one filter, `edbs_shortcode_field_registry` (see `Shortcode/FieldRegistry.php` and the row in `CLAUDE.md`'s extension-point table). A callback on this filter returns an array of field *descriptors* instead of a bare label/default; free itself derives the shortcode default, instance-config value, REST arg (when opted in), and builder-UI row from each descriptor.
 
-**Contract impact:** any callback still hooked to the five removed hooks stops running (`apply_filters()`/`do_action()` on an unregistered hook name is a silent no-op in WordPress — it does not error, so a callback written against the old contract will just quietly stop taking effect, not fail loudly). Every consumer needs to move to `edmm_shortcode_field_registry` before upgrading past this change.
+**Contract impact:** any callback still hooked to the five removed hooks stops running (`apply_filters()`/`do_action()` on an unregistered hook name is a silent no-op in WordPress — it does not error, so a callback written against the old contract will just quietly stop taking effect, not fail loudly). Every consumer needs to move to `edbs_shortcode_field_registry` before upgrading past this change.
 
-**Not a 1:1 replacement for `edmm_shortcode_builder_fields`'s raw-HTML use case:** the new registry only covers typed field descriptors (the six `FieldRegistry` types). `edmm_shortcode_builder_fields` was a bare `do_action()` some callers used to inject arbitrary custom markup/sections into the builder form (not just a labeled input/checkbox/select). There is no equivalent escape hatch in the new filter — a caller doing that needs a different approach (e.g. its own `admin_footer`/inline-script hook on the settings page) or to accept the field is intentionally unsupported by the registry.
+**Not a 1:1 replacement for `edbs_shortcode_builder_fields`'s raw-HTML use case:** the new registry only covers typed field descriptors (the six `FieldRegistry` types). `edbs_shortcode_builder_fields` was a bare `do_action()` some callers used to inject arbitrary custom markup/sections into the builder form (not just a labeled input/checkbox/select). There is no equivalent escape hatch in the new filter — a caller doing that needs a different approach (e.g. its own `admin_footer`/inline-script hook on the settings page) or to accept the field is intentionally unsupported by the registry.
 
 ```php
 // Before:
-add_filter( 'edmm_shortcode_atts', function ( array $defaults ) {
+add_filter( 'edbs_shortcode_atts', function ( array $defaults ) {
 	$defaults['location_label'] = '';
 	$defaults['hide_location']  = 'false';
 	return $defaults;
 } );
-add_filter( 'edmm_shortcode_builder_label_fields', function ( array $fields ) {
-	$fields['location_label'] = __( 'Location', 'edmm-pro' );
+add_filter( 'edbs_shortcode_builder_label_fields', function ( array $fields ) {
+	$fields['location_label'] = __( 'Location', 'boardscribe-pro' );
 	return $fields;
 } );
-add_filter( 'edmm_shortcode_builder_hide_fields', function ( array $fields ) {
-	$fields['hide_location'] = __( 'Location', 'edmm-pro' );
+add_filter( 'edbs_shortcode_builder_hide_fields', function ( array $fields ) {
+	$fields['hide_location'] = __( 'Location', 'boardscribe-pro' );
 	return $fields;
 } );
-add_filter( 'edmm_shortcode_instance_config', function ( array $config, array $atts ) {
+add_filter( 'edbs_shortcode_instance_config', function ( array $config, array $atts ) {
 	$config['locationLabel'] = sanitize_text_field( $atts['location_label'] ?? '' );
 	$config['hideLocation']  = filter_var( $atts['hide_location'] ?? 'false', FILTER_VALIDATE_BOOLEAN );
 	return $config;
 }, 10, 2 );
 
 // Now, one callback on the new filter replaces all four of the above:
-add_filter( 'edmm_shortcode_field_registry', function ( array $fields ) {
+add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 	return array_merge( $fields, [
 		[
 			'key'     => 'location_label',
 			'type'    => 'text',
 			'group'   => 'column_labels',
-			'label'   => __( 'Location', 'edmm-pro' ),
+			'label'   => __( 'Location', 'boardscribe-pro' ),
 			'default' => '',
 		],
 		[
 			'key'     => 'hide_location',
 			'type'    => 'checkbox',
 			'group'   => 'hide_columns',
-			'label'   => __( 'Location', 'edmm-pro' ),
+			'label'   => __( 'Location', 'boardscribe-pro' ),
 			'default' => false,
 		],
 	] );
 } );
 ```
 
-**Action for Pro before release:** grep Pro's codebase for all five removed hook names and migrate every callback to a descriptor on `edmm_shortcode_field_registry`. `posts_per_page` "all" support (previously bolted on via `edmm_rest_route_args` in `ProMetaFields::allow_all_posts_per_page()`) is now a core free-plugin field type (`number_with_all`) — that override method should be deleted entirely, not migrated.
+**Action for Pro before release:** grep Pro's codebase for all five removed hook names and migrate every callback to a descriptor on `edbs_shortcode_field_registry`. `posts_per_page` "all" support (previously bolted on via `edbs_rest_route_args` in `ProMetaFields::allow_all_posts_per_page()`) is now a core free-plugin field type (`number_with_all`) — that override method should be deleted entirely, not migrated.
+
+---
+
+## BoardScribe rebrand — every `edmm_`/`EDMM_` hook, constant, meta key, and option renamed to `edbs_`/`EDBS`
+
+**Before:** the plugin was "Meeting Minutes" / "Meeting Minutes Pro", with code prefix `edmm_`/`EDMM_`, namespace `EqualizeDigital\MeetingMinutes[Pro]`, text domains `meeting-minutes`/`edmm-pro`, and JS globals `window.edmm*`.
+
+**After:** rebranded to **BoardScribe** / **BoardScribe Pro**. Every hook/filter, constant, option, meta key, nonce, script/style handle, and JS global that used the `edmm_`/`EDMM_`/`edmm-`/`window.edmm*` prefix now uses `edbs_`/`EDBS`/`edbs-`/`window.edbs*` instead (see `CLAUDE.md`'s extension-point table for the current name of every hook — that table was updated in place, not duplicated here). Namespace is now `EqualizeDigital\BoardScribe` (free) / `EqualizeDigital\BoardScribePro` (Pro). Text domains are now `boardscribe` / `boardscribe-pro`. The free plugin's "is active" signal Pro checks changed from `defined('EDMM_VERSION')` to `defined('EDBS_VERSION')`.
+
+**Kept unchanged:** the CPT slug/shortcode tag `edbs_meeting_minutes` and the REST route segment `/meeting-minutes/` (now under `edbs/v1`) kept their `meeting_minutes`/`meeting-minutes` *suffix* — that names the content type, not the product, and changing it wasn't necessary or desirable. Pro's block name `equalize-digital/meeting-minutes` likewise kept its suffix. The GitHub repos and `composer.json`/`package.json` "name" fields were deliberately left as their historical `equalize-digital-meeting-minutes`/`meeting-minutes-pro` values, matching a prior precedent of the WP-facing slug diverging from the git repo name — but the local checkout directories were subsequently renamed to `boardscribe`/`boardscribe-pro` to match the new plugin slugs.
+
+**Contract impact:** every hook name in this document and in `CLAUDE.md`'s table (from `edbs_loaded` down) is the *current* name — any Pro code (or third-party integration) still written against the old `edmm_*`/`EDMM_*` names will silently stop firing/receiving these hooks, since `apply_filters()`/`do_action()` on an unregistered name is a no-op.
+
+**Action for Pro before release:** grep for any remaining `edmm`/`EDMM`/`meeting-minutes` (excluding the intentionally-kept CPT/shortcode/REST/block suffixes above) in Pro's codebase and update to the `edbs_`/`EDBS_PRO_` equivalents; confirm the free-plugin-active check reads `defined('EDBS_VERSION')`.

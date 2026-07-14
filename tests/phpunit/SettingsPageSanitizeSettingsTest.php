@@ -2,10 +2,10 @@
 /**
  * Tests for SettingsPage::sanitize_settings().
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\Admin\SettingsPage;
+use EqualizeDigital\BoardScribe\Admin\SettingsPage;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**

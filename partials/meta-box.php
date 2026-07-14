@@ -2,7 +2,7 @@
 /**
  * Meeting Details meta box fields markup.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  *
  * @var string   $meeting_date        Meeting date meta value.
  * @var string   $meeting_agenda_url  Agenda URL meta value.
@@ -20,78 +20,78 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<tbody>
 		<tr>
 			<th scope="row">
-				<label for="edmm_meeting_date"><?php esc_html_e( 'Meeting Date', 'meeting-minutes' ); ?> <span aria-hidden="true">*</span></label>
+				<label for="edbs_meeting_date"><?php esc_html_e( 'Meeting Date', 'boardscribe' ); ?> <span aria-hidden="true">*</span></label>
 			</th>
 			<td>
 				<input
 					type="date"
-					id="edmm_meeting_date"
-					name="edmm_meeting_date"
+					id="edbs_meeting_date"
+					name="edbs_meeting_date"
 					value="<?php echo esc_attr( $meeting_date ); ?>"
 					required
 					class="regular-text"
 				/>
-				<p class="description"><?php esc_html_e( 'Required. Format: YYYY-MM-DD', 'meeting-minutes' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Required. Format: YYYY-MM-DD', 'boardscribe' ); ?></p>
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">
-				<label for="edmm_meeting_agenda_url"><?php esc_html_e( 'Agenda URL', 'meeting-minutes' ); ?></label>
+				<label for="edbs_meeting_agenda_url"><?php esc_html_e( 'Agenda URL', 'boardscribe' ); ?></label>
 			</th>
 			<td>
 				<input
 					type="url"
-					id="edmm_meeting_agenda_url"
-					name="edmm_meeting_agenda_url"
+					id="edbs_meeting_agenda_url"
+					name="edbs_meeting_agenda_url"
 					value="<?php echo esc_url( $meeting_agenda_url ); ?>"
 					class="large-text"
 					placeholder="https://"
 				/>
 				<button
 					type="button"
-					class="button edmm-media-button"
-					data-target="edmm_meeting_agenda_url"
-					data-title="<?php esc_attr_e( 'Choose Agenda File', 'meeting-minutes' ); ?>"
-					data-insert="<?php esc_attr_e( 'Use this file', 'meeting-minutes' ); ?>"
-				><?php esc_html_e( 'Media Library', 'meeting-minutes' ); ?></button>
+					class="button edbs-media-button"
+					data-target="edbs_meeting_agenda_url"
+					data-title="<?php esc_attr_e( 'Choose Agenda File', 'boardscribe' ); ?>"
+					data-insert="<?php esc_attr_e( 'Use this file', 'boardscribe' ); ?>"
+				><?php esc_html_e( 'Media Library', 'boardscribe' ); ?></button>
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">
-				<label for="edmm_meeting_minutes_url"><?php esc_html_e( 'Minutes URL', 'meeting-minutes' ); ?></label>
+				<label for="edbs_meeting_minutes_url"><?php esc_html_e( 'Minutes URL', 'boardscribe' ); ?></label>
 			</th>
 			<td>
 				<input
 					type="url"
-					id="edmm_meeting_minutes_url"
-					name="edmm_meeting_minutes_url"
+					id="edbs_meeting_minutes_url"
+					name="edbs_meeting_minutes_url"
 					value="<?php echo esc_url( $meeting_minutes_url ); ?>"
 					class="large-text"
 					placeholder="https://"
 				/>
 				<button
 					type="button"
-					class="button edmm-media-button"
-					data-target="edmm_meeting_minutes_url"
-					data-title="<?php esc_attr_e( 'Choose Minutes File', 'meeting-minutes' ); ?>"
-					data-insert="<?php esc_attr_e( 'Use this file', 'meeting-minutes' ); ?>"
-				><?php esc_html_e( 'Media Library', 'meeting-minutes' ); ?></button>
+					class="button edbs-media-button"
+					data-target="edbs_meeting_minutes_url"
+					data-title="<?php esc_attr_e( 'Choose Minutes File', 'boardscribe' ); ?>"
+					data-insert="<?php esc_attr_e( 'Use this file', 'boardscribe' ); ?>"
+				><?php esc_html_e( 'Media Library', 'boardscribe' ); ?></button>
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">
-				<?php esc_html_e( 'Meeting Not Held', 'meeting-minutes' ); ?>
+				<?php esc_html_e( 'Meeting Not Held', 'boardscribe' ); ?>
 			</th>
 			<td>
-				<label for="edmm_meeting_not_held">
+				<label for="edbs_meeting_not_held">
 					<input
 						type="checkbox"
-						id="edmm_meeting_not_held"
-						name="edmm_meeting_not_held"
+						id="edbs_meeting_not_held"
+						name="edbs_meeting_not_held"
 						value="1"
 						<?php checked( '1', $meeting_not_held ); ?>
 					/>
-					<?php esc_html_e( 'This meeting was not held', 'meeting-minutes' ); ?>
+					<?php esc_html_e( 'This meeting was not held', 'boardscribe' ); ?>
 				</label>
 			</td>
 		</tr>
@@ -104,7 +104,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 *
 		 * @param \WP_Post $post The current post.
 		 */
-		do_action( 'edmm_meta_fields', $post );
+		do_action( 'edbs_meta_fields', $post );
 		?>
 	</tbody>
 </table>

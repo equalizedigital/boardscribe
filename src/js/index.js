@@ -7,7 +7,7 @@ import { initInstance } from './instance';
 // instead of re-implementing it (and risking divergence from fixes here).
 // Wraps @wordpress/escape-html's escapeAttribute, which throws on
 // null/undefined — callers rely on getting '' back for those.
-window.edmmEscapeAttr = function( value ) {
+window.edbsEscapeAttr = function( value ) {
 	if ( value === null || value === undefined ) {
 		return '';
 	}
@@ -15,14 +15,14 @@ window.edmmEscapeAttr = function( value ) {
 };
 
 // Exposed so a Pro display template can build a standard meetings <table>
-// (same columns/labels/window.edmmExtraColumns handling as the built-in
+// (same columns/labels/window.edbsExtraColumns handling as the built-in
 // "table" template) for however it lays out multiple tables/sections,
 // instead of re-implementing that column-building logic itself.
-window.edmmBuildTable = buildTableHtml;
+window.edbsBuildTable = buildTableHtml;
 
-window.edmmTemplates.table = window.edmmTemplates.table || tableTemplate;
+window.edbsTemplates.table = window.edbsTemplates.table || tableTemplate;
 
 // Initialise all instances when the DOM is ready.
 document.addEventListener( 'DOMContentLoaded', function() {
-	document.querySelectorAll( '.edmm-meeting-minutes-wrap' ).forEach( initInstance );
+	document.querySelectorAll( '.edbs-meeting-minutes-wrap' ).forEach( initInstance );
 } );

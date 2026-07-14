@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Meeting Minutes">
-    <description>WordPress coding standards for the Meeting Minutes plugin.</description>
+<ruleset name="BoardScribe">
+    <description>WordPress coding standards for the BoardScribe plugin.</description>
 
     <!-- Files to check -->
     <file>.</file>
@@ -28,14 +28,14 @@
     </rule>
 
     <!-- Require PHP 7.4+ -->
-    <config name="minimum_supported_wp_version" value="6.0"/>
+    <config name="minimum_supported_wp_version" value="6.7"/>
     <config name="testVersion" value="7.4-"/>
 
     <!-- Plugin-specific text domain -->
     <rule ref="WordPress.WP.I18n">
         <properties>
             <property name="text_domain" type="array">
-                <element value="meeting-minutes"/>
+                <element value="boardscribe"/>
             </property>
         </properties>
     </rule>
@@ -45,8 +45,8 @@
     <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
         <properties>
             <property name="prefixes" type="array">
-                <element value="edmm"/>
-                <element value="EqualizeDigital\MeetingMinutes"/>
+                <element value="edbs"/>
+                <element value="EqualizeDigital\BoardScribe"/>
             </property>
         </properties>
     </rule>

@@ -2,10 +2,10 @@
 /**
  * Native meta box for Meeting Minutes fields.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-namespace EqualizeDigital\MeetingMinutes\Admin;
+namespace EqualizeDigital\BoardScribe\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,7 +27,7 @@ class MetaBox {
 	public function register(): void {
 		add_action( 'init', [ $this, 'register_post_meta' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_box' ] );
-		add_action( 'save_post_edmm_meeting_minutes', [ $this, 'save_meta' ] );
+		add_action( 'save_post_edbs_meeting_minutes', [ $this, 'save_meta' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
@@ -45,15 +45,15 @@ class MetaBox {
 		}
 
 		$screen = get_current_screen();
-		if ( ! $screen || 'edmm_meeting_minutes' !== $screen->post_type ) {
+		if ( ! $screen || 'edbs_meeting_minutes' !== $screen->post_type ) {
 			return;
 		}
 
 		wp_enqueue_media();
 
-		wp_register_script( 'edmm-meta-box', false, [ 'media-upload' ], EDMM_VERSION, true );
-		wp_enqueue_script( 'edmm-meta-box' );
-		wp_add_inline_script( 'edmm-meta-box', $this->get_media_picker_script() );
+		wp_register_script( 'edbs-meta-box', false, [ 'media-upload' ], EDBS_VERSION, true );
+		wp_enqueue_script( 'edbs-meta-box' );
+		wp_add_inline_script( 'edbs-meta-box', $this->get_media_picker_script() );
 	}
 
 	/**
@@ -66,7 +66,7 @@ class MetaBox {
 	private function get_media_picker_script(): string {
 		return <<<'JS'
 document.addEventListener( 'DOMContentLoaded', function () {
-	document.querySelectorAll( '.edmm-media-button' ).forEach( function ( button ) {
+	document.querySelectorAll( '.edbs-media-button' ).forEach( function ( button ) {
 		button.addEventListener( 'click', function ( e ) {
 			e.preventDefault();
 
@@ -115,52 +115,52 @@ JS;
 		];
 
 		register_post_meta(
-			'edmm_meeting_minutes',
-			'edmm_meeting_date',
+			'edbs_meeting_minutes',
+			'edbs_meeting_date',
 			array_merge(
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'Meeting date in Y-m-d format.', 'meeting-minutes' ),
+					'description'       => __( 'Meeting date in Y-m-d format.', 'boardscribe' ),
 					'sanitize_callback' => 'sanitize_text_field',
 				]
 			)
 		);
 
 		register_post_meta(
-			'edmm_meeting_minutes',
-			'edmm_meeting_agenda_url',
+			'edbs_meeting_minutes',
+			'edbs_meeting_agenda_url',
 			array_merge(
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'URL to the meeting agenda document.', 'meeting-minutes' ),
+					'description'       => __( 'URL to the meeting agenda document.', 'boardscribe' ),
 					'sanitize_callback' => 'esc_url_raw',
 				]
 			)
 		);
 
 		register_post_meta(
-			'edmm_meeting_minutes',
-			'edmm_meeting_minutes_url',
+			'edbs_meeting_minutes',
+			'edbs_meeting_minutes_url',
 			array_merge(
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'URL to the meeting minutes document.', 'meeting-minutes' ),
+					'description'       => __( 'URL to the meeting minutes document.', 'boardscribe' ),
 					'sanitize_callback' => 'esc_url_raw',
 				]
 			)
 		);
 
 		register_post_meta(
-			'edmm_meeting_minutes',
-			'edmm_meeting_not_held',
+			'edbs_meeting_minutes',
+			'edbs_meeting_not_held',
 			array_merge(
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'Whether the meeting was not held.', 'meeting-minutes' ),
+					'description'       => __( 'Whether the meeting was not held.', 'boardscribe' ),
 					'sanitize_callback' => 'sanitize_text_field',
 				]
 			)
@@ -183,15 +183,15 @@ JS;
 		 *
 		 * @param bool $show Whether to show the native meta box.
 		 */
-		if ( ! apply_filters( 'edmm_use_native_meta_boxes', true ) ) {
+		if ( ! apply_filters( 'edbs_use_native_meta_boxes', true ) ) {
 			return;
 		}
 
 		add_meta_box(
-			'edmm_meeting_details',
-			__( 'Meeting Details', 'meeting-minutes' ),
+			'edbs_meeting_details',
+			__( 'Meeting Details', 'boardscribe' ),
 			[ $this, 'render_meta_box' ],
-			'edmm_meeting_minutes',
+			'edbs_meeting_minutes',
 			'normal',
 			'high'
 		);
@@ -206,12 +206,12 @@ JS;
 	 * @return void
 	 */
 	public function render_meta_box( \WP_Post $post ): void {
-		$meeting_date        = get_post_meta( $post->ID, 'edmm_meeting_date', true );
-		$meeting_agenda_url  = get_post_meta( $post->ID, 'edmm_meeting_agenda_url', true );
-		$meeting_minutes_url = get_post_meta( $post->ID, 'edmm_meeting_minutes_url', true );
-		$meeting_not_held    = get_post_meta( $post->ID, 'edmm_meeting_not_held', true );
+		$meeting_date        = get_post_meta( $post->ID, 'edbs_meeting_date', true );
+		$meeting_agenda_url  = get_post_meta( $post->ID, 'edbs_meeting_agenda_url', true );
+		$meeting_minutes_url = get_post_meta( $post->ID, 'edbs_meeting_minutes_url', true );
+		$meeting_not_held    = get_post_meta( $post->ID, 'edbs_meeting_not_held', true );
 
-		wp_nonce_field( 'edmm_save_meeting_meta', 'edmm_meeting_meta_nonce' );
+		wp_nonce_field( 'edbs_save_meeting_meta', 'edbs_meeting_meta_nonce' );
 
 		/**
 		 * Fires before the default meta box fields are rendered. Pro plugin can
@@ -221,9 +221,9 @@ JS;
 		 *
 		 * @param \WP_Post $post The current post.
 		 */
-		do_action( 'edmm_before_meta_box_fields', $post );
+		do_action( 'edbs_before_meta_box_fields', $post );
 
-		require EDMM_DIR . 'partials/meta-box.php';
+		require EDBS_DIR . 'partials/meta-box.php';
 	}
 
 	/**
@@ -235,11 +235,11 @@ JS;
 	 * @return void
 	 */
 	public function save_meta( int $post_id ): void {
-		if ( ! isset( $_POST['edmm_meeting_meta_nonce'] ) ) {
+		if ( ! isset( $_POST['edbs_meeting_meta_nonce'] ) ) {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['edmm_meeting_meta_nonce'] ) ), 'edmm_save_meeting_meta' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['edbs_meeting_meta_nonce'] ) ), 'edbs_save_meeting_meta' ) ) {
 			return;
 		}
 
@@ -252,27 +252,27 @@ JS;
 		}
 
 		// Meeting date — validate it is a real date in Y-m-d format.
-		if ( isset( $_POST['edmm_meeting_date'] ) ) {
-			$raw_date = sanitize_text_field( wp_unslash( $_POST['edmm_meeting_date'] ) );
+		if ( isset( $_POST['edbs_meeting_date'] ) ) {
+			$raw_date = sanitize_text_field( wp_unslash( $_POST['edbs_meeting_date'] ) );
 			$date_obj = \DateTime::createFromFormat( 'Y-m-d', $raw_date );
 			if ( $date_obj && $date_obj->format( 'Y-m-d' ) === $raw_date ) {
-				update_post_meta( $post_id, 'edmm_meeting_date', $raw_date );
+				update_post_meta( $post_id, 'edbs_meeting_date', $raw_date );
 			}
 		}
 
 		// Agenda URL.
-		if ( isset( $_POST['edmm_meeting_agenda_url'] ) ) {
-			update_post_meta( $post_id, 'edmm_meeting_agenda_url', esc_url_raw( wp_unslash( $_POST['edmm_meeting_agenda_url'] ) ) );
+		if ( isset( $_POST['edbs_meeting_agenda_url'] ) ) {
+			update_post_meta( $post_id, 'edbs_meeting_agenda_url', esc_url_raw( wp_unslash( $_POST['edbs_meeting_agenda_url'] ) ) );
 		}
 
 		// Minutes URL.
-		if ( isset( $_POST['edmm_meeting_minutes_url'] ) ) {
-			update_post_meta( $post_id, 'edmm_meeting_minutes_url', esc_url_raw( wp_unslash( $_POST['edmm_meeting_minutes_url'] ) ) );
+		if ( isset( $_POST['edbs_meeting_minutes_url'] ) ) {
+			update_post_meta( $post_id, 'edbs_meeting_minutes_url', esc_url_raw( wp_unslash( $_POST['edbs_meeting_minutes_url'] ) ) );
 		}
 
 		// Not held — checkbox is absent when unchecked.
-		$not_held = isset( $_POST['edmm_meeting_not_held'] ) ? '1' : '';
-		update_post_meta( $post_id, 'edmm_meeting_not_held', $not_held );
+		$not_held = isset( $_POST['edbs_meeting_not_held'] ) ? '1' : '';
+		update_post_meta( $post_id, 'edbs_meeting_not_held', $not_held );
 
 		/**
 		 * Fires after the default meta fields are saved. Pro plugin can hook here
@@ -282,6 +282,6 @@ JS;
 		 *
 		 * @param int $post_id The post ID.
 		 */
-		do_action( 'edmm_save_meeting_meta', $post_id );
+		do_action( 'edbs_save_meeting_meta', $post_id );
 	}
 }

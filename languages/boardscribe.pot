@@ -2,38 +2,47 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Meeting Minutes 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/meeting-minutes\n"
+"Project-Id-Version: BoardScribe 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-10T17:43:38+01:00\n"
+"POT-Creation-Date: 2026-07-14T22:38:00+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: meeting-minutes\n"
+"X-Domain: boardscribe\n"
 
 #. Plugin Name of the plugin
-#: meeting-minutes.php
-#: includes/PostType/MeetingMinutes.php:41
-msgid "Meeting Minutes"
+#: boardscribe.php
+msgid "BoardScribe"
 msgstr ""
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
-#: meeting-minutes.php
+#: boardscribe.php
 msgid "https://equalizedigital.com"
 msgstr ""
 
 #. Description of the plugin
-#: meeting-minutes.php
+#: boardscribe.php
 msgid "Manage and display meeting minutes as a custom post type with meta fields."
 msgstr ""
 
 #. Author of the plugin
-#: meeting-minutes.php
+#: boardscribe.php
 msgid "Equalize Digital"
+msgstr ""
+
+#. translators: 1: required PHP version, 2: current PHP version
+#: boardscribe.php:31
+#, php-format
+msgid "BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
+msgstr ""
+
+#: boardscribe.php:53
+msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr ""
 
 #: includes/Admin/MetaBox.php:124
@@ -92,6 +101,10 @@ msgstr ""
 #: includes/PostType/MeetingMinutes.php:40
 msgctxt "Post Type Singular Name"
 msgid "Meeting Minute"
+msgstr ""
+
+#: includes/PostType/MeetingMinutes.php:41
+msgid "Meeting Minutes"
 msgstr ""
 
 #: includes/PostType/MeetingMinutes.php:42
@@ -184,6 +197,7 @@ msgstr ""
 #: includes/Shortcode/FieldRegistry.php:188
 #: includes/Shortcode/FieldRegistry.php:232
 #: includes/Shortcode/MeetingMinutesShortcode.php:123
+#: assets/build/boardscribe.js:1
 #: src/js/templates/table.js:32
 msgid "Title"
 msgstr ""
@@ -191,6 +205,7 @@ msgstr ""
 #: includes/Shortcode/FieldRegistry.php:195
 #: includes/Shortcode/FieldRegistry.php:239
 #: includes/Shortcode/MeetingMinutesShortcode.php:124
+#: assets/build/boardscribe.js:1
 #: src/js/templates/table.js:33
 msgid "Date"
 msgstr ""
@@ -198,6 +213,7 @@ msgstr ""
 #: includes/Shortcode/FieldRegistry.php:202
 #: includes/Shortcode/FieldRegistry.php:246
 #: includes/Shortcode/MeetingMinutesShortcode.php:125
+#: assets/build/boardscribe.js:1
 #: src/js/templates/table.js:34
 msgid "Agenda"
 msgstr ""
@@ -205,6 +221,7 @@ msgstr ""
 #: includes/Shortcode/FieldRegistry.php:209
 #: includes/Shortcode/FieldRegistry.php:253
 #: includes/Shortcode/MeetingMinutesShortcode.php:126
+#: assets/build/boardscribe.js:1
 #: src/js/templates/table.js:35
 msgid "Minutes"
 msgstr ""
@@ -218,26 +235,32 @@ msgid "Minutes Link Label"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:127
+#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:63
 msgid "Previous"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:128
+#: assets/build/boardscribe.js:3
 #: src/js/defaults/renderPagination.js:89
 msgid "Next"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:129
+#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:61
 msgid "Previous Page"
 msgstr ""
 
+#. translators: %s: page number.
 #: includes/Shortcode/MeetingMinutesShortcode.php:130
+#: assets/build/boardscribe.js:3
 #: src/js/defaults/renderPagination.js:87
 msgid "Next Page"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:131
+#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:56
 msgid "Pagination"
 msgstr ""
@@ -245,6 +268,7 @@ msgstr ""
 #. translators: %s: page number
 #. translators: %s: page number.
 #: includes/Shortcode/MeetingMinutesShortcode.php:133
+#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:75
 #, php-format,js-format
 msgid "Page %s"
@@ -253,19 +277,10 @@ msgstr ""
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
 #. translators: %1$s: first entry number, %2$s: last entry number, %3$s: total number of entries.
 #: includes/Shortcode/MeetingMinutesShortcode.php:135
+#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderInfo.js:23
 #, php-format,js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
-msgstr ""
-
-#. translators: 1: required PHP version, 2: current PHP version
-#: meeting-minutes.php:31
-#, php-format
-msgid "Meeting Minutes requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
-msgstr ""
-
-#: meeting-minutes.php:53
-msgid "Meeting Minutes is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr ""
 
 #: partials/meta-box.php:23

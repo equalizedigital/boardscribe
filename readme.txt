@@ -1,26 +1,28 @@
-=== Meeting Minutes ===
+=== BoardScribe ===
 Contributors: equalizedigital
 Tags: meeting minutes, agenda, custom post type, shortcode, table
-Requires at least: 6.0
+Requires at least: 6.7
 Tested up to: 7.0
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Manage and display meeting minutes for government bodies, HOAs, nonprofits, and any organization that holds regular meetings.
+Publish accessible, searchable meeting minutes for councils, HOAs, school boards, and nonprofits — no ACF, no complexity required.
 
 == Description ==
 
-**Meeting Minutes** gives you a structured, accessible way to publish meeting minutes on your WordPress website. Built for government bodies, homeowners associations, nonprofits, school boards, and any organization that holds regular public meetings.
+**BoardScribe** turns your meeting minutes into a searchable, accessible public record — without hiring a developer or burying agendas and minutes in a folder of PDFs no one can find.
 
-No third-party plugins required — all meta fields use native WordPress storage. A built-in shortcode builder helps you configure the display and copy a ready-to-paste shortcode in seconds.
+Built for city councils, county boards, school boards, HOAs, and nonprofits that are required — or simply committed — to keeping their meeting records open. Add a meeting once, and BoardScribe handles the rest: a paginated, screen-reader-friendly table your visitors can browse and sort, backed by a public REST API your dev team can build on.
+
+No ACF. No third-party dependencies. Just native WordPress storage, a shortcode builder that writes the shortcode for you, and developer hooks throughout for anyone who wants to extend it further.
 
 = Features =
 
 * Custom post type for meeting minutes with native meta boxes — no ACF or other plugins required.
 * Shortcode builder in the admin settings page generates a ready-to-copy shortcode.
-* Paginated, accessible table display via `[edmm_meeting_minutes]` shortcode.
+* Paginated, accessible table display via `[edbs_meeting_minutes]` shortcode.
 * Multiple shortcodes on the same page, each independently configured.
 * Responsive stacking layout on small screens with accessible column labels.
 * REST API endpoint for fetching meeting minutes data.
@@ -37,7 +39,7 @@ No third-party plugins required — all meta fields use native WordPress storage
 
 = Shortcode =
 
-`[edmm_meeting_minutes]`
+`[edbs_meeting_minutes]`
 
 Use the **Settings > Shortcode Builder** to generate the shortcode with your preferred options, or write it manually with any of the supported attributes.
 
@@ -55,7 +57,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 
 **Example:**
 
-`[edmm_meeting_minutes included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]`
+`[edbs_meeting_minutes included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]`
 
 = Meta Fields =
 
@@ -72,7 +74,7 @@ The plugin exposes a full set of actions and filters for extending functionality
 
 == Installation ==
 
-1. Upload the plugin files to `/wp-content/plugins/meeting-minutes`, or install through the WordPress plugins screen.
+1. Upload the plugin files to `/wp-content/plugins/boardscribe`, or install through the WordPress plugins screen.
 2. Activate the plugin through the **Plugins** screen in WordPress.
 3. Add meeting minutes via **Meeting Minutes > Add New** in the admin menu.
 4. Go to **Meeting Minutes > Settings** to build your shortcode, then paste it into any page or post.
@@ -85,7 +87,7 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 
 = Can I display meeting minutes for specific years only? =
 
-Yes. Use the `included_years` shortcode attribute with a comma-separated list of years: `[edmm_meeting_minutes included_years="2023,2024"]`.
+Yes. Use the `included_years` shortcode attribute with a comma-separated list of years: `[edbs_meeting_minutes included_years="2023,2024"]`.
 
 = Can I use the shortcode more than once on the same page? =
 
@@ -101,7 +103,7 @@ By default, all data is preserved when the plugin is deleted. You can enable the
 
 = Is the REST API endpoint public? =
 
-Yes. The `/wp-json/edmm/v1/meeting-minutes/` endpoint is intentionally public because meeting minutes are public records. No authentication is required to read them.
+Yes. The `/wp-json/edbs/v1/meeting-minutes/` endpoint is intentionally public because meeting minutes are public records. No authentication is required to read them.
 
 == Screenshots ==
 

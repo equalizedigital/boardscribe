@@ -2,10 +2,10 @@
 /**
  * Tests for MeetingMinutesEndpoint::validate_date_format().
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**

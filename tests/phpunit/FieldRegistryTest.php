@@ -1,15 +1,15 @@
 <?php
 /**
- * Tests for the edmm_shortcode_field_registry filter end to end.
+ * Tests for the edbs_shortcode_field_registry filter end to end.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\Shortcode\MeetingMinutesShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\MeetingMinutesShortcode;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
- * Proves a field registered via edmm_shortcode_field_registry flows all
+ * Proves a field registered via edbs_shortcode_field_registry flows all
  * the way through: shortcode attribute default, instance-config value
  * (MeetingMinutesShortcode::render()), and — when rest_arg is true — the
  * REST route's registered args schema, without touching any of the
@@ -17,10 +17,10 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class FieldRegistryTest extends TestCase {
 
-	const ROUTE = '/edmm/v1/meeting-minutes';
+	const ROUTE = '/edbs/v1/meeting-minutes';
 
 	/**
-	 * The registered edmm_shortcode_field_registry callback, so it can be
+	 * The registered edbs_shortcode_field_registry callback, so it can be
 	 * removed again in tear_down() and not leak into other tests.
 	 *
 	 * @var callable|null
@@ -42,7 +42,7 @@ class FieldRegistryTest extends TestCase {
 	 */
 	public function tear_down(): void {
 		if ( $this->callback ) {
-			remove_filter( 'edmm_shortcode_field_registry', $this->callback );
+			remove_filter( 'edbs_shortcode_field_registry', $this->callback );
 			$this->callback = null;
 		}
 		parent::tear_down();
@@ -66,7 +66,7 @@ class FieldRegistryTest extends TestCase {
 	public function test_registered_field_reaches_instance_config(): void {
 		$this->callback = static function ( array $fields ) {
 			$fields[] = [
-				'key'     => 'edmm_test_hide_widget',
+				'key'     => 'edbs_test_hide_widget',
 				'type'    => 'checkbox',
 				'group'   => 'hide_columns',
 				'label'   => 'Widget',
@@ -74,13 +74,13 @@ class FieldRegistryTest extends TestCase {
 			];
 			return $fields;
 		};
-		add_filter( 'edmm_shortcode_field_registry', $this->callback );
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
 
 		$shortcode = new MeetingMinutesShortcode();
-		$config    = $this->get_instance_config( $shortcode->render( [ 'edmm_test_hide_widget' => 'true' ] ) );
+		$config    = $this->get_instance_config( $shortcode->render( [ 'edbs_test_hide_widget' => 'true' ] ) );
 
-		$this->assertArrayHasKey( 'edmmTestHideWidget', $config );
-		$this->assertTrue( $config['edmmTestHideWidget'] );
+		$this->assertArrayHasKey( 'edbsTestHideWidget', $config );
+		$this->assertTrue( $config['edbsTestHideWidget'] );
 	}
 
 	/**
@@ -90,7 +90,7 @@ class FieldRegistryTest extends TestCase {
 	public function test_sanitize_callback_and_config_key_overrides_are_honored(): void {
 		$this->callback = static function ( array $fields ) {
 			$fields[] = [
-				'key'               => 'edmm_test_shout',
+				'key'               => 'edbs_test_shout',
 				'type'              => 'text',
 				'group'             => 'general',
 				'label'             => 'Shout',
@@ -100,12 +100,12 @@ class FieldRegistryTest extends TestCase {
 			];
 			return $fields;
 		};
-		add_filter( 'edmm_shortcode_field_registry', $this->callback );
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
 
 		$shortcode = new MeetingMinutesShortcode();
-		$config    = $this->get_instance_config( $shortcode->render( [ 'edmm_test_shout' => 'hello' ] ) );
+		$config    = $this->get_instance_config( $shortcode->render( [ 'edbs_test_shout' => 'hello' ] ) );
 
-		$this->assertArrayNotHasKey( 'edmmTestShout', $config );
+		$this->assertArrayNotHasKey( 'edbsTestShout', $config );
 		$this->assertSame( 'HELLO', $config['shoutText'] );
 	}
 
@@ -123,7 +123,7 @@ class FieldRegistryTest extends TestCase {
 
 		$this->callback = static function ( array $fields ) use ( &$observed_raw_values ) {
 			$fields[] = [
-				'key'               => 'edmm_test_query_flag',
+				'key'               => 'edbs_test_query_flag',
 				'type'              => 'text',
 				'group'             => 'general',
 				'label'             => 'Query Flag',
@@ -136,7 +136,7 @@ class FieldRegistryTest extends TestCase {
 			];
 			return $fields;
 		};
-		add_filter( 'edmm_shortcode_field_registry', $this->callback );
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
 
 		// Re-register the route so it picks up the field added above -
 		// register_route() already ran once during set_up()'s
@@ -146,7 +146,7 @@ class FieldRegistryTest extends TestCase {
 		do_action( 'rest_api_init', $wp_rest_server );
 
 		$request = new \WP_REST_Request( 'GET', self::ROUTE );
-		$request->set_param( 'edmm_test_query_flag', 'raw-test-value' );
+		$request->set_param( 'edbs_test_query_flag', 'raw-test-value' );
 
 		$response = rest_get_server()->dispatch( $request );
 
@@ -166,9 +166,9 @@ class FieldRegistryTest extends TestCase {
 		$this->callback = static function () {
 			return null;
 		};
-		add_filter( 'edmm_shortcode_field_registry', $this->callback );
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
 
-		$fields = \EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry::all();
+		$fields = \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::all();
 
 		$this->assertIsArray( $fields );
 	}
@@ -180,12 +180,12 @@ class FieldRegistryTest extends TestCase {
 	 */
 	public function test_resolve_value_normalizes_an_array_raw_value(): void {
 		$field = [
-			'key'     => 'edmm_test_array_input',
+			'key'     => 'edbs_test_array_input',
 			'type'    => 'text',
 			'default' => '',
 		];
 
-		$result = \EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry::resolve_value( $field, [ 'unexpected', 'array' ] );
+		$result = \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::resolve_value( $field, [ 'unexpected', 'array' ] );
 
 		$this->assertSame( '', $result );
 	}

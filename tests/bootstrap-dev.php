@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file for local dev testing.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
 require_once __DIR__ . '/bootstrap.php';

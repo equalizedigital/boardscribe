@@ -2,10 +2,10 @@
 /**
  * Tests for Plugin's behavior beyond the bootstrap smoke test.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\Plugin;
+use EqualizeDigital\BoardScribe\Plugin;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -17,19 +17,19 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 class PluginBehaviorTest extends TestCase {
 
 	/**
-	 * Deletes the edmm_settings option before/after each test so
+	 * Deletes the edbs_settings option before/after each test so
 	 * get_setting() tests start from a known, empty state.
 	 */
 	public function set_up(): void {
 		parent::set_up();
-		delete_option( 'edmm_settings' );
+		delete_option( 'edbs_settings' );
 	}
 
 	/**
 	 * Tears down by deleting the option again.
 	 */
 	public function tear_down(): void {
-		delete_option( 'edmm_settings' );
+		delete_option( 'edbs_settings' );
 		parent::tear_down();
 	}
 
@@ -41,10 +41,10 @@ class PluginBehaviorTest extends TestCase {
 	}
 
 	/**
-	 * A value present in the stored edmm_settings option is returned.
+	 * A value present in the stored edbs_settings option is returned.
 	 */
 	public function test_get_setting_returns_stored_value(): void {
-		update_option( 'edmm_settings', [ 'delete_on_uninstall' => 1 ] );
+		update_option( 'edbs_settings', [ 'delete_on_uninstall' => 1 ] );
 
 		$this->assertSame( 1, Plugin::get_setting( 'delete_on_uninstall' ) );
 	}
@@ -74,13 +74,13 @@ class PluginBehaviorTest extends TestCase {
 	}
 
 	/**
-	 * When edmm_settings exists but doesn't contain the requested key,
+	 * When edbs_settings exists but doesn't contain the requested key,
 	 * it still falls back to the DEFAULTS constant - this is a
 	 * different path than "no option at all" (array key miss on an
 	 * existing array, vs. get_option()'s own default kicking in).
 	 */
 	public function test_get_setting_falls_back_to_defaults_when_option_exists_without_key(): void {
-		update_option( 'edmm_settings', [ 'some_other_setting' => 'irrelevant' ] );
+		update_option( 'edbs_settings', [ 'some_other_setting' => 'irrelevant' ] );
 
 		$this->assertSame( 0, Plugin::get_setting( 'delete_on_uninstall' ) );
 	}
@@ -90,7 +90,7 @@ class PluginBehaviorTest extends TestCase {
 	 * default and the DEFAULTS constant.
 	 */
 	public function test_get_setting_stored_value_takes_priority_over_default(): void {
-		update_option( 'edmm_settings', [ 'delete_on_uninstall' => 1 ] );
+		update_option( 'edbs_settings', [ 'delete_on_uninstall' => 1 ] );
 
 		$this->assertSame( 1, Plugin::get_setting( 'delete_on_uninstall', 0 ) );
 	}
@@ -105,17 +105,17 @@ class PluginBehaviorTest extends TestCase {
 		$result  = $plugin->register_edacp_filters( [ 'existing_filter' ] );
 
 		$this->assertContains( 'existing_filter', $result );
-		$this->assertContains( 'edmm_meeting_minutes_link', $result );
-		$this->assertContains( 'edmm_meeting_agenda_link', $result );
+		$this->assertContains( 'edbs_meeting_minutes_link', $result );
+		$this->assertContains( 'edbs_meeting_agenda_link', $result );
 	}
 
 	/**
-	 * edmm_loaded already fired during the normal plugins_loaded
+	 * edbs_loaded already fired during the normal plugins_loaded
 	 * bootstrap sequence, since Plugin::boot() runs there - this is
 	 * documented as the Pro plugin's sole entry point, so it must have
 	 * actually fired by the time any test runs.
 	 */
-	public function test_edmm_loaded_action_fired_during_bootstrap(): void {
-		$this->assertGreaterThanOrEqual( 1, did_action( 'edmm_loaded' ) );
+	public function test_edbs_loaded_action_fired_during_bootstrap(): void {
+		$this->assertGreaterThanOrEqual( 1, did_action( 'edbs_loaded' ) );
 	}
 }

@@ -2,17 +2,17 @@
 /**
  * Plugin settings page with shortcode builder.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-namespace EqualizeDigital\MeetingMinutes\Admin;
+namespace EqualizeDigital\BoardScribe\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use EqualizeDigital\MeetingMinutes\Plugin;
-use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
+use EqualizeDigital\BoardScribe\Plugin;
+use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
  * Registers and renders the Meeting Minutes settings page.
@@ -46,11 +46,11 @@ class SettingsPage {
 	 */
 	public function add_submenu_page(): void {
 		add_submenu_page(
-			'edit.php?post_type=edmm_meeting_minutes',
-			__( 'Meeting Minutes Settings', 'meeting-minutes' ),
-			__( 'Settings', 'meeting-minutes' ),
+			'edit.php?post_type=edbs_meeting_minutes',
+			__( 'Meeting Minutes Settings', 'boardscribe' ),
+			__( 'Settings', 'boardscribe' ),
 			'manage_options',
-			'edmm-settings',
+			'edbs-settings',
 			[ $this, 'render_page' ]
 		);
 	}
@@ -64,8 +64,8 @@ class SettingsPage {
 	 */
 	public function register_settings(): void {
 		register_setting(
-			'edmm_settings_group',
-			'edmm_settings',
+			'edbs_settings_group',
+			'edbs_settings',
 			[
 				'type'              => 'array',
 				'default'           => Plugin::DEFAULTS,
@@ -74,18 +74,18 @@ class SettingsPage {
 		);
 
 		add_settings_section(
-			'edmm_advanced_section',
-			__( 'Advanced', 'meeting-minutes' ),
+			'edbs_advanced_section',
+			__( 'Advanced', 'boardscribe' ),
 			'__return_empty_string',
-			'edmm-settings'
+			'edbs-settings'
 		);
 
 		add_settings_field(
 			'delete_on_uninstall',
-			__( 'Delete Data on Uninstall', 'meeting-minutes' ),
+			__( 'Delete Data on Uninstall', 'boardscribe' ),
 			[ $this, 'render_delete_on_uninstall' ],
-			'edmm-settings',
-			'edmm_advanced_section'
+			'edbs-settings',
+			'edbs_advanced_section'
 		);
 	}
 
@@ -98,14 +98,14 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function enqueue_builder_script( string $hook ): void {
-		if ( 'edmm_meeting_minutes_page_edmm-settings' !== $hook ) {
+		if ( 'edbs_meeting_minutes_page_edbs-settings' !== $hook ) {
 			return;
 		}
 
 		// Inline script — no separate file needed for a small builder.
-		wp_register_script( 'edmm-shortcode-builder', false, [], EDMM_VERSION, true );
-		wp_enqueue_script( 'edmm-shortcode-builder' );
-		wp_add_inline_script( 'edmm-shortcode-builder', $this->get_builder_script() );
+		wp_register_script( 'edbs-shortcode-builder', false, [], EDBS_VERSION, true );
+		wp_enqueue_script( 'edbs-shortcode-builder' );
+		wp_add_inline_script( 'edbs-shortcode-builder', $this->get_builder_script() );
 	}
 
 	/**
@@ -113,7 +113,7 @@ class SettingsPage {
 	 *
 	 * Walks every named form field generically (rather than a hardcoded
 	 * field list) so fields any plugin adds via the
-	 * edmm_shortcode_field_registry filter (see FieldRegistry) are
+	 * edbs_shortcode_field_registry filter (see FieldRegistry) are
 	 * automatically included in the generated shortcode - no matching JS
 	 * needed for a new field, as long as it follows this file's
 	 * data-default/checkbox-value conventions.
@@ -125,14 +125,14 @@ class SettingsPage {
 	private function get_builder_script(): string {
 		return <<<'JS'
 document.addEventListener( 'DOMContentLoaded', function () {
-	const form    = document.getElementById( 'edmm-shortcode-builder' );
-	const output  = document.getElementById( 'edmm-shortcode-output' );
-	const copyBtn = document.getElementById( 'edmm-copy-shortcode' );
+	const form    = document.getElementById( 'edbs-shortcode-builder' );
+	const output  = document.getElementById( 'edbs-shortcode-output' );
+	const copyBtn = document.getElementById( 'edbs-copy-shortcode' );
 
 	if ( ! form || ! output ) return;
 
 	function buildShortcode() {
-		let shortcode = '[edmm_meeting_minutes';
+		let shortcode = '[edbs_meeting_minutes';
 		const seen = new Set();
 
 		// WordPress shortcode parsing never decodes HTML entities in
@@ -191,7 +191,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	// checking the toggle disables the number input and enables the paired
 	// hidden field (name="{key}" value="all"), so the generic walk above
 	// picks up the "all" value instead - no per-field JS needed.
-	document.querySelectorAll( '.edmm-builder-show-all-toggle' ).forEach( function ( toggle ) {
+	document.querySelectorAll( '.edbs-builder-show-all-toggle' ).forEach( function ( toggle ) {
 		const numberInput = document.getElementById( toggle.dataset.numberInput );
 		const allHidden   = document.getElementById( toggle.dataset.allHidden );
 		if ( ! numberInput || ! allHidden ) return;
@@ -245,7 +245,7 @@ JS;
 	 */
 	public function render_field_control( array $field ): void {
 		$key     = $field['key'];
-		$id      = 'edmm_builder_' . $key;
+		$id      = 'edbs_builder_' . $key;
 		$default = $field['default'] ?? '';
 
 		switch ( $field['type'] ) {
@@ -284,12 +284,12 @@ JS;
 				<label style="margin-left:8px;">
 					<input
 						type="checkbox"
-						class="edmm-builder-show-all-toggle"
+						class="edbs-builder-show-all-toggle"
 						data-number-input="<?php echo esc_attr( $id ); ?>"
 						data-all-hidden="<?php echo esc_attr( $id ); ?>_all"
 						<?php checked( $is_all ); ?>
 					/>
-					<?php esc_html_e( 'Show all', 'meeting-minutes' ); ?>
+					<?php esc_html_e( 'Show all', 'boardscribe' ); ?>
 				</label>
 				<input
 					type="hidden"
@@ -404,17 +404,17 @@ JS;
 	public function render_delete_on_uninstall(): void {
 		$value = Plugin::get_setting( 'delete_on_uninstall' );
 		?>
-		<label for="edmm_delete_on_uninstall">
+		<label for="edbs_delete_on_uninstall">
 			<input
 				type="checkbox"
-				name="edmm_settings[delete_on_uninstall]"
-				id="edmm_delete_on_uninstall"
+				name="edbs_settings[delete_on_uninstall]"
+				id="edbs_delete_on_uninstall"
 				value="1"
 				<?php checked( 1, (int) $value ); ?>
 			/>
-			<?php esc_html_e( 'Remove all meeting minutes posts and plugin settings when this plugin is deleted.', 'meeting-minutes' ); ?>
+			<?php esc_html_e( 'Remove all meeting minutes posts and plugin settings when this plugin is deleted.', 'boardscribe' ); ?>
 		</label>
-		<p class="description" style="color:#d63638;"><?php esc_html_e( 'Warning: this cannot be undone.', 'meeting-minutes' ); ?></p>
+		<p class="description" style="color:#d63638;"><?php esc_html_e( 'Warning: this cannot be undone.', 'boardscribe' ); ?></p>
 		<?php
 	}
 
@@ -444,6 +444,6 @@ JS;
 			return;
 		}
 
-		require EDMM_DIR . 'partials/settings-page.php';
+		require EDBS_DIR . 'partials/settings-page.php';
 	}
 }

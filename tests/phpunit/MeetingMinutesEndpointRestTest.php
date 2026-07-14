@@ -1,8 +1,8 @@
 <?php
 /**
- * Integration tests for the registered /edmm/v1/meeting-minutes/ REST route.
+ * Integration tests for the registered /edbs/v1/meeting-minutes/ REST route.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
@@ -16,7 +16,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class MeetingMinutesEndpointRestTest extends TestCase {
 
-	const ROUTE = '/edmm/v1/meeting-minutes';
+	const ROUTE = '/edbs/v1/meeting-minutes';
 
 	/**
 	 * Ensures the REST server (and therefore rest_api_init/register_route)
@@ -36,7 +36,7 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 	 * @return int The created post ID.
 	 */
 	private function create_meeting( array $meta = [] ): int {
-		$post_id = self::factory()->post->create( [ 'post_type' => 'edmm_meeting_minutes' ] );
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting_minutes' ] );
 
 		foreach ( $meta as $key => $value ) {
 			update_post_meta( $post_id, $key, $value );
@@ -50,7 +50,7 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 	 * expected top-level response shape.
 	 */
 	public function test_route_returns_expected_shape(): void {
-		$this->create_meeting( [ 'edmm_meeting_date' => '2024-03-15' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
 
 		$request  = new \WP_REST_Request( 'GET', self::ROUTE );
 		$response = rest_get_server()->dispatch( $request );
@@ -95,9 +95,9 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 	 * posts_per_page is honored against real query results.
 	 */
 	public function test_posts_per_page_limits_results(): void {
-		$this->create_meeting( [ 'edmm_meeting_date' => '2024-01-01' ] );
-		$this->create_meeting( [ 'edmm_meeting_date' => '2024-06-01' ] );
-		$this->create_meeting( [ 'edmm_meeting_date' => '2024-12-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-01-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-06-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-12-01' ] );
 
 		$request = new \WP_REST_Request( 'GET', self::ROUTE );
 		$request->set_param( 'posts_per_page', 2 );
@@ -121,8 +121,8 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 	 * construction, not just the sanitized param value.
 	 */
 	public function test_included_years_filters_results(): void {
-		$this->create_meeting( [ 'edmm_meeting_date' => '2023-05-01' ] );
-		$this->create_meeting( [ 'edmm_meeting_date' => '2024-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2023-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
 
 		$request = new \WP_REST_Request( 'GET', self::ROUTE );
 		$request->set_param( 'included_years', '2024' );
@@ -138,7 +138,7 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 	 * per the meta_query's EXISTS clause.
 	 */
 	public function test_posts_without_meeting_date_are_excluded(): void {
-		$this->create_meeting(); // No edmm_meeting_date meta at all.
+		$this->create_meeting(); // No edbs_meeting_date meta at all.
 
 		$request  = new \WP_REST_Request( 'GET', self::ROUTE );
 		$response = rest_get_server()->dispatch( $request );
