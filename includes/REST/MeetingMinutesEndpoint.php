@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
- * Registers and handles the /edbs/v1/meeting-minutes/ REST endpoint.
+ * Registers and handles the /edbs/v1/boardscribe/ REST endpoint.
  *
  * This endpoint is intentionally public (permission_callback: __return_true)
  * because meeting minutes are public records. No authentication is required
@@ -71,7 +71,7 @@ class MeetingMinutesEndpoint {
 		}
 
 		/**
-		 * Filters the registered args schema for the meeting-minutes REST route.
+		 * Filters the registered args schema for the boardscribe REST route.
 		 * Pro plugin uses this to add REST-only params that aren't backed by any
 		 * shortcode/builder/block field (e.g. full-text search) — fields that do
 		 * need a builder/block field should be registered on
@@ -85,7 +85,7 @@ class MeetingMinutesEndpoint {
 
 		register_rest_route(
 			'edbs/v1',
-			'/meeting-minutes/',
+			'/boardscribe/',
 			[
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_meeting_minutes' ],
@@ -141,7 +141,7 @@ class MeetingMinutesEndpoint {
 		}
 
 		$args = [
-			'post_type'      => 'edbs_meeting_minutes',
+			'post_type'      => 'edbs_boardscribe',
 			'post_status'    => 'publish',
 			'posts_per_page' => $posts_per_page,
 			'paged'          => $page,

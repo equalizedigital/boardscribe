@@ -22,7 +22,7 @@ No ACF. No third-party dependencies. Just native WordPress storage, a shortcode 
 
 * Custom post type for meeting minutes with native meta boxes — no ACF or other plugins required.
 * Shortcode builder in the admin settings page generates a ready-to-copy shortcode.
-* Paginated, accessible table display via `[edbs_meeting_minutes]` shortcode.
+* Paginated, accessible table display via `[edbs_boardscribe]` shortcode.
 * Multiple shortcodes on the same page, each independently configured.
 * Responsive stacking layout on small screens with accessible column labels.
 * REST API endpoint for fetching meeting minutes data.
@@ -39,7 +39,7 @@ No ACF. No third-party dependencies. Just native WordPress storage, a shortcode 
 
 = Shortcode =
 
-`[edbs_meeting_minutes]`
+`[edbs_boardscribe]`
 
 Use the **Settings > Shortcode Builder** to generate the shortcode with your preferred options, or write it manually with any of the supported attributes.
 
@@ -57,7 +57,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 
 **Example:**
 
-`[edbs_meeting_minutes included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]`
+`[edbs_boardscribe included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]`
 
 = Meta Fields =
 
@@ -87,7 +87,7 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 
 = Can I display meeting minutes for specific years only? =
 
-Yes. Use the `included_years` shortcode attribute with a comma-separated list of years: `[edbs_meeting_minutes included_years="2023,2024"]`.
+Yes. Use the `included_years` shortcode attribute with a comma-separated list of years: `[edbs_boardscribe included_years="2023,2024"]`.
 
 = Can I use the shortcode more than once on the same page? =
 
@@ -103,7 +103,7 @@ By default, all data is preserved when the plugin is deleted. You can enable the
 
 = Is the REST API endpoint public? =
 
-Yes. The `/wp-json/edbs/v1/meeting-minutes/` endpoint is intentionally public because meeting minutes are public records. No authentication is required to read them.
+Yes. The `/wp-json/edbs/v1/boardscribe/` endpoint is intentionally public because meeting minutes are public records. No authentication is required to read them.
 
 == Screenshots ==
 

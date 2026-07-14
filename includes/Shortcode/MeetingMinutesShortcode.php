@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers the [edbs_meeting_minutes] shortcode and manages
+ * Registers the [edbs_boardscribe] shortcode and manages
  * conditional asset enqueuing.
  */
 class MeetingMinutesShortcode {
@@ -39,7 +39,7 @@ class MeetingMinutesShortcode {
 	 * @return void
 	 */
 	public function register(): void {
-		add_shortcode( 'edbs_meeting_minutes', [ $this, 'render' ] );
+		add_shortcode( 'edbs_boardscribe', [ $this, 'render' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'maybe_enqueue_assets' ] );
 	}
 
@@ -54,7 +54,7 @@ class MeetingMinutesShortcode {
 	 */
 	public function maybe_enqueue_assets(): void {
 		global $post;
-		if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'edbs_meeting_minutes' ) ) {
+		if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'edbs_boardscribe' ) ) {
 			$this->enqueue_assets();
 		}
 	}
@@ -118,7 +118,7 @@ class MeetingMinutesShortcode {
 			'edbs-meeting-minutes',
 			'edbsConfig',
 			[
-				'apiUrl' => rest_url( 'edbs/v1/meeting-minutes/' ),
+				'apiUrl' => rest_url( 'edbs/v1/boardscribe/' ),
 				'i18n'   => [
 					'colTitle'       => __( 'Title', 'boardscribe' ),
 					'colDate'        => __( 'Date', 'boardscribe' ),
@@ -141,7 +141,7 @@ class MeetingMinutesShortcode {
 	}
 
 	/**
-	 * Renders the [edbs_meeting_minutes] shortcode output.
+	 * Renders the [edbs_boardscribe] shortcode output.
 	 *
 	 * @since x.x.x
 	 *
@@ -156,7 +156,7 @@ class MeetingMinutesShortcode {
 			$defaults[ $field['key'] ] = $field['default'] ?? '';
 		}
 
-		$atts = shortcode_atts( $defaults, $atts, 'edbs_meeting_minutes' );
+		$atts = shortcode_atts( $defaults, $atts, 'edbs_boardscribe' );
 
 		// Ensure assets are enqueued even when page builders call shortcodes late.
 		$this->enqueue_assets();

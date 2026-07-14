@@ -16,9 +16,9 @@ The **Equalize Digital BoardScribe** plugin lets you manage and display meeting 
 
 - Custom post type for meeting minutes with native meta boxes (no ACF required).
 - Shortcode builder in the admin settings page generates a ready-to-copy shortcode.
-- Paginated, accessible table display via `[edbs_meeting_minutes]` shortcode.
+- Paginated, accessible table display via `[edbs_boardscribe]` shortcode.
 - Supports multiple shortcodes on the same page, each independently configured.
-- REST API endpoint (`/wp-json/edbs/v1/meeting-minutes/`) for fetching meeting minutes.
+- REST API endpoint (`/wp-json/edbs/v1/boardscribe/`) for fetching meeting minutes.
 - Responsive stacking layout on small screens with accessible column labels.
 
 ## Installation
@@ -31,7 +31,7 @@ The **Equalize Digital BoardScribe** plugin lets you manage and display meeting 
 ## Shortcode
 
 ```
-[edbs_meeting_minutes]
+[edbs_boardscribe]
 ```
 
 Use the **Settings > Shortcode Builder** to generate the shortcode with your preferred options. You can also write the shortcode manually using the attributes below.
@@ -53,7 +53,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 ### Example
 
 ```
-[edbs_meeting_minutes included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]
+[edbs_boardscribe included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]
 ```
 
 ## Meta Fields
@@ -69,7 +69,7 @@ Each meeting minute post has four native meta fields:
 
 The plugin exposes a public REST API endpoint for fetching meeting minutes data. This is intentional — meeting minutes are public records.
 
-**Endpoint:** `GET /wp-json/edbs/v1/meeting-minutes/`
+**Endpoint:** `GET /wp-json/edbs/v1/boardscribe/`
 
 | Parameter | Default | Description |
 |---|---|---|
@@ -82,7 +82,7 @@ The plugin exposes a public REST API endpoint for fetching meeting minutes data.
 **Example:**
 
 ```
-GET https://yourdomain.com/wp-json/edbs/v1/meeting-minutes/?included_years=2024&posts_per_page=10&page=1
+GET https://yourdomain.com/wp-json/edbs/v1/boardscribe/?included_years=2024&posts_per_page=10&page=1
 ```
 
 ## Developer Hooks

@@ -91,8 +91,22 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 
 **After:** rebranded to **BoardScribe** / **BoardScribe Pro**. Every hook/filter, constant, option, meta key, nonce, script/style handle, and JS global that used the `edmm_`/`EDMM_`/`edmm-`/`window.edmm*` prefix now uses `edbs_`/`EDBS`/`edbs-`/`window.edbs*` instead (see `CLAUDE.md`'s extension-point table for the current name of every hook — that table was updated in place, not duplicated here). Namespace is now `EqualizeDigital\BoardScribe` (free) / `EqualizeDigital\BoardScribePro` (Pro). Text domains are now `boardscribe` / `boardscribe-pro`. The free plugin's "is active" signal Pro checks changed from `defined('EDMM_VERSION')` to `defined('EDBS_VERSION')`.
 
-**Kept unchanged:** the CPT slug/shortcode tag `edbs_meeting_minutes` and the REST route segment `/meeting-minutes/` (now under `edbs/v1`) kept their `meeting_minutes`/`meeting-minutes` *suffix* — that names the content type, not the product, and changing it wasn't necessary or desirable. Pro's block name `equalize-digital/meeting-minutes` likewise kept its suffix. The GitHub repos and `composer.json`/`package.json` "name" fields were deliberately left as their historical `equalize-digital-meeting-minutes`/`meeting-minutes-pro` values, matching a prior precedent of the WP-facing slug diverging from the git repo name — but the local checkout directories were subsequently renamed to `boardscribe`/`boardscribe-pro` to match the new plugin slugs.
+**Kept unchanged:** the GitHub repos and `composer.json`/`package.json` "name" fields were deliberately left as their historical `equalize-digital-meeting-minutes`/`meeting-minutes-pro` values, matching a prior precedent of the WP-facing slug diverging from the git repo name — but the local checkout directories were subsequently renamed to `boardscribe`/`boardscribe-pro` to match the new plugin slugs.
 
 **Contract impact:** every hook name in this document and in `CLAUDE.md`'s table (from `edbs_loaded` down) is the *current* name — any Pro code (or third-party integration) still written against the old `edmm_*`/`EDMM_*` names will silently stop firing/receiving these hooks, since `apply_filters()`/`do_action()` on an unregistered name is a no-op.
 
-**Action for Pro before release:** grep for any remaining `edmm`/`EDMM`/`meeting-minutes` (excluding the intentionally-kept CPT/shortcode/REST/block suffixes above) in Pro's codebase and update to the `edbs_`/`EDBS_PRO_` equivalents; confirm the free-plugin-active check reads `defined('EDBS_VERSION')`.
+**Action for Pro before release:** grep for any remaining `edmm`/`EDMM`/`meeting-minutes` (excluding intentionally-kept content-type prose) in Pro's codebase and update to the `edbs_`/`EDBS_PRO_` equivalents; confirm the free-plugin-active check reads `defined('EDBS_VERSION')`.
+
+---
+
+## Follow-up — CPT slug, shortcode tag, and REST route renamed to `edbs_boardscribe` / `/edbs/v1/boardscribe/`
+
+**Before:** the initial BoardScribe rebrand (above) deliberately kept the CPT slug/shortcode tag as `edbs_meeting_minutes` and the REST route as `/edbs/v1/meeting-minutes/`, treating "meeting minutes" as descriptive content-type vocabulary rather than product branding.
+
+**After:** on request, these were renamed too: CPT slug and shortcode tag are now `edbs_boardscribe`, and the REST route is now `/edbs/v1/boardscribe/` (namespace `edbs/v1` unchanged, only the route segment changed). Pro's Gutenberg block was renamed to match: `equalize-digital/meeting-minutes` → `equalize-digital/boardscribe`.
+
+**Kept unchanged:** meta keys (`edbs_meeting_date`, `edbs_meeting_agenda_url`, `edbs_meeting_minutes_url`, `edbs_meeting_not_held`), the `edbs_meeting_row_data`/`edbs_meeting_formatted_date`/`edbs_meeting_agenda_link`/`edbs_meeting_minutes_link` hooks, and CSS/JS presentational classes (`edbs-meeting-minutes-table`, `edbs-meeting-minutes-wrap`) — none of these were in scope for this follow-up and still use the `meeting_minutes`/`meeting-minutes` wording.
+
+**Contract impact:** any code (Pro included) hardcoding the CPT slug `edbs_meeting_minutes`, the shortcode tag `[edbs_meeting_minutes]`, or building URLs against `/edbs/v1/meeting-minutes/` must be updated. WordPress's dynamic `save_post_{$post_type}` hook is now `save_post_edbs_boardscribe`.
+
+**Action for Pro before release:** grep for `edbs_meeting_minutes` as a **CPT-slug/shortcode-tag token** (not the meta-key/hook variants above, which are unaffected) and for `/meeting-minutes/` as a REST route segment; update `MeetingCategory`, `ProMetaFields`, `CsvImporter`, and `MeetingMinutesBlock` query/registration code, and `block.json`'s block name.

@@ -119,7 +119,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			type="text"
 			id="edbs-shortcode-output"
 			readonly
-			value="[edbs_meeting_minutes]"
+			value="[edbs_boardscribe]"
 			class="large-text"
 			style="font-family:monospace;"
 		/>

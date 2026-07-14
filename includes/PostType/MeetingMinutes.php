@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers and manages the edbs_meeting_minutes custom post type.
+ * Registers and manages the edbs_boardscribe custom post type.
  */
 class MeetingMinutes {
 
@@ -28,7 +28,7 @@ class MeetingMinutes {
 	}
 
 	/**
-	 * Registers the edbs_meeting_minutes custom post type.
+	 * Registers the edbs_boardscribe custom post type.
 	 *
 	 * @since x.x.x
 	 *
@@ -47,12 +47,12 @@ class MeetingMinutes {
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
 			// No public single/archive templates — meeting minutes are only ever
-			// displayed via the [edbs_meeting_minutes] shortcode's own REST endpoint.
+			// displayed via the [edbs_boardscribe] shortcode's own REST endpoint.
 			'public'        => false,
 			'rewrite'       => false,
 			'has_archive'   => false,
 			'show_ui'       => true,
-			// Intentionally still exposes the default /wp/v2/edbs_meeting_minutes
+			// Intentionally still exposes the default /wp/v2/edbs_boardscribe
 			// REST route (needed for the block editor meta box UI); this is fine
 			// since published meeting minutes are meant to be public records.
 			'show_in_rest'  => true,
@@ -61,7 +61,7 @@ class MeetingMinutes {
 		];
 
 		/**
-		 * Filters the edbs_meeting_minutes CPT registration args. Pro plugin uses
+		 * Filters the edbs_boardscribe CPT registration args. Pro plugin uses
 		 * this to enable public/rewrite/archive support or a custom capability_type.
 		 *
 		 * @since x.x.x
@@ -78,7 +78,7 @@ class MeetingMinutes {
 		 */
 		do_action( 'edbs_before_register_cpt' );
 
-		register_post_type( 'edbs_meeting_minutes', $args );
+		register_post_type( 'edbs_boardscribe', $args );
 
 		/**
 		 * Fires after the Meeting Minutes CPT is registered. Register taxonomies

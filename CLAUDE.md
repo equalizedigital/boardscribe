@@ -1,6 +1,6 @@
 # BoardScribe (by Equalize Digital)
 
-WordPress plugin — display name "BoardScribe", WP.org slug/text domain `boardscribe`, code prefix `edbs_`/`EDBS_`; the git repo (remote `equalizedigital/equalize-digital-meeting-minutes`) keeps its historical name, but the local checkout directory has been renamed to `boardscribe` to match the plugin slug. Manages meeting minutes as a custom post type (`edbs_meeting_minutes`), displayed via a `[edbs_meeting_minutes]` shortcode backed by a public REST endpoint. Native WordPress storage only — no ACF dependency (removed during the restructure; some docs still mention it, see Known Doc Staleness below).
+WordPress plugin — display name "BoardScribe", WP.org slug/text domain `boardscribe`, code prefix `edbs_`/`EDBS_`; the git repo (remote `equalizedigital/equalize-digital-meeting-minutes`) keeps its historical name, but the local checkout directory has been renamed to `boardscribe` to match the plugin slug. Manages meeting minutes as a custom post type (`edbs_boardscribe`), displayed via a `[edbs_boardscribe]` shortcode backed by a public REST endpoint (`/edbs/v1/boardscribe/`). Native WordPress storage only — no ACF dependency (removed during the restructure; some docs still mention it, see Known Doc Staleness below).
 
 ## This is the free plugin — Pro is a separate sibling repo
 
@@ -21,7 +21,7 @@ includes/
   PostType/MeetingMinutes.php          CPT registration
   Admin/MetaBox.php                    Native meta box UI + save handling
   Admin/SettingsPage.php               Settings page + shortcode builder UI
-  REST/MeetingMinutesEndpoint.php      /edbs/v1/meeting-minutes/ REST route + query/row building
+  REST/MeetingMinutesEndpoint.php      /edbs/v1/boardscribe/ REST route + query/row building
   Shortcode/MeetingMinutesShortcode.php Shortcode registration, asset enqueuing, instance config
 src/js/                                Frontend source modules (ES modules, bundled by webpack)
   index.js                             Entry: exposes window globals, registers table template, bootstraps
@@ -63,7 +63,7 @@ Keep this list current when adding or removing hooks — it's the primary refere
 | `template` shortcode attribute | config | `Shortcode/MeetingMinutesShortcode.php` | Names the `window.edbsTemplates` entry an instance renders with (sanitized with `sanitize_key()`, passed through `data-config`). Free ships only `table`; Pro registers accordion/card-grid/timeline templates and they become selectable with no further PHP changes. |
 | `window.edbsBuildTable( meetings, instanceCfg )` (JS, not a WP hook) | helper | `src/js/templates/table.js` | Returns a standard `<table>` HTML string (same columns/labels/`window.edbsExtraColumns` handling, and the calling template's own `edbs-template-<name>` class via `instanceCfg.resolvedTemplate`) as the built-in table template. A template that renders multiple tables/sections (e.g. one per year) calls this per section instead of re-implementing column-building logic by hand. |
 | `edbs_cpt_args` | filter | `PostType/MeetingMinutes.php` | Modify CPT registration args (e.g. enable `public`/`rewrite`/`has_archive`, or a custom `capability_type`) before `register_post_type()`. |
-| `edbs_rest_route_args` | filter | `REST/MeetingMinutesEndpoint.php` | Add REST-only params to the `/edbs/v1/meeting-minutes/` route's registered args schema that aren't backed by any shortcode/builder/block field (e.g. full-text search). Fields registered via `edbs_shortcode_field_registry` with `rest_arg => true` are already added before this filter runs — use that instead when the param also needs a builder/block field. |
+| `edbs_rest_route_args` | filter | `REST/MeetingMinutesEndpoint.php` | Add REST-only params to the `/edbs/v1/boardscribe/` route's registered args schema that aren't backed by any shortcode/builder/block field (e.g. full-text search). Fields registered via `edbs_shortcode_field_registry` with `rest_arg => true` are already added before this filter runs — use that instead when the param also needs a builder/block field. |
 | `MeetingMinutesEndpoint::build_meeting_row()` | public method | `REST/MeetingMinutesEndpoint.php` | Builds one meeting's escaped/formatted row data (title, date, agenda/minutes links) outside the REST loop — reuse this rather than re-implementing the same escaping for CSV/PDF export, an iCal feed, or a widget. Fires `edbs_meeting_row_data` internally; see `docs/HOOK-CONTRACT-CHANGES.md` for a signature caveat. |
 | `edbs_before_table` / `edbs_after_table` | action | `Shortcode/MeetingMinutesShortcode.php` | Fires inside the shortcode wrapper, before/after the table container — for lightweight additions (search box, add-to-calendar button, comment form) that don't need a full display-template override. |
 

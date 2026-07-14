@@ -1,6 +1,6 @@
 <?php
 /**
- * Integration tests for the registered /edbs/v1/meeting-minutes/ REST route.
+ * Integration tests for the registered /edbs/v1/boardscribe/ REST route.
  *
  * @package EqualizeDigital\BoardScribe
  */
@@ -16,7 +16,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class MeetingMinutesEndpointRestTest extends TestCase {
 
-	const ROUTE = '/edbs/v1/meeting-minutes';
+	const ROUTE = '/edbs/v1/boardscribe';
 
 	/**
 	 * Ensures the REST server (and therefore rest_api_init/register_route)
@@ -36,7 +36,7 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 	 * @return int The created post ID.
 	 */
 	private function create_meeting( array $meta = [] ): int {
-		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting_minutes' ] );
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_boardscribe' ] );
 
 		foreach ( $meta as $key => $value ) {
 			update_post_meta( $post_id, $key, $value );

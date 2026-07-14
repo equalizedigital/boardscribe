@@ -46,7 +46,7 @@ class SettingsPage {
 	 */
 	public function add_submenu_page(): void {
 		add_submenu_page(
-			'edit.php?post_type=edbs_meeting_minutes',
+			'edit.php?post_type=edbs_boardscribe',
 			__( 'Meeting Minutes Settings', 'boardscribe' ),
 			__( 'Settings', 'boardscribe' ),
 			'manage_options',
@@ -98,7 +98,7 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function enqueue_builder_script( string $hook ): void {
-		if ( 'edbs_meeting_minutes_page_edbs-settings' !== $hook ) {
+		if ( 'edbs_boardscribe_page_edbs-settings' !== $hook ) {
 			return;
 		}
 
@@ -132,7 +132,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	if ( ! form || ! output ) return;
 
 	function buildShortcode() {
-		let shortcode = '[edbs_meeting_minutes';
+		let shortcode = '[edbs_boardscribe';
 		const seen = new Set();
 
 		// WordPress shortcode parsing never decodes HTML entities in

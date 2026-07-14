@@ -17,7 +17,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class FieldRegistryTest extends TestCase {
 
-	const ROUTE = '/edbs/v1/meeting-minutes';
+	const ROUTE = '/edbs/v1/boardscribe';
 
 	/**
 	 * The registered edbs_shortcode_field_registry callback, so it can be

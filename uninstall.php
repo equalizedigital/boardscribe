@@ -20,17 +20,17 @@ if ( empty( $edbs_settings['delete_on_uninstall'] ) ) {
 }
 
 // Delete all meeting minutes posts and their associated meta.
-$edbs_meeting_minutes_post_ids = get_posts(
+$edbs_boardscribe_post_ids = get_posts(
 	[
-		'post_type'      => 'edbs_meeting_minutes',
+		'post_type'      => 'edbs_boardscribe',
 		'post_status'    => 'any',
 		'posts_per_page' => -1,
 		'fields'         => 'ids',
 	]
 );
 
-foreach ( $edbs_meeting_minutes_post_ids as $edbs_meeting_minutes_post_id ) {
-	wp_delete_post( $edbs_meeting_minutes_post_id, true );
+foreach ( $edbs_boardscribe_post_ids as $edbs_boardscribe_post_id ) {
+	wp_delete_post( $edbs_boardscribe_post_id, true );
 }
 
 // Delete plugin settings.
