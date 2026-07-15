@@ -2,10 +2,10 @@
 /**
  * Tests for MetaBox::save_meta().
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\Admin\MetaBox;
+use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -38,13 +38,13 @@ class MetaBoxSaveMetaTest extends TestCase {
 		parent::set_up();
 
 		$this->meta_box = new MetaBox();
-		$this->post_id  = self::factory()->post->create( [ 'post_type' => 'edmm_meeting_minutes' ] );
+		$this->post_id  = self::factory()->post->create( [ 'post_type' => 'edbs_boardscribe' ] );
 
 		$editor_id = self::factory()->user->create( [ 'role' => 'editor' ] );
 		wp_set_current_user( $editor_id );
 
 		$_POST = [
-			'edmm_meeting_meta_nonce' => wp_create_nonce( 'edmm_save_meeting_meta' ),
+			'edbs_meeting_meta_nonce' => wp_create_nonce( 'edbs_save_meeting_meta' ),
 		];
 	}
 
@@ -61,23 +61,23 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 * Without the nonce field present at all, nothing is saved.
 	 */
 	public function test_missing_nonce_saves_nothing(): void {
-		$_POST = [ 'edmm_meeting_date' => '2024-03-15' ];
+		$_POST = [ 'edbs_meeting_date' => '2024-03-15' ];
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '', get_post_meta( $this->post_id, 'edmm_meeting_date', true ) );
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
 	}
 
 	/**
 	 * An invalid/forged nonce is rejected.
 	 */
 	public function test_invalid_nonce_saves_nothing(): void {
-		$_POST['edmm_meeting_meta_nonce'] = 'not-a-real-nonce';
-		$_POST['edmm_meeting_date']       = '2024-03-15';
+		$_POST['edbs_meeting_meta_nonce'] = 'not-a-real-nonce';
+		$_POST['edbs_meeting_date']       = '2024-03-15';
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '', get_post_meta( $this->post_id, 'edmm_meeting_date', true ) );
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
 	}
 
 	/**
@@ -94,23 +94,23 @@ class MetaBoxSaveMetaTest extends TestCase {
 		$subscriber_id = self::factory()->user->create( [ 'role' => 'subscriber' ] );
 		wp_set_current_user( $subscriber_id );
 
-		$_POST['edmm_meeting_meta_nonce'] = wp_create_nonce( 'edmm_save_meeting_meta' );
-		$_POST['edmm_meeting_date']       = '2024-03-15';
+		$_POST['edbs_meeting_meta_nonce'] = wp_create_nonce( 'edbs_save_meeting_meta' );
+		$_POST['edbs_meeting_date']       = '2024-03-15';
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '', get_post_meta( $this->post_id, 'edmm_meeting_date', true ) );
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
 	}
 
 	/**
 	 * A well-formed Y-m-d date is saved as-is.
 	 */
 	public function test_valid_date_is_saved(): void {
-		$_POST['edmm_meeting_date'] = '2024-03-15';
+		$_POST['edbs_meeting_date'] = '2024-03-15';
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '2024-03-15', get_post_meta( $this->post_id, 'edmm_meeting_date', true ) );
+		$this->assertSame( '2024-03-15', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
 	}
 
 	/**
@@ -118,11 +118,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 * rejected rather than saved.
 	 */
 	public function test_invalid_date_is_not_saved(): void {
-		$_POST['edmm_meeting_date'] = '2024-13-45';
+		$_POST['edbs_meeting_date'] = '2024-13-45';
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '', get_post_meta( $this->post_id, 'edmm_meeting_date', true ) );
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
 	}
 
 	/**
@@ -130,11 +130,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 * reformatted or partially accepted.
 	 */
 	public function test_wrong_format_date_is_not_saved(): void {
-		$_POST['edmm_meeting_date'] = '03/15/2024';
+		$_POST['edbs_meeting_date'] = '03/15/2024';
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '', get_post_meta( $this->post_id, 'edmm_meeting_date', true ) );
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
 	}
 
 	/**
@@ -142,11 +142,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 */
 	public function test_agenda_url_is_sanitized(): void {
 		$input                            = 'https://example.com/agenda.pdf"><script>alert(1)</script>';
-		$_POST['edmm_meeting_agenda_url'] = $input;
+		$_POST['edbs_meeting_agenda_url'] = $input;
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$saved = get_post_meta( $this->post_id, 'edmm_meeting_agenda_url', true );
+		$saved = get_post_meta( $this->post_id, 'edbs_meeting_agenda_url', true );
 		$this->assertSame( esc_url_raw( $input ), $saved );
 	}
 
@@ -155,11 +155,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 */
 	public function test_minutes_url_is_sanitized(): void {
 		$input                             = 'javascript:alert(1)';
-		$_POST['edmm_meeting_minutes_url'] = $input;
+		$_POST['edbs_meeting_minutes_url'] = $input;
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$saved = get_post_meta( $this->post_id, 'edmm_meeting_minutes_url', true );
+		$saved = get_post_meta( $this->post_id, 'edbs_meeting_minutes_url', true );
 		$this->assertSame( esc_url_raw( $input ), $saved );
 	}
 
@@ -167,11 +167,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 * The "not held" checkbox saves '1' when present in $_POST.
 	 */
 	public function test_not_held_checkbox_checked_saves_1(): void {
-		$_POST['edmm_meeting_not_held'] = '1';
+		$_POST['edbs_meeting_not_held'] = '1';
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '1', get_post_meta( $this->post_id, 'edmm_meeting_not_held', true ) );
+		$this->assertSame( '1', get_post_meta( $this->post_id, 'edbs_meeting_not_held', true ) );
 	}
 
 	/**
@@ -179,14 +179,14 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 * $_POST, since unchecked checkboxes aren't submitted at all.
 	 */
 	public function test_not_held_checkbox_unchecked_saves_empty_string(): void {
-		// Deliberately not setting edmm_meeting_not_held in $_POST.
+		// Deliberately not setting edbs_meeting_not_held in $_POST.
 		$this->meta_box->save_meta( $this->post_id );
 
-		$this->assertSame( '', get_post_meta( $this->post_id, 'edmm_meeting_not_held', true ) );
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_meeting_not_held', true ) );
 	}
 
 	/**
-	 * The edmm_save_meeting_meta action fires after a successful save,
+	 * The edbs_save_meeting_meta action fires after a successful save,
 	 * so Pro plugin can save its own additional meta in the same request.
 	 */
 	public function test_save_meeting_meta_action_fires_on_success(): void {
@@ -194,11 +194,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 		$callback            = static function ( int $post_id ) use ( &$fired_with_post_id ): void {
 			$fired_with_post_id = $post_id;
 		};
-		add_action( 'edmm_save_meeting_meta', $callback );
+		add_action( 'edbs_save_meeting_meta', $callback );
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		remove_action( 'edmm_save_meeting_meta', $callback );
+		remove_action( 'edbs_save_meeting_meta', $callback );
 
 		$this->assertSame( $this->post_id, $fired_with_post_id );
 	}
@@ -214,11 +214,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 		$callback = static function () use ( &$fired ): void {
 			$fired = true;
 		};
-		add_action( 'edmm_save_meeting_meta', $callback );
+		add_action( 'edbs_save_meeting_meta', $callback );
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		remove_action( 'edmm_save_meeting_meta', $callback );
+		remove_action( 'edbs_save_meeting_meta', $callback );
 
 		$this->assertFalse( $fired );
 	}

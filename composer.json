@@ -1,6 +1,6 @@
 {
-    "name": "equalizedigital/equalize-digital-meeting-minutes",
-    "description": "Equalize Digital Meeting Minutes WordPress Plugin",
+    "name": "equalizedigital/boardscribe",
+    "description": "Equalize Digital BoardScribe WordPress Plugin",
     "license": "GPL-2.0-or-later",
     "config": {
         "allow-plugins": {
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "EqualizeDigital\\MeetingMinutes\\": "includes/"
+            "EqualizeDigital\\BoardScribe\\": "includes/"
         }
     },
     "require-dev": {

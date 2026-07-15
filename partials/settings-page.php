@@ -2,7 +2,7 @@
 /**
  * Settings page markup: shortcode builder + advanced settings.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,99 +13,99 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="wrap">
 	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
-	<h2><?php esc_html_e( 'Shortcode Builder', 'meeting-minutes' ); ?></h2>
-	<p><?php esc_html_e( 'Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post.', 'meeting-minutes' ); ?></p>
+	<h2><?php esc_html_e( 'Shortcode Builder', 'boardscribe' ); ?></h2>
+	<p><?php esc_html_e( 'Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post.', 'boardscribe' ); ?></p>
 
 	<?php
 	/**
 	 * The merged field registry — free plugin's own fields plus anything
-	 * Pro (or another plugin) added via edmm_shortcode_field_registry.
+	 * Pro (or another plugin) added via edbs_shortcode_field_registry.
 	 * Every field renders here, in the settings-page builder, from this
 	 * single array; see FieldRegistry::add_core_fields() for the shape.
 	 *
-	 * @var array[] $edmm_builder_fields
+	 * @var array[] $edbs_builder_fields
 	 */
-	$edmm_builder_fields = \EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry::all();
+	$edbs_builder_fields = \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::all();
 
-	$edmm_builder_groups = [
+	$edbs_builder_groups = [
 		'general'       => [],
 		'column_labels' => [],
 		'link_labels'   => [],
 		'hide_columns'  => [],
 		'show_columns'  => [],
 	];
-	foreach ( $edmm_builder_fields as $edmm_builder_field ) {
-		$edmm_group = $edmm_builder_field['group'] ?? 'general';
-		if ( ! isset( $edmm_builder_groups[ $edmm_group ] ) ) {
-			$edmm_group = 'general';
+	foreach ( $edbs_builder_fields as $edbs_builder_field ) {
+		$edbs_group = $edbs_builder_field['group'] ?? 'general';
+		if ( ! isset( $edbs_builder_groups[ $edbs_group ] ) ) {
+			$edbs_group = 'general';
 		}
-		$edmm_builder_groups[ $edmm_group ][] = $edmm_builder_field;
+		$edbs_builder_groups[ $edbs_group ][] = $edbs_builder_field;
 	}
 
-	$edmm_bundled_group_titles = [
-		'column_labels' => __( 'Column Labels', 'meeting-minutes' ),
-		'link_labels'   => __( 'Link Labels', 'meeting-minutes' ),
-		'hide_columns'  => __( 'Hide Columns', 'meeting-minutes' ),
-		'show_columns'  => __( 'Show Columns', 'meeting-minutes' ),
+	$edbs_bundled_group_titles = [
+		'column_labels' => __( 'Column Labels', 'boardscribe' ),
+		'link_labels'   => __( 'Link Labels', 'boardscribe' ),
+		'hide_columns'  => __( 'Hide Columns', 'boardscribe' ),
+		'show_columns'  => __( 'Show Columns', 'boardscribe' ),
 	];
 	?>
-	<form id="edmm-shortcode-builder" onsubmit="return false;">
+	<form id="edbs-shortcode-builder" onsubmit="return false;">
 		<table class="form-table" role="presentation">
 			<tbody>
-				<?php foreach ( $edmm_builder_groups['general'] as $edmm_field ) : ?>
+				<?php foreach ( $edbs_builder_groups['general'] as $edbs_field ) : ?>
 				<tr>
 					<th scope="row">
-						<label for="edmm_builder_<?php echo esc_attr( $edmm_field['key'] ); ?>"><?php echo esc_html( $edmm_field['label'] ?? '' ); ?></label>
+						<label for="edbs_builder_<?php echo esc_attr( $edbs_field['key'] ); ?>"><?php echo esc_html( $edbs_field['label'] ?? '' ); ?></label>
 					</th>
 					<td>
-						<?php $this->render_field_control( $edmm_field ); ?>
+						<?php $this->render_field_control( $edbs_field ); ?>
 					</td>
 				</tr>
 				<?php endforeach; ?>
 
-				<?php if ( $edmm_builder_groups['column_labels'] ) : ?>
+				<?php if ( $edbs_builder_groups['column_labels'] ) : ?>
 				<tr>
-					<th scope="row"><?php echo esc_html( $edmm_bundled_group_titles['column_labels'] ); ?></th>
+					<th scope="row"><?php echo esc_html( $edbs_bundled_group_titles['column_labels'] ); ?></th>
 					<td>
-						<?php foreach ( $edmm_builder_groups['column_labels'] as $edmm_field ) : ?>
-							<?php $this->render_bundled_text_field( $edmm_field ); ?>
+						<?php foreach ( $edbs_builder_groups['column_labels'] as $edbs_field ) : ?>
+							<?php $this->render_bundled_text_field( $edbs_field ); ?>
 						<?php endforeach; ?>
-						<p class="description"><?php esc_html_e( 'Leave blank to use the default label.', 'meeting-minutes' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Leave blank to use the default label.', 'boardscribe' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>
 
-				<?php if ( $edmm_builder_groups['link_labels'] ) : ?>
+				<?php if ( $edbs_builder_groups['link_labels'] ) : ?>
 				<tr>
-					<th scope="row"><?php echo esc_html( $edmm_bundled_group_titles['link_labels'] ); ?></th>
+					<th scope="row"><?php echo esc_html( $edbs_bundled_group_titles['link_labels'] ); ?></th>
 					<td>
-						<?php foreach ( $edmm_builder_groups['link_labels'] as $edmm_field ) : ?>
-							<?php $this->render_bundled_text_field( $edmm_field ); ?>
+						<?php foreach ( $edbs_builder_groups['link_labels'] as $edbs_field ) : ?>
+							<?php $this->render_bundled_text_field( $edbs_field ); ?>
 						<?php endforeach; ?>
-						<p class="description"><?php esc_html_e( 'Text shown inside each link. Leave blank to use the default.', 'meeting-minutes' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Text shown inside each link. Leave blank to use the default.', 'boardscribe' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>
 
-				<?php if ( $edmm_builder_groups['hide_columns'] ) : ?>
+				<?php if ( $edbs_builder_groups['hide_columns'] ) : ?>
 				<tr>
-					<th scope="row"><?php echo esc_html( $edmm_bundled_group_titles['hide_columns'] ); ?></th>
+					<th scope="row"><?php echo esc_html( $edbs_bundled_group_titles['hide_columns'] ); ?></th>
 					<td>
-						<?php foreach ( $edmm_builder_groups['hide_columns'] as $edmm_field ) : ?>
-							<?php $this->render_bundled_checkbox_field( $edmm_field ); ?>
+						<?php foreach ( $edbs_builder_groups['hide_columns'] as $edbs_field ) : ?>
+							<?php $this->render_bundled_checkbox_field( $edbs_field ); ?>
 						<?php endforeach; ?>
 					</td>
 				</tr>
 				<?php endif; ?>
 
-				<?php if ( $edmm_builder_groups['show_columns'] ) : ?>
+				<?php if ( $edbs_builder_groups['show_columns'] ) : ?>
 				<tr>
-					<th scope="row"><?php echo esc_html( $edmm_bundled_group_titles['show_columns'] ); ?></th>
+					<th scope="row"><?php echo esc_html( $edbs_bundled_group_titles['show_columns'] ); ?></th>
 					<td>
-						<?php foreach ( $edmm_builder_groups['show_columns'] as $edmm_field ) : ?>
-							<?php $this->render_bundled_checkbox_field( $edmm_field ); ?>
+						<?php foreach ( $edbs_builder_groups['show_columns'] as $edbs_field ) : ?>
+							<?php $this->render_bundled_checkbox_field( $edbs_field ); ?>
 						<?php endforeach; ?>
-						<p class="description"><?php esc_html_e( 'Enable additional columns.', 'meeting-minutes' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Enable additional columns.', 'boardscribe' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>
@@ -113,24 +113,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</table>
 	</form>
 
-	<h3><?php esc_html_e( 'Your Shortcode', 'meeting-minutes' ); ?></h3>
+	<h3><?php esc_html_e( 'Your Shortcode', 'boardscribe' ); ?></h3>
 	<div style="display:flex; gap:8px; align-items:center; max-width:600px;">
 		<input
 			type="text"
-			id="edmm-shortcode-output"
+			id="edbs-shortcode-output"
 			readonly
-			value="[edmm_meeting_minutes]"
+			value="[edbs_boardscribe]"
 			class="large-text"
 			style="font-family:monospace;"
 		/>
 		<button
 			type="button"
-			id="edmm-copy-shortcode"
+			id="edbs-copy-shortcode"
 			class="button button-secondary"
-			data-copy="<?php esc_attr_e( 'Copy', 'meeting-minutes' ); ?>"
-			data-copied="<?php esc_attr_e( 'Copied!', 'meeting-minutes' ); ?>"
+			data-copy="<?php esc_attr_e( 'Copy', 'boardscribe' ); ?>"
+			data-copied="<?php esc_attr_e( 'Copied!', 'boardscribe' ); ?>"
 		>
-			<?php esc_html_e( 'Copy', 'meeting-minutes' ); ?>
+			<?php esc_html_e( 'Copy', 'boardscribe' ); ?>
 		</button>
 	</div>
 
@@ -138,8 +138,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<form method="post" action="options.php">
 		<?php
-		settings_fields( 'edmm_settings_group' );
-		do_settings_sections( 'edmm-settings' );
+		settings_fields( 'edbs_settings_group' );
+		do_settings_sections( 'edbs-settings' );
 		submit_button();
 		?>
 	</form>
@@ -152,6 +152,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	 *
 	 * @since x.x.x
 	 */
-	do_action( 'edmm_settings_fields' );
+	do_action( 'edbs_settings_fields' );
 	?>
 </div>

@@ -1,8 +1,8 @@
-# Equalize Digital Meeting Minutes
+# BoardScribe
 
 **Contributors**: Equalize Digital
-**Requires at least**: 6.0
-**Tested up to**: 6.7
+**Requires at least**: 6.7
+**Tested up to**: 7.0
 **Stable tag**: 1.0.0
 **Requires PHP**: 7.4
 **License**: GPLv2 or later
@@ -10,28 +10,28 @@
 
 ## Description
 
-The **Equalize Digital Meeting Minutes** plugin lets you manage and display meeting minutes as a custom post type. No third-party dependencies required — all meta fields use native WordPress storage. A built-in REST API endpoint and JavaScript table renderer power the front-end display via a simple shortcode.
+The **BoardScribe** plugin lets you manage and display meeting minutes as a custom post type. No third-party dependencies required — all meta fields use native WordPress storage. A built-in REST API endpoint and JavaScript table renderer power the front-end display via a simple shortcode.
 
 ### Features
 
 - Custom post type for meeting minutes with native meta boxes (no ACF required).
 - Shortcode builder in the admin settings page generates a ready-to-copy shortcode.
-- Paginated, accessible table display via `[edmm_meeting_minutes]` shortcode.
+- Paginated, accessible table display via `[edbs_boardscribe]` shortcode.
 - Supports multiple shortcodes on the same page, each independently configured.
-- REST API endpoint (`/wp-json/edmm/v1/meeting-minutes/`) for fetching meeting minutes.
+- REST API endpoint (`/wp-json/edbs/v1/boardscribe/`) for fetching meeting minutes.
 - Responsive stacking layout on small screens with accessible column labels.
 
 ## Installation
 
-1. Upload the plugin files to the `/wp-content/plugins/equalize-digital-meeting-minutes` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/boardscribe` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the **Plugins** screen in WordPress.
 3. Add meetings via **Meeting Minutes > Add New** in the admin menu.
 4. Use the **Meeting Minutes > Settings** page to build your shortcode, then paste it into any page or post.
 
 ## Shortcode
 
-```
-[edmm_meeting_minutes]
+```text
+[edbs_boardscribe]
 ```
 
 Use the **Settings > Shortcode Builder** to generate the shortcode with your preferred options. You can also write the shortcode manually using the attributes below.
@@ -52,8 +52,8 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 
 ### Example
 
-```
-[edmm_meeting_minutes included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]
+```text
+[edbs_boardscribe included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]
 ```
 
 ## Meta Fields
@@ -69,7 +69,7 @@ Each meeting minute post has four native meta fields:
 
 The plugin exposes a public REST API endpoint for fetching meeting minutes data. This is intentional — meeting minutes are public records.
 
-**Endpoint:** `GET /wp-json/edmm/v1/meeting-minutes/`
+**Endpoint:** `GET /wp-json/edbs/v1/boardscribe/`
 
 | Parameter | Default | Description |
 |---|---|---|
@@ -81,8 +81,8 @@ The plugin exposes a public REST API endpoint for fetching meeting minutes data.
 
 **Example:**
 
-```
-GET https://yourdomain.com/wp-json/edmm/v1/meeting-minutes/?included_years=2024&posts_per_page=10&page=1
+```text
+GET https://yourdomain.com/wp-json/edbs/v1/boardscribe/?included_years=2024&posts_per_page=10&page=1
 ```
 
 ## Developer Hooks
@@ -91,17 +91,16 @@ The plugin exposes several hooks for extending functionality:
 
 | Hook | Type | Description |
 |---|---|---|
-| `edmm_loaded` | action | Fires after all components are registered. Entry point for add-ons. |
-| `edmm_shortcode_atts` | filter | Filter default shortcode attributes. |
-| `edmm_rest_query_args` | filter | Filter WP_Query args in the REST endpoint. |
-| `edmm_rest_response` | filter | Filter the full REST response array. |
-| `edmm_meeting_row_data` | filter | Filter a single meeting row before it is returned. |
-| `edmm_meta_fields` | action | Fires inside the meta box after the default fields. |
-| `edmm_save_meeting_meta` | action | Fires after default meta fields are saved. |
-| `edmm_after_register_cpt` | action | Fires after the CPT is registered. |
-| `edmm_shortcode_builder_fields` | action | Fires inside the shortcode builder form. |
-| `edmm_settings_fields` | action | Fires after default settings fields are registered. |
-| `edmm_use_native_meta_boxes` | filter | Return `false` to replace the native meta box UI. |
+| `edbs_loaded` | action | Fires after all components are registered. Entry point for add-ons. |
+| `edbs_shortcode_field_registry` | filter | Single source of truth for every field-backed shortcode attribute (default, instance-config value, builder-UI row, REST arg). Replaces the old `edbs_shortcode_atts`/`edbs_shortcode_instance_config`/`edbs_shortcode_builder_*` hooks — see `docs/HOOK-CONTRACT-CHANGES.md`. |
+| `edbs_rest_query_args` | filter | Filter WP_Query args in the REST endpoint. |
+| `edbs_rest_response` | filter | Filter the full REST response array. |
+| `edbs_meeting_row_data` | filter | Filter a single meeting row before it is returned. |
+| `edbs_meta_fields` | action | Fires inside the meta box after the default fields. |
+| `edbs_save_meeting_meta` | action | Fires after default meta fields are saved. |
+| `edbs_after_register_cpt` | action | Fires after the CPT is registered. |
+| `edbs_settings_fields` | action | Fires after default settings fields are registered. |
+| `edbs_use_native_meta_boxes` | filter | Return `false` to replace the native meta box UI. |
 
 ## License
 

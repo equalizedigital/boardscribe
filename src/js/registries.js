@@ -11,7 +11,7 @@
 // renderCell()'s return value, and label/getLabel()'s return value (used as
 // raw column header HTML), are inserted directly as HTML - each must escape
 // any untrusted data itself before returning.
-window.edmmExtraColumns = window.edmmExtraColumns || [];
+window.edbsExtraColumns = window.edbsExtraColumns || [];
 
 // Registry for display templates, keyed by template name. An instance selects
 // its template via the shortcode's template="" attribute; unknown or missing
@@ -42,20 +42,20 @@ window.edmmExtraColumns = window.edmmExtraColumns || [];
 // instanceCfg.resolvedTemplate (set by core before render() is called) is
 // the template name actually rendering, after the unknown/missing-name
 // fallback above - it may differ from instanceCfg.template itself. Every
-// template should add an "edmm-template-<resolvedTemplate>" class to its
+// template should add an "edbs-template-<resolvedTemplate>" class to its
 // own root element(s) (e.g. each <table> it renders), so a site can target
 // one template's output in CSS without needing the shortcode's class=""
-// attribute. The built-in table uses "edmm-template-table".
+// attribute. The built-in table uses "edbs-template-table".
 //
 // All rendered output is inserted as raw HTML - templates must escape any
-// untrusted data themselves (window.edmmEscapeAttr is available for this).
+// untrusted data themselves (window.edbsEscapeAttr is available for this).
 //
-// window.edmmBuildTable( meetings, instanceCfg ) returns a standard <table>
+// window.edbsBuildTable( meetings, instanceCfg ) returns a standard <table>
 // (same columns, label resolution, hide*/tableClass handling, and
-// window.edmmExtraColumns support as the built-in "table" template) as an
+// window.edbsExtraColumns support as the built-in "table" template) as an
 // HTML string. A template that renders multiple tables/sections (e.g. one
 // table per year) can call this per section instead of re-implementing the
 // same column-building logic - it already reads instanceCfg.resolvedTemplate
 // itself, so the returned table carries the calling template's own
-// edmm-template-<name> class.
-window.edmmTemplates = window.edmmTemplates || {};
+// edbs-template-<name> class.
+window.edbsTemplates = window.edbsTemplates || {};

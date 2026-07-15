@@ -2,17 +2,17 @@
 /**
  * Meeting Minutes custom post type registration.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-namespace EqualizeDigital\MeetingMinutes\PostType;
+namespace EqualizeDigital\BoardScribe\PostType;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Registers and manages the edmm_meeting_minutes custom post type.
+ * Registers and manages the edbs_boardscribe custom post type.
  */
 class MeetingMinutes {
 
@@ -28,7 +28,7 @@ class MeetingMinutes {
 	}
 
 	/**
-	 * Registers the edmm_meeting_minutes custom post type.
+	 * Registers the edbs_boardscribe custom post type.
 	 *
 	 * @since x.x.x
 	 *
@@ -36,23 +36,23 @@ class MeetingMinutes {
 	 */
 	public function register_post_type(): void {
 		$labels = [
-			'name'           => _x( 'Meeting Minutes', 'Post Type General Name', 'meeting-minutes' ),
-			'singular_name'  => _x( 'Meeting Minute', 'Post Type Singular Name', 'meeting-minutes' ),
-			'menu_name'      => __( 'Meeting Minutes', 'meeting-minutes' ),
-			'name_admin_bar' => __( 'Meeting Minute', 'meeting-minutes' ),
+			'name'           => _x( 'Meeting Minutes', 'Post Type General Name', 'boardscribe' ),
+			'singular_name'  => _x( 'Meeting Minute', 'Post Type Singular Name', 'boardscribe' ),
+			'menu_name'      => __( 'Meeting Minutes', 'boardscribe' ),
+			'name_admin_bar' => __( 'Meeting Minute', 'boardscribe' ),
 		];
 
 		$args = [
-			'label'         => __( 'Meeting Minute', 'meeting-minutes' ),
+			'label'         => __( 'Meeting Minute', 'boardscribe' ),
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
 			// No public single/archive templates — meeting minutes are only ever
-			// displayed via the [edmm_meeting_minutes] shortcode's own REST endpoint.
+			// displayed via the [edbs_boardscribe] shortcode's own REST endpoint.
 			'public'        => false,
 			'rewrite'       => false,
 			'has_archive'   => false,
 			'show_ui'       => true,
-			// Intentionally still exposes the default /wp/v2/edmm_meeting_minutes
+			// Intentionally still exposes the default /wp/v2/edbs_boardscribe
 			// REST route (needed for the block editor meta box UI); this is fine
 			// since published meeting minutes are meant to be public records.
 			'show_in_rest'  => true,
@@ -61,14 +61,14 @@ class MeetingMinutes {
 		];
 
 		/**
-		 * Filters the edmm_meeting_minutes CPT registration args. Pro plugin uses
+		 * Filters the edbs_boardscribe CPT registration args. Pro plugin uses
 		 * this to enable public/rewrite/archive support or a custom capability_type.
 		 *
 		 * @since x.x.x
 		 *
 		 * @param array $args The register_post_type() args.
 		 */
-		$args = apply_filters( 'edmm_cpt_args', $args );
+		$args = apply_filters( 'edbs_cpt_args', $args );
 
 		/**
 		 * Fires before the Meeting Minutes CPT is registered. Register taxonomies
@@ -76,9 +76,9 @@ class MeetingMinutes {
 		 *
 		 * @since x.x.x
 		 */
-		do_action( 'edmm_before_register_cpt' );
+		do_action( 'edbs_before_register_cpt' );
 
-		register_post_type( 'edmm_meeting_minutes', $args );
+		register_post_type( 'edbs_boardscribe', $args );
 
 		/**
 		 * Fires after the Meeting Minutes CPT is registered. Register taxonomies
@@ -86,6 +86,6 @@ class MeetingMinutes {
 		 *
 		 * @since x.x.x
 		 */
-		do_action( 'edmm_after_register_cpt' );
+		do_action( 'edbs_after_register_cpt' );
 	}
 }

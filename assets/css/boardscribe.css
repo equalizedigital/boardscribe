@@ -1,9 +1,9 @@
-.edmm-pagination-buttons {
+.edbs-pagination-buttons {
     display: flex;
     gap: 5px;
 }
 
-.edmm-pagination-button {
+.edbs-pagination-button {
     padding: 5px 10px;
     border: none;
     background-color: #007bff;
@@ -11,22 +11,22 @@
     cursor: pointer;
 }
 
-.edmm-pagination-button.current {
+.edbs-pagination-button.current {
     background-color: #0056b3;
 }
 
-.edmm-pagination-button[disabled] {
+.edbs-pagination-button[disabled] {
     background-color: #ccc;
     cursor: not-allowed;
 }
 
-.edmm-meeting-minutes-table {
+.edbs-meeting-minutes-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.edmm-meeting-minutes-table th,
-.edmm-meeting-minutes-table td {
+.edbs-meeting-minutes-table th,
+.edbs-meeting-minutes-table td {
     padding: 8px;
     text-align: left;
     border: 1px solid #ddd;
@@ -36,35 +36,35 @@
    however many columns exist (no explicit widths needed), giving every
    column the same width for consistent vertical rhythm. Cell content
    wraps instead of forcing a column wider than its even share. */
-.edmm-meeting-minutes-table.edmm-equal-columns {
+.edbs-meeting-minutes-table.edbs-equal-columns {
     table-layout: fixed;
 }
 
-.edmm-meeting-minutes-table.edmm-equal-columns th,
-.edmm-meeting-minutes-table.edmm-equal-columns td {
+.edbs-meeting-minutes-table.edbs-equal-columns th,
+.edbs-meeting-minutes-table.edbs-equal-columns td {
     overflow-wrap: break-word;
 }
 
 /* Stacking layout on small screens */
 @media only screen and (max-width: 768px) {
-    .edmm-meeting-minutes-table,
-    .edmm-meeting-minutes-table thead,
-    .edmm-meeting-minutes-table tbody,
-    .edmm-meeting-minutes-table th,
-    .edmm-meeting-minutes-table td,
-    .edmm-meeting-minutes-table tr {
+    .edbs-meeting-minutes-table,
+    .edbs-meeting-minutes-table thead,
+    .edbs-meeting-minutes-table tbody,
+    .edbs-meeting-minutes-table th,
+    .edbs-meeting-minutes-table td,
+    .edbs-meeting-minutes-table tr {
         display: block;
     }
 
-    .edmm-meeting-minutes-table thead {
+    .edbs-meeting-minutes-table thead {
         display: none;
     }
 
-    .edmm-meeting-minutes-table tr {
+    .edbs-meeting-minutes-table tr {
         margin-bottom: 10px;
     }
 
-    .edmm-meeting-minutes-table td {
+    .edbs-meeting-minutes-table td {
         display: flex;
         justify-content: space-between;
         padding: 10px;
@@ -72,7 +72,7 @@
         text-align: left;
     }
 
-    .edmm-meeting-minutes-table td::before {
+    .edbs-meeting-minutes-table td::before {
         content: attr(data-label);
         font-weight: bold;
         text-transform: uppercase;

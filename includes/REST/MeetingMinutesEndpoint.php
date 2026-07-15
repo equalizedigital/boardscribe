@@ -2,19 +2,19 @@
 /**
  * REST API endpoint for meeting minutes.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-namespace EqualizeDigital\MeetingMinutes\REST;
+namespace EqualizeDigital\BoardScribe\REST;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
+use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
- * Registers and handles the /edmm/v1/meeting-minutes/ REST endpoint.
+ * Registers and handles the /edbs/v1/boardscribe/ REST endpoint.
  *
  * This endpoint is intentionally public (permission_callback: __return_true)
  * because meeting minutes are public records. No authentication is required
@@ -71,21 +71,21 @@ class MeetingMinutesEndpoint {
 		}
 
 		/**
-		 * Filters the registered args schema for the meeting-minutes REST route.
+		 * Filters the registered args schema for the boardscribe REST route.
 		 * Pro plugin uses this to add REST-only params that aren't backed by any
 		 * shortcode/builder/block field (e.g. full-text search) — fields that do
 		 * need a builder/block field should be registered on
-		 * edmm_shortcode_field_registry with rest_arg => true instead.
+		 * edbs_shortcode_field_registry with rest_arg => true instead.
 		 *
 		 * @since x.x.x
 		 *
 		 * @param array $args The REST route args schema.
 		 */
-		$args = apply_filters( 'edmm_rest_route_args', $args );
+		$args = apply_filters( 'edbs_rest_route_args', $args );
 
 		register_rest_route(
-			'edmm/v1',
-			'/meeting-minutes/',
+			'edbs/v1',
+			'/boardscribe/',
 			[
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_meeting_minutes' ],
@@ -109,8 +109,8 @@ class MeetingMinutesEndpoint {
 		$held_date_format     = $request->get_param( 'held_date_format' );
 		$not_held_date_format = $request->get_param( 'not_held_date_format' );
 		$included_years       = $request->get_param( 'included_years' );
-		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'meeting-minutes' );
-		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'meeting-minutes' );
+		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
+		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
 
 		$posts_per_page = (int) $posts_per_page;
 
@@ -126,7 +126,7 @@ class MeetingMinutesEndpoint {
 			 *
 			 * @param int $absolute_max Upper bound substituted for -1. Default 500.
 			 */
-			$posts_per_page = (int) apply_filters( 'edmm_rest_absolute_max_per_page', 500 );
+			$posts_per_page = (int) apply_filters( 'edbs_rest_absolute_max_per_page', 500 );
 		} elseif ( $posts_per_page > 0 ) {
 			/**
 			 * Filters the maximum number of meetings a single REST request may return.
@@ -137,21 +137,21 @@ class MeetingMinutesEndpoint {
 			 *
 			 * @param int $max_per_page Maximum posts_per_page. Default 100.
 			 */
-			$posts_per_page = min( $posts_per_page, (int) apply_filters( 'edmm_rest_max_per_page', 100 ) );
+			$posts_per_page = min( $posts_per_page, (int) apply_filters( 'edbs_rest_max_per_page', 100 ) );
 		}
 
 		$args = [
-			'post_type'      => 'edmm_meeting_minutes',
+			'post_type'      => 'edbs_boardscribe',
 			'post_status'    => 'publish',
 			'posts_per_page' => $posts_per_page,
 			'paged'          => $page,
-			'meta_key'       => 'edmm_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
+			'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
 			'orderby'        => 'meta_value',
 			'order'          => 'DESC',
 			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
 				'relation' => 'AND',
 				[
-					'key'     => 'edmm_meeting_date',
+					'key'     => 'edbs_meeting_date',
 					'compare' => 'EXISTS',
 				],
 			],
@@ -164,7 +164,7 @@ class MeetingMinutesEndpoint {
 			foreach ( $years as $year ) {
 				$year           = intval( $year );
 				$year_queries[] = [
-					'key'     => 'edmm_meeting_date',
+					'key'     => 'edbs_meeting_date',
 					'value'   => [ $year . '-01-01', $year . '-12-31' ],
 					'compare' => 'BETWEEN',
 					'type'    => 'DATE',
@@ -183,7 +183,7 @@ class MeetingMinutesEndpoint {
 		 * @param array            $args    The WP_Query args.
 		 * @param \WP_REST_Request $request The REST request.
 		 */
-		$args = apply_filters( 'edmm_rest_query_args', $args, $request );
+		$args = apply_filters( 'edbs_rest_query_args', $args, $request );
 
 		$query    = new \WP_Query( $args );
 		$meetings = [];
@@ -222,7 +222,7 @@ class MeetingMinutesEndpoint {
 		 * @param array            $response The response data.
 		 * @param \WP_REST_Request $request  The REST request.
 		 */
-		$response = apply_filters( 'edmm_rest_response', $response, $request );
+		$response = apply_filters( 'edbs_rest_response', $response, $request );
 
 		return rest_ensure_response( $response );
 	}
@@ -252,23 +252,23 @@ class MeetingMinutesEndpoint {
 	public function build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array {
 		$held_date_format     = $format_args['held_date_format'] ?? 'Y/m/d';
 		$not_held_date_format = $format_args['not_held_date_format'] ?? 'Y/m';
-		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'meeting-minutes' );
-		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'meeting-minutes' );
+		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'boardscribe' );
+		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'boardscribe' );
 
-		$meeting_date        = get_post_meta( $post_id, 'edmm_meeting_date', true );
-		$meeting_not_held    = (bool) get_post_meta( $post_id, 'edmm_meeting_not_held', true );
-		$meeting_agenda_url  = get_post_meta( $post_id, 'edmm_meeting_agenda_url', true );
-		$meeting_minutes_url = get_post_meta( $post_id, 'edmm_meeting_minutes_url', true );
+		$meeting_date        = get_post_meta( $post_id, 'edbs_meeting_date', true );
+		$meeting_not_held    = (bool) get_post_meta( $post_id, 'edbs_meeting_not_held', true );
+		$meeting_agenda_url  = get_post_meta( $post_id, 'edbs_meeting_agenda_url', true );
+		$meeting_minutes_url = get_post_meta( $post_id, 'edbs_meeting_minutes_url', true );
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional, gated behind WP_DEBUG for troubleshooting date parsing.
-			error_log( 'EDMM: Raw meeting date for post ' . $post_id . ': ' . $meeting_date );
+			error_log( 'EDBS: Raw meeting date for post ' . $post_id . ': ' . $meeting_date );
 		}
 
 		$date_object    = $this->parse_date( $meeting_date );
 		$formatted_date = $date_object
 			? esc_html( $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format ) )
-			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'meeting-minutes' ) . '</span>';
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'boardscribe' ) . '</span>';
 
 		/**
 		 * Filters the formatted date string before it's used in the visible date
@@ -276,7 +276,7 @@ class MeetingMinutesEndpoint {
 		 * this to substitute a per-meeting text override (e.g. "March Special",
 		 * "TBD") for the computed date, honored whenever set regardless of
 		 * held/not-held status. Sort order is unaffected — it's driven by the
-		 * raw edmm_meeting_date value, not this display string.
+		 * raw edbs_meeting_date value, not this display string.
 		 *
 		 * @since x.x.x
 		 *
@@ -284,41 +284,41 @@ class MeetingMinutesEndpoint {
 		 * @param int    $post_id          The post ID.
 		 * @param bool   $meeting_not_held Whether the meeting is marked not held.
 		 */
-		$filtered_date  = apply_filters( 'edmm_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
+		$filtered_date  = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
 		$formatted_date = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
 
 		$agenda_item = $meeting_agenda_url
 			? apply_filters(
-				'edmm_meeting_agenda_link',
+				'edbs_meeting_agenda_link',
 				'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr(
 					sprintf(
 					/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-						__( '%1$s for %2$s', 'meeting-minutes' ),
+						__( '%1$s for %2$s', 'boardscribe' ),
 						$agenda_link_label,
 						wp_strip_all_tags( $formatted_date )
 					)
 				) . '">' . esc_html( $agenda_link_label ) . '</a>'
 			)
-			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'meeting-minutes' ) . '</span>';
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'boardscribe' ) . '</span>';
 
 		$minutes_item = $meeting_minutes_url
 			? apply_filters(
-				'edmm_meeting_minutes_link',
+				'edbs_meeting_minutes_link',
 				'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr(
 					sprintf(
 					/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
-						__( '%1$s for %2$s', 'meeting-minutes' ),
+						__( '%1$s for %2$s', 'boardscribe' ),
 						$minutes_link_label,
 						wp_strip_all_tags( $formatted_date )
 					)
 				) . '">' . esc_html( $minutes_link_label ) . '</a>'
 			)
-			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'meeting-minutes' ) . '</span>';
+			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'boardscribe' ) . '</span>';
 
 		$row = [
 			'title'   => esc_html( get_the_title( $post_id ) ),
 			'date'    => $formatted_date,
-			'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'meeting-minutes' ) : $agenda_item,
+			'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'boardscribe' ) : $agenda_item,
 			'minutes' => $minutes_item,
 		];
 
@@ -332,7 +332,7 @@ class MeetingMinutesEndpoint {
 		 * @param int                    $post_id The post ID.
 		 * @param \WP_REST_Request|null $request  The REST request, if any.
 		 */
-		return apply_filters( 'edmm_meeting_row_data', $row, $post_id, $request );
+		return apply_filters( 'edbs_meeting_row_data', $row, $post_id, $request );
 	}
 
 	/**

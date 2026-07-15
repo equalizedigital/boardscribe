@@ -2,21 +2,21 @@
 /**
  * Main plugin class.
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-namespace EqualizeDigital\MeetingMinutes;
+namespace EqualizeDigital\BoardScribe;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use EqualizeDigital\MeetingMinutes\Admin\MetaBox;
-use EqualizeDigital\MeetingMinutes\Admin\SettingsPage;
-use EqualizeDigital\MeetingMinutes\PostType\MeetingMinutes as MeetingMinutesCPT;
-use EqualizeDigital\MeetingMinutes\REST\MeetingMinutesEndpoint;
-use EqualizeDigital\MeetingMinutes\Shortcode\FieldRegistry;
-use EqualizeDigital\MeetingMinutes\Shortcode\MeetingMinutesShortcode;
+use EqualizeDigital\BoardScribe\Admin\MetaBox;
+use EqualizeDigital\BoardScribe\Admin\SettingsPage;
+use EqualizeDigital\BoardScribe\PostType\MeetingMinutes as MeetingMinutesCPT;
+use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
+use EqualizeDigital\BoardScribe\Shortcode\MeetingMinutesShortcode;
 
 /**
  * Singleton plugin bootstrap. Wires all components together.
@@ -67,7 +67,7 @@ class Plugin {
 	 * @return void
 	 */
 	public function boot(): void {
-		load_plugin_textdomain( 'meeting-minutes', false, dirname( plugin_basename( EDMM_FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'boardscribe', false, dirname( plugin_basename( EDBS_FILE ) ) . '/languages' );
 
 		( new FieldRegistry() )->register();
 		( new MeetingMinutesCPT() )->register();
@@ -88,7 +88,7 @@ class Plugin {
 		 *
 		 * @param Plugin $plugin The plugin instance.
 		 */
-		do_action( 'edmm_loaded', $this );
+		do_action( 'edbs_loaded', $this );
 	}
 
 	/**
@@ -100,8 +100,8 @@ class Plugin {
 	 * @return array
 	 */
 	public function register_edacp_filters( array $additional_filters ): array {
-		$additional_filters[] = 'edmm_meeting_minutes_link';
-		$additional_filters[] = 'edmm_meeting_agenda_link';
+		$additional_filters[] = 'edbs_meeting_minutes_link';
+		$additional_filters[] = 'edbs_meeting_agenda_link';
 		return $additional_filters;
 	}
 
@@ -115,7 +115,7 @@ class Plugin {
 	 * @return mixed
 	 */
 	public static function get_setting( string $key, $default_value = null ) {
-		$settings = get_option( 'edmm_settings', [] );
+		$settings = get_option( 'edbs_settings', [] );
 		if ( isset( $settings[ $key ] ) ) {
 			return $settings[ $key ];
 		}

@@ -2,10 +2,10 @@
 /**
  * Tests for MeetingMinutesShortcode::render().
  *
- * @package EqualizeDigital\MeetingMinutes
+ * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\MeetingMinutes\Shortcode\MeetingMinutesShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\MeetingMinutesShortcode;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
