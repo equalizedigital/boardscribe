@@ -1,8 +1,8 @@
-# Equalize Digital BoardScribe
+# BoardScribe
 
 **Contributors**: Equalize Digital
-**Requires at least**: 6.0
-**Tested up to**: 6.7
+**Requires at least**: 6.7
+**Tested up to**: 7.0
 **Stable tag**: 1.0.0
 **Requires PHP**: 7.4
 **License**: GPLv2 or later
@@ -10,7 +10,7 @@
 
 ## Description
 
-The **Equalize Digital BoardScribe** plugin lets you manage and display meeting minutes as a custom post type. No third-party dependencies required — all meta fields use native WordPress storage. A built-in REST API endpoint and JavaScript table renderer power the front-end display via a simple shortcode.
+The **BoardScribe** plugin lets you manage and display meeting minutes as a custom post type. No third-party dependencies required — all meta fields use native WordPress storage. A built-in REST API endpoint and JavaScript table renderer power the front-end display via a simple shortcode.
 
 ### Features
 
@@ -30,7 +30,7 @@ The **Equalize Digital BoardScribe** plugin lets you manage and display meeting 
 
 ## Shortcode
 
-```
+```text
 [edbs_boardscribe]
 ```
 
@@ -52,7 +52,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 
 ### Example
 
-```
+```text
 [edbs_boardscribe included_years="2023,2024" posts_per_page="10" held_date_format="F j, Y"]
 ```
 
@@ -81,7 +81,7 @@ The plugin exposes a public REST API endpoint for fetching meeting minutes data.
 
 **Example:**
 
-```
+```text
 GET https://yourdomain.com/wp-json/edbs/v1/boardscribe/?included_years=2024&posts_per_page=10&page=1
 ```
 
@@ -92,14 +92,13 @@ The plugin exposes several hooks for extending functionality:
 | Hook | Type | Description |
 |---|---|---|
 | `edbs_loaded` | action | Fires after all components are registered. Entry point for add-ons. |
-| `edbs_shortcode_atts` | filter | Filter default shortcode attributes. |
+| `edbs_shortcode_field_registry` | filter | Single source of truth for every field-backed shortcode attribute (default, instance-config value, builder-UI row, REST arg). Replaces the old `edbs_shortcode_atts`/`edbs_shortcode_instance_config`/`edbs_shortcode_builder_*` hooks — see `docs/HOOK-CONTRACT-CHANGES.md`. |
 | `edbs_rest_query_args` | filter | Filter WP_Query args in the REST endpoint. |
 | `edbs_rest_response` | filter | Filter the full REST response array. |
 | `edbs_meeting_row_data` | filter | Filter a single meeting row before it is returned. |
 | `edbs_meta_fields` | action | Fires inside the meta box after the default fields. |
 | `edbs_save_meeting_meta` | action | Fires after default meta fields are saved. |
 | `edbs_after_register_cpt` | action | Fires after the CPT is registered. |
-| `edbs_shortcode_builder_fields` | action | Fires inside the shortcode builder form. |
 | `edbs_settings_fields` | action | Fires after default settings fields are registered. |
 | `edbs_use_native_meta_boxes` | filter | Return `false` to replace the native meta box UI. |
 

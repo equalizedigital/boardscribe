@@ -1,5 +1,5 @@
 {
-	"name": "equalize-digital-meeting-minutes",
+	"name": "boardscribe",
 	"version": "1.0.0",
 	"description": "Build tooling, tests, and linting for the Equalize Digital BoardScribe plugin",
 	"private": true,

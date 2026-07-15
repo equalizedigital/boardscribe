@@ -26,7 +26,7 @@ import { i18n } from '../config';
 export function buildTableHtml( meetings, instanceCfg ) {
 	const safeMeetings = Array.isArray( meetings ) ? meetings : [];
 	const cfg = instanceCfg || {};
-	const extraColumns = window.edbsExtraColumns || [];
+	const extraColumns = Array.isArray( window.edbsExtraColumns ) ? window.edbsExtraColumns : [];
 
 	// Resolve column labels: instance override → i18n global → hard-coded fallback.
 	const labelTitle = cfg.titleLabel || i18n.colTitle || __( 'Title', 'boardscribe' );

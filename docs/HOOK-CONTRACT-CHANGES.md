@@ -81,7 +81,7 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 } );
 ```
 
-**Action for Pro before release:** grep Pro's codebase for all five removed hook names and migrate every callback to a descriptor on `edbs_shortcode_field_registry`. `posts_per_page` "all" support (previously bolted on via `edbs_rest_route_args` in `ProMetaFields::allow_all_posts_per_page()`) is now a core free-plugin field type (`number_with_all`) — that override method should be deleted entirely, not migrated.
+**Action for Pro before release:** grep Pro's codebase for all five removed hook names. Migrate every callback that added a typed field (label/default/checkbox/etc.) to a descriptor on `edbs_shortcode_field_registry`; for any `edbs_shortcode_builder_fields` callback injecting raw custom markup, see the raw-HTML caveat above — there is no direct replacement, so that logic needs a different approach (or to be dropped) rather than a registry migration. `posts_per_page` "all" support (previously bolted on via `edbs_rest_route_args` in `ProMetaFields::allow_all_posts_per_page()`) is now a core free-plugin field type (`number_with_all`) — that override method should be deleted entirely, not migrated.
 
 ---
 

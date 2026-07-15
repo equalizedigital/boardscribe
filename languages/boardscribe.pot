@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-14T22:38:00+01:00\n"
+"POT-Creation-Date: 2026-07-15T14:49:13+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -27,7 +27,7 @@ msgstr ""
 
 #. Description of the plugin
 #: boardscribe.php
-msgid "Manage and display meeting minutes as a custom post type with meta fields."
+msgid "Publish accessible, searchable meeting minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
 msgstr ""
 
 #. Author of the plugin
