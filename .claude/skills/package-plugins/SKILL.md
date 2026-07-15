@@ -46,7 +46,7 @@ composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe-pro.zip
 STAGE=$(mktemp -d)/boardscribe-pro && mkdir -p "$STAGE/assets" "$STAGE/src/js"
 cp -r \
-  boardscribe-pro.php block.json readme.txt \
+  boardscribe-pro.php block.json readme.txt LICENSE \
   includes partials build vendor \
   "$STAGE"/
 cp -r assets/css "$STAGE/assets/"
@@ -57,7 +57,7 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest:
-`boardscribe-pro.php`, `block.json`, `readme.txt`, `build/{index.js,index.asset.php}`, `assets/css/pro-meta.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section,block-editor-preview}.php`, `includes/{Plugin,License/LicenseManager,Admin/ProMetaFields,PostType/MeetingCategory,Block/MeetingMinutesBlock,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate}.js`
+`boardscribe-pro.php`, `block.json`, `readme.txt`, `LICENSE`, `build/{index.js,index.asset.php}`, `assets/css/pro-meta.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section,block-editor-preview}.php`, `includes/{Plugin,License/LicenseManager,Admin/ProMetaFields,PostType/MeetingCategory,Block/MeetingMinutesBlock,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate}.js`
 
 Note: `partials/shortcode-builder-fields.php` no longer exists (deleted in the shortcode-field-registry refactor, PR equalize-digital-meeting-minutes#19 / meeting-minutes-pro#11) — don't re-add it if an old checklist still references it.
 
