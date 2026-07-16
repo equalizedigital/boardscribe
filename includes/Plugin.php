@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use EqualizeDigital\BoardScribe\Admin\SettingsPage;
+use EqualizeDigital\BoardScribe\Block\BoardScribeBlock;
 use EqualizeDigital\BoardScribe\PostType\MeetingMinutes as MeetingMinutesCPT;
 use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
@@ -75,6 +76,7 @@ class Plugin {
 		( new SettingsPage() )->register();
 		( new MeetingMinutesEndpoint() )->register();
 		( new MeetingMinutesShortcode() )->register();
+		( new BoardScribeBlock() )->register();
 
 		add_filter(
 			'edac_fix_file_size_and_type_additional_filters',
