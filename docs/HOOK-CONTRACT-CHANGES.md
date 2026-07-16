@@ -110,3 +110,19 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 **Contract impact:** any code (Pro included) hardcoding the CPT slug `edbs_meeting_minutes`, the shortcode tag `[edbs_meeting_minutes]`, or building URLs against `/edbs/v1/meeting-minutes/` must be updated. WordPress's dynamic `save_post_{$post_type}` hook is now `save_post_edbs_boardscribe`.
 
 **Action for Pro before release:** grep for `edbs_meeting_minutes` as a **CPT-slug/shortcode-tag token** (not the meta-key/hook variants above, which are unaffected) and for `/meeting-minutes/` as a REST route segment; update `MeetingCategory`, `ProMetaFields`, `CsvImporter`, and `MeetingMinutesBlock` query/registration code, and `block.json`'s block name.
+
+---
+
+## Block moved from Pro into the free plugin (paired `feat/move-block-to-free` branches)
+
+**Before:** the `equalize-digital/boardscribe` block was registered by Pro (`Block/MeetingMinutesBlock.php` there), with the editor preview hardcoding Pro's five columns and the year-timeline template.
+
+**After:** the free plugin registers the block (`Block/BoardScribeBlock.php`, from `block.json`; block **name unchanged** — it's stored in existing content). Pro extends it purely through new free extension points: `edbs_block_preview_columns`, `edbs_block_editor_preview`, `edbs_block_preview_max_rows`, the public `BoardScribeBlock::render_preview_table()`, and the `edbs.block.templateChangeAttributes` JS filter (see CLAUDE.md's table). Free's registration runs at `init` 20 behind a `WP_Block_Type_Registry::is_registered()` guard, so an **old Pro + new free** combination keeps working (old Pro's registration at `init` 10 wins, no notice).
+
+**Also in this change:**
+- `MeetingMinutesEndpoint::parse_date()` is now `public static` — shared surface Pro calls for year grouping (its own `MeetingMinutesBlock::parse_meeting_date()` copy is deleted).
+- The core `template` field descriptor now ships only the `''` (table) choice. A plugin owning another display template must append its choice via `edbs_shortcode_field_registry` or it disappears from the builder/block pickers.
+
+**Contract impact / version pairing:** **new Pro requires the paired new free release.** On an older free plugin, new Pro's block is simply gone (nothing registers it) and `ProMetaFields::get_meeting_year()` fatals calling the then-private `parse_date()`. The reverse skew (old Pro + new free) is handled by the registration guard above.
+
+**Action for Pro before release:** confirm Pro no longer ships `block.json`/`build/` (packaging manifests updated in `package-plugins` skill), that `BlockExtensions` is booted, and that the paired free release is published first.

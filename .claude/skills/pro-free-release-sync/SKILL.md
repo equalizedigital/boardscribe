@@ -26,6 +26,11 @@ If a free PR changes an **existing** hook's call signature (args, types, nullabi
 
 Pro's frontend hangs off free's window globals — confirm they still exist in free's `src/js` after any free JS refactor:
 `window.edbsExtraColumns`, `window.edbsTemplates`, `window.edbsBuildTable( meetings, instanceCfg )`, `window.edbsEscapeAttr`, `instanceCfg.resolvedTemplate`, and the `edbs-template-<name>` root-class convention.
+Editor side: `window.edbsBlockFieldRegistry` (localized onto free's block editor bundle) and the `edbs.block.templateChangeAttributes` wp.hooks filter (Pro's `src/js/editor/blockEditor.js` couples postsPerPage to the year-timeline template through it).
+
+## 4b. Block version pairing (since the block moved to free)
+
+The `equalize-digital/boardscribe` block is registered by **free** (`Block/BoardScribeBlock.php`); Pro only extends it. New Pro requires the paired new free release (block otherwise missing, and `ProMetaFields::get_meeting_year()` calls free's public `MeetingMinutesEndpoint::parse_date()`). Old Pro + new free is safe: free registers at `init` 20 behind an `is_registered()` guard, so old Pro's own block registration wins.
 
 ## 5. Review gates (both repos)
 
