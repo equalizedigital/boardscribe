@@ -24,5 +24,5 @@ window.edbsTemplates.table = window.edbsTemplates.table || tableTemplate;
 
 // Initialise all instances when the DOM is ready.
 document.addEventListener( 'DOMContentLoaded', function() {
-	document.querySelectorAll( '.edbs-meeting-minutes-wrap' ).forEach( initInstance );
+	document.querySelectorAll( '.edbs-boardscribe-wrap' ).forEach( initInstance );
 } );

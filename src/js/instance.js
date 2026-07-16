@@ -6,7 +6,7 @@ import { defaultFocus } from './defaults/focus';
 /**
  * Initialises a single BoardScribe instance.
  *
- * @param {HTMLElement} container - The .edbs-meeting-minutes-wrap element.
+ * @param {HTMLElement} container - The .edbs-boardscribe-wrap element.
  */
 export function initInstance( container ) {
 	// A malformed data-config must only break its own instance - an

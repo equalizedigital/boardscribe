@@ -126,3 +126,25 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 **Contract impact / version pairing:** **new Pro requires the paired new free release.** On an older free plugin, new Pro's block is simply gone (nothing registers it) and `ProMetaFields::get_meeting_year()` fatals calling the then-private `parse_date()`. The reverse skew (old Pro + new free) is handled by the registration guard above.
 
 **Action for Pro before release:** confirm Pro no longer ships `block.json`/`build/` (packaging manifests updated in `package-plugins` skill), that `BlockExtensions` is booted, and that the paired free release is published first.
+
+---
+
+## Rebrand completion — slug-derived identifiers and doc-link meta keys/hooks renamed (pre-release)
+
+**Before:** the earlier rebrand entries above deliberately kept the frontend script/style handle `edbs-meeting-minutes`, the CSS classes `edbs-meeting-minutes-table`/`edbs-meeting-minutes-wrap`, the meta keys `edbs_meeting_agenda_url`/`edbs_meeting_minutes_url`, and the hooks `edbs_meeting_agenda_link`/`edbs_meeting_minutes_link`.
+
+**After** (allowed because neither plugin has shipped — no stored data or third-party CSS to preserve):
+
+| Old | New |
+|---|---|
+| `edbs-meeting-minutes` (script + style handle) | `edbs-boardscribe` |
+| `.edbs-meeting-minutes-table` | `.edbs-boardscribe-table` |
+| `.edbs-meeting-minutes-wrap` | `.edbs-boardscribe-wrap` |
+| `edbs_meeting_agenda_url` (meta key + POST field) | `edbs_agenda_url` |
+| `edbs_meeting_minutes_url` (meta key + POST field) | `edbs_minutes_url` |
+| `edbs_meeting_agenda_link` (filter) | `edbs_agenda_link` |
+| `edbs_meeting_minutes_link` (filter) | `edbs_minutes_link` |
+
+**Kept:** `edbs_meeting_date` and `edbs_meeting_not_held` (properties of the meeting — no brand echo), and the `edbs_meeting_row_data`/`edbs_meeting_formatted_date`/`edbs_save_meeting_meta` hooks likewise.
+
+**Contract impact:** Pro must enqueue against the `edbs-boardscribe` handle and write `edbs_agenda_url`/`edbs_minutes_url` in its CSV importer (done in the paired `fix/boardscribe-wording` branch). Any site content created against the old meta keys before this change loses its agenda/minutes links (accepted: unreleased). Accessibility Checker Pro's link-fix integration receives the new filter names via `edac_fix_file_size_and_type_additional_filters` automatically.

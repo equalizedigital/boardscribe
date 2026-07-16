@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 <table
-	class="edbs-meeting-minutes-table widefat"
+	class="edbs-boardscribe-table widefat"
 	style="border-collapse:collapse;<?php echo $equal_columns ? ' table-layout:fixed;' : ''; ?>"
 >
 	<thead>

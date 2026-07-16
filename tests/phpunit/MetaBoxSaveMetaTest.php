@@ -142,11 +142,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 */
 	public function test_agenda_url_is_sanitized(): void {
 		$input                            = 'https://example.com/agenda.pdf"><script>alert(1)</script>';
-		$_POST['edbs_meeting_agenda_url'] = $input;
+		$_POST['edbs_agenda_url'] = $input;
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$saved = get_post_meta( $this->post_id, 'edbs_meeting_agenda_url', true );
+		$saved = get_post_meta( $this->post_id, 'edbs_agenda_url', true );
 		$this->assertSame( esc_url_raw( $input ), $saved );
 	}
 
@@ -155,11 +155,11 @@ class MetaBoxSaveMetaTest extends TestCase {
 	 */
 	public function test_minutes_url_is_sanitized(): void {
 		$input                             = 'javascript:alert(1)';
-		$_POST['edbs_meeting_minutes_url'] = $input;
+		$_POST['edbs_minutes_url'] = $input;
 
 		$this->meta_box->save_meta( $this->post_id );
 
-		$saved = get_post_meta( $this->post_id, 'edbs_meeting_minutes_url', true );
+		$saved = get_post_meta( $this->post_id, 'edbs_minutes_url', true );
 		$this->assertSame( esc_url_raw( $input ), $saved );
 	}
 

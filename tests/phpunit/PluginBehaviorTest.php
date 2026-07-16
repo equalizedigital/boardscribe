@@ -105,8 +105,8 @@ class PluginBehaviorTest extends TestCase {
 		$result  = $plugin->register_edacp_filters( [ 'existing_filter' ] );
 
 		$this->assertContains( 'existing_filter', $result );
-		$this->assertContains( 'edbs_meeting_minutes_link', $result );
-		$this->assertContains( 'edbs_meeting_agenda_link', $result );
+		$this->assertContains( 'edbs_minutes_link', $result );
+		$this->assertContains( 'edbs_agenda_link', $result );
 	}
 
 	/**

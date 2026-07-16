@@ -47,7 +47,7 @@ class MetaBoxRegisterMetaTest extends TestCase {
 		global $wp_meta_keys;
 		$keys = array_keys( $wp_meta_keys['post']['edbs_boardscribe'] );
 
-		foreach ( [ 'edbs_meeting_date', 'edbs_meeting_agenda_url', 'edbs_meeting_minutes_url', 'edbs_meeting_not_held' ] as $expected_key ) {
+		foreach ( [ 'edbs_meeting_date', 'edbs_agenda_url', 'edbs_minutes_url', 'edbs_meeting_not_held' ] as $expected_key ) {
 			$this->assertContains( $expected_key, $keys );
 		}
 	}
@@ -65,8 +65,8 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * at save time in MetaBox::save_meta().
 	 */
 	public function test_url_fields_use_esc_url_raw(): void {
-		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edbs_meeting_agenda_url' )['sanitize_callback'] );
-		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edbs_meeting_minutes_url' )['sanitize_callback'] );
+		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edbs_agenda_url' )['sanitize_callback'] );
+		$this->assertSame( 'esc_url_raw', $this->get_meta_args( 'edbs_minutes_url' )['sanitize_callback'] );
 	}
 
 	/**

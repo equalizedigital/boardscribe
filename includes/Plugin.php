@@ -102,8 +102,8 @@ class Plugin {
 	 * @return array
 	 */
 	public function register_edacp_filters( array $additional_filters ): array {
-		$additional_filters[] = 'edbs_meeting_minutes_link';
-		$additional_filters[] = 'edbs_meeting_agenda_link';
+		$additional_filters[] = 'edbs_minutes_link';
+		$additional_filters[] = 'edbs_agenda_link';
 		return $additional_filters;
 	}
 

@@ -41,7 +41,7 @@ export function buildTableHtml( meetings, instanceCfg ) {
 	const tableClass = escapeAttribute( cfg.tableClass || '' );
 	const templateClass = escapeAttribute( 'edbs-template-' + ( cfg.resolvedTemplate || 'table' ) );
 	const equalColumnsClass = cfg.equalColumns ? 'edbs-equal-columns' : '';
-	let table = '<table tabindex="0" class="edbs-meeting-minutes-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
+	let table = '<table tabindex="0" class="edbs-boardscribe-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
 		'<thead class="desktop"><tr>';
 
 	if ( ! cfg.hideTitle ) {

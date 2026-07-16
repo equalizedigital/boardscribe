@@ -69,7 +69,7 @@ class MeetingMinutesShortcode {
 	 */
 	private function enqueue_assets(): void {
 		wp_enqueue_style(
-			'edbs-meeting-minutes',
+			'edbs-boardscribe',
 			EDBS_URL . 'assets/css/boardscribe.css',
 			[],
 			EDBS_VERSION
@@ -80,7 +80,7 @@ class MeetingMinutesShortcode {
 		// the externals map in webpack.config.js — this dependency list is
 		// maintained by hand and must stay in sync with that map.
 		wp_enqueue_script(
-			'edbs-meeting-minutes',
+			'edbs-boardscribe',
 			EDBS_URL . 'assets/build/boardscribe.js',
 			[ 'wp-escape-html', 'wp-i18n' ],
 			EDBS_VERSION,
@@ -88,7 +88,7 @@ class MeetingMinutesShortcode {
 		);
 
 		// Load the JS translation files (JSON) for __() calls in the bundle.
-		wp_set_script_translations( 'edbs-meeting-minutes', 'boardscribe' );
+		wp_set_script_translations( 'edbs-boardscribe', 'boardscribe' );
 
 		$this->localize_script();
 
@@ -115,7 +115,7 @@ class MeetingMinutesShortcode {
 		}
 
 		wp_localize_script(
-			'edbs-meeting-minutes',
+			'edbs-boardscribe',
 			'edbsConfig',
 			[
 				'apiUrl' => rest_url( 'edbs/v1/boardscribe/' ),
@@ -179,7 +179,7 @@ class MeetingMinutesShortcode {
 		ob_start();
 		?>
 		<div
-			class="edbs-meeting-minutes-wrap"
+			class="edbs-boardscribe-wrap"
 			data-config="<?php echo esc_attr( wp_json_encode( $instance_config ) ); ?>"
 		>
 			<?php

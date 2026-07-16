@@ -5,8 +5,8 @@
  * @package EqualizeDigital\BoardScribe
  *
  * @var string   $meeting_date        Meeting date meta value.
- * @var string   $meeting_agenda_url  Agenda URL meta value.
- * @var string   $meeting_minutes_url Minutes URL meta value.
+ * @var string   $agenda_url  Agenda URL meta value.
+ * @var string   $minutes_url Minutes URL meta value.
  * @var string   $meeting_not_held    Whether the meeting was not held.
  * @var \WP_Post $post                The current post.
  */
@@ -36,21 +36,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 		<tr>
 			<th scope="row">
-				<label for="edbs_meeting_agenda_url"><?php esc_html_e( 'Agenda URL', 'boardscribe' ); ?></label>
+				<label for="edbs_agenda_url"><?php esc_html_e( 'Agenda URL', 'boardscribe' ); ?></label>
 			</th>
 			<td>
 				<input
 					type="url"
-					id="edbs_meeting_agenda_url"
-					name="edbs_meeting_agenda_url"
-					value="<?php echo esc_url( $meeting_agenda_url ); ?>"
+					id="edbs_agenda_url"
+					name="edbs_agenda_url"
+					value="<?php echo esc_url( $agenda_url ); ?>"
 					class="large-text"
 					placeholder="https://"
 				/>
 				<button
 					type="button"
 					class="button edbs-media-button"
-					data-target="edbs_meeting_agenda_url"
+					data-target="edbs_agenda_url"
 					data-title="<?php esc_attr_e( 'Choose Agenda File', 'boardscribe' ); ?>"
 					data-insert="<?php esc_attr_e( 'Use this file', 'boardscribe' ); ?>"
 				><?php esc_html_e( 'Media Library', 'boardscribe' ); ?></button>
@@ -58,21 +58,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 		<tr>
 			<th scope="row">
-				<label for="edbs_meeting_minutes_url"><?php esc_html_e( 'Minutes URL', 'boardscribe' ); ?></label>
+				<label for="edbs_minutes_url"><?php esc_html_e( 'Minutes URL', 'boardscribe' ); ?></label>
 			</th>
 			<td>
 				<input
 					type="url"
-					id="edbs_meeting_minutes_url"
-					name="edbs_meeting_minutes_url"
-					value="<?php echo esc_url( $meeting_minutes_url ); ?>"
+					id="edbs_minutes_url"
+					name="edbs_minutes_url"
+					value="<?php echo esc_url( $minutes_url ); ?>"
 					class="large-text"
 					placeholder="https://"
 				/>
 				<button
 					type="button"
 					class="button edbs-media-button"
-					data-target="edbs_meeting_minutes_url"
+					data-target="edbs_minutes_url"
 					data-title="<?php esc_attr_e( 'Choose Minutes File', 'boardscribe' ); ?>"
 					data-insert="<?php esc_attr_e( 'Use this file', 'boardscribe' ); ?>"
 				><?php esc_html_e( 'Media Library', 'boardscribe' ); ?></button>

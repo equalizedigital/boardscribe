@@ -138,7 +138,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 			[
 				'edbs_meeting_date'        => '2024-03-15',
 				'edbs_meeting_not_held'    => '1',
-				'edbs_meeting_agenda_url'  => 'https://example.com/agenda.pdf',
+				'edbs_agenda_url'  => 'https://example.com/agenda.pdf',
 			]
 		);
 
@@ -165,7 +165,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 		$post_id = $this->create_meeting(
 			[
 				'edbs_meeting_date'       => '2024-03-15',
-				'edbs_meeting_agenda_url' => 'https://example.com/agenda.pdf',
+				'edbs_agenda_url' => 'https://example.com/agenda.pdf',
 			]
 		);
 
@@ -199,7 +199,7 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 		$post_id = $this->create_meeting(
 			[
 				'edbs_meeting_date'        => '2024-03-15',
-				'edbs_meeting_minutes_url' => 'https://example.com/minutes.pdf',
+				'edbs_minutes_url' => 'https://example.com/minutes.pdf',
 			]
 		);
 

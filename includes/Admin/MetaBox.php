@@ -129,7 +129,7 @@ JS;
 
 		register_post_meta(
 			'edbs_boardscribe',
-			'edbs_meeting_agenda_url',
+			'edbs_agenda_url',
 			array_merge(
 				$common,
 				[
@@ -142,7 +142,7 @@ JS;
 
 		register_post_meta(
 			'edbs_boardscribe',
-			'edbs_meeting_minutes_url',
+			'edbs_minutes_url',
 			array_merge(
 				$common,
 				[
@@ -206,10 +206,10 @@ JS;
 	 * @return void
 	 */
 	public function render_meta_box( \WP_Post $post ): void {
-		$meeting_date        = get_post_meta( $post->ID, 'edbs_meeting_date', true );
-		$meeting_agenda_url  = get_post_meta( $post->ID, 'edbs_meeting_agenda_url', true );
-		$meeting_minutes_url = get_post_meta( $post->ID, 'edbs_meeting_minutes_url', true );
-		$meeting_not_held    = get_post_meta( $post->ID, 'edbs_meeting_not_held', true );
+		$meeting_date     = get_post_meta( $post->ID, 'edbs_meeting_date', true );
+		$agenda_url       = get_post_meta( $post->ID, 'edbs_agenda_url', true );
+		$minutes_url      = get_post_meta( $post->ID, 'edbs_minutes_url', true );
+		$meeting_not_held = get_post_meta( $post->ID, 'edbs_meeting_not_held', true );
 
 		wp_nonce_field( 'edbs_save_meeting_meta', 'edbs_meeting_meta_nonce' );
 
@@ -261,13 +261,13 @@ JS;
 		}
 
 		// Agenda URL.
-		if ( isset( $_POST['edbs_meeting_agenda_url'] ) ) {
-			update_post_meta( $post_id, 'edbs_meeting_agenda_url', esc_url_raw( wp_unslash( $_POST['edbs_meeting_agenda_url'] ) ) );
+		if ( isset( $_POST['edbs_agenda_url'] ) ) {
+			update_post_meta( $post_id, 'edbs_agenda_url', esc_url_raw( wp_unslash( $_POST['edbs_agenda_url'] ) ) );
 		}
 
 		// Minutes URL.
-		if ( isset( $_POST['edbs_meeting_minutes_url'] ) ) {
-			update_post_meta( $post_id, 'edbs_meeting_minutes_url', esc_url_raw( wp_unslash( $_POST['edbs_meeting_minutes_url'] ) ) );
+		if ( isset( $_POST['edbs_minutes_url'] ) ) {
+			update_post_meta( $post_id, 'edbs_minutes_url', esc_url_raw( wp_unslash( $_POST['edbs_minutes_url'] ) ) );
 		}
 
 		// Not held — checkbox is absent when unchecked.

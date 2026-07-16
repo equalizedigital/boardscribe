@@ -20,13 +20,13 @@
     cursor: not-allowed;
 }
 
-.edbs-meeting-minutes-table {
+.edbs-boardscribe-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.edbs-meeting-minutes-table th,
-.edbs-meeting-minutes-table td {
+.edbs-boardscribe-table th,
+.edbs-boardscribe-table td {
     padding: 8px;
     text-align: left;
     border: 1px solid #ddd;
@@ -36,35 +36,35 @@
    however many columns exist (no explicit widths needed), giving every
    column the same width for consistent vertical rhythm. Cell content
    wraps instead of forcing a column wider than its even share. */
-.edbs-meeting-minutes-table.edbs-equal-columns {
+.edbs-boardscribe-table.edbs-equal-columns {
     table-layout: fixed;
 }
 
-.edbs-meeting-minutes-table.edbs-equal-columns th,
-.edbs-meeting-minutes-table.edbs-equal-columns td {
+.edbs-boardscribe-table.edbs-equal-columns th,
+.edbs-boardscribe-table.edbs-equal-columns td {
     overflow-wrap: break-word;
 }
 
 /* Stacking layout on small screens */
 @media only screen and (max-width: 768px) {
-    .edbs-meeting-minutes-table,
-    .edbs-meeting-minutes-table thead,
-    .edbs-meeting-minutes-table tbody,
-    .edbs-meeting-minutes-table th,
-    .edbs-meeting-minutes-table td,
-    .edbs-meeting-minutes-table tr {
+    .edbs-boardscribe-table,
+    .edbs-boardscribe-table thead,
+    .edbs-boardscribe-table tbody,
+    .edbs-boardscribe-table th,
+    .edbs-boardscribe-table td,
+    .edbs-boardscribe-table tr {
         display: block;
     }
 
-    .edbs-meeting-minutes-table thead {
+    .edbs-boardscribe-table thead {
         display: none;
     }
 
-    .edbs-meeting-minutes-table tr {
+    .edbs-boardscribe-table tr {
         margin-bottom: 10px;
     }
 
-    .edbs-meeting-minutes-table td {
+    .edbs-boardscribe-table td {
         display: flex;
         justify-content: space-between;
         padding: 10px;
@@ -72,7 +72,7 @@
         text-align: left;
     }
 
-    .edbs-meeting-minutes-table td::before {
+    .edbs-boardscribe-table td::before {
         content: attr(data-label);
         font-weight: bold;
         text-transform: uppercase;

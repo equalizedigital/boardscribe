@@ -255,10 +255,10 @@ class MeetingMinutesEndpoint {
 		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'boardscribe' );
 		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'boardscribe' );
 
-		$meeting_date        = get_post_meta( $post_id, 'edbs_meeting_date', true );
-		$meeting_not_held    = (bool) get_post_meta( $post_id, 'edbs_meeting_not_held', true );
-		$meeting_agenda_url  = get_post_meta( $post_id, 'edbs_meeting_agenda_url', true );
-		$meeting_minutes_url = get_post_meta( $post_id, 'edbs_meeting_minutes_url', true );
+		$meeting_date     = get_post_meta( $post_id, 'edbs_meeting_date', true );
+		$meeting_not_held = (bool) get_post_meta( $post_id, 'edbs_meeting_not_held', true );
+		$agenda_url       = get_post_meta( $post_id, 'edbs_agenda_url', true );
+		$minutes_url      = get_post_meta( $post_id, 'edbs_minutes_url', true );
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional, gated behind WP_DEBUG for troubleshooting date parsing.
@@ -287,10 +287,10 @@ class MeetingMinutesEndpoint {
 		$filtered_date  = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
 		$formatted_date = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
 
-		$agenda_item = $meeting_agenda_url
+		$agenda_item = $agenda_url
 			? apply_filters(
-				'edbs_meeting_agenda_link',
-				'<a href="' . esc_url( $meeting_agenda_url ) . '" aria-label="' . esc_attr(
+				'edbs_agenda_link',
+				'<a href="' . esc_url( $agenda_url ) . '" aria-label="' . esc_attr(
 					sprintf(
 					/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
 						__( '%1$s for %2$s', 'boardscribe' ),
@@ -301,10 +301,10 @@ class MeetingMinutesEndpoint {
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'boardscribe' ) . '</span>';
 
-		$minutes_item = $meeting_minutes_url
+		$minutes_item = $minutes_url
 			? apply_filters(
-				'edbs_meeting_minutes_link',
-				'<a href="' . esc_url( $meeting_minutes_url ) . '" aria-label="' . esc_attr(
+				'edbs_minutes_link',
+				'<a href="' . esc_url( $minutes_url ) . '" aria-label="' . esc_attr(
 					sprintf(
 					/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
 						__( '%1$s for %2$s', 'boardscribe' ),
