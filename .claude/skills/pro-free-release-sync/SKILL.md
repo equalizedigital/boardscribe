@@ -5,7 +5,7 @@ description: Pre-release / pre-merge checklist keeping the free plugin (boardscr
 
 # Free ↔ Pro release-sync checklist
 
-The two plugins live in **separate repos** (local checkout `boardscribe` free, sibling `../boardscribe-pro`; GitHub repo names are still the historical `equalize-digital-meeting-minutes`/`meeting-minutes-pro`) developed in lockstep with **matching branch names** for paired features. Nothing compiles across the boundary — these manual checks are the only guard.
+The two plugins live in **separate repos** (local checkout `boardscribe` free, sibling `../boardscribe-pro`; GitHub repos `equalizedigital/boardscribe`/`equalizedigital/boardscribe-pro`, renamed from the historical meeting-minutes names) developed in lockstep with **matching branch names** for paired features. Nothing compiles across the boundary — these manual checks are the only guard.
 
 ## 1. Hook-contract check (every Pro release)
 

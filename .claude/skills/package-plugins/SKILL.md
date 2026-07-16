@@ -1,6 +1,6 @@
 ---
 name: package-plugins
-description: Build and zip the free (repo equalize-digital-meeting-minutes, plugin slug boardscribe) and Pro (repo meeting-minutes-pro, plugin slug boardscribe-pro) plugins into deployable dist/ zips with the correct contents. Use when asked to package, zip, release, or deploy either plugin.
+description: Build and zip the free (repo/slug boardscribe) and Pro (repo/slug boardscribe-pro) plugins into deployable dist/ zips with the correct contents. Use when asked to package, zip, release, or deploy either plugin.
 ---
 
 # Package the free and/or Pro plugin into a deploy zip
@@ -40,7 +40,7 @@ Expected manifest (verify with `unzip -l`):
 ## Pro plugin
 
 ```bash
-cd <pro-repo>   # ../boardscribe-pro relative to the free repo (local checkout dir renamed to match the plugin slug; GitHub repo name is still meeting-minutes-pro)
+cd <pro-repo>   # ../boardscribe-pro relative to the free repo (GitHub repo also renamed to boardscribe-pro)
 # No JS build - Pro ships plain-file JS only since the block moved to free.
 composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe-pro.zip
@@ -61,7 +61,7 @@ Expected manifest:
 
 Note: Pro no longer ships `block.json`, `build/`, or `partials/block-editor-preview.php` — the block moved to the free plugin (paired `feat/move-block-to-free` branches). Don't re-add them from an old checklist.
 
-Note: `partials/shortcode-builder-fields.php` no longer exists (deleted in the shortcode-field-registry refactor, PR equalize-digital-meeting-minutes#19 / meeting-minutes-pro#11) — don't re-add it if an old checklist still references it.
+Note: `partials/shortcode-builder-fields.php` no longer exists (deleted in the shortcode-field-registry refactor, PR boardscribe#19 / boardscribe-pro#11 (repos since renamed from equalize-digital-meeting-minutes/meeting-minutes-pro)) — don't re-add it if an old checklist still references it.
 
 ## After building
 
