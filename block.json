@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "equalize-digital/boardscribe",
+	"version": "1.0.0",
+	"title": "Meeting Minutes",
+	"category": "widgets",
+	"icon": "calendar",
+	"description": "Display a paginated, accessible table of meeting minutes.",
+	"keywords": [ "meeting", "minutes", "agenda", "notes", "table" ],
+	"textdomain": "boardscribe",
+	"supports": {
+		"html": false,
+		"multiple": true,
+		"align": false
+	},
+	"editorScript": "file:./assets/build/block/index.js"
+}
