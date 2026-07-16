@@ -158,9 +158,13 @@ class FieldRegistry {
 					'group'   => 'general',
 					'label'   => __( 'Display Template', 'boardscribe' ),
 					'default' => '',
+					// Only the built-in table ships here. A plugin providing
+					// another display template (e.g. Pro's year-timeline)
+					// appends its choice to this descriptor via the
+					// edbs_shortcode_field_registry filter, alongside
+					// registering the template itself on window.edbsTemplates.
 					'choices' => [
-						''              => __( 'Table (default)', 'boardscribe' ),
-						'year-timeline' => __( 'Timeline (grouped by year)', 'boardscribe' ),
+						'' => __( 'Table (default)', 'boardscribe' ),
 					],
 				],
 				[
