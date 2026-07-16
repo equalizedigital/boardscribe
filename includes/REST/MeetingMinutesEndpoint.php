@@ -265,7 +265,7 @@ class MeetingMinutesEndpoint {
 			error_log( 'EDBS: Raw meeting date for post ' . $post_id . ': ' . $meeting_date );
 		}
 
-		$date_object    = $this->parse_date( $meeting_date );
+		$date_object    = self::parse_date( $meeting_date );
 		$formatted_date = $date_object
 			? esc_html( $date_object->format( $meeting_not_held ? $not_held_date_format : $held_date_format ) )
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Date not available', 'boardscribe' ) . '</span>';
@@ -373,12 +373,17 @@ class MeetingMinutesEndpoint {
 	 * Supports Y-m-d (native/ISO), Ymd (ACF default), d/m/Y and m/d/Y
 	 * to handle data previously stored by ACF with varying format settings.
 	 *
+	 * Public and static so Pro features that derive values from the raw
+	 * edbs_meeting_date meta (e.g. year grouping) parse the stored value
+	 * with the exact same format list as this endpoint, instead of
+	 * maintaining a copy that could silently diverge.
+	 *
 	 * @since x.x.x
 	 *
 	 * @param string $date_string The raw date string from post meta.
 	 * @return \DateTime|null
 	 */
-	private function parse_date( string $date_string ): ?\DateTime {
+	public static function parse_date( string $date_string ): ?\DateTime {
 		if ( empty( $date_string ) ) {
 			return null;
 		}
