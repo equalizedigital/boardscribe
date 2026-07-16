@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Registers the [edbs_boardscribe] shortcode and manages
  * conditional asset enqueuing.
  */
-class MeetingMinutesShortcode {
+class BoardScribeShortcode {
 
 	/**
 	 * Whether wp_localize_script has already been called this page load.

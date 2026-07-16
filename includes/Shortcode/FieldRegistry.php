@@ -11,15 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 
 /**
  * Single source of truth for every shortcode attribute this plugin
  * recognizes. Registers the free plugin's own fields on the
  * edbs_shortcode_field_registry filter, and provides the shared,
  * type-based value resolvers that every consumer of that filter uses:
- * MeetingMinutesShortcode (attribute defaults + instance config),
- * MeetingMinutesEndpoint (REST args schema), the settings-page builder
+ * BoardScribeShortcode (attribute defaults + instance config),
+ * BoardScribeEndpoint (REST args schema), the settings-page builder
  * UI, and Pro's Gutenberg block.
  */
 class FieldRegistry {
@@ -137,7 +137,7 @@ class FieldRegistry {
 					'sanitize_callback' => static function ( $value ) {
 						return self::sanitize_date_format( $value, 'Y/m/d' );
 					},
-					'validate_callback' => [ MeetingMinutesEndpoint::class, 'validate_date_format' ],
+					'validate_callback' => [ BoardScribeEndpoint::class, 'validate_date_format' ],
 					'rest_arg'          => true,
 				],
 				[
@@ -149,7 +149,7 @@ class FieldRegistry {
 					'sanitize_callback' => static function ( $value ) {
 						return self::sanitize_date_format( $value, 'Y/m' );
 					},
-					'validate_callback' => [ MeetingMinutesEndpoint::class, 'validate_date_format' ],
+					'validate_callback' => [ BoardScribeEndpoint::class, 'validate_date_format' ],
 					'rest_arg'          => true,
 				],
 				[
@@ -351,7 +351,7 @@ class FieldRegistry {
 
 	/**
 	 * Sanitizes a PHP date() format string, falling back to $default_value
-	 * if it fails MeetingMinutesEndpoint::validate_date_format() — shared
+	 * if it fails BoardScribeEndpoint::validate_date_format() — shared
 	 * by the held_date_format and not_held_date_format field descriptors,
 	 * which differ only in their fallback value.
 	 *
@@ -363,7 +363,7 @@ class FieldRegistry {
 	 */
 	public static function sanitize_date_format( $value, string $default_value ): string {
 		$value = sanitize_text_field( (string) $value );
-		return MeetingMinutesEndpoint::validate_date_format( $value ) ? $value : $default_value;
+		return BoardScribeEndpoint::validate_date_format( $value ) ? $value : $default_value;
 	}
 
 	/**

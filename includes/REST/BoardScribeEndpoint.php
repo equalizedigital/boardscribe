@@ -20,7 +20,7 @@ use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
  * because meeting agendas and minutes are public records. No authentication is required
  * to read them, just as no authentication is required to view a public archive page.
  */
-class MeetingMinutesEndpoint {
+class BoardScribeEndpoint {
 
 	/**
 	 * Hooks REST route registration into WordPress.
@@ -88,7 +88,7 @@ class MeetingMinutesEndpoint {
 			'/boardscribe/',
 			[
 				'methods'             => 'GET',
-				'callback'            => [ $this, 'get_meeting_minutes' ],
+				'callback'            => [ $this, 'get_meetings' ],
 				'permission_callback' => '__return_true', // Public data — meeting agendas and minutes are public records.
 				'args'                => $args,
 			]
@@ -103,7 +103,7 @@ class MeetingMinutesEndpoint {
 	 * @param \WP_REST_Request $request The REST request object.
 	 * @return \WP_REST_Response
 	 */
-	public function get_meeting_minutes( \WP_REST_Request $request ): \WP_REST_Response {
+	public function get_meetings( \WP_REST_Request $request ): \WP_REST_Response {
 		$page                 = $request->get_param( 'page' );
 		$posts_per_page       = $request->get_param( 'posts_per_page' );
 		$held_date_format     = $request->get_param( 'held_date_format' );

@@ -6,7 +6,7 @@
  *
  * Two bundles are built:
  * - the frontend bundle (assets/build/boardscribe.js), enqueued by hand
- *   in MeetingMinutesShortcode.php with no *.asset.php — its externals
+ *   in BoardScribeShortcode.php with no *.asset.php — its externals
  *   are declared manually below;
  * - the block editor bundle (assets/build/block/index.js), consumed by
  *   block.json's editorScript. It keeps wp-scripts' default
@@ -36,7 +36,7 @@ const frontendConfig = {
 	),
 	// Map @wordpress/* imports to the wp.* globals WordPress ships instead
 	// of bundling them. Every entry here needs its script handle (wp-*) in
-	// the wp_enqueue_script() dependency list in MeetingMinutesShortcode.php.
+	// the wp_enqueue_script() dependency list in BoardScribeShortcode.php.
 	externals: {
 		'@wordpress/escape-html': [ 'wp', 'escapeHtml' ],
 		'@wordpress/i18n': [ 'wp', 'i18n' ],

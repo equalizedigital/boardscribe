@@ -9,12 +9,12 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Dispatches real requests through the REST server, rather than calling
- * MeetingMinutesEndpoint's methods directly - this is the only coverage
+ * BoardScribeEndpoint's methods directly - this is the only coverage
  * that proves register_route() is actually wired correctly (route path,
  * args schema, validate_callback) rather than just proving the
  * underlying functions work in isolation.
  */
-class MeetingMinutesEndpointRestTest extends TestCase {
+class BoardScribeEndpointRestTest extends TestCase {
 
 	const ROUTE = '/edbs/v1/boardscribe';
 
@@ -30,7 +30,7 @@ class MeetingMinutesEndpointRestTest extends TestCase {
 	}
 
 	/**
-	 * Creates a meeting minutes post with the given meta.
+	 * Creates a meeting post with the given meta.
 	 *
 	 * @param array $meta Meta key/value pairs to set on the post.
 	 * @return int The created post ID.

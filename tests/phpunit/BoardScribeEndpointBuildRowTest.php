@@ -1,11 +1,11 @@
 <?php
 /**
- * Tests for MeetingMinutesEndpoint::build_meeting_row().
+ * Tests for BoardScribeEndpoint::build_meeting_row().
  *
  * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -14,14 +14,14 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * escaping fixed after a stored-XSS finding where post titles were
  * returned unescaped in the public REST response.
  */
-class MeetingMinutesEndpointBuildRowTest extends TestCase {
+class BoardScribeEndpointBuildRowTest extends TestCase {
 
 	/**
 	 * The endpoint instance under test.
 	 *
-	 * @var MeetingMinutesEndpoint
+	 * @var BoardScribeEndpoint
 	 */
-	private MeetingMinutesEndpoint $endpoint;
+	private BoardScribeEndpoint $endpoint;
 
 	/**
 	 * Default format args matching the REST route's defaults.
@@ -40,11 +40,11 @@ class MeetingMinutesEndpointBuildRowTest extends TestCase {
 	 */
 	public function set_up(): void {
 		parent::set_up();
-		$this->endpoint = new MeetingMinutesEndpoint();
+		$this->endpoint = new BoardScribeEndpoint();
 	}
 
 	/**
-	 * Creates a meeting minutes post with the given meta.
+	 * Creates a meeting post with the given meta.
 	 *
 	 * @param array $meta Meta key/value pairs to set on the post.
 	 * @param array $post_args Additional wp_insert_post args (e.g. post_title).

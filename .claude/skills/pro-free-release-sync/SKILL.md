@@ -10,7 +10,7 @@ The two plugins live in **separate repos** (local checkout `boardscribe` free, s
 ## 1. Hook-contract check (every Pro release)
 
 - Read free's `docs/HOOK-CONTRACT-CHANGES.md`. For each entry, grep Pro for the hook name and verify each callback matches the current signature.
-- Standing caveat: `edbs_meeting_row_data`'s 3rd arg `$request` may be `null` (rows built via `MeetingMinutesEndpoint::build_meeting_row()` outside REST). Pro callbacks must type-hint `?\WP_REST_Request`, or leave untyped and null-check.
+- Standing caveat: `edbs_meeting_row_data`'s 3rd arg `$request` may be `null` (rows built via `BoardScribeEndpoint::build_meeting_row()` outside REST). Pro callbacks must type-hint `?\WP_REST_Request`, or leave untyped and null-check.
 - Reverse check: `grep -rhoP "edbs_[a-z_]+" <pro>/includes <pro>/src | sort -u` and confirm every consumed hook still exists in free (`grep -rn "<hook>" <free>/includes <free>/partials <free>/src`). A hook renamed/removed in free silently breaks Pro.
 
 ## 2. Signature-change discipline (every free change)
@@ -30,7 +30,7 @@ Editor side: `window.edbsBlockFieldRegistry` (localized onto free's block editor
 
 ## 4b. Block version pairing (since the block moved to free)
 
-The `equalize-digital/boardscribe` block is registered by **free** (`Block/BoardScribeBlock.php`); Pro only extends it. New Pro requires the paired new free release (block otherwise missing, and `ProMetaFields::get_meeting_year()` calls free's public `MeetingMinutesEndpoint::parse_date()`). Old Pro + new free is safe: free registers at `init` 20 behind an `is_registered()` guard, so old Pro's own block registration wins.
+The `equalize-digital/boardscribe` block is registered by **free** (`Block/BoardScribeBlock.php`); Pro only extends it. New Pro requires the paired new free release (block otherwise missing, and `ProMetaFields::get_meeting_year()` calls free's public `BoardScribeEndpoint::parse_date()`). Old Pro + new free is safe: free registers at `init` 20 behind an `is_registered()` guard, so old Pro's own block registration wins.
 
 ## 5. Review gates (both repos)
 

@@ -96,7 +96,7 @@ class PluginBehaviorTest extends TestCase {
 	}
 
 	/**
-	 * register_edacp_filters() adds both meeting-minutes link filters to
+	 * register_edacp_filters() adds both agenda/minutes link filters to
 	 * the list Accessibility Checker Pro consumes, without disturbing
 	 * any filters already present.
 	 */

@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers and manages the edbs_boardscribe custom post type.
  */
-class MeetingMinutes {
+class BoardScribeCPT {
 
 	/**
 	 * Hooks the CPT registration into WordPress init.

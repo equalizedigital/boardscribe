@@ -9,14 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-16T20:08:31+00:00\n"
+"POT-Creation-Date: 2026-07-16T20:34:58+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/PostType/MeetingMinutes.php:41
+#: includes/PostType/BoardScribeCPT.php:41
 msgid "BoardScribe"
 msgstr ""
 
@@ -95,84 +95,125 @@ msgid "Warning: this cannot be undone."
 msgstr ""
 
 #: includes/Block/BoardScribeBlock.php:400
+#: includes/Shortcode/BoardScribeShortcode.php:123
 #: includes/Shortcode/FieldRegistry.php:192
 #: includes/Shortcode/FieldRegistry.php:236
-#: includes/Shortcode/MeetingMinutesShortcode.php:123
 #: src/js/templates/table.js:32
 msgid "Title"
 msgstr ""
 
 #: includes/Block/BoardScribeBlock.php:405
+#: includes/Shortcode/BoardScribeShortcode.php:124
 #: includes/Shortcode/FieldRegistry.php:199
 #: includes/Shortcode/FieldRegistry.php:243
-#: includes/Shortcode/MeetingMinutesShortcode.php:124
 #: src/js/templates/table.js:33
 msgid "Date"
 msgstr ""
 
 #: includes/Block/BoardScribeBlock.php:410
+#: includes/Shortcode/BoardScribeShortcode.php:125
 #: includes/Shortcode/FieldRegistry.php:206
 #: includes/Shortcode/FieldRegistry.php:250
-#: includes/Shortcode/MeetingMinutesShortcode.php:125
 #: src/js/templates/table.js:34
 msgid "Agenda"
 msgstr ""
 
 #: includes/Block/BoardScribeBlock.php:415
+#: includes/Shortcode/BoardScribeShortcode.php:126
 #: includes/Shortcode/FieldRegistry.php:213
 #: includes/Shortcode/FieldRegistry.php:257
-#: includes/Shortcode/MeetingMinutesShortcode.php:126
 #: src/js/templates/table.js:35
 msgid "Minutes"
 msgstr ""
 
-#: includes/PostType/MeetingMinutes.php:39
+#: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "BoardScribe Meetings"
 msgstr ""
 
-#: includes/PostType/MeetingMinutes.php:40
+#: includes/PostType/BoardScribeCPT.php:40
 msgctxt "Post Type Singular Name"
 msgid "BoardScribe Meeting"
 msgstr ""
 
-#: includes/PostType/MeetingMinutes.php:42
-#: includes/PostType/MeetingMinutes.php:46
+#: includes/PostType/BoardScribeCPT.php:42
+#: includes/PostType/BoardScribeCPT.php:46
 msgid "BoardScribe Meeting"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:112
-#: includes/REST/MeetingMinutesEndpoint.php:255
+#: includes/REST/BoardScribeEndpoint.php:112
+#: includes/REST/BoardScribeEndpoint.php:255
 msgid "View Agenda"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:113
-#: includes/REST/MeetingMinutesEndpoint.php:256
+#: includes/REST/BoardScribeEndpoint.php:113
+#: includes/REST/BoardScribeEndpoint.php:256
 msgid "View Minutes"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:271
+#: includes/REST/BoardScribeEndpoint.php:271
 msgid "Date not available"
 msgstr ""
 
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
 #. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/MeetingMinutesEndpoint.php:296
-#: includes/REST/MeetingMinutesEndpoint.php:310
+#: includes/REST/BoardScribeEndpoint.php:296
+#: includes/REST/BoardScribeEndpoint.php:310
 #, php-format
 msgid "%1$s for %2$s"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:302
+#: includes/REST/BoardScribeEndpoint.php:302
 msgid "Agenda not available"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:316
+#: includes/REST/BoardScribeEndpoint.php:316
 msgid "Minutes not available"
 msgstr ""
 
-#: includes/REST/MeetingMinutesEndpoint.php:321
+#: includes/REST/BoardScribeEndpoint.php:321
 msgid "Meeting not held"
+msgstr ""
+
+#: includes/Shortcode/BoardScribeShortcode.php:127
+#: src/js/defaults/renderPagination.js:63
+msgid "Previous"
+msgstr ""
+
+#: includes/Shortcode/BoardScribeShortcode.php:128
+#: src/js/defaults/renderPagination.js:89
+msgid "Next"
+msgstr ""
+
+#: includes/Shortcode/BoardScribeShortcode.php:129
+#: src/js/defaults/renderPagination.js:61
+msgid "Previous Page"
+msgstr ""
+
+#: includes/Shortcode/BoardScribeShortcode.php:130
+#: src/js/defaults/renderPagination.js:87
+msgid "Next Page"
+msgstr ""
+
+#: includes/Shortcode/BoardScribeShortcode.php:131
+#: src/js/defaults/renderPagination.js:56
+msgid "Pagination"
+msgstr ""
+
+#. translators: %s: page number
+#. translators: %s: page number.
+#: includes/Shortcode/BoardScribeShortcode.php:133
+#: src/js/defaults/renderPagination.js:75
+#, php-format,js-format
+msgid "Page %s"
+msgstr ""
+
+#. translators: 1: first entry number, 2: last entry number, 3: total entries
+#. translators: %1$s: first entry number, %2$s: last entry number, %3$s: total number of entries.
+#: includes/Shortcode/BoardScribeShortcode.php:135
+#: src/js/defaults/renderInfo.js:23
+#, php-format,js-format
+msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr ""
 
 #: includes/Shortcode/FieldRegistry.php:116
@@ -225,47 +266,6 @@ msgstr ""
 
 #: includes/Shortcode/FieldRegistry.php:228
 msgid "Minutes Link Label"
-msgstr ""
-
-#: includes/Shortcode/MeetingMinutesShortcode.php:127
-#: src/js/defaults/renderPagination.js:63
-msgid "Previous"
-msgstr ""
-
-#: includes/Shortcode/MeetingMinutesShortcode.php:128
-#: src/js/defaults/renderPagination.js:89
-msgid "Next"
-msgstr ""
-
-#: includes/Shortcode/MeetingMinutesShortcode.php:129
-#: src/js/defaults/renderPagination.js:61
-msgid "Previous Page"
-msgstr ""
-
-#: includes/Shortcode/MeetingMinutesShortcode.php:130
-#: src/js/defaults/renderPagination.js:87
-msgid "Next Page"
-msgstr ""
-
-#: includes/Shortcode/MeetingMinutesShortcode.php:131
-#: src/js/defaults/renderPagination.js:56
-msgid "Pagination"
-msgstr ""
-
-#. translators: %s: page number
-#. translators: %s: page number.
-#: includes/Shortcode/MeetingMinutesShortcode.php:133
-#: src/js/defaults/renderPagination.js:75
-#, php-format,js-format
-msgid "Page %s"
-msgstr ""
-
-#. translators: 1: first entry number, 2: last entry number, 3: total entries
-#. translators: %1$s: first entry number, %2$s: last entry number, %3$s: total number of entries.
-#: includes/Shortcode/MeetingMinutesShortcode.php:135
-#: src/js/defaults/renderInfo.js:23
-#, php-format,js-format
-msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr ""
 
 #: partials/block-editor-preview.php:55

@@ -35,7 +35,7 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest (verify with `unzip -l`):
-`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/css/boardscribe.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/MeetingMinutes,REST/MeetingMinutesEndpoint,Shortcode/{FieldRegistry,MeetingMinutesShortcode},Block/BoardScribeBlock}.php`
+`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/css/boardscribe.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
 
 ## Pro plugin
 

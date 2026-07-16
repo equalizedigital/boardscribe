@@ -5,13 +5,13 @@
  * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\BoardScribe\Shortcode\MeetingMinutesShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Proves a field registered via edbs_shortcode_field_registry flows all
  * the way through: shortcode attribute default, instance-config value
- * (MeetingMinutesShortcode::render()), and — when rest_arg is true — the
+ * (BoardScribeShortcode::render()), and — when rest_arg is true — the
  * REST route's registered args schema, without touching any of the
  * consumer classes directly. This is the contract Pro relies on.
  */
@@ -28,7 +28,7 @@ class FieldRegistryTest extends TestCase {
 	private $callback;
 
 	/**
-	 * Ensures the REST server has run, same as MeetingMinutesEndpointRestTest.
+	 * Ensures the REST server has run, same as BoardScribeEndpointRestTest.
 	 */
 	public function set_up(): void {
 		parent::set_up();
@@ -76,7 +76,7 @@ class FieldRegistryTest extends TestCase {
 		};
 		add_filter( 'edbs_shortcode_field_registry', $this->callback );
 
-		$shortcode = new MeetingMinutesShortcode();
+		$shortcode = new BoardScribeShortcode();
 		$config    = $this->get_instance_config( $shortcode->render( [ 'edbs_test_hide_widget' => 'true' ] ) );
 
 		$this->assertArrayHasKey( 'edbsTestHideWidget', $config );
@@ -102,7 +102,7 @@ class FieldRegistryTest extends TestCase {
 		};
 		add_filter( 'edbs_shortcode_field_registry', $this->callback );
 
-		$shortcode = new MeetingMinutesShortcode();
+		$shortcode = new BoardScribeShortcode();
 		$config    = $this->get_instance_config( $shortcode->render( [ 'edbs_test_shout' => 'hello' ] ) );
 
 		$this->assertArrayNotHasKey( 'edbsTestShout', $config );

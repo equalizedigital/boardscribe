@@ -148,3 +148,18 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 **Kept:** `edbs_meeting_date` and `edbs_meeting_not_held` (properties of the meeting — no brand echo), and the `edbs_meeting_row_data`/`edbs_meeting_formatted_date`/`edbs_save_meeting_meta` hooks likewise.
 
 **Contract impact:** Pro must enqueue against the `edbs-boardscribe` handle and write `edbs_agenda_url`/`edbs_minutes_url` in its CSV importer (done in the paired `fix/boardscribe-wording` branch). Any site content created against the old meta keys before this change loses its agenda/minutes links (accepted: unreleased). Accessibility Checker Pro's link-fix integration receives the new filter names via `edac_fix_file_size_and_type_additional_filters` automatically.
+
+---
+
+## Rebrand completion — PHP classes renamed to BoardScribe* (pre-release)
+
+**Before / after** (namespaces unchanged; each class is named after the `edbs_boardscribe`/`boardscribe` slug it registers):
+
+| Old | New |
+|---|---|
+| `PostType\MeetingMinutes` (`PostType/MeetingMinutes.php`) | `PostType\BoardScribeCPT` |
+| `REST\MeetingMinutesEndpoint` (`REST/MeetingMinutesEndpoint.php`) | `REST\BoardScribeEndpoint` |
+| `Shortcode\MeetingMinutesShortcode` (`Shortcode/MeetingMinutesShortcode.php`) | `Shortcode\BoardScribeShortcode` |
+| `MeetingMinutesEndpoint::get_meeting_minutes()` (REST callback) | `BoardScribeEndpoint::get_meetings()` |
+
+**Contract impact:** `BoardScribeEndpoint::build_meeting_row()` and `::parse_date()` are cross-repo public surface — Pro references the new class name (updated in the paired `fix/boardscribe-wording` branch). Older HOOK-CONTRACT entries above intentionally keep the historical class names they were written against.

@@ -1,11 +1,11 @@
 <?php
 /**
- * Tests for MeetingMinutesShortcode::render().
+ * Tests for BoardScribeShortcode::render().
  *
  * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\BoardScribe\Shortcode\MeetingMinutesShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -18,21 +18,21 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * tests go through the public render() output rather than reflection -
  * that keeps the tests tied to the actual observable contract.
  */
-class MeetingMinutesShortcodeTest extends TestCase {
+class BoardScribeShortcodeTest extends TestCase {
 
 	/**
 	 * The shortcode instance under test.
 	 *
-	 * @var MeetingMinutesShortcode
+	 * @var BoardScribeShortcode
 	 */
-	private MeetingMinutesShortcode $shortcode;
+	private BoardScribeShortcode $shortcode;
 
 	/**
 	 * Sets up a fresh shortcode instance for each test.
 	 */
 	public function set_up(): void {
 		parent::set_up();
-		$this->shortcode = new MeetingMinutesShortcode();
+		$this->shortcode = new BoardScribeShortcode();
 	}
 
 	/**

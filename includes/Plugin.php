@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use EqualizeDigital\BoardScribe\Admin\SettingsPage;
 use EqualizeDigital\BoardScribe\Block\BoardScribeBlock;
-use EqualizeDigital\BoardScribe\PostType\MeetingMinutes as MeetingMinutesCPT;
-use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\PostType\BoardScribeCPT;
+use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
-use EqualizeDigital\BoardScribe\Shortcode\MeetingMinutesShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
 
 /**
  * Singleton plugin bootstrap. Wires all components together.
@@ -71,11 +71,11 @@ class Plugin {
 		load_plugin_textdomain( 'boardscribe', false, dirname( plugin_basename( EDBS_FILE ) ) . '/languages' );
 
 		( new FieldRegistry() )->register();
-		( new MeetingMinutesCPT() )->register();
+		( new BoardScribeCPT() )->register();
 		( new MetaBox() )->register();
 		( new SettingsPage() )->register();
-		( new MeetingMinutesEndpoint() )->register();
-		( new MeetingMinutesShortcode() )->register();
+		( new BoardScribeEndpoint() )->register();
+		( new BoardScribeShortcode() )->register();
 		( new BoardScribeBlock() )->register();
 
 		add_filter(

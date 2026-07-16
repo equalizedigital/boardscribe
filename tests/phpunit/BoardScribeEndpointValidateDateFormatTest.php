@@ -1,11 +1,11 @@
 <?php
 /**
- * Tests for MeetingMinutesEndpoint::validate_date_format().
+ * Tests for BoardScribeEndpoint::validate_date_format().
  *
  * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\BoardScribe\REST\MeetingMinutesEndpoint;
+use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -14,7 +14,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * unauthenticated caller could otherwise control a PHP DateTime format
  * string reflected back in the public REST response.
  */
-class MeetingMinutesEndpointValidateDateFormatTest extends TestCase {
+class BoardScribeEndpointValidateDateFormatTest extends TestCase {
 
 	/**
 	 * Ordinary date format strings are accepted.
@@ -23,7 +23,7 @@ class MeetingMinutesEndpointValidateDateFormatTest extends TestCase {
 	 * @param string $format Format string under test.
 	 */
 	public function test_accepts_valid_formats( string $format ): void {
-		$this->assertTrue( MeetingMinutesEndpoint::validate_date_format( $format ) );
+		$this->assertTrue( BoardScribeEndpoint::validate_date_format( $format ) );
 	}
 
 	/**
@@ -49,7 +49,7 @@ class MeetingMinutesEndpointValidateDateFormatTest extends TestCase {
 	 * down to "" before validate_date_format() ever sees it.
 	 */
 	public function test_rejects_empty_string(): void {
-		$this->assertFalse( MeetingMinutesEndpoint::validate_date_format( '' ) );
+		$this->assertFalse( BoardScribeEndpoint::validate_date_format( '' ) );
 	}
 
 	/**
@@ -58,14 +58,14 @@ class MeetingMinutesEndpointValidateDateFormatTest extends TestCase {
 	 * ones that aren't allowed on their own (like angle brackets).
 	 */
 	public function test_rejects_backslash_escaped_payload(): void {
-		$this->assertFalse( MeetingMinutesEndpoint::validate_date_format( '\\<\\s\\c\\r\\i\\p\\t\\>' ) );
+		$this->assertFalse( BoardScribeEndpoint::validate_date_format( '\\<\\s\\c\\r\\i\\p\\t\\>' ) );
 	}
 
 	/**
 	 * Rejects a literal disallowed character even without any escaping.
 	 */
 	public function test_rejects_disallowed_characters(): void {
-		$this->assertFalse( MeetingMinutesEndpoint::validate_date_format( '<script>' ) );
+		$this->assertFalse( BoardScribeEndpoint::validate_date_format( '<script>' ) );
 	}
 
 	/**
@@ -73,7 +73,7 @@ class MeetingMinutesEndpointValidateDateFormatTest extends TestCase {
 	 * fail validation cleanly rather than throw a TypeError.
 	 */
 	public function test_rejects_non_string_input_without_throwing(): void {
-		$this->assertFalse( MeetingMinutesEndpoint::validate_date_format( [ 'not', 'a', 'string' ] ) );
+		$this->assertFalse( BoardScribeEndpoint::validate_date_format( [ 'not', 'a', 'string' ] ) );
 	}
 
 	/**
@@ -82,13 +82,13 @@ class MeetingMinutesEndpointValidateDateFormatTest extends TestCase {
 	 * DateTime::format() once per result row.
 	 */
 	public function test_rejects_overly_long_input(): void {
-		$this->assertFalse( MeetingMinutesEndpoint::validate_date_format( str_repeat( 'Y', 33 ) ) );
+		$this->assertFalse( BoardScribeEndpoint::validate_date_format( str_repeat( 'Y', 33 ) ) );
 	}
 
 	/**
 	 * Input at exactly the length limit is still accepted.
 	 */
 	public function test_accepts_input_at_length_limit(): void {
-		$this->assertTrue( MeetingMinutesEndpoint::validate_date_format( str_repeat( 'Y', 32 ) ) );
+		$this->assertTrue( BoardScribeEndpoint::validate_date_format( str_repeat( 'Y', 32 ) ) );
 	}
 }

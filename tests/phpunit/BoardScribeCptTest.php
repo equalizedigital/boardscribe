@@ -1,11 +1,11 @@
 <?php
 /**
- * Tests for PostType\MeetingMinutes::register_post_type().
+ * Tests for PostType\BoardScribeCPT::register_post_type().
  *
  * @package EqualizeDigital\BoardScribe
  */
 
-use EqualizeDigital\BoardScribe\PostType\MeetingMinutes as MeetingMinutesCPT;
+use EqualizeDigital\BoardScribe\PostType\BoardScribeCPT;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -13,7 +13,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * public/show_in_rest combination) and the edbs_cpt_args filter added
  * so Pro can enable public/rewrite/archive support.
  */
-class MeetingMinutesPostTypeTest extends TestCase {
+class BoardScribeCptTest extends TestCase {
 
 	/**
 	 * The edbs_boardscribe post type is registered.
@@ -49,7 +49,7 @@ class MeetingMinutesPostTypeTest extends TestCase {
 		add_filter( 'edbs_cpt_args', $callback );
 
 		unregister_post_type( 'edbs_boardscribe' );
-		( new MeetingMinutesCPT() )->register_post_type();
+		( new BoardScribeCPT() )->register_post_type();
 
 		remove_filter( 'edbs_cpt_args', $callback );
 
@@ -71,7 +71,7 @@ class MeetingMinutesPostTypeTest extends TestCase {
 
 		try {
 			unregister_post_type( 'edbs_boardscribe' );
-			( new MeetingMinutesCPT() )->register_post_type();
+			( new BoardScribeCPT() )->register_post_type();
 
 			$post_type_object = get_post_type_object( 'edbs_boardscribe' );
 			$this->assertTrue( $post_type_object->public );
@@ -80,7 +80,7 @@ class MeetingMinutesPostTypeTest extends TestCase {
 			// tests, even if the assertion above failed.
 			remove_filter( 'edbs_cpt_args', $callback );
 			unregister_post_type( 'edbs_boardscribe' );
-			( new MeetingMinutesCPT() )->register_post_type();
+			( new BoardScribeCPT() )->register_post_type();
 		}
 	}
 }
