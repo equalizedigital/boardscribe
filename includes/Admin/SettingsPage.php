@@ -15,12 +15,13 @@ use EqualizeDigital\BoardScribe\Plugin;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
- * Registers and renders the BoardScribe settings page.
+ * Registers and renders the BoardScribe settings page and the
+ * shortcode builder page.
  *
- * The page contains:
- * - A shortcode builder that generates a ready-to-copy shortcode
- *   based on the user's selections (no values are stored).
- * - An Advanced section for persistent settings (e.g. delete on uninstall).
+ * - The Shortcode Builder page generates a ready-to-copy shortcode based
+ *   on the user's selections (no values are stored).
+ * - The Settings page holds an Advanced section for persistent settings
+ *   (e.g. delete on uninstall).
  */
 class SettingsPage {
 
@@ -32,9 +33,28 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function register(): void {
+		add_action( 'admin_menu', [ $this, 'add_builder_submenu_page' ] );
 		add_action( 'admin_menu', [ $this, 'add_submenu_page' ] );
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_builder_script' ] );
+	}
+
+	/**
+	 * Adds the Shortcode Builder submenu under the BoardScribe CPT menu.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return void
+	 */
+	public function add_builder_submenu_page(): void {
+		add_submenu_page(
+			'edit.php?post_type=edbs_boardscribe',
+			__( 'Shortcode Builder', 'boardscribe' ),
+			__( 'Shortcode Builder', 'boardscribe' ),
+			'manage_options',
+			'edbs-shortcode-builder',
+			[ $this, 'render_builder_page' ]
+		);
 	}
 
 	/**
@@ -90,7 +110,7 @@ class SettingsPage {
 	}
 
 	/**
-	 * Enqueues the inline shortcode builder script on the settings page.
+	 * Enqueues the inline shortcode builder script on the builder page.
 	 *
 	 * @since x.x.x
 	 *
@@ -98,7 +118,7 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function enqueue_builder_script( string $hook ): void {
-		if ( 'edbs_boardscribe_page_edbs-settings' !== $hook ) {
+		if ( 'edbs_boardscribe_page_edbs-shortcode-builder' !== $hook ) {
 			return;
 		}
 
@@ -445,5 +465,20 @@ JS;
 		}
 
 		require EDBS_DIR . 'partials/settings-page.php';
+	}
+
+	/**
+	 * Renders the shortcode builder page HTML.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return void
+	 */
+	public function render_builder_page(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		require EDBS_DIR . 'partials/shortcode-builder-page.php';
 	}
 }
