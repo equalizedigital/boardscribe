@@ -94,7 +94,7 @@ class Plugin {
 	}
 
 	/**
-	 * Adds meeting minutes link filters for Accessibility Checker Pro.
+	 * Adds agenda/minutes link filters for Accessibility Checker Pro.
 	 *
 	 * @since x.x.x
 	 *

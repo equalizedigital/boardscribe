@@ -1,6 +1,6 @@
 <?php
 /**
- * Native meta box for Meeting Minutes fields.
+ * Native meta box for BoardScribe meeting fields.
  *
  * @package EqualizeDigital\BoardScribe
  */
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Registers post meta and provides a native admin meta box UI
- * for the four Meeting Minutes meta fields.
+ * for the four BoardScribe meeting meta fields.
  */
 class MetaBox {
 
@@ -147,7 +147,7 @@ JS;
 				$common,
 				[
 					'type'              => 'string',
-					'description'       => __( 'URL to the meeting minutes document.', 'boardscribe' ),
+					'description'       => __( 'URL to the published minutes document for this meeting.', 'boardscribe' ),
 					'sanitize_callback' => 'esc_url_raw',
 				]
 			)

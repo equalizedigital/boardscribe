@@ -9,13 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-15T14:49:13+01:00\n"
+"POT-Creation-Date: 2026-07-16T20:08:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
+#: includes/PostType/MeetingMinutes.php:41
 msgid "BoardScribe"
 msgstr ""
 
@@ -27,7 +28,7 @@ msgstr ""
 
 #. Description of the plugin
 #: boardscribe.php
-msgid "Publish accessible, searchable meeting minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
+msgid "Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
 msgstr ""
 
 #. Author of the plugin
@@ -54,7 +55,7 @@ msgid "URL to the meeting agenda document."
 msgstr ""
 
 #: includes/Admin/MetaBox.php:150
-msgid "URL to the meeting minutes document."
+msgid "URL to the published minutes document for this meeting."
 msgstr ""
 
 #: includes/Admin/MetaBox.php:163
@@ -66,7 +67,7 @@ msgid "Meeting Details"
 msgstr ""
 
 #: includes/Admin/SettingsPage.php:50
-msgid "Meeting Minutes Settings"
+msgid "BoardScribe Settings"
 msgstr ""
 
 #: includes/Admin/SettingsPage.php:51
@@ -86,30 +87,58 @@ msgid "Show all"
 msgstr ""
 
 #: includes/Admin/SettingsPage.php:415
-msgid "Remove all meeting minutes posts and plugin settings when this plugin is deleted."
+msgid "Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted."
 msgstr ""
 
 #: includes/Admin/SettingsPage.php:417
 msgid "Warning: this cannot be undone."
 msgstr ""
 
+#: includes/Block/BoardScribeBlock.php:400
+#: includes/Shortcode/FieldRegistry.php:192
+#: includes/Shortcode/FieldRegistry.php:236
+#: includes/Shortcode/MeetingMinutesShortcode.php:123
+#: src/js/templates/table.js:32
+msgid "Title"
+msgstr ""
+
+#: includes/Block/BoardScribeBlock.php:405
+#: includes/Shortcode/FieldRegistry.php:199
+#: includes/Shortcode/FieldRegistry.php:243
+#: includes/Shortcode/MeetingMinutesShortcode.php:124
+#: src/js/templates/table.js:33
+msgid "Date"
+msgstr ""
+
+#: includes/Block/BoardScribeBlock.php:410
+#: includes/Shortcode/FieldRegistry.php:206
+#: includes/Shortcode/FieldRegistry.php:250
+#: includes/Shortcode/MeetingMinutesShortcode.php:125
+#: src/js/templates/table.js:34
+msgid "Agenda"
+msgstr ""
+
+#: includes/Block/BoardScribeBlock.php:415
+#: includes/Shortcode/FieldRegistry.php:213
+#: includes/Shortcode/FieldRegistry.php:257
+#: includes/Shortcode/MeetingMinutesShortcode.php:126
+#: src/js/templates/table.js:35
+msgid "Minutes"
+msgstr ""
+
 #: includes/PostType/MeetingMinutes.php:39
 msgctxt "Post Type General Name"
-msgid "Meeting Minutes"
+msgid "BoardScribe Meetings"
 msgstr ""
 
 #: includes/PostType/MeetingMinutes.php:40
 msgctxt "Post Type Singular Name"
-msgid "Meeting Minute"
-msgstr ""
-
-#: includes/PostType/MeetingMinutes.php:41
-msgid "Meeting Minutes"
+msgid "BoardScribe Meeting"
 msgstr ""
 
 #: includes/PostType/MeetingMinutes.php:42
 #: includes/PostType/MeetingMinutes.php:46
-msgid "Meeting Minute"
+msgid "BoardScribe Meeting"
 msgstr ""
 
 #: includes/REST/MeetingMinutesEndpoint.php:112
@@ -174,93 +203,51 @@ msgstr ""
 msgid "Display Template"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:162
+#: includes/Shortcode/FieldRegistry.php:167
 msgid "Table (default)"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:163
-msgid "Timeline (grouped by year)"
-msgstr ""
-
-#: includes/Shortcode/FieldRegistry.php:170
+#: includes/Shortcode/FieldRegistry.php:174
 msgid "Force all columns to the same width"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:172
+#: includes/Shortcode/FieldRegistry.php:176
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:182
 msgid "Custom CSS Class"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:188
-#: includes/Shortcode/FieldRegistry.php:232
-#: includes/Shortcode/MeetingMinutesShortcode.php:123
-#: assets/build/boardscribe.js:1
-#: src/js/templates/table.js:32
-msgid "Title"
-msgstr ""
-
-#: includes/Shortcode/FieldRegistry.php:195
-#: includes/Shortcode/FieldRegistry.php:239
-#: includes/Shortcode/MeetingMinutesShortcode.php:124
-#: assets/build/boardscribe.js:1
-#: src/js/templates/table.js:33
-msgid "Date"
-msgstr ""
-
-#: includes/Shortcode/FieldRegistry.php:202
-#: includes/Shortcode/FieldRegistry.php:246
-#: includes/Shortcode/MeetingMinutesShortcode.php:125
-#: assets/build/boardscribe.js:1
-#: src/js/templates/table.js:34
-msgid "Agenda"
-msgstr ""
-
-#: includes/Shortcode/FieldRegistry.php:209
-#: includes/Shortcode/FieldRegistry.php:253
-#: includes/Shortcode/MeetingMinutesShortcode.php:126
-#: assets/build/boardscribe.js:1
-#: src/js/templates/table.js:35
-msgid "Minutes"
-msgstr ""
-
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:220
 msgid "Agenda Link Label"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:228
 msgid "Minutes Link Label"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:127
-#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:63
 msgid "Previous"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:128
-#: assets/build/boardscribe.js:3
 #: src/js/defaults/renderPagination.js:89
 msgid "Next"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:129
-#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:61
 msgid "Previous Page"
 msgstr ""
 
-#. translators: %s: page number.
 #: includes/Shortcode/MeetingMinutesShortcode.php:130
-#: assets/build/boardscribe.js:3
 #: src/js/defaults/renderPagination.js:87
 msgid "Next Page"
 msgstr ""
 
 #: includes/Shortcode/MeetingMinutesShortcode.php:131
-#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:56
 msgid "Pagination"
 msgstr ""
@@ -268,7 +255,6 @@ msgstr ""
 #. translators: %s: page number
 #. translators: %s: page number.
 #: includes/Shortcode/MeetingMinutesShortcode.php:133
-#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderPagination.js:75
 #, php-format,js-format
 msgid "Page %s"
@@ -277,10 +263,13 @@ msgstr ""
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
 #. translators: %1$s: first entry number, %2$s: last entry number, %3$s: total number of entries.
 #: includes/Shortcode/MeetingMinutesShortcode.php:135
-#: assets/build/boardscribe.js:1
 #: src/js/defaults/renderInfo.js:23
 #, php-format,js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
+msgstr ""
+
+#: partials/block-editor-preview.php:55
+msgid "No published meetings found."
 msgstr ""
 
 #: partials/meta-box.php:23
@@ -334,18 +323,22 @@ msgid "Configure your shortcode options below, then copy the generated shortcode
 msgstr ""
 
 #: partials/settings-page.php:46
+#: src/js/block/index.js:32
 msgid "Column Labels"
 msgstr ""
 
 #: partials/settings-page.php:47
+#: src/js/block/index.js:33
 msgid "Link Labels"
 msgstr ""
 
 #: partials/settings-page.php:48
+#: src/js/block/index.js:34
 msgid "Hide Columns"
 msgstr ""
 
 #: partials/settings-page.php:49
+#: src/js/block/index.js:35
 msgid "Show Columns"
 msgstr ""
 
@@ -372,4 +365,60 @@ msgstr ""
 
 #: partials/settings-page.php:131
 msgid "Copied!"
+msgstr ""
+
+#: src/js/block/index.js:31
+msgid "Display Settings"
+msgstr ""
+
+#: src/js/block/index.js:212
+msgid "Show all meetings"
+msgstr ""
+
+#: src/js/block/index.js:213
+msgid "Ignores the per-page limit below and fetches every meeting in one request."
+msgstr ""
+
+#: src/js/block/index.js:219
+msgid "Records Per Page"
+msgstr ""
+
+#: block.json
+msgctxt "block title"
+msgid "BoardScribe"
+msgstr ""
+
+#: block.json
+msgctxt "block description"
+msgid "Display a paginated, accessible table of board meetings, with agenda and minutes links."
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "meeting"
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "minutes"
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "agenda"
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "notes"
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "table"
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "boardscribe"
 msgstr ""

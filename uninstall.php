@@ -3,7 +3,7 @@
  * Runs when the plugin is deleted from the WordPress plugins screen.
  *
  * Only removes data when the user has explicitly opted in via
- * Meeting Minutes → Settings → Delete Data on Uninstall.
+ * BoardScribe → Settings → Delete Data on Uninstall.
  * This prevents accidental data loss during deactivate/reactivate cycles.
  *
  * @package EqualizeDigital\BoardScribe
@@ -19,7 +19,7 @@ if ( empty( $edbs_settings['delete_on_uninstall'] ) ) {
 	return;
 }
 
-// Delete all meeting minutes posts and their associated meta.
+// Delete all BoardScribe meeting posts and their associated meta.
 $edbs_boardscribe_post_ids = get_posts(
 	[
 		'post_type'      => 'edbs_boardscribe',

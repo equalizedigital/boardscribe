@@ -15,7 +15,7 @@ use EqualizeDigital\BoardScribe\Plugin;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
- * Registers and renders the Meeting Minutes settings page.
+ * Registers and renders the BoardScribe settings page.
  *
  * The page contains:
  * - A shortcode builder that generates a ready-to-copy shortcode
@@ -38,7 +38,7 @@ class SettingsPage {
 	}
 
 	/**
-	 * Adds the Settings submenu under the Meeting Minutes CPT menu.
+	 * Adds the Settings submenu under the BoardScribe CPT menu.
 	 *
 	 * @since x.x.x
 	 *
@@ -47,7 +47,7 @@ class SettingsPage {
 	public function add_submenu_page(): void {
 		add_submenu_page(
 			'edit.php?post_type=edbs_boardscribe',
-			__( 'Meeting Minutes Settings', 'boardscribe' ),
+			__( 'BoardScribe Settings', 'boardscribe' ),
 			__( 'Settings', 'boardscribe' ),
 			'manage_options',
 			'edbs-settings',
@@ -412,7 +412,7 @@ JS;
 				value="1"
 				<?php checked( 1, (int) $value ); ?>
 			/>
-			<?php esc_html_e( 'Remove all meeting minutes posts and plugin settings when this plugin is deleted.', 'boardscribe' ); ?>
+			<?php esc_html_e( 'Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted.', 'boardscribe' ); ?>
 		</label>
 		<p class="description" style="color:#d63638;"><?php esc_html_e( 'Warning: this cannot be undone.', 'boardscribe' ); ?></p>
 		<?php

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       BoardScribe
  * Plugin URI:        https://equalizedigital.com
- * Description:       Publish accessible, searchable meeting minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records.
+ * Description:       Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records.
  * Version:           1.0.0
  * Author:            Equalize Digital
  * Author URI:        https://equalizedigital.com

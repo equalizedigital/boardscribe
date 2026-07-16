@@ -1,6 +1,6 @@
 <?php
 /**
- * Meeting Minutes shortcode registration and asset enqueuing.
+ * BoardScribe shortcode registration and asset enqueuing.
  *
  * @package EqualizeDigital\BoardScribe
  */

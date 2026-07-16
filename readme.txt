@@ -8,11 +8,11 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Publish accessible, searchable meeting minutes for councils, HOAs, school boards, and nonprofits — no ACF, no complexity required.
+Publish accessible, searchable meeting agendas and minutes for councils, HOAs, school boards, and nonprofits — no ACF, no complexity required.
 
 == Description ==
 
-**BoardScribe** turns your meeting minutes into a searchable, accessible public record — without hiring a developer or burying agendas and minutes in a folder of PDFs no one can find.
+**BoardScribe** turns your board meetings into a searchable, accessible public record — without hiring a developer or burying agendas and minutes in a folder of PDFs no one can find.
 
 Built for city councils, county boards, school boards, HOAs, and nonprofits that are required — or simply committed — to keeping their meeting records open. Add a meeting once, and BoardScribe handles the rest: a paginated, screen-reader-friendly table your visitors can browse and sort, backed by a public REST API your dev team can build on.
 
@@ -20,12 +20,12 @@ No ACF. No third-party dependencies. Just native WordPress storage, a shortcode 
 
 = Features =
 
-* Custom post type for meeting minutes with native meta boxes — no ACF or other plugins required.
+* Custom post type for meetings with native meta boxes — no ACF or other plugins required.
 * Shortcode builder in the admin settings page generates a ready-to-copy shortcode.
 * Paginated, accessible table display via `[edbs_boardscribe]` shortcode.
 * Multiple shortcodes on the same page, each independently configured.
 * Responsive stacking layout on small screens with accessible column labels.
-* REST API endpoint for fetching meeting minutes data.
+* REST API endpoint for fetching meeting data.
 * Marks meetings as "not held" with a separate date format for those entries.
 * Extensible — developer hooks throughout for custom add-ons.
 
@@ -61,7 +61,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 
 = Meta Fields =
 
-Each meeting minute post stores:
+Each meeting post stores:
 
 * **Meeting Date** — Required. The date the meeting occurred.
 * **Agenda URL** — Link to the agenda document.
@@ -76,8 +76,8 @@ The plugin exposes a full set of actions and filters for extending functionality
 
 1. Upload the plugin files to `/wp-content/plugins/boardscribe`, or install through the WordPress plugins screen.
 2. Activate the plugin through the **Plugins** screen in WordPress.
-3. Add meeting minutes via **Meeting Minutes > Add New** in the admin menu.
-4. Go to **Meeting Minutes > Settings** to build your shortcode, then paste it into any page or post.
+3. Add meetings via **BoardScribe > Add New** in the admin menu.
+4. Go to **BoardScribe > Settings** to build your shortcode, then paste it into any page or post.
 
 == Frequently Asked Questions ==
 
@@ -85,7 +85,7 @@ The plugin exposes a full set of actions and filters for extending functionality
 
 No. This plugin uses native WordPress meta fields and requires no third-party plugins.
 
-= Can I display meeting minutes for specific years only? =
+= Can I display meetings for specific years only? =
 
 Yes. Use the `included_years` shortcode attribute with a comma-separated list of years: `[edbs_boardscribe included_years="2023,2024"]`.
 
@@ -99,16 +99,16 @@ Dates are stored in `Y-m-d` (ISO 8601) format, e.g. `2024-01-15`. The display fo
 
 = What happens to my data if I delete the plugin? =
 
-By default, all data is preserved when the plugin is deleted. You can enable the **Delete Data on Uninstall** option in **Meeting Minutes > Settings > Advanced** to remove all posts and settings when the plugin is deleted. This cannot be undone.
+By default, all data is preserved when the plugin is deleted. You can enable the **Delete Data on Uninstall** option in **BoardScribe > Settings > Advanced** to remove all posts and settings when the plugin is deleted. This cannot be undone.
 
 = Is the REST API endpoint public? =
 
-Yes. The `/wp-json/edbs/v1/boardscribe/` endpoint is intentionally public because meeting minutes are public records. No authentication is required to read them.
+Yes. The `/wp-json/edbs/v1/boardscribe/` endpoint is intentionally public because meeting agendas and minutes are public records. No authentication is required to read them.
 
 == Screenshots ==
 
-1. Meeting minutes table displayed on the front end.
-2. Add or edit a meeting minute in the WordPress admin.
+1. Meetings table displayed on the front end.
+2. Add or edit a meeting in the WordPress admin.
 3. Shortcode builder on the settings page.
 
 == Changelog ==
@@ -116,10 +116,10 @@ Yes. The `/wp-json/edbs/v1/boardscribe/` endpoint is intentionally public becaus
 = 1.0.0 =
 * Initial release.
 * Custom post type with native meta boxes (no ACF dependency).
-* Paginated accessible table display via `[edmm_meeting_minutes]` shortcode.
+* Paginated accessible table display via `[edbs_boardscribe]` shortcode.
 * Shortcode builder admin settings page.
 * Multiple shortcode instances supported on a single page.
-* REST API endpoint for fetching meeting minutes data.
+* REST API endpoint for fetching meeting data.
 * Responsive stacking layout on small screens.
 * Full i18n support.
 * Extensibility hooks for add-ons.

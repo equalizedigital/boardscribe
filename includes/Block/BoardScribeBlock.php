@@ -219,7 +219,7 @@ class BoardScribeBlock {
 	/**
 	 * Renders a real HTML table preview for the block editor.
 	 *
-	 * Queries the latest meeting minutes posts, builds each row through
+	 * Queries the latest meeting posts, builds each row through
 	 * MeetingMinutesEndpoint::build_meeting_row() — the same escaping and
 	 * formatting pipeline the REST endpoint uses, including the
 	 * edbs_meeting_row_data filter, so Pro row fields are present — and

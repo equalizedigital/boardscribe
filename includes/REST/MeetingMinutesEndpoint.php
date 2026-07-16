@@ -1,6 +1,6 @@
 <?php
 /**
- * REST API endpoint for meeting minutes.
+ * REST API endpoint for BoardScribe meetings.
  *
  * @package EqualizeDigital\BoardScribe
  */
@@ -17,7 +17,7 @@ use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
  * Registers and handles the /edbs/v1/boardscribe/ REST endpoint.
  *
  * This endpoint is intentionally public (permission_callback: __return_true)
- * because meeting minutes are public records. No authentication is required
+ * because meeting agendas and minutes are public records. No authentication is required
  * to read them, just as no authentication is required to view a public archive page.
  */
 class MeetingMinutesEndpoint {
@@ -89,14 +89,14 @@ class MeetingMinutesEndpoint {
 			[
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_meeting_minutes' ],
-				'permission_callback' => '__return_true', // Public data — meeting minutes are public records.
+				'permission_callback' => '__return_true', // Public data — meeting agendas and minutes are public records.
 				'args'                => $args,
 			]
 		);
 	}
 
 	/**
-	 * Handles GET requests to the meeting minutes endpoint.
+	 * Handles GET requests to the boardscribe endpoint.
 	 *
 	 * @since x.x.x
 	 *
@@ -175,7 +175,7 @@ class MeetingMinutesEndpoint {
 		}
 
 		/**
-		 * Filters the WP_Query args before querying meeting minutes.
+		 * Filters the WP_Query args before querying meetings.
 		 * Pro plugin can add taxonomy queries, additional meta filters, etc.
 		 *
 		 * @since x.x.x
@@ -228,7 +228,7 @@ class MeetingMinutesEndpoint {
 	}
 
 	/**
-	 * Builds the public-facing row data for a single meeting minutes post.
+	 * Builds the public-facing row data for a single meeting post.
 	 *
 	 * Extracted so Pro plugin features that need the exact same
 	 * escaped/formatted output as this endpoint (CSV/PDF export, an iCal
@@ -237,7 +237,7 @@ class MeetingMinutesEndpoint {
 	 *
 	 * @since x.x.x
 	 *
-	 * @param int                   $post_id     The meeting minutes post ID.
+	 * @param int                   $post_id     The meeting post ID.
 	 * @param array                 $format_args {
 	 *    Formatting options.
 	 *

@@ -1,6 +1,6 @@
 <?php
 /**
- * Block editor preview markup for the Meeting Minutes block.
+ * Block editor preview markup for the BoardScribe block.
  *
  * Renders one static table over a prepared column/row set. Required by
  * BoardScribeBlock::render_preview_table(), possibly more than once
@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					colspan="<?php echo esc_attr( count( $visible_columns ) ); ?>"
 					style="padding:16px 12px; color:#757575; font-style:italic;"
 				>
-					<?php esc_html_e( 'No published meeting minutes found.', 'boardscribe' ); ?>
+					<?php esc_html_e( 'No published meetings found.', 'boardscribe' ); ?>
 				</td>
 			</tr>
 		<?php endif; ?>

@@ -4,7 +4,7 @@ import { defaultBuildRequestUrl } from './defaults/request';
 import { defaultFocus } from './defaults/focus';
 
 /**
- * Initialises a single meeting minutes instance.
+ * Initialises a single BoardScribe instance.
  *
  * @param {HTMLElement} container - The .edbs-meeting-minutes-wrap element.
  */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Meeting Minutes custom post type registration.
+ * BoardScribe meeting custom post type registration.
  *
  * @package EqualizeDigital\BoardScribe
  */
@@ -36,17 +36,17 @@ class MeetingMinutes {
 	 */
 	public function register_post_type(): void {
 		$labels = [
-			'name'           => _x( 'Meeting Minutes', 'Post Type General Name', 'boardscribe' ),
-			'singular_name'  => _x( 'Meeting Minute', 'Post Type Singular Name', 'boardscribe' ),
-			'menu_name'      => __( 'Meeting Minutes', 'boardscribe' ),
-			'name_admin_bar' => __( 'Meeting Minute', 'boardscribe' ),
+			'name'           => _x( 'BoardScribe Meetings', 'Post Type General Name', 'boardscribe' ),
+			'singular_name'  => _x( 'BoardScribe Meeting', 'Post Type Singular Name', 'boardscribe' ),
+			'menu_name'      => __( 'BoardScribe', 'boardscribe' ),
+			'name_admin_bar' => __( 'BoardScribe Meeting', 'boardscribe' ),
 		];
 
 		$args = [
-			'label'         => __( 'Meeting Minute', 'boardscribe' ),
+			'label'         => __( 'BoardScribe Meeting', 'boardscribe' ),
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
-			// No public single/archive templates — meeting minutes are only ever
+			// No public single/archive templates — meetings are only ever
 			// displayed via the [edbs_boardscribe] shortcode's own REST endpoint.
 			'public'        => false,
 			'rewrite'       => false,
@@ -54,7 +54,7 @@ class MeetingMinutes {
 			'show_ui'       => true,
 			// Intentionally still exposes the default /wp/v2/edbs_boardscribe
 			// REST route (needed for the block editor meta box UI); this is fine
-			// since published meeting minutes are meant to be public records.
+			// since published meetings are meant to be public records.
 			'show_in_rest'  => true,
 			'menu_position' => 5,
 			'menu_icon'     => 'dashicons-calendar',
@@ -71,7 +71,7 @@ class MeetingMinutes {
 		$args = apply_filters( 'edbs_cpt_args', $args );
 
 		/**
-		 * Fires before the Meeting Minutes CPT is registered. Register taxonomies
+		 * Fires before the BoardScribe CPT is registered. Register taxonomies
 		 * that need to bind to the CPT here.
 		 *
 		 * @since x.x.x
@@ -81,7 +81,7 @@ class MeetingMinutes {
 		register_post_type( 'edbs_boardscribe', $args );
 
 		/**
-		 * Fires after the Meeting Minutes CPT is registered. Register taxonomies
+		 * Fires after the BoardScribe CPT is registered. Register taxonomies
 		 * or rewrite rules here.
 		 *
 		 * @since x.x.x
