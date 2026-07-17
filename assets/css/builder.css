@@ -46,3 +46,16 @@
 	min-height: 40px;
 	font-family: Consolas, Monaco, monospace;
 }
+
+/* Copy-feedback snackbar, pinned like the editor's notices. */
+.edbs-builder-app__snackbar {
+	position: fixed;
+	bottom: 24px;
+	left: 50%;
+	transform: translateX( -50% );
+	z-index: 100000;
+}
+
+.edbs-builder-app__snackbar-error {
+	background-color: #cc1818;
+}

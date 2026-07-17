@@ -5,6 +5,7 @@ import {
 	CardHeader,
 	Panel,
 	PanelBody,
+	Snackbar,
 	ToggleControl,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
@@ -91,6 +92,7 @@ export function BuilderApp( { fields } ) {
 		return initial;
 	} );
 	const [ copyLabel, setCopyLabel ] = useState( __( 'Copy', 'boardscribe' ) );
+	const [ notice, setNotice ] = useState( null );
 
 	const outputRef = useRef( null );
 	const copyResetTimer = useRef( null );
@@ -121,23 +123,52 @@ export function BuilderApp( { fields } ) {
 	};
 
 	const copyShortcode = () => {
+		// Screen readers hear the result either way, via the Snackbar's own
+		// announcement (see its politeness prop below): success politely (it
+		// doesn't need to interrupt), failure assertively (the user's next
+		// action - pasting - is about to silently do the wrong thing). No
+		// manual speak() here: the Snackbar announces its content itself on
+		// mount, and a second announcement would clear/overwrite the first.
 		const markCopied = () => {
 			setCopyLabel( __( 'Copied!', 'boardscribe' ) );
 			clearTimeout( copyResetTimer.current );
 			copyResetTimer.current = setTimeout( () => {
 				setCopyLabel( __( 'Copy', 'boardscribe' ) );
 			}, 2000 );
+			setNotice( { content: __( 'Shortcode copied to clipboard.', 'boardscribe' ), isError: false } );
+		};
+
+		const markFailed = () => {
+			setNotice( {
+				content: __( 'Copying failed. Select the shortcode text and copy it manually.', 'boardscribe' ),
+				isError: true,
+			} );
+			// Do the selecting for them - one keystroke left to copy.
+			if ( outputRef.current ) {
+				outputRef.current.select();
+			}
 		};
 
 		// Fallback for non-HTTPS admin screens, where the async
 		// clipboard API is unavailable.
 		const legacyCopy = () => {
 			if ( ! outputRef.current ) {
+				markFailed();
 				return;
 			}
+			// select() moves focus into the input; on success put it back
+			// on the Copy button so the click doesn't silently relocate
+			// keyboard focus. On failure the selection (and its focus) is
+			// exactly what markFailed wants left in place.
+			const previouslyFocused = document.activeElement;
 			outputRef.current.select();
 			if ( document.execCommand( 'copy' ) ) {
+				if ( previouslyFocused && previouslyFocused.focus ) {
+					previouslyFocused.focus();
+				}
 				markCopied();
+			} else {
+				markFailed();
 			}
 		};
 
@@ -191,6 +222,22 @@ export function BuilderApp( { fields } ) {
 
 				<Preview fields={ fields } values={ values } />
 			</div>
+
+			{ notice && (
+				<div className="edbs-builder-app__snackbar">
+					{ /* Snackbar announces its own content on mount (that's
+					     why copyShortcode doesn't also call speak() - the
+					     later of two announcements clears the earlier one)
+					     and auto-dismisses via its built-in timeout. */ }
+					<Snackbar
+						className={ notice.isError ? 'edbs-builder-app__snackbar-error' : undefined }
+						politeness={ notice.isError ? 'assertive' : 'polite' }
+						onRemove={ () => setNotice( null ) }
+					>
+						{ notice.content }
+					</Snackbar>
+				</div>
+			) }
 		</div>
 	);
 }
