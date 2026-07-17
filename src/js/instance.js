@@ -44,12 +44,19 @@ export function initInstance( container ) {
 	// in CSS without needing the class="" shortcode attribute.
 	instanceCfg.resolvedTemplate = isValidTemplate ? requested : 'table';
 
+	// An instance can opt out of URL state entirely (initial page read,
+	// pushState on pagination, popstate sync) with urlState: false - the
+	// admin builder's live preview uses this so paginating the preview
+	// never rewrites the admin URL, and so repeated re-inits attach no
+	// window-level listeners. Front-end instances keep the default.
+	const urlState = false !== instanceCfg.urlState;
+
 	// Query param name for this instance, e.g. "edbs_page_1".
 	const pageParam = 'edbs_page_' + id.replace( 'edbs_', '' );
 
 	// Read the initial page from the URL so shared/bookmarked links work.
 	const initParams = new URLSearchParams( window.location.search );
-	let currentPage = Math.max( 1, parseInt( initParams.get( pageParam ), 10 ) || 1 );
+	let currentPage = urlState ? Math.max( 1, parseInt( initParams.get( pageParam ), 10 ) || 1 ) : 1;
 	let maxNumPages = 1;
 
 	/**
@@ -94,6 +101,9 @@ export function initInstance( container ) {
 	}
 
 	function updateUrl( page ) {
+		if ( ! urlState ) {
+			return;
+		}
 		const params = new URLSearchParams( window.location.search );
 		if ( page <= 1 ) {
 			params.delete( pageParam );
@@ -105,14 +115,16 @@ export function initInstance( container ) {
 	}
 
 	// Sync this instance when the user navigates back/forward.
-	window.addEventListener( 'popstate', function() {
-		const params = new URLSearchParams( window.location.search );
-		const popped = Math.max( 1, parseInt( params.get( pageParam ), 10 ) || 1 );
-		if ( popped !== currentPage ) {
-			currentPage = popped;
-			fetchMeetings( false );
-		}
-	} );
+	if ( urlState ) {
+		window.addEventListener( 'popstate', function() {
+			const params = new URLSearchParams( window.location.search );
+			const popped = Math.max( 1, parseInt( params.get( pageParam ), 10 ) || 1 );
+			if ( popped !== currentPage ) {
+				currentPage = popped;
+				fetchMeetings( false );
+			}
+		} );
+	}
 
 	function fetchMeetings( refocus ) {
 		refocus = refocus || false;

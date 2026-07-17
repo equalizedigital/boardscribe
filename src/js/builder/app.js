@@ -9,6 +9,7 @@ import { useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { GenericFieldControl } from '../shared/generic-field-control';
 import { buildShortcode } from './build-shortcode';
+import { Preview } from './preview';
 
 // Panel grouping/order - same groups the block editor sidebar uses.
 const GROUPS = [
@@ -165,6 +166,8 @@ export function BuilderApp( { fields } ) {
 					{ copyLabel }
 				</Button>
 			</div>
+
+			<Preview fields={ fields } values={ values } />
 		</div>
 	);
 }
