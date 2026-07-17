@@ -68,8 +68,12 @@ class Plugin {
 	 * @return void
 	 */
 	public function boot(): void {
-		load_plugin_textdomain( 'boardscribe', false, dirname( plugin_basename( EDBS_FILE ) ) . '/languages' );
-
+		// No manual load_plugin_textdomain() call - discouraged since
+		// WordPress 4.6. Core's just-in-time textdomain loading
+		// (_load_textdomain_just_in_time()) already finds this plugin's
+		// translations automatically because its Text Domain header
+		// ("boardscribe") matches its slug/directory name; that lookup
+		// isn't gated on being wp.org-hosted.
 		( new FieldRegistry() )->register();
 		( new BoardScribeCPT() )->register();
 		( new MetaBox() )->register();
