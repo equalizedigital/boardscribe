@@ -4,18 +4,28 @@ import { apiBaseUrl } from '../config';
  * Builds the default REST request URL for a page of meetings.
  * Used when a template doesn't override buildRequestUrl or request.
  *
+ * apiBaseUrl (from rest_url()) already contains its own query string
+ * (`?rest_route=/edbs/v1/boardscribe/`) on any site using plain
+ * permalinks, rather than the path-based `/wp-json/...` form pretty
+ * permalinks produce - appending `?included_years=...` unconditionally
+ * would nest a second `?` inside the first param's value instead of
+ * starting a real query string, so the request 404s. Building through
+ * URL/URLSearchParams merges onto whatever's already there instead of
+ * assuming either form.
+ *
  * @param {Object} instanceCfg - The per-instance configuration.
  * @param {number} page        - The 1-based page number to request.
  * @return {string} The URL to fetch.
  */
 export function defaultBuildRequestUrl( instanceCfg, page ) {
-	return apiBaseUrl +
-		'?included_years=' + encodeURIComponent( instanceCfg.includedYears || '' ) +
-		'&held_date_format=' + encodeURIComponent( instanceCfg.heldDateFormat || 'Y/m/d' ) +
-		'&not_held_date_format=' + encodeURIComponent( instanceCfg.notHeldDateFormat || 'Y/m' ) +
-		'&posts_per_page=' + encodeURIComponent( instanceCfg.postsPerPage || 20 ) +
-		'&agenda_link_label=' + encodeURIComponent( instanceCfg.agendaLinkLabel || '' ) +
-		'&minutes_link_label=' + encodeURIComponent( instanceCfg.minutesLinkLabel || '' ) +
-		'&category=' + encodeURIComponent( instanceCfg.category || '' ) +
-		'&page=' + encodeURIComponent( page );
+	const url = new URL( apiBaseUrl, window.location.origin );
+	url.searchParams.set( 'included_years', instanceCfg.includedYears || '' );
+	url.searchParams.set( 'held_date_format', instanceCfg.heldDateFormat || 'Y/m/d' );
+	url.searchParams.set( 'not_held_date_format', instanceCfg.notHeldDateFormat || 'Y/m' );
+	url.searchParams.set( 'posts_per_page', instanceCfg.postsPerPage || 20 );
+	url.searchParams.set( 'agenda_link_label', instanceCfg.agendaLinkLabel || '' );
+	url.searchParams.set( 'minutes_link_label', instanceCfg.minutesLinkLabel || '' );
+	url.searchParams.set( 'category', instanceCfg.category || '' );
+	url.searchParams.set( 'page', page );
+	return url.toString();
 }
