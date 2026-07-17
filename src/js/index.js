@@ -22,6 +22,11 @@ window.edbsBuildTable = buildTableHtml;
 
 window.edbsTemplates.table = window.edbsTemplates.table || tableTemplate;
 
+// Exposed so instances injected after DOMContentLoaded can be
+// initialised on demand - the admin shortcode builder's live preview
+// re-inits its instance this way each time the config changes.
+window.edbsInitInstance = initInstance;
+
 // Initialise all instances when the DOM is ready.
 document.addEventListener( 'DOMContentLoaded', function() {
 	document.querySelectorAll( '.edbs-boardscribe-wrap' ).forEach( initInstance );

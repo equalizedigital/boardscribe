@@ -84,40 +84,10 @@ class BoardScribeBlock {
 		// show up in the block editor sidebar.
 		if ( $block_type instanceof \WP_Block_Type ) {
 			foreach ( $block_type->editor_script_handles as $handle ) {
-				wp_localize_script( $handle, 'edbsBlockFieldRegistry', $this->build_field_schema_for_js() );
+				wp_localize_script( $handle, 'edbsBlockFieldRegistry', FieldRegistry::js_schema() );
 				wp_set_script_translations( $handle, 'boardscribe' );
 			}
 		}
-	}
-
-	/**
-	 * Projects the shared field registry into a JSON-safe shape for the
-	 * block editor - drops PHP-only keys (sanitize_callback/validate_callback
-	 * are closures/callables, not serializable) and keys the JS side
-	 * doesn't need (rest_arg, config_key), and resolves the block
-	 * attribute name so JS never has to know about the snake_case
-	 * shortcode-side key or the camelCase-derivation convention.
-	 *
-	 * @since x.x.x
-	 *
-	 * @return array<int, array{attributeKey: string, type: string, group: string, label: string, choices: ?array, placeholder: ?string, description: ?string}>
-	 */
-	private function build_field_schema_for_js(): array {
-		$schema = [];
-
-		foreach ( FieldRegistry::all() as $field ) {
-			$schema[] = [
-				'attributeKey' => FieldRegistry::block_attribute_key( $field ),
-				'type'         => $field['type'],
-				'group'        => $field['group'] ?? 'general',
-				'label'        => $field['label'] ?? '',
-				'choices'      => $field['choices'] ?? null,
-				'placeholder'  => $field['placeholder'] ?? null,
-				'description'  => $field['description'] ?? null,
-			];
-		}
-
-		return $schema;
 	}
 
 	/**

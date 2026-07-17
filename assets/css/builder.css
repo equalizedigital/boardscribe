@@ -1,0 +1,61 @@
+/**
+ * Admin Shortcode Builder page layout (src/js/builder/).
+ *
+ * Settings panel on the left, generated shortcode + live preview on
+ * the right; the right column sticks while the settings scroll.
+ */
+
+.edbs-builder-app {
+	display: grid;
+	grid-template-columns: minmax( 300px, 420px ) minmax( 0, 1fr );
+	gap: 24px;
+	align-items: start;
+	max-width: 1400px;
+	margin-top: 16px;
+}
+
+@media ( max-width: 960px ) {
+	.edbs-builder-app {
+		grid-template-columns: 1fr;
+	}
+}
+
+.edbs-builder-app__result {
+	position: sticky;
+	top: 46px; /* admin bar + breathing room */
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+/* Vertical rhythm between the controls inside one panel group. */
+.edbs-builder-app__fields {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.edbs-builder-app__output-row {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.edbs-builder-app__output {
+	flex: 1;
+	min-height: 40px;
+	font-family: Consolas, Monaco, monospace;
+}
+
+/* Copy-feedback snackbar, pinned like the editor's notices. */
+.edbs-builder-app__snackbar {
+	position: fixed;
+	bottom: 24px;
+	left: 50%;
+	transform: translateX( -50% );
+	z-index: 100000;
+}
+
+.edbs-builder-app__snackbar-error {
+	background-color: #cc1818;
+}
