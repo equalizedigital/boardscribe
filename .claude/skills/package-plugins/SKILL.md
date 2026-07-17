@@ -35,7 +35,9 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest (verify with `unzip -l`):
-`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/css/boardscribe.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
+`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,shortcode-builder-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/build/builder/{index.js,index.asset.php}`, `assets/css/{boardscribe,builder}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
+
+Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode Builder React app, PRO-1228) ship via the existing wildcard `cp -r assets/build assets/css` step below with no script change — this manifest entry just documents that they're expected, not new/unexpected, when verifying with `unzip -l`.
 
 ## Pro plugin
 
