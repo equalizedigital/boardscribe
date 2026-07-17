@@ -12,7 +12,7 @@ Both repos ship as manually-built zips in each repo's gitignored `dist/`. There 
 1. **Always run the JS build first** (free repo only since the block moved there — Pro has no bundled JS anymore). Built output is gitignored (`assets/build/` in free). A zip missing it installs fine but renders an empty table / broken block editor with a 404'd script.
 2. **Always run `composer install --no-dev --optimize-autoloader` before staging, and a plain `composer install` again after zipping.** Both plugins bootstrap via a Composer PSR-4 autoloader (`vendor/autoload.php`) — a zip without it fatal-errors on activation. Neither plugin has a runtime Composer dependency (only `php` itself in `require`; everything else is `require-dev` tooling), so `--no-dev` leaves `vendor/` containing only Composer's own autoloader machinery (`vendor/autoload.php` + `vendor/composer/*`, no third-party library code) — safe to ship wholesale. The restore step afterward matters: skipping it silently drops phpcs/phpunit/etc. from the working tree for the rest of the session.
 3. The zip must contain a single top-level directory named exactly like the plugin slug (`boardscribe/` or `boardscribe-pro/`) — WordPress derives the install path from it.
-4. Never include: `node_modules/`, `tests/`, `docs/`, `dist/`, `scripts/`, dotfiles (`.git*`, `.eslintrc`, `.husky/`, `.editorconfig`), `composer.json`, `composer.lock`, `package*.json`, `phpunit*`, `phpcs.xml`, `webpack.config.js`, `docker-compose.yml`. (`vendor/` is now a required exception to the general "no dev-tooling directories" rule — see above.)
+4. Never include: `node_modules/`, `tests/`, `docs/`, `dist/`, `scripts/`, dotfiles (`.git*`, `.eslintrc`, `.husky/`, `.editorconfig`), `composer.lock`, `package*.json`, `phpunit*`, `phpcs.xml`, `webpack.config.js`, `docker-compose.yml`. (`vendor/` is now a required exception to the general "no dev-tooling directories" rule — see above.) **`composer.json` DOES ship** (added post-PRO-1196) — the official WP.org Plugin Check tool flags a shipped `vendor/` with no accompanying `composer.json` as `missing_composer_json_file` (plugin_repo category); the file has no runtime-dependency/private-registry info worth hiding (just PHP version requirement, PSR-4 autoload map, and `require-dev`/`scripts` entries), so shipping it is free. `composer.lock` stays excluded — it only pins exact dev-tooling versions, which change often and give a site admin nothing actionable.
 5. In Pro, `src/js/admin/`, `src/js/front-end/`, and `src/js/editor/` are **plain-file enqueues and MUST ship**. In free, no `src/` ships at all (everything is bundled — including the block editor script, `src/js/block/` → `assets/build/block/`).
 6. **Run each plugin's whole bash block as a single script**, not line-by-line — `$STAGE` (and `$OLDPWD` inside the zip subshell) are shell variables/state that don't persist across separate command invocations.
 
@@ -25,7 +25,7 @@ composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe.zip
 STAGE=$(mktemp -d)/boardscribe && mkdir -p "$STAGE/assets"
 cp -r \
-  boardscribe.php block.json uninstall.php readme.txt LICENSE \
+  boardscribe.php block.json uninstall.php readme.txt LICENSE composer.json \
   includes partials languages vendor \
   "$STAGE"/
 cp -r assets/build assets/css "$STAGE/assets/"
@@ -35,7 +35,7 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest (verify with `unzip -l`):
-`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,shortcode-builder-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/build/builder/{index.js,index.asset.php}`, `assets/css/{boardscribe,builder}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
+`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `composer.json`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,shortcode-builder-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/build/builder/{index.js,index.asset.php}`, `assets/css/{boardscribe,builder}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
 
 Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode Builder React app, PRO-1228) ship via the existing wildcard `cp -r assets/build assets/css` step below with no script change — this manifest entry just documents that they're expected, not new/unexpected, when verifying with `unzip -l`.
 
@@ -48,7 +48,7 @@ composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe-pro.zip
 STAGE=$(mktemp -d)/boardscribe-pro && mkdir -p "$STAGE/assets" "$STAGE/src/js"
 cp -r \
-  boardscribe-pro.php readme.txt LICENSE \
+  boardscribe-pro.php readme.txt LICENSE composer.json \
   includes partials vendor \
   "$STAGE"/
 cp -r assets/css "$STAGE/assets/"
@@ -59,7 +59,7 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest:
-`boardscribe-pro.php`, `readme.txt`, `LICENSE`, `assets/css/{pro-meta,calendar-templates}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section}.php`, `includes/{Plugin,License/LicenseManager,Admin/ProMetaFields,PostType/MeetingCategory,Block/BlockExtensions,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate,front-end/calendarTemplates,editor/blockEditor}.js`
+`boardscribe-pro.php`, `readme.txt`, `LICENSE`, `composer.json`, `assets/css/{pro-meta,calendar-templates}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section}.php`, `includes/{Plugin,License/LicenseManager,Admin/ProMetaFields,PostType/MeetingCategory,Block/BlockExtensions,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate,front-end/calendarTemplates,editor/blockEditor}.js`
 
 Note: Pro no longer ships `block.json`, `build/`, or `partials/block-editor-preview.php` — the block moved to the free plugin (paired `feat/move-block-to-free` branches). Don't re-add them from an old checklist.
 
