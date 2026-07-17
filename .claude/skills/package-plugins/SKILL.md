@@ -12,25 +12,29 @@ Both repos ship as manually-built zips in each repo's gitignored `dist/`. There 
 1. **Always run the JS build first** (free repo only since the block moved there — Pro has no bundled JS anymore). Built output is gitignored (`assets/build/` in free). A zip missing it installs fine but renders an empty table / broken block editor with a 404'd script.
 2. **Always run `composer install --no-dev --optimize-autoloader` before staging, and a plain `composer install` again after zipping.** Both plugins bootstrap via a Composer PSR-4 autoloader (`vendor/autoload.php`) — a zip without it fatal-errors on activation. Neither plugin has a runtime Composer dependency (only `php` itself in `require`; everything else is `require-dev` tooling), so `--no-dev` leaves `vendor/` containing only Composer's own autoloader machinery (`vendor/autoload.php` + `vendor/composer/*`, no third-party library code) — safe to ship wholesale. The restore step afterward matters: skipping it silently drops phpcs/phpunit/etc. from the working tree for the rest of the session.
 3. The zip must contain a single top-level directory named exactly like the plugin slug (`boardscribe/` or `boardscribe-pro/`) — WordPress derives the install path from it.
-4. Never include: `node_modules/`, `tests/`, `docs/`, `dist/`, `scripts/`, dotfiles (`.git*`, `.eslintrc`, `.husky/`, `.editorconfig`), `composer.json`, `composer.lock`, `package*.json`, `phpunit*`, `phpcs.xml`, `webpack.config.js`, `docker-compose.yml`. (`vendor/` is now a required exception to the general "no dev-tooling directories" rule — see above.)
+4. Never include: `node_modules/`, `tests/`, `docs/`, `dist/`, `scripts/`, dotfiles (`.git*`, `.eslintrc`, `.husky/`, `.editorconfig`), `composer.json`, `composer.lock`, `package*.json`, `phpunit*`, `phpcs.xml`, `webpack.config.js`, `docker-compose.yml`. (`vendor/` is now a required exception to the general "no dev-tooling directories" rule — see above.) **Accepted Plugin Check warning:** the official WP.org Plugin Check tool flags a shipped `vendor/` with no accompanying `composer.json` as `missing_composer_json_file` (plugin_repo category, WARNING not ERROR). Deliberately not fixed — decided (PRO-1196) to keep `composer.json`/`composer.lock` out of the release zip rather than ship dev-tooling config for a warning-level, non-blocking finding. Don't re-add `composer.json` to either recipe below from an old checklist or a future Plugin Check run without checking here first.
 5. In Pro, `src/js/admin/`, `src/js/front-end/`, and `src/js/editor/` are **plain-file enqueues and MUST ship**. In free, no `src/` ships at all (everything is bundled — including the block editor script, `src/js/block/` → `assets/build/block/`).
-6. **Run each plugin's whole bash block as a single script**, not line-by-line — `$STAGE` (and `$OLDPWD` inside the zip subshell) are shell variables/state that don't persist across separate command invocations.
+6. **Run each plugin's whole bash block as a single script**, not line-by-line — `$STAGE`/`$TMP_DIR` (and `$OLDPWD` inside the zip subshell) are shell variables/state that don't persist across separate command invocations.
+7. **Both blocks open with `set -euo pipefail` and a cleanup trap — don't strip these when copy-pasting.** Without them, a failed `composer install`/`cp`/`zip` can be silently ignored and the script continues packaging a broken zip; worse, if `mktemp -d` itself fails, `STAGE=$(mktemp -d)/boardscribe` degrades to the literal string `/boardscribe` with **no error surfaced** (bash doesn't propagate the failure through the concatenation), making the old cleanup line `rm -rf "$(dirname "$STAGE")"` resolve to `rm -rf /`. The current form avoids this entirely: `TMP_DIR=$(mktemp -d)` is a bare assignment (so `set -e` reliably aborts if it fails, unlike the concatenated form), `STAGE` is built from `$TMP_DIR` afterward, and `trap 'rm -rf -- "$TMP_DIR"' EXIT` only ever removes that one known path — it can't be redirected by a failure elsewhere. (Found via CodeRabbit review on boardscribe#31.)
 
 ## Free plugin
 
 ```bash
 cd <free-repo>
+set -euo pipefail
 npm run build   # -> assets/build/boardscribe.js + assets/build/block/{index.js,index.asset.php}
 composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe.zip
-STAGE=$(mktemp -d)/boardscribe && mkdir -p "$STAGE/assets"
+TMP_DIR=$(mktemp -d)
+STAGE="$TMP_DIR/boardscribe"
+trap 'rm -rf -- "$TMP_DIR"' EXIT
+mkdir -p "$STAGE/assets"
 cp -r \
   boardscribe.php block.json uninstall.php readme.txt LICENSE \
   includes partials languages vendor \
   "$STAGE"/
 cp -r assets/build assets/css "$STAGE/assets/"
-( cd "$(dirname "$STAGE")" && zip -r "$OLDPWD/dist/boardscribe.zip" boardscribe )
-rm -rf "$(dirname "$STAGE")"
+( cd "$TMP_DIR" && zip -r "$OLDPWD/dist/boardscribe.zip" boardscribe )
 composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
@@ -43,18 +47,21 @@ Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode 
 
 ```bash
 cd <pro-repo>   # ../boardscribe-pro relative to the free repo (GitHub repo also renamed to boardscribe-pro)
+set -euo pipefail
 # No JS build - Pro ships plain-file JS only since the block moved to free.
 composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe-pro.zip
-STAGE=$(mktemp -d)/boardscribe-pro && mkdir -p "$STAGE/assets" "$STAGE/src/js"
+TMP_DIR=$(mktemp -d)
+STAGE="$TMP_DIR/boardscribe-pro"
+trap 'rm -rf -- "$TMP_DIR"' EXIT
+mkdir -p "$STAGE/assets" "$STAGE/src/js"
 cp -r \
   boardscribe-pro.php readme.txt LICENSE \
   includes partials vendor \
   "$STAGE"/
 cp -r assets/css "$STAGE/assets/"
 cp -r src/js/admin src/js/front-end src/js/editor "$STAGE/src/js/"
-( cd "$(dirname "$STAGE")" && zip -r "$OLDPWD/dist/boardscribe-pro.zip" boardscribe-pro )
-rm -rf "$(dirname "$STAGE")"
+( cd "$TMP_DIR" && zip -r "$OLDPWD/dist/boardscribe-pro.zip" boardscribe-pro )
 composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
