@@ -63,11 +63,16 @@ class BoardScribeShortcode {
 	 * Registers and enqueues the plugin stylesheet and script.
 	 * Safe to call multiple times — WordPress deduplicates by handle.
 	 *
+	 * Public so the admin Shortcode Builder page (SettingsPage) can
+	 * enqueue the real frontend pipeline for its live preview — including
+	 * the edbsConfig localization and the edbs_enqueue_assets action, so
+	 * Pro's extra columns/templates render in the preview too.
+	 *
 	 * @since x.x.x
 	 *
 	 * @return void
 	 */
-	private function enqueue_assets(): void {
+	public function enqueue_assets(): void {
 		wp_enqueue_style(
 			'edbs-boardscribe',
 			EDBS_URL . 'assets/css/boardscribe.css',

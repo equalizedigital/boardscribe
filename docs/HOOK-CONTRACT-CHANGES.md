@@ -163,3 +163,15 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 | `MeetingMinutesEndpoint::get_meeting_minutes()` (REST callback) | `BoardScribeEndpoint::get_meetings()` |
 
 **Contract impact:** `BoardScribeEndpoint::build_meeting_row()` and `::parse_date()` are cross-repo public surface — Pro references the new class name (updated in the paired `fix/boardscribe-wording` branch). Older HOOK-CONTRACT entries above intentionally keep the historical class names they were written against.
+
+---
+
+## Shortcode Builder converted to a React app (PRO-1228) — `edbs_enqueue_assets` can now fire in wp-admin
+
+**Before:** `edbs_enqueue_assets` only ever fired on the front end, from `BoardScribeShortcode::enqueue_assets()` during `wp_enqueue_scripts` or a front-end shortcode render.
+
+**After:** the admin Shortcode Builder page (`SettingsPage::enqueue_builder_script()`) also calls `enqueue_assets()` (now public) so its live preview runs the real frontend pipeline — meaning the action now also fires during `admin_enqueue_scripts` on that one admin screen. This is intentional: it's what makes a Pro/third-party plugin's extra columns and display templates render inside the builder preview with no extra wiring.
+
+**Contract impact:** no signature change. But a callback on `edbs_enqueue_assets` that assumes a front-end context (e.g. calls front-end-only conditionals, enqueues assets that break admin styling, or dequeues admin scripts) now runs in wp-admin too. Callbacks should be context-safe — enqueuing the plugin's own frontend JS/CSS (the intended use) is fine as-is; anything else should guard with `is_admin()` as needed.
+
+**Action for Pro before release:** grep Pro for `edbs_enqueue_assets` and confirm each callback only enqueues its frontend assets (safe) or guards admin-sensitive work with `is_admin()`.

@@ -4,14 +4,18 @@
  * entry/output paths (the wp-scripts defaults of src/index.js → build/
  * clash with src/ holding the PHP classes).
  *
- * Two bundles are built:
+ * Three bundles are built:
  * - the frontend bundle (assets/build/boardscribe.js), enqueued by hand
  *   in BoardScribeShortcode.php with no *.asset.php — its externals
  *   are declared manually below;
  * - the block editor bundle (assets/build/block/index.js), consumed by
  *   block.json's editorScript. It keeps wp-scripts' default
  *   DependencyExtractionWebpackPlugin so register_block_type() can read
- *   the generated index.asset.php for dependencies/version.
+ *   the generated index.asset.php for dependencies/version;
+ * - the shortcode builder bundle (assets/build/builder/index.js), the
+ *   React app on the admin Shortcode Builder page, enqueued by
+ *   SettingsPage.php. It also keeps DependencyExtractionWebpackPlugin
+ *   and its generated index.asset.php.
  */
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const path = require( 'path' );
@@ -24,10 +28,10 @@ const frontendConfig = {
 	output: {
 		...defaultConfig.output,
 		path: path.resolve( __dirname, 'assets/build' ),
-		// The block bundle below emits into a subdirectory of this output
-		// path; without the keep rule, this config's clean step deletes it
-		// (the two compilers run in parallel within one webpack run).
-		clean: { keep: /^block\// },
+		// The block/builder bundles below emit into subdirectories of this
+		// output path; without the keep rule, this config's clean step
+		// deletes them (the compilers run in parallel within one webpack run).
+		clean: { keep: /^(block|builder)\// },
 	},
 	// Drop DependencyExtractionWebpackPlugin so no *.asset.php is emitted;
 	// the externals it would have provided are declared by hand below.
@@ -54,4 +58,15 @@ const blockConfig = {
 	},
 };
 
-module.exports = [ frontendConfig, blockConfig ];
+const builderConfig = {
+	...defaultConfig,
+	entry: {
+		index: path.resolve( __dirname, 'src/js/builder/index.js' ),
+	},
+	output: {
+		...defaultConfig.output,
+		path: path.resolve( __dirname, 'assets/build/builder' ),
+	},
+};
+
+module.exports = [ frontendConfig, blockConfig, builderConfig ];
