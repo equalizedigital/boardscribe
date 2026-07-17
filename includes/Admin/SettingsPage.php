@@ -149,6 +149,12 @@ class SettingsPage {
 			true
 		);
 		wp_enqueue_style( 'wp-components' );
+		wp_enqueue_style(
+			'edbs-shortcode-builder',
+			EDBS_URL . 'assets/css/builder.css',
+			[ 'wp-components' ],
+			EDBS_VERSION
+		);
 		wp_set_script_translations( 'edbs-shortcode-builder', 'boardscribe' );
 		wp_localize_script( 'edbs-shortcode-builder', 'edbsBuilderFieldRegistry', FieldRegistry::js_schema() );
 

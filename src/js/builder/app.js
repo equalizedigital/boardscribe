@@ -1,5 +1,8 @@
 import {
 	Button,
+	Card,
+	CardBody,
+	CardHeader,
 	Panel,
 	PanelBody,
 	ToggleControl,
@@ -19,6 +22,14 @@ const GROUPS = [
 	{ key: 'hide_columns', title: __( 'Hide Columns', 'boardscribe' ), initialOpen: false },
 	{ key: 'show_columns', title: __( 'Show Columns', 'boardscribe' ), initialOpen: false },
 ];
+
+// Opt every builder control into the current component sizing/margins
+// (the app owns its spacing via builder.css). The block's sidebar
+// controls deliberately don't get these - they follow the editor.
+const CONTROL_PROPS = {
+	__next40pxDefaultSize: true,
+	__nextHasNoMarginBottom: true,
+};
 
 /**
  * A number_with_all field renders as a number input paired with a
@@ -41,11 +52,6 @@ function NumberWithAllControl( { field, value, onChange } ) {
 
 	return (
 		<>
-			<ToggleControl
-				label={ __( 'Show all', 'boardscribe' ) }
-				checked={ showingAll }
-				onChange={ ( checked ) => onChange( checked ? 'all' : lastCustom.current ) }
-			/>
 			{ ! showingAll && (
 				<NumberControl
 					label={ field.label }
@@ -53,8 +59,15 @@ function NumberWithAllControl( { field, value, onChange } ) {
 					value={ value }
 					onChange={ ( val ) => onChange( parseInt( val, 10 ) || field.default ) }
 					min={ 1 }
+					{ ...CONTROL_PROPS }
 				/>
 			) }
+			<ToggleControl
+				label={ __( 'Show all', 'boardscribe' ) }
+				checked={ showingAll }
+				onChange={ ( checked ) => onChange( checked ? 'all' : lastCustom.current ) }
+				__nextHasNoMarginBottom
+			/>
 		</>
 	);
 }
@@ -62,7 +75,8 @@ function NumberWithAllControl( { field, value, onChange } ) {
 /**
  * The shortcode builder app: every registry field (free's own plus
  * anything Pro/third parties added via edbs_shortcode_field_registry)
- * rendered in its group, with the generated shortcode kept in sync.
+ * rendered in its group, with the generated shortcode and live preview
+ * kept in sync. Layout (two columns, spacing) lives in builder.css.
  *
  * @param {Object} props        Component props.
  * @param {Array}  props.fields Field descriptors from FieldRegistry::js_schema().
@@ -103,7 +117,7 @@ export function BuilderApp( { fields } ) {
 		};
 		return 'number_with_all' === field.type
 			? <NumberWithAllControl { ...props } />
-			: <GenericFieldControl { ...props } />;
+			: <GenericFieldControl { ...props } controlProps={ CONTROL_PROPS } />;
 	};
 
 	const copyShortcode = () => {
@@ -137,37 +151,46 @@ export function BuilderApp( { fields } ) {
 
 	return (
 		<div className="edbs-builder-app">
-			<Panel>
-				{ GROUPS.map( ( group ) => {
-					const groupFields = fieldsByGroup[ group.key ] || [];
-					if ( ! groupFields.length ) {
-						return null;
-					}
-					return (
-						<PanelBody key={ group.key } title={ group.title } initialOpen={ group.initialOpen }>
-							{ groupFields.map( renderField ) }
-						</PanelBody>
-					);
-				} ) }
-			</Panel>
-
-			<h2>{ __( 'Your Shortcode', 'boardscribe' ) }</h2>
-			<div style={ { display: 'flex', gap: '8px', alignItems: 'center', maxWidth: '600px' } }>
-				<input
-					type="text"
-					ref={ outputRef }
-					readOnly
-					value={ shortcode }
-					className="large-text"
-					style={ { fontFamily: 'monospace' } }
-					aria-label={ __( 'Your Shortcode', 'boardscribe' ) }
-				/>
-				<Button variant="secondary" onClick={ copyShortcode }>
-					{ copyLabel }
-				</Button>
+			<div className="edbs-builder-app__settings">
+				<Panel>
+					{ GROUPS.map( ( group ) => {
+						const groupFields = fieldsByGroup[ group.key ] || [];
+						if ( ! groupFields.length ) {
+							return null;
+						}
+						return (
+							<PanelBody key={ group.key } title={ group.title } initialOpen={ group.initialOpen }>
+								<div className="edbs-builder-app__fields">
+									{ groupFields.map( renderField ) }
+								</div>
+							</PanelBody>
+						);
+					} ) }
+				</Panel>
 			</div>
 
-			<Preview fields={ fields } values={ values } />
+			<div className="edbs-builder-app__result">
+				<Card>
+					<CardHeader>{ __( 'Your Shortcode', 'boardscribe' ) }</CardHeader>
+					<CardBody>
+						<div className="edbs-builder-app__output-row">
+							<input
+								type="text"
+								ref={ outputRef }
+								readOnly
+								value={ shortcode }
+								className="edbs-builder-app__output"
+								aria-label={ __( 'Your Shortcode', 'boardscribe' ) }
+							/>
+							<Button variant="primary" onClick={ copyShortcode } __next40pxDefaultSize>
+								{ copyLabel }
+							</Button>
+						</div>
+					</CardBody>
+				</Card>
+
+				<Preview fields={ fields } values={ values } />
+			</div>
 		</div>
 	);
 }

@@ -1,3 +1,4 @@
+import { Card, CardBody, CardHeader } from '@wordpress/components';
 import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -76,28 +77,30 @@ export function Preview( { fields, values } ) {
 	}
 
 	return (
-		<div className="edbs-builder-preview">
-			<h2>{ __( 'Preview', 'boardscribe' ) }</h2>
-			{ /* Keyed on the config so each change remounts a clean copy of
-			     the exact wrapper markup BoardScribeShortcode::render()
-			     emits - the frontend pipeline owns everything inside it,
-			     which React must never reconcile over. */ }
-			<div
-				key={ debouncedJson }
-				ref={ wrapRef }
-				className="edbs-boardscribe-wrap"
-				data-config={ debouncedJson }
-			>
-				<div id={ `edbs-table-${ PREVIEW_ID }` } className="edbs-table-container"></div>
-				<div id={ `edbs-pagination-${ PREVIEW_ID }` } className="edbs-pagination-container"></div>
+		<Card className="edbs-builder-preview">
+			<CardHeader>{ __( 'Preview', 'boardscribe' ) }</CardHeader>
+			<CardBody>
+				{ /* Keyed on the config so each change remounts a clean copy of
+				     the exact wrapper markup BoardScribeShortcode::render()
+				     emits - the frontend pipeline owns everything inside it,
+				     which React must never reconcile over. */ }
 				<div
-					id={ `edbs-info-${ PREVIEW_ID }` }
-					className="edbs-pagination-info"
-					aria-live="polite"
-					aria-atomic="true"
-					style={ { position: 'absolute', left: '-9999px' } }
-				></div>
-			</div>
-		</div>
+					key={ debouncedJson }
+					ref={ wrapRef }
+					className="edbs-boardscribe-wrap"
+					data-config={ debouncedJson }
+				>
+					<div id={ `edbs-table-${ PREVIEW_ID }` } className="edbs-table-container"></div>
+					<div id={ `edbs-pagination-${ PREVIEW_ID }` } className="edbs-pagination-container"></div>
+					<div
+						id={ `edbs-info-${ PREVIEW_ID }` }
+						className="edbs-pagination-info"
+						aria-live="polite"
+						aria-atomic="true"
+						style={ { position: 'absolute', left: '-9999px' } }
+					></div>
+				</div>
+			</CardBody>
+		</Card>
 	);
 }

@@ -41,6 +41,7 @@ src/js/                                Frontend source modules (ES modules, bund
 partials/block-editor-preview.php      One preview table (columns × rows), required per section by render_preview_table()
 assets/build/                          Bundled output (GITIGNORED — run `npm run build`; release packaging must build)
 assets/css/boardscribe.css             Frontend styles
+assets/css/builder.css                 Admin Shortcode Builder page layout (two-column, sticky preview)
 uninstall.php                         Opt-in data cleanup on plugin deletion
 docs/                                 Planning docs (market research, premium features, readiness checklist) — not user-facing
 tests/                                PHPUnit setup

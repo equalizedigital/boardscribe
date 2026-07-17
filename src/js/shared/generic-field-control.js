@@ -14,25 +14,33 @@ import {
  * keys fields by attributeKey, the builder by key), so this component
  * stays agnostic of where the value lives.
  *
- * @param {Object}   props          Component props.
- * @param {Object}   props.field    Field descriptor from the localized registry schema.
- * @param {*}        props.value    Current value.
- * @param {Function} props.onChange Called with the new value.
+ * @param {Object}   props              Component props.
+ * @param {Object}   props.field        Field descriptor from the localized registry schema.
+ * @param {*}        props.value        Current value.
+ * @param {Function} props.onChange     Called with the new value.
+ * @param {Object}   props.controlProps Extra props spread onto the rendered control - the
+ *                                      builder passes the new-sizing/margin opt-ins here
+ *                                      while the block keeps the editor defaults.
  * @return {JSX.Element} The control.
  */
-export function GenericFieldControl( { field, value = '', onChange } ) {
+export function GenericFieldControl( { field, value = '', onChange, controlProps = {} } ) {
 	const help = field.description || undefined;
 
 	switch ( field.type ) {
-		case 'checkbox':
+		case 'checkbox': {
+			// ToggleControl has no size variants - only the margin opt-in
+			// applies to it.
+			const { __next40pxDefaultSize, ...toggleProps } = controlProps;
 			return (
 				<ToggleControl
 					label={ field.label }
 					help={ help }
 					checked={ !! value }
 					onChange={ onChange }
+					{ ...toggleProps }
 				/>
 			);
+		}
 
 		case 'select': {
 			const choices = field.choices || {};
@@ -47,6 +55,7 @@ export function GenericFieldControl( { field, value = '', onChange } ) {
 					value={ value }
 					options={ options }
 					onChange={ onChange }
+					{ ...controlProps }
 				/>
 			);
 		}
@@ -60,6 +69,7 @@ export function GenericFieldControl( { field, value = '', onChange } ) {
 					value={ value }
 					onChange={ ( val ) => onChange( parseInt( val, 10 ) || 0 ) }
 					min={ 'number_with_all' === field.type ? -1 : 1 }
+					{ ...controlProps }
 				/>
 			);
 
@@ -70,6 +80,7 @@ export function GenericFieldControl( { field, value = '', onChange } ) {
 					help={ help }
 					value={ value }
 					onChange={ onChange }
+					{ ...controlProps }
 				/>
 			);
 
@@ -82,6 +93,7 @@ export function GenericFieldControl( { field, value = '', onChange } ) {
 					placeholder={ field.placeholder || '' }
 					value={ value }
 					onChange={ onChange }
+					{ ...controlProps }
 				/>
 			);
 	}
