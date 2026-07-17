@@ -263,6 +263,41 @@ class FieldRegistry {
 	}
 
 	/**
+	 * Projects the merged field registry into a JSON-safe shape for JS
+	 * consumers (the block editor's InspectorControls and the shortcode
+	 * builder app) - drops PHP-only keys (sanitize_callback/
+	 * validate_callback are closures/callables, not serializable) and
+	 * resolves the derived key names so JS never has to know about the
+	 * camelCase-derivation convention: attributeKey for the block,
+	 * key/configKey/default for the builder's shortcode generation and
+	 * preview instance config.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, placeholder: ?string, description: ?string}>
+	 */
+	public static function js_schema(): array {
+		$schema = [];
+
+		foreach ( self::all() as $field ) {
+			$schema[] = [
+				'key'          => $field['key'],
+				'attributeKey' => self::block_attribute_key( $field ),
+				'configKey'    => self::config_key( $field ),
+				'type'         => $field['type'],
+				'group'        => $field['group'] ?? 'general',
+				'label'        => $field['label'] ?? '',
+				'default'      => $field['default'] ?? '',
+				'choices'      => $field['choices'] ?? null,
+				'placeholder'  => $field['placeholder'] ?? null,
+				'description'  => $field['description'] ?? null,
+			];
+		}
+
+		return $schema;
+	}
+
+	/**
 	 * Resolves a raw shortcode-attribute value into its sanitized
 	 * instance-config value, using the field's own sanitize_callback
 	 * if it has one, otherwise a built-in resolver for its type.
