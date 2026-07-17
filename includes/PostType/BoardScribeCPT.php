@@ -57,7 +57,7 @@ class BoardScribeCPT {
 			// since published meetings are meant to be public records.
 			'show_in_rest'  => true,
 			'menu_position' => 5,
-			'menu_icon'     => 'dashicons-calendar',
+			'menu_icon'     => 'dashicons-groups',
 		];
 
 		/**
