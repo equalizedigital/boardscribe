@@ -5,8 +5,6 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	TextControl,
-	TextareaControl,
 	ToggleControl,
 	SelectControl,
 	__experimentalNumberControl as NumberControl,
@@ -16,6 +14,7 @@ import { useRef } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import metadata from '../../../block.json';
+import { GenericFieldControl } from '../shared/generic-field-control';
 
 // Localized by BoardScribeBlock::register_block() from the shared
 // field registry (see Shortcode/FieldRegistry.php) - the same source
@@ -44,84 +43,6 @@ const GROUPS = [
 // - className has no control here at all; it's driven by the block's
 //   native "Additional CSS Class(es)" Advanced-panel field instead.
 const SPECIAL_CASED_KEYS = [ 'template', 'postsPerPage', 'className' ];
-
-/**
- * Renders the control matching a field's type - the generic half of the
- * InspectorControls, covering every field except the special-cased ones
- * above. One renderer per FieldRegistry type (see FieldRegistry.php).
- *
- * @param {Object}   props          Component props.
- * @param {Object}   props.field    Field descriptor from FIELD_REGISTRY.
- * @param {*}        props.value    Current attribute value.
- * @param {Function} props.onChange Called with the new value.
- * @return {JSX.Element} The control.
- */
-function GenericFieldControl( { field, value = '', onChange } ) {
-	const help = field.description || undefined;
-
-	switch ( field.type ) {
-		case 'checkbox':
-			return (
-				<ToggleControl
-					label={ field.label }
-					help={ help }
-					checked={ !! value }
-					onChange={ onChange }
-				/>
-			);
-
-		case 'select': {
-			const choices = field.choices || {};
-			const options = Object.keys( choices ).map( ( choiceValue ) => ( {
-				value: choiceValue,
-				label: choices[ choiceValue ],
-			} ) );
-			return (
-				<SelectControl
-					label={ field.label }
-					help={ help }
-					value={ value }
-					options={ options }
-					onChange={ onChange }
-				/>
-			);
-		}
-
-		case 'number':
-		case 'number_with_all':
-			return (
-				<NumberControl
-					label={ field.label }
-					help={ help }
-					value={ value }
-					onChange={ ( val ) => onChange( parseInt( val, 10 ) || 0 ) }
-					min={ 'number_with_all' === field.type ? -1 : 1 }
-				/>
-			);
-
-		case 'textarea':
-			return (
-				<TextareaControl
-					label={ field.label }
-					help={ help }
-					value={ value }
-					onChange={ onChange }
-				/>
-			);
-
-		case 'text':
-		default:
-			return (
-				<TextControl
-					label={ field.label }
-					help={ help }
-					placeholder={ field.placeholder || '' }
-					value={ value }
-					onChange={ onChange }
-				/>
-			);
-	}
-}
 
 registerBlockType( metadata.name, {
 	edit( { attributes, setAttributes } ) {

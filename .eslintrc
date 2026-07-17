@@ -10,7 +10,14 @@
 	},
 	"overrides": [
 		{
-			"files": [ "src/js/block/**/*.js", "src/js/block/**/*.jsx" ],
+			"files": [
+				"src/js/block/**/*.js",
+				"src/js/block/**/*.jsx",
+				"src/js/builder/**/*.js",
+				"src/js/builder/**/*.jsx",
+				"src/js/shared/**/*.js",
+				"src/js/shared/**/*.jsx"
+			],
 			"plugins": [ "react" ],
 			"parserOptions": {
 				"ecmaVersion": 2021,
