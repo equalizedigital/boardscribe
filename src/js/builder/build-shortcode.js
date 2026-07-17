@@ -3,7 +3,9 @@
  * builder values. Pure function so the generation rules are easy to
  * follow (and match what the pre-React inline builder script emitted):
  * a field is only included when its value differs from the field's
- * default, checkboxes only when checked (as `key="true"`).
+ * default - for checkboxes that means an explicit `key="true"` or
+ * `key="false"`, so a field whose default is checked can still be
+ * turned off (matching what the live preview shows for the same state).
  *
  * @param {Array}  fields Field descriptors from the localized registry schema.
  * @param {Object} values Current values keyed by field.key.
@@ -16,8 +18,11 @@ export function buildShortcode( fields, values ) {
 		const value = values[ field.key ];
 
 		if ( 'checkbox' === field.type ) {
-			if ( value ) {
-				shortcode += ' ' + field.key + '="true"';
+			// Truthiness on both sides, matching how the preview's instance
+			// config resolves the same value (!! value).
+			const checked = !! value;
+			if ( checked !== !! field.default ) {
+				shortcode += ' ' + field.key + '="' + ( checked ? 'true' : 'false' ) + '"';
 			}
 			return;
 		}

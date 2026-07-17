@@ -284,7 +284,7 @@ class FieldRegistry {
 				'key'          => $field['key'],
 				'attributeKey' => self::block_attribute_key( $field ),
 				'configKey'    => self::config_key( $field ),
-				'type'         => $field['type'],
+				'type'         => $field['type'] ?? '',
 				'group'        => $field['group'] ?? 'general',
 				'label'        => $field['label'] ?? '',
 				'default'      => $field['default'] ?? '',
