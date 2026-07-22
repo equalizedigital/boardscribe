@@ -6,6 +6,11 @@
  * .edbs-settings-wrap so they can be adjusted in one place.
  */
 
+/* Tint the whole settings screen so the white panels stand out. */
+body.edbs_meeting_page_edbs-settings {
+	background-color: #eef2f8;
+}
+
 .edbs-settings-wrap {
 	/* Brand palette (sampled from the BoardScribe logo). */
 	--edbs-navy: #102048;
@@ -226,6 +231,64 @@
 	color: var(--edbs-blue-dark);
 	background-color: var(--edbs-misty);
 	border-color: var(--edbs-gray);
+}
+
+/*
+ * Styled checkbox toggle for settings-form fields (ArchiveWP-style pill
+ * switch). Scoped to the General tab's form-table so it doesn't touch the
+ * builder tab's wp-components controls.
+ */
+.edbs-settings-panel .form-table input[type="checkbox"] {
+	appearance: none;
+	-webkit-appearance: none;
+	position: relative;
+	width: 48px;
+	height: 26px;
+	margin: 0 6px 0 0;
+	border: none;
+	border-radius: 999px;
+	background: var(--edbs-gray);
+	cursor: pointer;
+	vertical-align: middle;
+	flex-shrink: 0;
+	transition: background-color 0.2s ease;
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]::before {
+	content: "\00d7"; /* × */
+	position: absolute;
+	top: 50%;
+	left: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	border-radius: 999px;
+	background: var(--edbs-white);
+	color: var(--edbs-gray);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+	transform: translateY(-50%);
+	transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]:checked {
+	background: var(--edbs-blue);
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]:checked::before {
+	content: "\2713"; /* ✓ */
+	color: var(--edbs-blue);
+	transform: translate(21px, -50%);
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]:focus {
+	box-shadow: none;
+	outline: 2px solid var(--edbs-blue);
+	outline-offset: 2px;
 }
 
 /* Support tab. */
