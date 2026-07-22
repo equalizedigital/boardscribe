@@ -126,13 +126,18 @@
 	}
 }
 
-.edbs-settings-panel-header {
+/*
+ * Scoped to .edbs-settings-panel (specificity 0-2-0) so it outranks core's
+ * .wrap h1 (0-1-1) without !important — otherwise core wins on margin,
+ * padding, font-size and font-weight.
+ */
+.edbs-settings-panel .edbs-settings-panel-header {
 	display: flex;
 	align-items: center;
 	font-size: 22px;
-	/* Override core .wrap h1 margins so the header bleeds to the panel edges. */
-	margin: -20px -20px 20px !important;
-	padding: 20px !important;
+	/* Negative margins let the header bleed to the panel edges. */
+	margin: -20px -20px 20px;
+	padding: 20px;
 	font-weight: 500;
 	background: var(--edbs-navy);
 	color: var(--edbs-white);
