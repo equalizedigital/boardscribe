@@ -185,6 +185,10 @@
 	padding-bottom: 0;
 }
 
+.edbs-settings-panel-sub > h2:first-child {
+	margin-top: 0;
+}
+
 /* Field descriptions. */
 .edbs-settings-panel p.description,
 .edbs-settings-panel .description {

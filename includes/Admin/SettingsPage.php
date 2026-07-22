@@ -448,26 +448,47 @@ class SettingsPage {
 	 * @return void
 	 */
 	private function render_support_tab(): void {
-		$links = [
-			[
-				'url'   => 'https://equalizedigital.com/boardscribe/',
-				'label' => __( 'BoardScribe Documentation', 'boardscribe' ),
-			],
-			[
-				'url'   => 'https://equalizedigital.com/boardscribe/#support',
-				'label' => __( 'Contact Support', 'boardscribe' ),
-			],
+		// Placeholder links — swap for real BoardScribe documentation URLs.
+		$quick_links = [
+			__( 'Getting Started with BoardScribe', 'boardscribe' ),
+			__( 'Displaying Meetings with the Shortcode', 'boardscribe' ),
+			__( 'Using the BoardScribe Block', 'boardscribe' ),
+			__( 'Adding a Meeting', 'boardscribe' ),
+			__( 'Agenda and Minutes Links', 'boardscribe' ),
+			__( 'Is BoardScribe Accessible?', 'boardscribe' ),
+			__( 'BoardScribe Developer Guide', 'boardscribe' ),
+			__( 'BoardScribe Hooks Reference', 'boardscribe' ),
 		];
 		?>
 		<div class="edbs-settings-panel-sub">
+			<h2><?php esc_html_e( 'Documentation', 'boardscribe' ); ?></h2>
 			<p class="edbs-settings-support-description">
-				<?php esc_html_e( 'Need help? Explore the documentation for step-by-step guides, or reach out to the Equalize Digital team.', 'boardscribe' ); ?>
+				<?php esc_html_e( 'Need help? Check out our documentation for step-by-step guides and feature walkthroughs.', 'boardscribe' ); ?>
 			</p>
+			<a class="button button-secondary" href="#" target="_blank" rel="noopener noreferrer">
+				<?php esc_html_e( 'View Documentation', 'boardscribe' ); ?>
+				<span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'boardscribe' ); ?></span>
+			</a>
+		</div>
+
+		<div class="edbs-settings-panel-sub">
+			<h2><?php esc_html_e( 'Contact Us', 'boardscribe' ); ?></h2>
+			<p class="edbs-settings-support-description">
+				<?php esc_html_e( 'Have questions or need help? Reach out to our support team.', 'boardscribe' ); ?>
+			</p>
+			<a class="button button-secondary" href="#" target="_blank" rel="noopener noreferrer">
+				<?php esc_html_e( 'Contact Support', 'boardscribe' ); ?>
+				<span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'boardscribe' ); ?></span>
+			</a>
+		</div>
+
+		<div class="edbs-settings-panel-sub">
+			<h2><?php esc_html_e( 'Quick Links', 'boardscribe' ); ?></h2>
 			<ul class="edbs-settings-links-list">
-				<?php foreach ( $links as $link ) : ?>
+				<?php foreach ( $quick_links as $label ) : ?>
 					<li>
-						<a href="<?php echo esc_url( $link['url'] ); ?>" target="_blank" rel="noopener noreferrer">
-							<?php echo esc_html( $link['label'] ); ?>
+						<a href="#" target="_blank" rel="noopener noreferrer">
+							<?php echo esc_html( $label ); ?>
 							<span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'boardscribe' ); ?></span>
 						</a>
 					</li>
