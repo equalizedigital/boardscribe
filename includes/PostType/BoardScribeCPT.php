@@ -48,10 +48,16 @@ class BoardScribeCPT {
 			'label'         => __( 'Board Meeting', 'boardscribe' ),
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
-			// No public single/archive templates — meetings are only ever
-			// displayed via the [edbs_boardscribe] shortcode's own REST endpoint.
-			'public'        => false,
-			'rewrite'       => false,
+			// Public with a real rewrite base ('board-meetings') — a
+			// meeting has its own viewable single page (falling back to
+			// the theme's generic single template; this CPT only supports
+			// 'title') and a plugin like ArchiveWP that keys its own
+			// features off the 'public' flag directly can see it. No
+			// theme archive page: meetings are still meant to be browsed
+			// via the [edbs_boardscribe] shortcode's own REST endpoint,
+			// not a generated archive listing.
+			'public'        => true,
+			'rewrite'       => [ 'slug' => 'board-meetings' ],
 			'has_archive'   => false,
 			'show_ui'       => true,
 			// Intentionally still exposes the default /wp/v2/edbs_meeting
@@ -63,8 +69,10 @@ class BoardScribeCPT {
 		];
 
 		/**
-		 * Filters the edbs_meeting CPT registration args. Pro plugin uses
-		 * this to enable public/rewrite/archive support or a custom capability_type.
+		 * Filters the edbs_meeting CPT registration args. Pro plugin or a
+		 * site can use this to change the rewrite slug, enable a real
+		 * archive page, disable public/rewrite back to false, or set a
+		 * custom capability_type.
 		 *
 		 * @since x.x.x
 		 *
