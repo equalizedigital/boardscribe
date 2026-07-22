@@ -36,8 +36,8 @@ class BoardScribeCptTest extends TestCase {
 		$this->assertTrue( $post_type_object->show_in_rest );
 		$this->assertFalse( $post_type_object->rewrite );
 		$this->assertFalse( $post_type_object->has_archive );
-		$this->assertTrue( post_type_supports( 'edbs_meetings', 'title' ) );
-		$this->assertFalse( post_type_supports( 'edbs_meetings', 'editor' ) );
+		$this->assertTrue( post_type_supports( 'edbs_meeting', 'title' ) );
+		$this->assertFalse( post_type_supports( 'edbs_meeting', 'editor' ) );
 	}
 
 	/**
@@ -103,15 +103,15 @@ class BoardScribeCptTest extends TestCase {
 		add_filter( 'edbs_cpt_args', $callback );
 
 		try {
-			unregister_post_type( 'edbs_meetings' );
+			unregister_post_type( 'edbs_meeting' );
 			( new BoardScribeCPT() )->register_post_type();
 
-			$post_type_object = get_post_type_object( 'edbs_meetings' );
+			$post_type_object = get_post_type_object( 'edbs_meeting' );
 			$this->assertNotFalse( $post_type_object->rewrite );
 			$this->assertTrue( $post_type_object->has_archive );
 		} finally {
 			remove_filter( 'edbs_cpt_args', $callback );
-			unregister_post_type( 'edbs_meetings' );
+			unregister_post_type( 'edbs_meeting' );
 			( new BoardScribeCPT() )->register_post_type();
 		}
 	}
@@ -125,7 +125,7 @@ class BoardScribeCptTest extends TestCase {
 	public function test_cpt_is_not_included_in_public_post_types_query_by_default(): void {
 		$public_post_types = get_post_types( [ 'public' => true ], 'names' );
 
-		$this->assertNotContains( 'edbs_meetings', $public_post_types );
+		$this->assertNotContains( 'edbs_meeting', $public_post_types );
 	}
 
 	/**
@@ -141,14 +141,14 @@ class BoardScribeCptTest extends TestCase {
 		add_filter( 'edbs_cpt_args', $callback );
 
 		try {
-			unregister_post_type( 'edbs_meetings' );
+			unregister_post_type( 'edbs_meeting' );
 			( new BoardScribeCPT() )->register_post_type();
 
 			$public_post_types = get_post_types( [ 'public' => true ], 'names' );
-			$this->assertContains( 'edbs_meetings', $public_post_types );
+			$this->assertContains( 'edbs_meeting', $public_post_types );
 		} finally {
 			remove_filter( 'edbs_cpt_args', $callback );
-			unregister_post_type( 'edbs_meetings' );
+			unregister_post_type( 'edbs_meeting' );
 			( new BoardScribeCPT() )->register_post_type();
 		}
 	}
