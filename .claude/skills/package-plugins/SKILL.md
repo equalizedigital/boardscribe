@@ -14,8 +14,9 @@ Both repos ship as manually-built zips in each repo's gitignored `dist/`. There 
 3. The zip must contain a single top-level directory named exactly like the plugin slug (`boardscribe/` or `boardscribe-pro/`) — WordPress derives the install path from it.
 4. Never include: `node_modules/`, `tests/`, `docs/`, `dist/`, `scripts/`, dotfiles (`.git*`, `.eslintrc`, `.husky/`, `.editorconfig`), `composer.json`, `composer.lock`, `package*.json`, `phpunit*`, `phpcs.xml`, `webpack.config.js`, `docker-compose.yml`. (`vendor/` is now a required exception to the general "no dev-tooling directories" rule — see above.) **Accepted Plugin Check warning:** the official WP.org Plugin Check tool flags a shipped `vendor/` with no accompanying `composer.json` as `missing_composer_json_file` (plugin_repo category, WARNING not ERROR). Deliberately not fixed — decided (PRO-1196) to keep `composer.json`/`composer.lock` out of the release zip rather than ship dev-tooling config for a warning-level, non-blocking finding. Don't re-add `composer.json` to either recipe below from an old checklist or a future Plugin Check run without checking here first.
 5. In Pro, `src/js/admin/`, `src/js/front-end/`, and `src/js/editor/` are **plain-file enqueues and MUST ship**. In free, no `src/` ships at all (everything is bundled — including the block editor script, `src/js/block/` → `assets/build/block/`).
-6. **Run each plugin's whole bash block as a single script**, not line-by-line — `$STAGE`/`$TMP_DIR` (and `$OLDPWD` inside the zip subshell) are shell variables/state that don't persist across separate command invocations.
-7. **Both blocks open with `set -euo pipefail` and a cleanup trap — don't strip these when copy-pasting.** Without them, a failed `composer install`/`cp`/`zip` can be silently ignored and the script continues packaging a broken zip; worse, if `mktemp -d` itself fails, `STAGE=$(mktemp -d)/boardscribe` degrades to the literal string `/boardscribe` with **no error surfaced** (bash doesn't propagate the failure through the concatenation), making the old cleanup line `rm -rf "$(dirname "$STAGE")"` resolve to `rm -rf /`. The current form avoids this entirely: `TMP_DIR=$(mktemp -d)` is a bare assignment (so `set -e` reliably aborts if it fails, unlike the concatenated form), `STAGE` is built from `$TMP_DIR` afterward, and `trap 'rm -rf -- "$TMP_DIR"' EXIT` only ever removes that one known path — it can't be redirected by a failure elsewhere. (Found via CodeRabbit review on boardscribe#31.)
+6. **Run each plugin's whole bash block as a single script**, not line-by-line — `$STAGE`/`$TMP_DIR` are shell variables/state that don't persist across separate command invocations, and the `mv` into `dist/` after the zip subshell relies on still being in the repo root.
+7. **Both blocks open with `set -euo pipefail` and a `cleanup` trap — don't strip these when copy-pasting.** Without them, a failed `composer install`/`cp`/`zip` can be silently ignored and the script continues packaging a broken zip; worse, if `mktemp -d` itself fails, `STAGE=$(mktemp -d)/boardscribe` degrades to the literal string `/boardscribe` with **no error surfaced** (bash doesn't propagate the failure through the concatenation), making a naive cleanup line `rm -rf "$(dirname "$STAGE")"` resolve to `rm -rf /`. The current form avoids this entirely: `TMP_DIR=$(mktemp -d)` is a bare assignment (so `set -e` reliably aborts if it fails, unlike the concatenated form), `STAGE` is built from `$TMP_DIR` afterward, and the `cleanup` function only ever removes that one known path — it can't be redirected by a failure elsewhere. (Found via CodeRabbit review on boardscribe#31.)
+8. **The `cleanup` trap does two things, in order, and both matter under `set -e`:** (1) restores dev tooling with a plain `composer install` — this must happen on **every** exit path, not just the happy one, because with `set -e` active a `cp`/`zip` failure now aborts the script *before* reaching a trailing `composer install` line, which would silently leave `vendor/` in `--no-dev` mode (no phpcs/phpunit) for the rest of the session; (2) removes `$TMP_DIR`. The restore step is guarded with `|| true` so a Composer hiccup during cleanup can't itself mask the script's real exit code, which the trap captures up front (`local exit_code=$?`) and re-raises at the end via `exit "$exit_code"`. **The zip is built inside `$TMP_DIR` and `mv`'d into `dist/` only after `zip` succeeds** — writing `zip -r` directly to the final `dist/*.zip` path means a mid-write failure (disk full, permissions) can leave a truncated file sitting at the release path, indistinguishable from a good one without re-checking. (Also found via CodeRabbit review on boardscribe#31.)
 
 ## Free plugin
 
@@ -27,15 +28,21 @@ composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe.zip
 TMP_DIR=$(mktemp -d)
 STAGE="$TMP_DIR/boardscribe"
-trap 'rm -rf -- "$TMP_DIR"' EXIT
+cleanup() {
+  local exit_code=$?
+  composer install || true   # restore dev tooling (phpcs/phpunit/etc.) - even on failure
+  rm -rf -- "$TMP_DIR"
+  exit "$exit_code"
+}
+trap cleanup EXIT
 mkdir -p "$STAGE/assets"
 cp -r \
   boardscribe.php block.json uninstall.php readme.txt LICENSE \
   includes partials languages vendor \
   "$STAGE"/
 cp -r assets/build assets/css "$STAGE/assets/"
-( cd "$TMP_DIR" && zip -r "$OLDPWD/dist/boardscribe.zip" boardscribe )
-composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
+( cd "$TMP_DIR" && zip -r boardscribe.zip boardscribe )
+mv "$TMP_DIR/boardscribe.zip" dist/boardscribe.zip
 ```
 
 Expected manifest (verify with `unzip -l`):
@@ -53,7 +60,13 @@ composer install --no-dev --optimize-autoloader
 mkdir -p dist && rm -f dist/boardscribe-pro.zip
 TMP_DIR=$(mktemp -d)
 STAGE="$TMP_DIR/boardscribe-pro"
-trap 'rm -rf -- "$TMP_DIR"' EXIT
+cleanup() {
+  local exit_code=$?
+  composer install || true   # restore dev tooling (phpcs/phpunit/etc.) - even on failure
+  rm -rf -- "$TMP_DIR"
+  exit "$exit_code"
+}
+trap cleanup EXIT
 mkdir -p "$STAGE/assets" "$STAGE/src/js"
 cp -r \
   boardscribe-pro.php readme.txt LICENSE \
@@ -61,8 +74,8 @@ cp -r \
   "$STAGE"/
 cp -r assets/css "$STAGE/assets/"
 cp -r src/js/admin src/js/front-end src/js/editor "$STAGE/src/js/"
-( cd "$TMP_DIR" && zip -r "$OLDPWD/dist/boardscribe-pro.zip" boardscribe-pro )
-composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
+( cd "$TMP_DIR" && zip -r boardscribe-pro.zip boardscribe-pro )
+mv "$TMP_DIR/boardscribe-pro.zip" dist/boardscribe-pro.zip
 ```
 
 Expected manifest:
