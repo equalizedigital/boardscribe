@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					required
 					class="regular-text"
 				/>
-				<p class="description"><?php esc_html_e( 'Required. Format: YYYY-MM-DD', 'boardscribe' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Required. Select the date the meeting was or will be held.', 'boardscribe' ); ?></p>
 			</td>
 		</tr>
 		<tr>
