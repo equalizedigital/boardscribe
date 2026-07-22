@@ -170,8 +170,18 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 
 **Before:** `edbs_enqueue_assets` only ever fired on the front end, from `BoardScribeShortcode::enqueue_assets()` during `wp_enqueue_scripts` or a front-end shortcode render.
 
-**After:** the admin Shortcode Builder page (`SettingsPage::enqueue_builder_script()`) also calls `enqueue_assets()` (now public) so its live preview runs the real frontend pipeline — meaning the action now also fires during `admin_enqueue_scripts` on that one admin screen. This is intentional: it's what makes a Pro/third-party plugin's extra columns and display templates render inside the builder preview with no extra wiring.
+**After:** the settings page's Shortcode Builder tab (`SettingsPage::enqueue_assets()`) also calls the shortcode's `enqueue_assets()` (now public) so its live preview runs the real frontend pipeline — meaning the action now also fires during `admin_enqueue_scripts` on that one admin screen (the `edbs-settings` page with `?tab=builder`). This is intentional: it's what makes a Pro/third-party plugin's extra columns and display templates render inside the builder preview with no extra wiring.
 
 **Contract impact:** no signature change. But a callback on `edbs_enqueue_assets` that assumes a front-end context (e.g. calls front-end-only conditionals, enqueues assets that break admin styling, or dequeues admin scripts) now runs in wp-admin too. Callbacks should be context-safe — enqueuing the plugin's own frontend JS/CSS (the intended use) is fine as-is; anything else should guard with `is_admin()` as needed.
 
 **Action for Pro before release:** grep Pro for `edbs_enqueue_assets` and confirm each callback only enqueues its frontend assets (safe) or guards admin-sensitive work with `is_admin()`.
+
+---
+
+## Settings page redesigned: Shortcode Builder folded into a tab (#27) — standalone builder submenu removed, `enqueue_builder_script()` renamed
+
+**Before:** two submenus under the Board Meetings menu — `Settings` (`page=edbs-settings`) and `Shortcode Builder` (`page=edbs-shortcode-builder`, rendered by `SettingsPage::render_builder_page()`, assets enqueued by `SettingsPage::enqueue_builder_script()`).
+
+**After:** one tabbed `Settings` page (`page=edbs-settings`) with `General` / `Shortcode Builder` (`&tab=builder`) / `Support` tabs. The standalone `edbs-shortcode-builder` submenu page, `add_builder_submenu_page()`, `render_builder_page()`, and the `partials/shortcode-builder-page.php` partial are gone. `enqueue_builder_script()` is renamed `enqueue_assets()` and now keys off the settings-page hook + active tab. The builder's mount node (`#edbs-shortcode-builder-root`) and its `edbs-shortcode-builder` script/style handles are unchanged.
+
+**Contract impact:** free-plugin admin internals only — Pro has no references to the removed slug/methods (verified). Any external link to `page=edbs-shortcode-builder` should point at `page=edbs-settings&tab=builder` instead.
