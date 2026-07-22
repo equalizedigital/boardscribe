@@ -167,9 +167,9 @@ class SettingsPage {
 		);
 
 		add_settings_section(
-			'edbs_advanced_section',
-			__( 'Advanced', 'boardscribe' ),
-			[ $this, 'render_advanced_section' ],
+			'edbs_general_section',
+			__( 'General Settings', 'boardscribe' ),
+			[ $this, 'render_general_section' ],
 			self::PAGE_SLUG
 		);
 
@@ -178,7 +178,7 @@ class SettingsPage {
 			__( 'Delete Data on Uninstall', 'boardscribe' ),
 			[ $this, 'render_delete_on_uninstall' ],
 			self::PAGE_SLUG,
-			'edbs_advanced_section'
+			'edbs_general_section'
 		);
 	}
 
@@ -240,14 +240,14 @@ class SettingsPage {
 	}
 
 	/**
-	 * Renders the Advanced section intro copy.
+	 * Renders the General section intro copy.
 	 *
 	 * @since x.x.x
 	 *
 	 * @return void
 	 */
-	public function render_advanced_section(): void {
-		echo '<p>' . esc_html__( 'Advanced options for BoardScribe.', 'boardscribe' ) . '</p>';
+	public function render_general_section(): void {
+		echo '<p>' . esc_html__( 'Configure general settings for the BoardScribe plugin.', 'boardscribe' ) . '</p>';
 	}
 
 	/**
