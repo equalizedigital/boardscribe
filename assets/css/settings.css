@@ -130,8 +130,9 @@
 	display: flex;
 	align-items: center;
 	font-size: 22px;
-	margin: -20px -20px 20px;
-	padding: 20px;
+	/* Override core .wrap h1 margins so the header bleeds to the panel edges. */
+	margin: -20px -20px 20px !important;
+	padding: 20px !important;
 	font-weight: 500;
 	background: var(--edbs-navy);
 	color: var(--edbs-white);
