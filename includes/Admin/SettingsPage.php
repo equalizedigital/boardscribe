@@ -49,7 +49,7 @@ class SettingsPage {
 	 */
 	public function add_builder_submenu_page(): void {
 		add_submenu_page(
-			'edit.php?post_type=edbs_meetings',
+			'edit.php?post_type=edbs_meeting',
 			__( 'Shortcode Builder', 'boardscribe' ),
 			__( 'Shortcode Builder', 'boardscribe' ),
 			'manage_options',
@@ -67,7 +67,7 @@ class SettingsPage {
 	 */
 	public function add_submenu_page(): void {
 		add_submenu_page(
-			'edit.php?post_type=edbs_meetings',
+			'edit.php?post_type=edbs_meeting',
 			__( 'BoardScribe Settings', 'boardscribe' ),
 			__( 'Settings', 'boardscribe' ),
 			'manage_options',
@@ -126,7 +126,7 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function enqueue_builder_script( string $hook ): void {
-		if ( 'edbs_meetings_page_edbs-shortcode-builder' !== $hook ) {
+		if ( 'edbs_meeting_page_edbs-shortcode-builder' !== $hook ) {
 			return;
 		}
 

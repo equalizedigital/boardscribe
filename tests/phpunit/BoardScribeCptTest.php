@@ -16,10 +16,10 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 class BoardScribeCptTest extends TestCase {
 
 	/**
-	 * The edbs_meetings post type is registered.
+	 * The edbs_meeting post type is registered.
 	 */
 	public function test_cpt_is_registered(): void {
-		$this->assertTrue( post_type_exists( 'edbs_meetings' ) );
+		$this->assertTrue( post_type_exists( 'edbs_meeting' ) );
 	}
 
 	/**
@@ -27,7 +27,7 @@ class BoardScribeCptTest extends TestCase {
 	 * defaults (public => false but show_in_rest => true).
 	 */
 	public function test_cpt_has_documented_default_args(): void {
-		$post_type_object = get_post_type_object( 'edbs_meetings' );
+		$post_type_object = get_post_type_object( 'edbs_meeting' );
 
 		$this->assertFalse( $post_type_object->public );
 		$this->assertTrue( $post_type_object->show_in_rest );
@@ -48,7 +48,7 @@ class BoardScribeCptTest extends TestCase {
 		};
 		add_filter( 'edbs_cpt_args', $callback );
 
-		unregister_post_type( 'edbs_meetings' );
+		unregister_post_type( 'edbs_meeting' );
 		( new BoardScribeCPT() )->register_post_type();
 
 		remove_filter( 'edbs_cpt_args', $callback );
@@ -70,16 +70,16 @@ class BoardScribeCptTest extends TestCase {
 		add_filter( 'edbs_cpt_args', $callback );
 
 		try {
-			unregister_post_type( 'edbs_meetings' );
+			unregister_post_type( 'edbs_meeting' );
 			( new BoardScribeCPT() )->register_post_type();
 
-			$post_type_object = get_post_type_object( 'edbs_meetings' );
+			$post_type_object = get_post_type_object( 'edbs_meeting' );
 			$this->assertTrue( $post_type_object->public );
 		} finally {
 			// Restore the CPT to its normal registration for subsequent
 			// tests, even if the assertion above failed.
 			remove_filter( 'edbs_cpt_args', $callback );
-			unregister_post_type( 'edbs_meetings' );
+			unregister_post_type( 'edbs_meeting' );
 			( new BoardScribeCPT() )->register_post_type();
 		}
 	}
