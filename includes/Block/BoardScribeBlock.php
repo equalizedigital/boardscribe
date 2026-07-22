@@ -224,7 +224,7 @@ class BoardScribeBlock {
 		$posts_per_page     = min( $posts_per_page, max( 1, $max_rows ) );
 
 		$query_args = [
-			'post_type'      => 'edbs_boardscribe',
+			'post_type'      => 'edbs_meetings',
 			'posts_per_page' => $posts_per_page,
 			'post_status'    => 'publish',
 			'orderby'        => 'meta_value',
