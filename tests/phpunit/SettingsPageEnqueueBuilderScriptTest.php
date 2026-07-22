@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for SettingsPage::enqueue_builder_script().
+ * Tests for SettingsPage::enqueue_assets().
  *
  * @package EqualizeDigital\BoardScribe
  */
@@ -10,16 +10,16 @@ use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
- * Covers the admin Shortcode Builder page's asset enqueue: the builder
- * bundle + wp-components/builder.css only load on the builder's own
- * admin page, the field registry is localized in the shape the React
- * app expects, and the frontend pipeline (for the live preview) is
- * pulled in alongside it - including edbs_enqueue_assets firing, which
- * is what lets Pro's columns/templates render in the preview.
+ * Covers the settings page's asset enqueue: the settings stylesheet loads on
+ * every settings tab, while the Shortcode Builder bundle + wp-components/
+ * builder.css only load on the builder tab. The field registry is localized
+ * in the shape the React app expects, and the frontend pipeline (for the live
+ * preview) is pulled in alongside it - including edbs_enqueue_assets firing,
+ * which is what lets Pro's columns/templates render in the preview.
  */
 class SettingsPageEnqueueBuilderScriptTest extends TestCase {
 
-	const BUILDER_HOOK = 'edbs_meeting_page_edbs-shortcode-builder';
+	const SETTINGS_HOOK = 'edbs_meeting_page_edbs-settings';
 
 	/**
 	 * The SettingsPage instance under test.
@@ -42,31 +42,59 @@ class SettingsPageEnqueueBuilderScriptTest extends TestCase {
 	}
 
 	/**
-	 * On any admin page other than the builder, nothing is enqueued -
-	 * the builder bundle has no business loading elsewhere in wp-admin.
+	 * Clears the tab request var between tests.
+	 */
+	public function tear_down(): void {
+		unset( $_GET['tab'] );
+		parent::tear_down();
+	}
+
+	/**
+	 * On any admin page other than the settings page, nothing is enqueued -
+	 * neither the settings styles nor the builder bundle have any business
+	 * loading elsewhere in wp-admin.
 	 */
 	public function test_does_nothing_on_a_different_admin_page(): void {
-		$this->settings_page->enqueue_builder_script( 'edit.php' );
+		$this->settings_page->enqueue_assets( 'edit.php' );
 
+		$this->assertFalse( wp_style_is( 'edbs-settings', 'enqueued' ) );
 		$this->assertFalse( wp_script_is( 'edbs-shortcode-builder', 'enqueued' ) );
 		$this->assertFalse( wp_script_is( 'edbs-boardscribe', 'enqueued' ) );
 	}
 
 	/**
-	 * On the builder's own admin page, both the builder bundle and the
-	 * frontend pipeline (for the live preview) are enqueued, along with
-	 * the wp-components styles the React app's controls need.
+	 * On a non-builder settings tab, the settings stylesheet loads but the
+	 * builder bundle and frontend pipeline stay off - they belong to the
+	 * builder tab only.
 	 */
-	public function test_enqueues_builder_and_frontend_assets_on_the_builder_page(): void {
-		$this->settings_page->enqueue_builder_script( self::BUILDER_HOOK );
+	public function test_enqueues_only_settings_style_on_non_builder_tab(): void {
+		$_GET['tab'] = 'general';
 
+		$this->settings_page->enqueue_assets( self::SETTINGS_HOOK );
+
+		$this->assertTrue( wp_style_is( 'edbs-settings', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'edbs-shortcode-builder', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'edbs-boardscribe', 'enqueued' ) );
+	}
+
+	/**
+	 * On the builder tab, both the builder bundle and the frontend pipeline
+	 * (for the live preview) are enqueued, along with the wp-components
+	 * styles the React app's controls need.
+	 */
+	public function test_enqueues_builder_and_frontend_assets_on_the_builder_tab(): void {
+		$_GET['tab'] = 'builder';
+
+		$this->settings_page->enqueue_assets( self::SETTINGS_HOOK );
+
+		$this->assertTrue( wp_style_is( 'edbs-settings', 'enqueued' ) );
 		$this->assertTrue( wp_script_is( 'edbs-shortcode-builder', 'enqueued' ) );
 		$this->assertTrue( wp_style_is( 'wp-components', 'enqueued' ) );
 		$this->assertTrue( wp_style_is( 'edbs-shortcode-builder', 'enqueued' ) );
 
 		// The live preview runs the real frontend pipeline - proves
-		// enqueue_builder_script() actually calls BoardScribeShortcode's
-		// (now public) enqueue_assets(), not just the builder's own bundle.
+		// enqueue_assets() actually calls BoardScribeShortcode's (now
+		// public) enqueue_assets(), not just the builder's own bundle.
 		$this->assertTrue( wp_script_is( 'edbs-boardscribe', 'enqueued' ) );
 		$this->assertTrue( wp_style_is( 'edbs-boardscribe', 'enqueued' ) );
 	}
@@ -78,7 +106,9 @@ class SettingsPageEnqueueBuilderScriptTest extends TestCase {
 	 * own global name.
 	 */
 	public function test_localizes_the_field_registry_schema(): void {
-		$this->settings_page->enqueue_builder_script( self::BUILDER_HOOK );
+		$_GET['tab'] = 'builder';
+
+		$this->settings_page->enqueue_assets( self::SETTINGS_HOOK );
 
 		$localized = wp_scripts()->get_data( 'edbs-shortcode-builder', 'data' );
 		$this->assertIsString( $localized );
@@ -94,11 +124,13 @@ class SettingsPageEnqueueBuilderScriptTest extends TestCase {
 	}
 
 	/**
-	 * edbs_enqueue_assets fires on the builder page too (via the shared
+	 * edbs_enqueue_assets fires on the builder tab too (via the shared
 	 * enqueue_assets() call) - documented in HOOK-CONTRACT-CHANGES.md as
 	 * a behavior change Pro callbacks must tolerate.
 	 */
 	public function test_fires_edbs_enqueue_assets_action(): void {
+		$_GET['tab'] = 'builder';
+
 		$fired = false;
 		add_action(
 			'edbs_enqueue_assets',
@@ -107,7 +139,7 @@ class SettingsPageEnqueueBuilderScriptTest extends TestCase {
 			}
 		);
 
-		$this->settings_page->enqueue_builder_script( self::BUILDER_HOOK );
+		$this->settings_page->enqueue_assets( self::SETTINGS_HOOK );
 
 		$this->assertTrue( $fired );
 	}

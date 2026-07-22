@@ -1,7 +1,7 @@
 import { createRoot } from '@wordpress/element';
 import { BuilderApp } from './app';
 
-// Localized by SettingsPage::enqueue_builder_script() from the shared
+// Localized by SettingsPage::enqueue_assets() from the shared
 // field registry (FieldRegistry::js_schema()) - the same source the
 // shortcode defaults, instance config, REST args, and the block's
 // InspectorControls all derive from, so a field any plugin registers

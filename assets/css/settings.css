@@ -1,0 +1,317 @@
+/**
+ * BoardScribe settings page layout and styles.
+ *
+ * Ported from the ArchiveWP admin settings design and rebranded with the
+ * BoardScribe palette. Brand colors are exposed as custom properties on
+ * .edbs-settings-wrap so they can be adjusted in one place.
+ */
+
+/* Tint the whole settings screen so the white panels stand out. */
+body.edbs_meeting_page_edbs-settings {
+	background-color: #eef2f8;
+}
+
+.edbs-settings-wrap {
+	/* Brand palette (sampled from the BoardScribe logo). */
+	--edbs-navy: #102048;
+	--edbs-blue: #306098;
+	--edbs-blue-dark: #26507f;
+	--edbs-plum: #401850;
+	--edbs-plum-dark: #5a2470;
+	--edbs-white: #fff;
+	--edbs-gray-light: #dcdcde;
+	--edbs-gray: #8c8f94;
+	--edbs-gray-darkest: #1d2327;
+	--edbs-dark-gray: #50575e;
+	--edbs-misty: #eef2f8;
+
+	max-width: 1200px;
+}
+
+@media (min-width: 783px) {
+
+	.edbs-settings-wrap {
+		display: flex;
+		gap: 20px;
+	}
+}
+
+/* Sidebar header with logo + tab navigation. */
+.edbs-settings-header {
+	display: block;
+	margin-bottom: 15px;
+	background-color: var(--edbs-white);
+	border: 1px solid var(--edbs-gray-light);
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+@media (min-width: 783px) {
+
+	.edbs-settings-header {
+		width: 265px;
+		min-width: 265px;
+		margin-bottom: 25px;
+	}
+}
+
+.edbs-settings-header img {
+	max-width: 180px;
+	height: auto;
+	display: block;
+}
+
+.edbs-settings-header-version {
+	margin: 10px 0 0;
+	font-weight: 600;
+	color: var(--edbs-dark-gray);
+}
+
+/* Tab navigation (vertical in the sidebar). */
+.edbs-settings-tabs {
+	margin-top: 15px;
+}
+
+.edbs-settings-tabs-tab {
+	color: var(--edbs-gray-darkest);
+	display: inline-flex;
+	align-items: center;
+	vertical-align: middle;
+	line-height: 1.5;
+	text-decoration: none;
+	border: 1px solid transparent;
+	border-radius: 3px;
+	padding: 7px 10px;
+	font-size: 1.05em;
+	width: 100%;
+	box-sizing: border-box;
+	margin-bottom: 5px;
+}
+
+.edbs-settings-tabs-tab .dashicons {
+	font-size: 1.1em;
+	margin-right: 7px;
+	width: 23px;
+	display: inline-flex;
+	align-items: center;
+}
+
+.edbs-settings-tabs-tab:hover,
+.edbs-settings-tabs-tab:focus {
+	color: var(--edbs-blue-dark);
+	background: var(--edbs-misty);
+}
+
+.edbs-settings-tabs-tab-active,
+.edbs-settings-tabs-tab-active:hover,
+.edbs-settings-tabs-tab-active:focus {
+	color: var(--edbs-blue-dark);
+	border-color: var(--edbs-blue-dark);
+	background: var(--edbs-misty);
+}
+
+.edbs-settings-tabs-tab:focus-visible {
+	outline: 2px solid var(--edbs-blue);
+	outline-offset: 1px;
+}
+
+/* Main content panel. */
+.edbs-settings-panel {
+	background-color: var(--edbs-white);
+	border: 1px solid var(--edbs-gray-light);
+	padding: 20px;
+	margin-bottom: 25px;
+	box-sizing: border-box;
+}
+
+@media (min-width: 783px) {
+
+	.edbs-settings-panel {
+		flex-grow: 1;
+	}
+}
+
+/*
+ * Scoped to .edbs-settings-panel (specificity 0-2-0) so it outranks core's
+ * .wrap h1 (0-1-1) without !important — otherwise core wins on margin,
+ * padding, font-size and font-weight.
+ */
+.edbs-settings-panel .edbs-settings-panel-header {
+	display: flex;
+	align-items: center;
+	font-size: 22px;
+	/* Negative margins let the header bleed to the panel edges. */
+	margin: -20px -20px 20px;
+	padding: 20px;
+	font-weight: 500;
+	background: var(--edbs-navy);
+	color: var(--edbs-white);
+	position: relative;
+	overflow: hidden;
+}
+
+/* Double accent stripe on the right edge (plum + blue). */
+.edbs-settings-panel-header::before {
+	content: "";
+	position: absolute;
+	background-color: var(--edbs-blue);
+	width: 5px;
+	bottom: 0;
+	top: 0;
+	right: 0;
+}
+
+.edbs-settings-panel-header::after {
+	content: "";
+	position: absolute;
+	background-color: var(--edbs-plum);
+	width: 5px;
+	bottom: 0;
+	top: 0;
+	right: 5px;
+}
+
+.edbs-settings-panel-header .dashicons {
+	font-size: 23px;
+	width: 23px;
+	height: 23px;
+	margin-right: 8px;
+}
+
+.edbs-settings-panel-sub {
+	margin-bottom: 30px;
+	border-bottom: 1px solid var(--edbs-gray-light);
+	padding-bottom: 20px;
+}
+
+.edbs-settings-panel-sub:last-child {
+	margin-bottom: 0;
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.edbs-settings-panel-sub > h2:first-child {
+	margin-top: 0;
+}
+
+/* Field descriptions. */
+.edbs-settings-panel p.description,
+.edbs-settings-panel .description {
+	color: var(--edbs-dark-gray);
+}
+
+/* Buttons inside the panel take the brand colors. */
+.edbs-settings-panel .button-primary {
+	background-color: var(--edbs-blue);
+	border-color: var(--edbs-blue);
+	color: var(--edbs-white);
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.edbs-settings-panel .button-primary:hover,
+.edbs-settings-panel .button-primary:focus {
+	background-color: var(--edbs-navy);
+	border-color: var(--edbs-navy);
+	color: var(--edbs-white);
+}
+
+.edbs-settings-panel .button-primary:focus {
+	box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--edbs-blue);
+}
+
+.edbs-settings-panel .button-secondary {
+	color: var(--edbs-blue-dark);
+	border-color: var(--edbs-gray);
+	background-color: var(--edbs-white);
+}
+
+.edbs-settings-panel .button-secondary:hover,
+.edbs-settings-panel .button-secondary:focus {
+	color: var(--edbs-blue-dark);
+	background-color: var(--edbs-misty);
+	border-color: var(--edbs-gray);
+}
+
+/*
+ * Styled checkbox toggle for settings-form fields (ArchiveWP-style pill
+ * switch). Scoped to the General tab's form-table so it doesn't touch the
+ * builder tab's wp-components controls.
+ */
+.edbs-settings-panel .form-table input[type="checkbox"] {
+	appearance: none;
+	-webkit-appearance: none;
+	position: relative;
+	width: 48px;
+	height: 26px;
+	margin: 0 6px 0 0;
+	border: none;
+	border-radius: 999px;
+	background: var(--edbs-gray);
+	cursor: pointer;
+	vertical-align: middle;
+	flex-shrink: 0;
+	transition: background-color 0.2s ease;
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]::before {
+	content: "\00d7"; /* × */
+	position: absolute;
+	top: 50%;
+	left: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	border-radius: 999px;
+	background: var(--edbs-white);
+	color: var(--edbs-gray);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+	transform: translateY(-50%);
+	transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]:checked {
+	background: var(--edbs-blue);
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]:checked::before {
+	content: "\2713"; /* ✓ */
+	color: var(--edbs-blue);
+	transform: translate(21px, -50%);
+}
+
+.edbs-settings-panel .form-table input[type="checkbox"]:focus {
+	box-shadow: none;
+	outline: 2px solid var(--edbs-blue);
+	outline-offset: 2px;
+}
+
+/* Support tab. */
+.edbs-settings-support-description {
+	margin: 1em 0;
+	max-width: 640px;
+}
+
+.edbs-settings-links-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+@media (min-width: 600px) {
+
+	.edbs-settings-links-list {
+		column-count: 2;
+		column-gap: 40px;
+	}
+}
+
+.edbs-settings-links-list li {
+	margin: 0 0 12px;
+	break-inside: avoid;
+}
