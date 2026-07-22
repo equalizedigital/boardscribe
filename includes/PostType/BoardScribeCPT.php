@@ -48,8 +48,15 @@ class BoardScribeCPT {
 			'label'         => __( 'Board Meeting', 'boardscribe' ),
 			'labels'        => $labels,
 			'supports'      => [ 'title' ],
-			// No public single/archive templates — meetings are only ever
-			// displayed via the [edbs_boardscribe] shortcode's own REST endpoint.
+			// 'public' is false for now (paused rollout — see edbs_cpt_args
+			// below), but the edbs_cpt_args filter stays in place so Pro or
+			// a site can flip it to true: plugins that key their own
+			// features off that flag (e.g. ArchiveWP's archivable-post-types
+			// list) check 'public' directly — there's no other extension
+			// point for it. rewrite and has_archive stay false regardless:
+			// meetings are still meant to be displayed via the
+			// [edbs_boardscribe] shortcode's own REST endpoint, not a theme
+			// archive page or pretty permalinks.
 			'public'        => false,
 			'rewrite'       => false,
 			'has_archive'   => false,
