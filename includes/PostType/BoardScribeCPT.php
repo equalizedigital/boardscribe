@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers and manages the edbs_meetings custom post type.
+ * Registers and manages the edbs_meeting custom post type.
  */
 class BoardScribeCPT {
 
@@ -28,7 +28,7 @@ class BoardScribeCPT {
 	}
 
 	/**
-	 * Registers the edbs_meetings custom post type.
+	 * Registers the edbs_meeting custom post type.
 	 *
 	 * @since x.x.x
 	 *
@@ -62,7 +62,7 @@ class BoardScribeCPT {
 			'rewrite'       => false,
 			'has_archive'   => false,
 			'show_ui'       => true,
-			// Intentionally still exposes the default /wp/v2/edbs_meetings
+			// Intentionally still exposes the default /wp/v2/edbs_meeting
 			// REST route (needed for the block editor meta box UI); this is fine
 			// since published meetings are meant to be public records.
 			'show_in_rest'  => true,
@@ -71,7 +71,7 @@ class BoardScribeCPT {
 		];
 
 		/**
-		 * Filters the edbs_meetings CPT registration args. Pro plugin uses
+		 * Filters the edbs_meeting CPT registration args. Pro plugin uses
 		 * this to enable public/rewrite/archive support or a custom capability_type.
 		 *
 		 * @since x.x.x
@@ -88,7 +88,7 @@ class BoardScribeCPT {
 		 */
 		do_action( 'edbs_before_register_cpt' );
 
-		register_post_type( 'edbs_meetings', $args );
+		register_post_type( 'edbs_meeting', $args );
 
 		/**
 		 * Fires after the BoardScribe CPT is registered. Register taxonomies

@@ -22,7 +22,7 @@ if ( empty( $edbs_settings['delete_on_uninstall'] ) ) {
 // Delete all BoardScribe meeting posts and their associated meta.
 $edbs_meeting_post_ids = get_posts(
 	[
-		'post_type'      => 'edbs_meetings',
+		'post_type'      => 'edbs_meeting',
 		'post_status'    => 'any',
 		'posts_per_page' => -1,
 		'fields'         => 'ids',
