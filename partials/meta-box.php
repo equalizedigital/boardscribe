@@ -56,6 +56,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 				><?php esc_html_e( 'Media Library', 'boardscribe' ); ?></button>
 			</td>
 		</tr>
+		<?php
+		/**
+		 * Fires immediately after the Agenda URL field's row. Pro plugin uses
+		 * this to place its Agenda Document picker directly under the URL
+		 * field it takes priority over, rather than at the end of the box
+		 * with the generic edbs_meta_fields hook.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param \WP_Post $post The current post.
+		 */
+		do_action( 'edbs_after_agenda_url_field', $post );
+		?>
 		<tr>
 			<th scope="row">
 				<label for="edbs_minutes_url"><?php esc_html_e( 'Minutes URL', 'boardscribe' ); ?></label>
@@ -78,6 +91,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 				><?php esc_html_e( 'Media Library', 'boardscribe' ); ?></button>
 			</td>
 		</tr>
+		<?php
+		/**
+		 * Fires immediately after the Minutes URL field's row. Pro plugin
+		 * uses this to place its Minutes Document picker directly under the
+		 * URL field it takes priority over, rather than at the end of the
+		 * box with the generic edbs_meta_fields hook.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param \WP_Post $post The current post.
+		 */
+		do_action( 'edbs_after_minutes_url_field', $post );
+		?>
 		<tr>
 			<th scope="row">
 				<?php esc_html_e( 'Meeting Not Held', 'boardscribe' ); ?>
