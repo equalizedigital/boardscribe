@@ -141,7 +141,7 @@ class BoardScribeEndpoint {
 		}
 
 		$args = [
-			'post_type'      => 'edbs_meetings',
+			'post_type'      => 'edbs_meeting',
 			'post_status'    => 'publish',
 			'posts_per_page' => $posts_per_page,
 			'paged'          => $page,

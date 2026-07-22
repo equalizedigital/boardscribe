@@ -36,7 +36,7 @@ class BoardScribeEndpointRestTest extends TestCase {
 	 * @return int The created post ID.
 	 */
 	private function create_meeting( array $meta = [] ): int {
-		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meetings' ] );
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
 
 		foreach ( $meta as $key => $value ) {
 			update_post_meta( $post_id, $key, $value );
