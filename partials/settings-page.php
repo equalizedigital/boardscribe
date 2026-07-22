@@ -1,8 +1,11 @@
 <?php
 /**
- * Settings page markup: advanced settings.
+ * Settings page markup: sidebar header + tabbed panel.
  *
  * @package EqualizeDigital\BoardScribe
+ *
+ * @var \EqualizeDigital\BoardScribe\Admin\SettingsPage $this        Settings page instance.
+ * @var string                                          $current_tab Active tab slug.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,25 +13,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
-<div class="wrap">
-	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+<div class="wrap edbs-settings-wrap">
+	<?php settings_errors( 'edbs_settings_group' ); ?>
 
-	<form method="post" action="options.php">
+	<div class="edbs-settings-header">
+		<img
+			src="<?php echo esc_url( EDBS_URL . 'assets/images/logo.png' ); ?>"
+			alt="<?php esc_attr_e( 'BoardScribe', 'boardscribe' ); ?>"
+		/>
+		<p class="edbs-settings-header-version">
+			<?php
+			/* translators: %s: plugin version number. */
+			printf( esc_html__( 'Version %s', 'boardscribe' ), esc_html( EDBS_VERSION ) );
+			?>
+		</p>
+		<?php $this->render_tabs( $current_tab ); ?>
+	</div>
+
+	<section class="edbs-settings-panel">
 		<?php
-		settings_fields( 'edbs_settings_group' );
-		do_settings_sections( 'edbs-settings' );
-		submit_button();
+		$this->render_panel_header( $current_tab );
+		$this->render_tab_content( $current_tab );
 		?>
-	</form>
-
-	<?php
-	/**
-	 * Fires inside the settings page after the main form. Pro plugin uses this
-	 * for sections with their own form (e.g. license management) that don't use
-	 * the Settings API.
-	 *
-	 * @since x.x.x
-	 */
-	do_action( 'edbs_settings_fields' );
-	?>
+	</section>
 </div>
