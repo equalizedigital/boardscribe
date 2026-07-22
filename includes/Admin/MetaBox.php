@@ -7,6 +7,8 @@
 
 namespace EqualizeDigital\BoardScribe\Admin;
 
+use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -283,5 +285,90 @@ JS;
 		 * @param int $post_id The post ID.
 		 */
 		do_action( 'edbs_save_meeting_meta', $post_id );
+
+		// Fall back to a generated title when the editor left it blank.
+		$this->maybe_set_default_title( $post_id );
+	}
+
+	/**
+	 * Generates a default post title from the meeting date when the meeting was
+	 * saved without one, so meetings always have a meaningful admin/list label.
+	 *
+	 * Runs after the meta is saved (so the current meeting date is available)
+	 * and unhooks its own save handler around wp_update_post() to avoid a
+	 * save_post recursion loop.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param int $post_id The post ID being saved.
+	 * @return void
+	 */
+	private function maybe_set_default_title( int $post_id ): void {
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			return;
+		}
+
+		// Only generate when the editor left the title blank.
+		if ( '' !== trim( $post->post_title ) ) {
+			return;
+		}
+
+		$meeting_date = get_post_meta( $post_id, 'edbs_meeting_date', true );
+		$title        = $this->generate_default_title( (string) $meeting_date, $post_id );
+
+		if ( '' === $title ) {
+			return;
+		}
+
+		// Avoid re-entering save_meta() when wp_update_post() re-fires save_post.
+		remove_action( 'save_post_edbs_meeting', [ $this, 'save_meta' ] );
+		wp_update_post(
+			[
+				'ID'         => $post_id,
+				'post_title' => $title,
+			]
+		);
+		add_action( 'save_post_edbs_meeting', [ $this, 'save_meta' ] );
+	}
+
+	/**
+	 * Builds the default meeting title ("Board Meeting" plus the formatted
+	 * meeting date). Public and filterable so Pro can reuse or override it.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $meeting_date The raw edbs_meeting_date meta value (Y-m-d).
+	 * @param int    $post_id      The post ID the title is being generated for.
+	 * @return string The generated title.
+	 */
+	public function generate_default_title( string $meeting_date, int $post_id = 0 ): string {
+		$base        = _x( 'Board Meeting', 'default generated meeting title', 'boardscribe' );
+		$date_object = BoardScribeEndpoint::parse_date( $meeting_date );
+
+		if ( $date_object ) {
+			$date_format = (string) get_option( 'date_format' );
+			$formatted   = $date_object->format( '' !== $date_format ? $date_format : 'F j, Y' );
+			$title       = sprintf(
+				/* translators: 1: "Board Meeting" label, 2: formatted meeting date. */
+				_x( '%1$s - %2$s', 'default generated meeting title with date', 'boardscribe' ),
+				$base,
+				$formatted
+			);
+		} else {
+			$title = $base;
+		}
+
+		/**
+		 * Filters the auto-generated title used when a meeting is saved without
+		 * one. Pro plugin can override the format (e.g. include the meeting series).
+		 *
+		 * @since x.x.x
+		 *
+		 * @param string $title        The generated title.
+		 * @param string $meeting_date The raw meeting date meta value.
+		 * @param int    $post_id      The post ID.
+		 */
+		return (string) apply_filters( 'edbs_default_meeting_title', $title, $meeting_date, $post_id );
 	}
 }
