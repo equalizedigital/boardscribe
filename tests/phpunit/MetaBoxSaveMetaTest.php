@@ -38,7 +38,7 @@ class MetaBoxSaveMetaTest extends TestCase {
 		parent::set_up();
 
 		$this->meta_box = new MetaBox();
-		$this->post_id  = self::factory()->post->create( [ 'post_type' => 'edbs_boardscribe' ] );
+		$this->post_id  = self::factory()->post->create( [ 'post_type' => 'edbs_meetings' ] );
 
 		$editor_id = self::factory()->user->create( [ 'role' => 'editor' ] );
 		wp_set_current_user( $editor_id );

@@ -20,17 +20,17 @@ if ( empty( $edbs_settings['delete_on_uninstall'] ) ) {
 }
 
 // Delete all BoardScribe meeting posts and their associated meta.
-$edbs_boardscribe_post_ids = get_posts(
+$edbs_meeting_post_ids = get_posts(
 	[
-		'post_type'      => 'edbs_boardscribe',
+		'post_type'      => 'edbs_meetings',
 		'post_status'    => 'any',
 		'posts_per_page' => -1,
 		'fields'         => 'ids',
 	]
 );
 
-foreach ( $edbs_boardscribe_post_ids as $edbs_boardscribe_post_id ) {
-	wp_delete_post( $edbs_boardscribe_post_id, true );
+foreach ( $edbs_meeting_post_ids as $edbs_meeting_post_id ) {
+	wp_delete_post( $edbs_meeting_post_id, true );
 }
 
 // Delete plugin settings.
