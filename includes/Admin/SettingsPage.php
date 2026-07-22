@@ -67,7 +67,7 @@ class SettingsPage {
 	 * @return array<string, array{icon:string,label:string}>
 	 */
 	private function get_tabs(): array {
-		return [
+		$tabs = [
 			'general' => [
 				'icon'  => 'dashicons-admin-generic',
 				'label' => __( 'General', 'boardscribe' ),
@@ -81,6 +81,19 @@ class SettingsPage {
 				'label' => __( 'Support', 'boardscribe' ),
 			],
 		];
+
+		/**
+		 * Filters the settings page tabs, keyed by tab slug. Pro plugin adds
+		 * its own tabs here (e.g. an Import tab) and renders their content on
+		 * the matching `edbs_settings_tab_content_{$tab}` action. Array order
+		 * controls display order, so a callback can splice a tab in before
+		 * "support" rather than only appending.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param array<string, array{icon:string,label:string}> $tabs Tab definitions.
+		 */
+		return apply_filters( 'edbs_settings_tabs', $tabs );
 	}
 
 	/**
@@ -365,8 +378,21 @@ class SettingsPage {
 				$this->render_support_tab();
 				break;
 			case 'general':
-			default:
 				$this->render_general_tab();
+				break;
+			default:
+				/**
+				 * Fires to render the content of a settings tab that isn't one
+				 * of the free plugin's core tabs. The dynamic portion is the tab
+				 * slug (e.g. `edbs_settings_tab_content_import`). A plugin that
+				 * registered a tab via `edbs_settings_tabs` renders its UI here.
+				 *
+				 * Only fires for tabs present in the (filtered) tab list, since
+				 * get_current_tab() falls back to "general" for unknown slugs.
+				 *
+				 * @since x.x.x
+				 */
+				do_action( "edbs_settings_tab_content_{$current_tab}" );
 				break;
 		}
 	}
