@@ -36,7 +36,7 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 */
 	private function get_meta_args( string $meta_key ): array {
 		global $wp_meta_keys;
-		return $wp_meta_keys['post']['edbs_boardscribe'][ $meta_key ];
+		return $wp_meta_keys['post']['edbs_meeting'][ $meta_key ];
 	}
 
 	/**
@@ -45,7 +45,7 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 */
 	public function test_all_meta_keys_are_registered(): void {
 		global $wp_meta_keys;
-		$keys = array_keys( $wp_meta_keys['post']['edbs_boardscribe'] );
+		$keys = array_keys( $wp_meta_keys['post']['edbs_meeting'] );
 
 		foreach ( [ 'edbs_meeting_date', 'edbs_agenda_url', 'edbs_minutes_url', 'edbs_meeting_not_held' ] as $expected_key ) {
 			$this->assertContains( $expected_key, $keys );
@@ -75,7 +75,7 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * even if they could edit posts of this type in general.
 	 */
 	public function test_auth_callback_denies_user_without_post_specific_capability(): void {
-		$post_id       = self::factory()->post->create( [ 'post_type' => 'edbs_boardscribe' ] );
+		$post_id       = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
 		$subscriber_id = self::factory()->user->create( [ 'role' => 'subscriber' ] );
 		wp_set_current_user( $subscriber_id );
 
@@ -91,7 +91,7 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * With a real post ID, a user who can edit that post is allowed.
 	 */
 	public function test_auth_callback_allows_user_with_post_specific_capability(): void {
-		$post_id   = self::factory()->post->create( [ 'post_type' => 'edbs_boardscribe' ] );
+		$post_id   = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
 		$editor_id = self::factory()->user->create( [ 'role' => 'editor' ] );
 		wp_set_current_user( $editor_id );
 

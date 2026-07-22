@@ -27,7 +27,7 @@ class MetaBox {
 	public function register(): void {
 		add_action( 'init', [ $this, 'register_post_meta' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_box' ] );
-		add_action( 'save_post_edbs_boardscribe', [ $this, 'save_meta' ] );
+		add_action( 'save_post_edbs_meeting', [ $this, 'save_meta' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
@@ -45,7 +45,7 @@ class MetaBox {
 		}
 
 		$screen = get_current_screen();
-		if ( ! $screen || 'edbs_boardscribe' !== $screen->post_type ) {
+		if ( ! $screen || 'edbs_meeting' !== $screen->post_type ) {
 			return;
 		}
 
@@ -115,7 +115,7 @@ JS;
 		];
 
 		register_post_meta(
-			'edbs_boardscribe',
+			'edbs_meeting',
 			'edbs_meeting_date',
 			array_merge(
 				$common,
@@ -128,7 +128,7 @@ JS;
 		);
 
 		register_post_meta(
-			'edbs_boardscribe',
+			'edbs_meeting',
 			'edbs_agenda_url',
 			array_merge(
 				$common,
@@ -141,7 +141,7 @@ JS;
 		);
 
 		register_post_meta(
-			'edbs_boardscribe',
+			'edbs_meeting',
 			'edbs_minutes_url',
 			array_merge(
 				$common,
@@ -154,7 +154,7 @@ JS;
 		);
 
 		register_post_meta(
-			'edbs_boardscribe',
+			'edbs_meeting',
 			'edbs_meeting_not_held',
 			array_merge(
 				$common,
@@ -191,7 +191,7 @@ JS;
 			'edbs_meeting_details',
 			__( 'Meeting Details', 'boardscribe' ),
 			[ $this, 'render_meta_box' ],
-			'edbs_boardscribe',
+			'edbs_meeting',
 			'normal',
 			'high'
 		);

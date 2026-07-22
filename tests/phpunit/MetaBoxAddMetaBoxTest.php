@@ -22,7 +22,7 @@ class MetaBoxAddMetaBoxTest extends TestCase {
 	public function set_up(): void {
 		parent::set_up();
 		global $wp_meta_boxes;
-		unset( $wp_meta_boxes['edbs_boardscribe'] );
+		unset( $wp_meta_boxes['edbs_meeting'] );
 	}
 
 	/**
@@ -32,7 +32,7 @@ class MetaBoxAddMetaBoxTest extends TestCase {
 		( new MetaBox() )->add_meta_box();
 
 		global $wp_meta_boxes;
-		$this->assertArrayHasKey( 'edbs_meeting_details', $wp_meta_boxes['edbs_boardscribe']['normal']['high'] );
+		$this->assertArrayHasKey( 'edbs_meeting_details', $wp_meta_boxes['edbs_meeting']['normal']['high'] );
 	}
 
 	/**
@@ -47,6 +47,6 @@ class MetaBoxAddMetaBoxTest extends TestCase {
 		remove_filter( 'edbs_use_native_meta_boxes', '__return_false' );
 
 		global $wp_meta_boxes;
-		$this->assertArrayNotHasKey( 'edbs_boardscribe', (array) $wp_meta_boxes );
+		$this->assertArrayNotHasKey( 'edbs_meeting', (array) $wp_meta_boxes );
 	}
 }

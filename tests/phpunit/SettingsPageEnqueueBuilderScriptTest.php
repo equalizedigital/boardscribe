@@ -19,7 +19,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class SettingsPageEnqueueBuilderScriptTest extends TestCase {
 
-	const BUILDER_HOOK = 'edbs_boardscribe_page_edbs-shortcode-builder';
+	const BUILDER_HOOK = 'edbs_meeting_page_edbs-shortcode-builder';
 
 	/**
 	 * The SettingsPage instance under test.

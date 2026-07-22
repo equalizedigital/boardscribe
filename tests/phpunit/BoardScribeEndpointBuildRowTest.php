@@ -53,7 +53,7 @@ class BoardScribeEndpointBuildRowTest extends TestCase {
 	private function create_meeting( array $meta = [], array $post_args = [] ): int {
 		$post_id = self::factory()->post->create(
 			array_merge(
-				[ 'post_type' => 'edbs_boardscribe' ],
+				[ 'post_type' => 'edbs_meeting' ],
 				$post_args
 			)
 		);
