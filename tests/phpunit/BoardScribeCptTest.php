@@ -34,6 +34,7 @@ class BoardScribeCptTest extends TestCase {
 
 		$this->assertFalse( $post_type_object->public );
 		$this->assertTrue( $post_type_object->show_in_rest );
+		$this->assertFalse( $post_type_object->rewrite );
 		$this->assertFalse( $post_type_object->has_archive );
 		$this->assertTrue( post_type_supports( 'edbs_meetings', 'title' ) );
 		$this->assertFalse( post_type_supports( 'edbs_meetings', 'editor' ) );

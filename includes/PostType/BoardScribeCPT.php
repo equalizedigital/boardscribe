@@ -53,7 +53,8 @@ class BoardScribeCPT {
 			// a site can flip it to true: plugins that key their own
 			// features off that flag (e.g. ArchiveWP's archivable-post-types
 			// list) check 'public' directly — there's no other extension
-			// point for it. rewrite and has_archive stay false regardless:
+			// point for it. public, rewrite, and has_archive are false by
+			// default, but can be overridden through edbs_cpt_args:
 			// meetings are still meant to be displayed via the
 			// [edbs_boardscribe] shortcode's own REST endpoint, not a theme
 			// archive page or pretty permalinks.
