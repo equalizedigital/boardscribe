@@ -106,4 +106,32 @@ class MetaBoxRenderMetaBoxTest extends TestCase {
 		$this->assertGreaterThan( $agenda_pos, $marker_pos );
 		$this->assertLessThan( $minutes_pos, $marker_pos );
 	}
+
+	/**
+	 * Mirrors test_agenda_hook_output_lands_between_the_two_url_fields()
+	 * for the minutes hook - only covering the agenda side would let a
+	 * regression that moved edbs_after_minutes_url_field down past the
+	 * "Meeting Not Held" row pass unnoticed.
+	 */
+	public function test_minutes_hook_output_lands_after_minutes_url_field(): void {
+		$post_id  = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		$marker   = 'test-minutes-anchor-marker';
+		$callback = static function () use ( $marker ) {
+			echo esc_html( $marker );
+		};
+		add_action( 'edbs_after_minutes_url_field', $callback );
+
+		ob_start();
+		( new MetaBox() )->render_meta_box( get_post( $post_id ) );
+		$html = ob_get_clean();
+		remove_action( 'edbs_after_minutes_url_field', $callback );
+
+		$minutes_pos   = strpos( $html, 'edbs_minutes_url' );
+		$marker_pos    = strpos( $html, $marker );
+		$not_held_pos  = strpos( $html, 'edbs_meeting_not_held' );
+
+		$this->assertNotFalse( $marker_pos );
+		$this->assertGreaterThan( $minutes_pos, $marker_pos );
+		$this->assertLessThan( $not_held_pos, $marker_pos );
+	}
 }
