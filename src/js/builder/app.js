@@ -11,6 +11,7 @@ import {
 } from '@wordpress/components';
 import { useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { withDateFilterHelpText } from '../shared/date-filter-help-text';
 import { GenericFieldControl } from '../shared/generic-field-control';
 import { buildShortcode } from './build-shortcode';
 import { Preview } from './preview';
@@ -111,9 +112,15 @@ export function BuilderApp( { fields } ) {
 	const setValue = ( key, value ) => setValues( ( prev ) => ( { ...prev, [ key ]: value } ) );
 
 	const renderField = ( field ) => {
+		const resolvedField = withDateFilterHelpText(
+			field,
+			values.included_years,
+			values.start_date,
+			values.end_date,
+		);
 		const props = {
 			key: field.key,
-			field,
+			field: resolvedField,
 			value: values[ field.key ],
 			onChange: ( val ) => setValue( field.key, val ),
 		};
