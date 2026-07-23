@@ -1,6 +1,6 @@
 {
 	"name": "boardscribe",
-	"version": "1.0.0-beta1",
+	"version": "1.0.0-beta2",
 	"description": "Build tooling, tests, and linting for the Equalize Digital BoardScribe plugin",
 	"private": true,
 	"scripts": {

@@ -3,7 +3,7 @@ Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
 Tags: board meetings, meeting minutes, meeting agenda, agenda, minutes
 Requires at least: 6.7
 Tested up to: 7.0
-Stable tag: 1.0.0-beta1
+Stable tag: 1.0.0-beta2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
