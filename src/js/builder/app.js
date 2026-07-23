@@ -202,7 +202,9 @@ export function BuilderApp( { fields } ) {
 
 			<div className="edbs-builder-app__result">
 				<Card>
-					<CardHeader>{ __( 'Your Shortcode', 'boardscribe' ) }</CardHeader>
+					<CardHeader>
+						<h2 className="edbs-builder-app__card-heading">{ __( 'Your Shortcode', 'boardscribe' ) }</h2>
+					</CardHeader>
 					<CardBody>
 						<div className="edbs-builder-app__output-row">
 							<input
