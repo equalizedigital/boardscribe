@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<div class="edbs-settings-header">
 		<img
-			src="<?php echo esc_url( EDBS_URL . 'assets/images/logo.png' ); ?>"
+			src="<?php echo esc_url( EDBS_URL . 'assets/images/logo.svg' ); ?>"
 			alt="<?php esc_attr_e( 'BoardScribe', 'boardscribe' ); ?>"
 		/>
 		<p class="edbs-settings-header-version">
