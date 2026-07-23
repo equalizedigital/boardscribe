@@ -150,27 +150,6 @@ body.edbs_meeting_page_edbs-settings {
 	overflow: hidden;
 }
 
-/* Double accent stripe on the right edge (plum + blue). */
-.edbs-settings-panel-header::before {
-	content: "";
-	position: absolute;
-	background-color: var(--edbs-blue);
-	width: 5px;
-	bottom: 0;
-	top: 0;
-	right: 0;
-}
-
-.edbs-settings-panel-header::after {
-	content: "";
-	position: absolute;
-	background-color: var(--edbs-plum);
-	width: 5px;
-	bottom: 0;
-	top: 0;
-	right: 5px;
-}
-
 .edbs-settings-panel-header .dashicons {
 	font-size: 23px;
 	width: 23px;
