@@ -6,13 +6,15 @@
 .edbs-pagination-button {
     padding: 5px 10px;
     border: none;
-    background-color: #007bff;
+    /* White text at ~7:1 against this shade, passing WCAG AA/AAA for
+       normal text - the previous #007bff was only ~4:1, failing AA. */
+    background-color: #0056b3;
     color: white;
     cursor: pointer;
 }
 
 .edbs-pagination-button.current {
-    background-color: #0056b3;
+    background-color: #003d80;
 }
 
 .edbs-pagination-button[disabled] {

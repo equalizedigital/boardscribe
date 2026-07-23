@@ -41,20 +41,27 @@ export function buildTableHtml( meetings, instanceCfg ) {
 	const tableClass = escapeAttribute( cfg.tableClass || '' );
 	const templateClass = escapeAttribute( 'edbs-template-' + ( cfg.resolvedTemplate || 'table' ) );
 	const equalColumnsClass = cfg.equalColumns ? 'edbs-equal-columns' : '';
-	let table = '<table tabindex="0" class="edbs-boardscribe-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
-		'<thead class="desktop"><tr>';
+	// Explicit table/row/cell roles below are belt-and-braces: the
+	// responsive stacking layout (see the max-width:768px block in
+	// boardscribe.css) overrides `display` on every one of these
+	// elements, which strips their *implicit* table semantics in some
+	// browsers (most notably Safari/VoiceOver) - explicit roles keep the
+	// table announced as a table, with header/cell relationships intact,
+	// regardless of that CSS.
+	let table = '<table tabindex="0" role="table" class="edbs-boardscribe-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
+		'<thead class="desktop" role="rowgroup"><tr role="row">';
 
 	if ( ! cfg.hideTitle ) {
-		table += '<th scope="col">' + escapeHTML( labelTitle ) + '</th>';
+		table += '<th scope="col" role="columnheader">' + escapeHTML( labelTitle ) + '</th>';
 	}
 	if ( ! cfg.hideDate ) {
-		table += '<th scope="col">' + escapeHTML( labelDate ) + '</th>';
+		table += '<th scope="col" role="columnheader">' + escapeHTML( labelDate ) + '</th>';
 	}
 	if ( ! cfg.hideAgenda ) {
-		table += '<th scope="col">' + escapeHTML( labelAgenda ) + '</th>';
+		table += '<th scope="col" role="columnheader">' + escapeHTML( labelAgenda ) + '</th>';
 	}
 	if ( ! cfg.hideMinutes ) {
-		table += '<th scope="col">' + escapeHTML( labelMinutes ) + '</th>';
+		table += '<th scope="col" role="columnheader">' + escapeHTML( labelMinutes ) + '</th>';
 	}
 
 	// hidden()/getLabel() only depend on cfg, not on any one meeting, so
@@ -75,10 +82,10 @@ export function buildTableHtml( meetings, instanceCfg ) {
 		} );
 
 	visibleExtraColumns.forEach( function( entry ) {
-		table += '<th scope="col">' + ( entry.label || '' ) + '</th>';
+		table += '<th scope="col" role="columnheader">' + ( entry.label || '' ) + '</th>';
 	} );
 
-	table += '</tr></thead><tbody>';
+	table += '</tr></thead><tbody role="rowgroup">';
 
 	// Cell content below (meeting.title, meeting.date, meeting.agenda,
 	// meeting.minutes, and any Pro-registered renderCell() output) is
@@ -91,23 +98,27 @@ export function buildTableHtml( meetings, instanceCfg ) {
 			return;
 		}
 
-		table += '<tr>';
+		table += '<tr role="row">';
 		if ( ! cfg.hideTitle ) {
-			table += '<td data-label="' + escapeAttribute( labelTitle ) + '" scope="row">' + ( meeting.title || '' ) + '</td>';
+			// role="rowheader" is the ARIA (not `scope`) way to mark a <td>
+			// as a row header - `scope` is only valid on <th> and browsers
+			// silently ignore it here, leaving the row with no accessible
+			// header at all.
+			table += '<td data-label="' + escapeAttribute( labelTitle ) + '" role="rowheader">' + ( meeting.title || '' ) + '</td>';
 		}
 		if ( ! cfg.hideDate ) {
-			table += '<td data-label="' + escapeAttribute( labelDate ) + '">' + ( meeting.date || '' ) + '</td>';
+			table += '<td data-label="' + escapeAttribute( labelDate ) + '" role="cell">' + ( meeting.date || '' ) + '</td>';
 		}
 		if ( ! cfg.hideAgenda ) {
-			table += '<td data-label="' + escapeAttribute( labelAgenda ) + '">' + ( meeting.agenda || '' ) + '</td>';
+			table += '<td data-label="' + escapeAttribute( labelAgenda ) + '" role="cell">' + ( meeting.agenda || '' ) + '</td>';
 		}
 		if ( ! cfg.hideMinutes ) {
-			table += '<td data-label="' + escapeAttribute( labelMinutes ) + '">' + ( meeting.minutes || '' ) + '</td>';
+			table += '<td data-label="' + escapeAttribute( labelMinutes ) + '" role="cell">' + ( meeting.minutes || '' ) + '</td>';
 		}
 
 		visibleExtraColumns.forEach( function( entry ) {
 			const cell = entry.col.renderCell ? entry.col.renderCell( meeting, cfg ) : ( meeting[ entry.col.key ] || '' );
-			table += '<td data-label="' + escapeAttribute( entry.label || '' ) + '">' + cell + '</td>';
+			table += '<td data-label="' + escapeAttribute( entry.label || '' ) + '" role="cell">' + cell + '</td>';
 		} );
 
 		table += '</tr>';
