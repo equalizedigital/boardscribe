@@ -132,10 +132,10 @@ class FieldRegistry {
 					'type'              => self::TYPE_TEXT,
 					'group'             => 'general',
 					'label'             => __( 'Held Date Format', 'boardscribe' ),
-					'default'           => 'Y/m/d',
+					'default'           => 'F j, Y',
 					'description'       => __( 'PHP date() format. See php.net/manual/en/datetime.format.php for the full reference.', 'boardscribe' ),
 					'sanitize_callback' => static function ( $value ) {
-						return self::sanitize_date_format( $value, 'Y/m/d' );
+						return self::sanitize_date_format( $value, 'F j, Y' );
 					},
 					'validate_callback' => [ BoardScribeEndpoint::class, 'validate_date_format' ],
 					'rest_arg'          => true,
@@ -145,9 +145,9 @@ class FieldRegistry {
 					'type'              => self::TYPE_TEXT,
 					'group'             => 'general',
 					'label'             => __( 'Not Held Date Format', 'boardscribe' ),
-					'default'           => 'Y/m',
+					'default'           => 'F Y',
 					'sanitize_callback' => static function ( $value ) {
-						return self::sanitize_date_format( $value, 'Y/m' );
+						return self::sanitize_date_format( $value, 'F Y' );
 					},
 					'validate_callback' => [ BoardScribeEndpoint::class, 'validate_date_format' ],
 					'rest_arg'          => true,
