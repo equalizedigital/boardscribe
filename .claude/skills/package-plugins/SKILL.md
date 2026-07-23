@@ -33,15 +33,16 @@ cp -r \
   boardscribe.php block.json uninstall.php readme.txt LICENSE \
   includes partials languages vendor \
   "$STAGE"/
-cp -r assets/build assets/css "$STAGE/assets/"
+cp -r assets/build assets/css assets/images "$STAGE/assets/"
+find "$STAGE" -name '.DS_Store' -delete   # strip macOS cruft (e.g. assets/images/.DS_Store) before zipping
 ( cd "$TMP_DIR" && zip -r "$OLDPWD/dist/boardscribe.zip" boardscribe )
 composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest (verify with `unzip -l`):
-`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,shortcode-builder-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/build/builder/{index.js,index.asset.php}`, `assets/css/{boardscribe,builder}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
+`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/build/builder/{index.js,index.asset.php}`, `assets/css/{boardscribe,builder,settings}.css`, `assets/images/logo.png`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
 
-Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode Builder React app, PRO-1228) ship via the existing wildcard `cp -r assets/build assets/css` step below with no script change — this manifest entry just documents that they're expected, not new/unexpected, when verifying with `unzip -l`.
+Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode Builder React app, PRO-1228) ship via the existing wildcard `cp -r assets/build assets/css assets/images` step below with no script change — this manifest entry just documents that they're expected, not new/unexpected, when verifying with `unzip -l`. `assets/images/logo.png` (settings-sidebar logo, rendered by partials/settings-page.php) ships via that same step — it was missing from the copy list until a build review caught the broken logo; keep `assets/images` in it.
 
 ## Pro plugin
 
@@ -61,6 +62,7 @@ cp -r \
   "$STAGE"/
 cp -r assets/css "$STAGE/assets/"
 cp -r src/js/admin src/js/front-end src/js/editor "$STAGE/src/js/"
+find "$STAGE" -name '.DS_Store' -delete   # strip macOS cruft before zipping
 ( cd "$TMP_DIR" && zip -r "$OLDPWD/dist/boardscribe-pro.zip" boardscribe-pro )
 composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
