@@ -49,8 +49,8 @@ body.edbs_meeting_page_edbs-settings {
 @media (min-width: 783px) {
 
 	.edbs-settings-header {
-		width: 265px;
-		min-width: 265px;
+		width: 225px;
+		min-width: 225px;
 		margin-bottom: 25px;
 	}
 }
