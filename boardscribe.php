@@ -1,9 +1,8 @@
 <?php
 /**
  * Plugin Name:       BoardScribe
- * Plugin URI:        https://equalizedigital.com
  * Description:       Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records.
- * Version:           1.0.0-beta2
+ * Version:           1.0.0
  * Author:            Equalize Digital
  * Author URI:        https://equalizedigital.com
  * License:           GPL-2.0-or-later
@@ -63,7 +62,7 @@ require_once EDBS_DIR . 'vendor/autoload.php';
 // "is free active" signal, so defining it any earlier (e.g. alongside
 // the other constants above) would make Pro think free is active even
 // when the autoloader guard above just bailed.
-define( 'EDBS_VERSION', '1.0.0-beta2' );
+define( 'EDBS_VERSION', '1.0.0' );
 
 // Boot the plugin.
 add_action(
