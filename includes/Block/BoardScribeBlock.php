@@ -50,6 +50,37 @@ class BoardScribeBlock {
 	 */
 	public function register(): void {
 		add_action( 'init', [ $this, 'register_block' ], 20 );
+		add_filter( 'block_categories_all', [ $this, 'register_block_category' ] );
+	}
+
+	/**
+	 * Registers the "BoardScribe" editor category the block lives in.
+	 *
+	 * The block.json metadata references this category by its `boardscribe`
+	 * slug, which does nothing until the category is inserted into the
+	 * editor's list here. Guards against double-registration in case an old
+	 * Pro build has already added it (see register_block() for the same
+	 * old-Pro concern).
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array $categories Existing block categories.
+	 * @return array The category list with the BoardScribe category appended.
+	 */
+	public function register_block_category( array $categories ): array {
+		foreach ( $categories as $category ) {
+			if ( isset( $category['slug'] ) && 'boardscribe' === $category['slug'] ) {
+				return $categories;
+			}
+		}
+
+		$categories[] = [
+			'slug'  => 'boardscribe',
+			'title' => __( 'BoardScribe', 'boardscribe' ),
+			'icon'  => null,
+		];
+
+		return $categories;
 	}
 
 	/**
