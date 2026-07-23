@@ -265,8 +265,16 @@ class BoardScribeBlock {
 			'no_found_rows'  => true,
 		];
 
-		$start_date = (string) ( $attributes['startDate'] ?? '' );
-		$end_date   = (string) ( $attributes['endDate'] ?? '' );
+		// Resolved through the same sanitize_iso_date() the frontend
+		// shortcode path uses (via FieldRegistry::resolve_value()) rather
+		// than trusted raw - hand-edited/invalid block markup would
+		// otherwise make this preview disagree with the real query.
+		$start_date = isset( $attributes['startDate'] ) && is_string( $attributes['startDate'] )
+			? FieldRegistry::sanitize_iso_date( $attributes['startDate'] )
+			: '';
+		$end_date   = isset( $attributes['endDate'] ) && is_string( $attributes['endDate'] )
+			? FieldRegistry::sanitize_iso_date( $attributes['endDate'] )
+			: '';
 
 		// Mirrors BoardScribeEndpoint::get_meetings()'s precedence: an
 		// explicit start/end date range takes priority over includedYears
