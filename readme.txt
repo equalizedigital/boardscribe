@@ -1,4 +1,4 @@
-=== BoardScribe - Board Meeting Minutes, Agendas & Public Records ===
+=== BoardScribe ===
 Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
 Tags: board meetings, meeting minutes, meeting agenda, agenda, minutes
 Requires at least: 6.7
