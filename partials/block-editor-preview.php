@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<thead>
 		<tr>
 			<?php foreach ( $visible_columns as $edbs_column ) : ?>
-				<th scope="col" style="padding:8px 12px;"><?php echo esc_html( $edbs_column['label'] ?? '' ); ?></th>
+				<th scope="col" style="padding:8px 12px; text-align:left;"><?php echo esc_html( $edbs_column['label'] ?? '' ); ?></th>
 			<?php endforeach; ?>
 		</tr>
 	</thead>
