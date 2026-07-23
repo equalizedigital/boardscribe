@@ -7,14 +7,14 @@
 
 .edbs-builder-app {
 	display: grid;
-	grid-template-columns: minmax( 300px, 420px ) minmax( 0, 1fr );
+	grid-template-columns: 1fr auto;
 	gap: 24px;
 	align-items: start;
 	max-width: 1400px;
 	margin-top: 16px;
 }
 
-@media ( max-width: 960px ) {
+@media ( max-width: 1200px ) {
 	.edbs-builder-app {
 		grid-template-columns: 1fr;
 	}
