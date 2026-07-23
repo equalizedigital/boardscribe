@@ -90,7 +90,7 @@ class BoardScribeShortcodeTest extends TestCase {
 		$html   = $this->shortcode->render( [ 'held_date_format' => '\\<\\s\\c\\r\\i\\p\\t\\>' ] );
 		$config = $this->get_instance_config( $html );
 
-		$this->assertSame( 'Y/m/d', $config['heldDateFormat'] );
+		$this->assertSame( 'F j, Y', $config['heldDateFormat'] );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class BoardScribeShortcodeTest extends TestCase {
 		$html   = $this->shortcode->render( [ 'not_held_date_format' => '<script>' ] );
 		$config = $this->get_instance_config( $html );
 
-		$this->assertSame( 'Y/m', $config['notHeldDateFormat'] );
+		$this->assertSame( 'F Y', $config['notHeldDateFormat'] );
 	}
 
 	/**

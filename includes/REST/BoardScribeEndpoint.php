@@ -250,8 +250,8 @@ class BoardScribeEndpoint {
 	 * @return array
 	 */
 	public function build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array {
-		$held_date_format     = $format_args['held_date_format'] ?? 'Y/m/d';
-		$not_held_date_format = $format_args['not_held_date_format'] ?? 'Y/m';
+		$held_date_format     = $format_args['held_date_format'] ?? 'F j, Y';
+		$not_held_date_format = $format_args['not_held_date_format'] ?? 'F Y';
 		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'boardscribe' );
 		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'boardscribe' );
 
