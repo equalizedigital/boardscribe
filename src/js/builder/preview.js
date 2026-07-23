@@ -78,7 +78,9 @@ export function Preview( { fields, values } ) {
 
 	return (
 		<Card className="edbs-builder-preview">
-			<CardHeader>{ __( 'Preview', 'boardscribe' ) }</CardHeader>
+			<CardHeader>
+				<h2 className="edbs-builder-app__card-heading">{ __( 'Preview', 'boardscribe' ) }</h2>
+			</CardHeader>
 			<CardBody>
 				{ /* Keyed on the config so each change remounts a clean copy of
 				     the exact wrapper markup BoardScribeShortcode::render()

@@ -59,3 +59,11 @@
 .edbs-builder-app__snackbar-error {
 	background-color: #cc1818;
 }
+
+/* CardHeader isn't a heading element - the h2 inside it (see app.js/
+   preview.js, fixing #49) needs its user-agent margin/font reset so it
+   renders identically to the plain text it replaces. */
+.edbs-builder-app__card-heading {
+	margin: 0;
+	font: inherit;
+}
