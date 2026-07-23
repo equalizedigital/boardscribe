@@ -68,11 +68,15 @@ registerBlockType( metadata.name, {
 		// The template picker renders from the registry field's choices, so
 		// a Pro/third-party template registered via the
 		// edbs_shortcode_field_registry filter becomes selectable with no
-		// change here. With only the built-in table registered there is
-		// nothing to pick, so the control is omitted entirely.
+		// change here. It renders as soon as the field is present in the
+		// registry, even with only the built-in "Table (default)" choice -
+		// matching how the shortcode builder page (which renders every
+		// registry field generically) behaves. Pro contributes additional
+		// choices onto this same field rather than making the control's
+		// existence conditional on more than one choice existing.
 		const templateField = FIELD_REGISTRY.find( ( field ) => 'template' === field.attributeKey );
 		const templateChoices = ( templateField && templateField.choices ) || {};
-		const showTemplatePicker = Object.keys( templateChoices ).length > 1;
+		const showTemplatePicker = Boolean( templateField ) && Object.keys( templateChoices ).length > 0;
 
 		const fieldsByGroup = {};
 		FIELD_REGISTRY.forEach( ( field ) => {

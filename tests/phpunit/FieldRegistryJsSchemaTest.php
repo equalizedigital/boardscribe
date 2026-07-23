@@ -81,4 +81,27 @@ class FieldRegistryJsSchemaTest extends TestCase {
 		$this->assertSame( 'abc', $by_key['edbs_test_schema_field']['default'] );
 		$this->assertArrayNotHasKey( 'sanitize_callback', $by_key['edbs_test_schema_field'] );
 	}
+
+	/**
+	 * Regression test for the block editor's InspectorControls template
+	 * picker being hidden entirely when Pro isn't installed.
+	 *
+	 * The block editor script (src/js/block/index.js) decides whether to
+	 * render the "Display Template" SelectControl purely from this
+	 * schema's `template` entry - it renders whenever the field is
+	 * present with at least one choice, matching the shortcode builder
+	 * app's generic behavior. Free ships only the built-in "Table
+	 * (default)" choice, so this proves that one-entry case still gives
+	 * the block script everything it needs to show the control, without
+	 * requiring Pro's filter to add a second choice.
+	 */
+	public function test_template_field_has_at_least_one_choice_without_pro(): void {
+		$by_key = array_column( FieldRegistry::js_schema(), null, 'key' );
+
+		$this->assertArrayHasKey( 'template', $by_key );
+		$this->assertSame( 'template', $by_key['template']['attributeKey'] );
+		$this->assertIsArray( $by_key['template']['choices'] );
+		$this->assertNotEmpty( $by_key['template']['choices'], 'The template field must always expose at least the built-in "Table (default)" choice, so the block sidebar picker is never suppressed for lack of choices.' );
+		$this->assertArrayHasKey( '', $by_key['template']['choices'] );
+	}
 }
