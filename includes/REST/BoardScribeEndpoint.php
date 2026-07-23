@@ -109,6 +109,8 @@ class BoardScribeEndpoint {
 		$held_date_format     = $request->get_param( 'held_date_format' );
 		$not_held_date_format = $request->get_param( 'not_held_date_format' );
 		$included_years       = $request->get_param( 'included_years' );
+		$start_date           = $request->get_param( 'start_date' );
+		$end_date             = $request->get_param( 'end_date' );
 		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
 		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
 
@@ -157,7 +159,35 @@ class BoardScribeEndpoint {
 			],
 		];
 
-		if ( ! empty( $included_years ) ) {
+		if ( ! empty( $start_date ) || ! empty( $end_date ) ) {
+			// start_date/end_date support arbitrary ranges (e.g. a
+			// July-to-June fiscal year) that included_years can't express,
+			// so they take priority over it entirely rather than being
+			// combined — a caller sending both almost certainly means the
+			// explicit range, not an intersection with whole calendar years.
+			if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
+				$args['meta_query'][] = [
+					'key'     => 'edbs_meeting_date',
+					'value'   => [ $start_date, $end_date ],
+					'compare' => 'BETWEEN',
+					'type'    => 'DATE',
+				];
+			} elseif ( ! empty( $start_date ) ) {
+				$args['meta_query'][] = [
+					'key'     => 'edbs_meeting_date',
+					'value'   => $start_date,
+					'compare' => '>=',
+					'type'    => 'DATE',
+				];
+			} else {
+				$args['meta_query'][] = [
+					'key'     => 'edbs_meeting_date',
+					'value'   => $end_date,
+					'compare' => '<=',
+					'type'    => 'DATE',
+				];
+			}
+		} elseif ( ! empty( $included_years ) ) {
 			$years        = explode( ',', $included_years );
 			$year_queries = [ 'relation' => 'OR' ];
 
