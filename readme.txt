@@ -67,7 +67,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 
 * `included_years` - Comma-separated years to display (e.g. `2023,2024`). Default: all years.
 * `posts_per_page` - Entries per page. Use `-1` to show all. Default: `20`.
-* `held_date_format` - PHP date format for meetings that were held. Default: `F j, Y`.
+* `held_date_format` - PHP date format for meetings that were held. Default: `l, F j, Y`.
 * `not_held_date_format` - PHP date format for meetings not held. Default: `F Y`.
 * `hide_title` - Set to `true` to hide the Title column. Default: `false`.
 * `hide_date` - Set to `true` to hide the Date column. Default: `false`.

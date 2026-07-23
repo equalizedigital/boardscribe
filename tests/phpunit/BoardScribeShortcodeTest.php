@@ -90,7 +90,7 @@ class BoardScribeShortcodeTest extends TestCase {
 		$html   = $this->shortcode->render( [ 'held_date_format' => '\\<\\s\\c\\r\\i\\p\\t\\>' ] );
 		$config = $this->get_instance_config( $html );
 
-		$this->assertSame( 'F j, Y', $config['heldDateFormat'] );
+		$this->assertSame( 'l, F j, Y', $config['heldDateFormat'] );
 	}
 
 	/**

@@ -33,7 +33,7 @@ class BoardScribeEndpointValidateDateFormatTest extends TestCase {
 	 */
 	public function provide_valid_formats(): array {
 		return [
-			'default held format'     => [ 'F j, Y' ],
+			'default held format'     => [ 'l, F j, Y' ],
 			'default not-held format' => [ 'F Y' ],
 			'with time and dashes'    => [ 'Y-m-d H:i:s' ],
 		];

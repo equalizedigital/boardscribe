@@ -20,7 +20,7 @@ import { apiBaseUrl } from '../config';
 export function defaultBuildRequestUrl( instanceCfg, page ) {
 	const url = new URL( apiBaseUrl, window.location.origin );
 	url.searchParams.set( 'included_years', instanceCfg.includedYears || '' );
-	url.searchParams.set( 'held_date_format', instanceCfg.heldDateFormat || 'F j, Y' );
+	url.searchParams.set( 'held_date_format', instanceCfg.heldDateFormat || 'l, F j, Y' );
 	url.searchParams.set( 'not_held_date_format', instanceCfg.notHeldDateFormat || 'F Y' );
 	url.searchParams.set( 'posts_per_page', instanceCfg.postsPerPage || 20 );
 	url.searchParams.set( 'agenda_link_label', instanceCfg.agendaLinkLabel || '' );

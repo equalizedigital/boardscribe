@@ -132,10 +132,12 @@ class FieldRegistry {
 					'type'              => self::TYPE_TEXT,
 					'group'             => 'general',
 					'label'             => __( 'Held Date Format', 'boardscribe' ),
-					'default'           => 'F j, Y',
+					// Spelled-out weekday reads more reliably to screen readers
+					// than a bare numeric/abbreviated date (see boardscribe#46).
+					'default'           => 'l, F j, Y',
 					'description'       => __( 'PHP date() format. See php.net/manual/en/datetime.format.php for the full reference.', 'boardscribe' ),
 					'sanitize_callback' => static function ( $value ) {
-						return self::sanitize_date_format( $value, 'F j, Y' );
+						return self::sanitize_date_format( $value, 'l, F j, Y' );
 					},
 					'validate_callback' => [ BoardScribeEndpoint::class, 'validate_date_format' ],
 					'rest_arg'          => true,
