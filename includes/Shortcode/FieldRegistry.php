@@ -35,6 +35,7 @@ class FieldRegistry {
 	const TYPE_SELECT          = 'select';
 	const TYPE_NUMBER          = 'number';
 	const TYPE_NUMBER_WITH_ALL = 'number_with_all';
+	const TYPE_DATE            = 'date';
 
 	/**
 	 * Hooks the free plugin's own fields into the registry filter.
@@ -118,6 +119,33 @@ class FieldRegistry {
 					'placeholder' => '2023,2024',
 					'description' => __( 'Comma-separated list of years. Leave blank to show all years.', 'boardscribe' ),
 					'rest_arg'    => true,
+				],
+				[
+					'key'               => 'start_date',
+					'type'              => self::TYPE_DATE,
+					'group'             => 'general',
+					'label'             => __( 'Start Date', 'boardscribe' ),
+					'default'           => '',
+					// Fiscal-year (or any other custom range) filtering that
+					// included_years can't express — e.g. a July-to-June
+					// school year. Takes priority over included_years when
+					// either start_date or end_date is set (see
+					// BoardScribeEndpoint::get_meetings()).
+					'description'       => __( 'Only show meetings on or after this date. Takes priority over Included Years.', 'boardscribe' ),
+					'sanitize_callback' => [ __CLASS__, 'sanitize_iso_date' ],
+					'validate_callback' => [ __CLASS__, 'validate_iso_date_or_empty' ],
+					'rest_arg'          => true,
+				],
+				[
+					'key'               => 'end_date',
+					'type'              => self::TYPE_DATE,
+					'group'             => 'general',
+					'label'             => __( 'End Date', 'boardscribe' ),
+					'default'           => '',
+					'description'       => __( 'Only show meetings on or before this date. Takes priority over Included Years.', 'boardscribe' ),
+					'sanitize_callback' => [ __CLASS__, 'sanitize_iso_date' ],
+					'validate_callback' => [ __CLASS__, 'validate_iso_date_or_empty' ],
+					'rest_arg'          => true,
 				],
 				[
 					'key'      => 'posts_per_page',
@@ -401,6 +429,50 @@ class FieldRegistry {
 	public static function sanitize_date_format( $value, string $default_value ): string {
 		$value = sanitize_text_field( (string) $value );
 		return BoardScribeEndpoint::validate_date_format( $value ) ? $value : $default_value;
+	}
+
+	/**
+	 * Sanitizes a start_date/end_date value, falling back to an empty
+	 * string (no filter) for anything that isn't a valid Y-m-d date —
+	 * same fallback-to-safe-default pattern as sanitize_date_format().
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $value Raw start_date/end_date value.
+	 * @return string A Y-m-d date string, or ''.
+	 */
+	public static function sanitize_iso_date( $value ): string {
+		$value = sanitize_text_field( (string) $value );
+		return self::validate_iso_date_or_empty( $value ) ? $value : '';
+	}
+
+	/**
+	 * Validates a start_date/end_date REST param: either empty (no
+	 * filter) or a real calendar date in Y-m-d form.
+	 *
+	 * Rejects non-existent calendar dates (e.g. "2024-02-30") rather than
+	 * relying on DateTime's silent rollover to the next valid date -
+	 * checkdate() is the strict check purpose-built for this.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $value The raw start_date/end_date value.
+	 * @return bool
+	 */
+	public static function validate_iso_date_or_empty( $value ): bool {
+		if ( ! is_string( $value ) ) {
+			return false;
+		}
+
+		if ( '' === $value ) {
+			return true;
+		}
+
+		if ( ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $value, $matches ) ) {
+			return false;
+		}
+
+		return checkdate( (int) $matches[2], (int) $matches[3], (int) $matches[1] );
 	}
 
 	/**

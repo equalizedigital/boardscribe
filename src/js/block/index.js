@@ -14,6 +14,7 @@ import { useRef } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import metadata from '../../../block.json';
+import { withDateFilterHelpText } from '../shared/date-filter-help-text';
 import { GenericFieldControl } from '../shared/generic-field-control';
 
 // Localized by BoardScribeBlock::register_block() from the shared
@@ -91,7 +92,12 @@ registerBlockType( metadata.name, {
 			( fieldsByGroup[ group ] || [] ).map( ( field ) => (
 				<GenericFieldControl
 					key={ field.attributeKey }
-					field={ field }
+					field={ withDateFilterHelpText(
+						field,
+						attributes.includedYears,
+						attributes.startDate,
+						attributes.endDate,
+					) }
 					value={ attributes[ field.attributeKey ] }
 					onChange={ ( val ) => setAttributes( { [ field.attributeKey ]: val } ) }
 				/>

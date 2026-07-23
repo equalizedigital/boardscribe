@@ -146,4 +146,105 @@ class BoardScribeEndpointRestTest extends TestCase {
 
 		$this->assertSame( 0, $data['total_entries'] );
 	}
+
+	/**
+	 * start_date and end_date together filter to an arbitrary range that
+	 * spans a calendar year boundary — the fiscal-year use case
+	 * included_years can't express (see boardscribe#48).
+	 */
+	public function test_start_and_end_date_filter_a_fiscal_year_range(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2025-06-30' ] ); // Just before the range.
+		$this->create_meeting( [ 'edbs_meeting_date' => '2025-07-01' ] ); // Range start, inclusive.
+		$this->create_meeting( [ 'edbs_meeting_date' => '2026-01-15' ] ); // Inside the range.
+		$this->create_meeting( [ 'edbs_meeting_date' => '2026-06-30' ] ); // Range end, inclusive.
+		$this->create_meeting( [ 'edbs_meeting_date' => '2026-07-01' ] ); // Just after the range.
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'start_date', '2025-07-01' );
+		$request->set_param( 'end_date', '2026-06-30' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 3, $data['total_entries'] );
+	}
+
+	/**
+	 * start_date alone is an open-ended "on or after" filter.
+	 */
+	public function test_start_date_alone_filters_open_ended(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-01-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2025-01-01' ] );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'start_date', '2024-06-01' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 1, $data['total_entries'] );
+	}
+
+	/**
+	 * end_date alone is an open-ended "on or before" filter.
+	 */
+	public function test_end_date_alone_filters_open_ended(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-01-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2025-01-01' ] );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'end_date', '2024-06-01' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 1, $data['total_entries'] );
+	}
+
+	/**
+	 * A start_date/end_date range takes priority over included_years
+	 * entirely when both are sent — not combined/intersected with it —
+	 * since a caller sending both almost certainly means the explicit
+	 * range.
+	 */
+	public function test_start_date_takes_priority_over_included_years(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2023-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'included_years', '2024' );
+		$request->set_param( 'start_date', '2023-01-01' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// Both meetings fall on/after 2023-01-01, so start_date alone
+		// (ignoring included_years=2024) returns both.
+		$this->assertSame( 2, $data['total_entries'] );
+	}
+
+	/**
+	 * An invalid (non-existent) start_date is rejected with 400 by the
+	 * route's own validate_callback, end to end.
+	 */
+	public function test_invalid_start_date_is_rejected_with_400(): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'start_date', '2024-02-30' );
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertSame( 400, $response->get_status() );
+	}
+
+	/**
+	 * An invalid end_date is rejected with 400 too.
+	 */
+	public function test_invalid_end_date_is_rejected_with_400(): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'end_date', 'not-a-date' );
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertSame( 400, $response->get_status() );
+	}
 }

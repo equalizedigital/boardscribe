@@ -114,6 +114,41 @@ class BoardScribeShortcodeTest extends TestCase {
 	}
 
 	/**
+	 * A valid start_date/end_date is preserved into the instance config
+	 * under its camelCase key.
+	 */
+	public function test_valid_start_and_end_date_are_preserved(): void {
+		$html   = $this->shortcode->render(
+			[
+				'start_date' => '2025-07-01',
+				'end_date'   => '2026-06-30',
+			]
+		);
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( '2025-07-01', $config['startDate'] );
+		$this->assertSame( '2026-06-30', $config['endDate'] );
+	}
+
+	/**
+	 * An invalid (non-existent) start_date/end_date falls back to an
+	 * empty string (no filter) rather than reaching the instance config
+	 * as an unchecked value.
+	 */
+	public function test_invalid_start_and_end_date_fall_back_to_empty_string(): void {
+		$html   = $this->shortcode->render(
+			[
+				'start_date' => '2024-02-30',
+				'end_date'   => 'not-a-date',
+			]
+		);
+		$config = $this->get_instance_config( $html );
+
+		$this->assertSame( '', $config['startDate'] );
+		$this->assertSame( '', $config['endDate'] );
+	}
+
+	/**
 	 * With no template attribute, the config carries an empty template
 	 * name, which the JS resolves to the built-in table template.
 	 */

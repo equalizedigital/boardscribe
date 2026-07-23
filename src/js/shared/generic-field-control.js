@@ -84,6 +84,18 @@ export function GenericFieldControl( { field, value = '', onChange, controlProps
 				/>
 			);
 
+		case 'date':
+			return (
+				<TextControl
+					type="date"
+					label={ field.label }
+					help={ help }
+					value={ value }
+					onChange={ onChange }
+					{ ...controlProps }
+				/>
+			);
+
 		case 'text':
 		default:
 			return (

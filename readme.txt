@@ -66,6 +66,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 **Attributes:**
 
 * `included_years` - Comma-separated years to display (e.g. `2023,2024`). Default: all years.
+* `start_date`, `end_date` - Only show meetings in this date range (`YYYY-MM-DD`, inclusive on both ends). Either can be used alone for an open-ended range. Takes priority over `included_years` when set — useful for fiscal years that don't align to the calendar year (e.g. `start_date="2025-07-01" end_date="2026-06-30"`).
 * `posts_per_page` - Entries per page. Use `-1` to show all. Default: `20`.
 * `held_date_format` - PHP date format for meetings that were held. Default: `l, F j, Y`.
 * `not_held_date_format` - PHP date format for meetings not held. Default: `F Y`.
@@ -138,6 +139,10 @@ Yes. BoardScribe outputs a standard, accessible HTML table through a shortcode, 
 = Can I display meetings for specific years only? =
 
 Yes. Use the `included_years` shortcode attribute with a comma-separated list of years: `[edbs_boardscribe included_years="2023,2024"]`.
+
+= Can I display meetings for a fiscal year that doesn't match the calendar year? =
+
+Yes. Use the `start_date` and `end_date` shortcode attributes for an arbitrary date range: `[edbs_boardscribe start_date="2025-07-01" end_date="2026-06-30"]`.
 
 = Can I use the shortcode more than once on the same page? =
 

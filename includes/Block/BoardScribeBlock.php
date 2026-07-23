@@ -141,6 +141,7 @@ class BoardScribeBlock {
 			FieldRegistry::TYPE_SELECT          => 'string',
 			FieldRegistry::TYPE_NUMBER          => 'number',
 			FieldRegistry::TYPE_NUMBER_WITH_ALL => 'number',
+			FieldRegistry::TYPE_DATE            => 'string',
 		];
 
 		$attributes = [];
@@ -264,7 +265,53 @@ class BoardScribeBlock {
 			'no_found_rows'  => true,
 		];
 
-		if ( ! empty( $attributes['includedYears'] ) ) {
+		// Resolved through the same sanitize_iso_date() the frontend
+		// shortcode path uses (via FieldRegistry::resolve_value()) rather
+		// than trusted raw - hand-edited/invalid block markup would
+		// otherwise make this preview disagree with the real query.
+		$start_date = isset( $attributes['startDate'] ) && is_string( $attributes['startDate'] )
+			? FieldRegistry::sanitize_iso_date( $attributes['startDate'] )
+			: '';
+		$end_date   = isset( $attributes['endDate'] ) && is_string( $attributes['endDate'] )
+			? FieldRegistry::sanitize_iso_date( $attributes['endDate'] )
+			: '';
+
+		// Mirrors BoardScribeEndpoint::get_meetings()'s precedence: an
+		// explicit start/end date range takes priority over includedYears
+		// entirely, rather than being combined with it. Filtered against
+		// the edbs_meeting_date meta value (meta_query), not post_date —
+		// same field the query above already orders by, and the same
+		// field the real REST/front-end query filters against.
+		if ( '' !== $start_date || '' !== $end_date ) {
+			if ( '' !== $start_date && '' !== $end_date ) {
+				$query_args['meta_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter the editor preview by meeting date range.
+					[
+						'key'     => 'edbs_meeting_date',
+						'value'   => [ $start_date, $end_date ],
+						'compare' => 'BETWEEN',
+						'type'    => 'DATE',
+					],
+				];
+			} elseif ( '' !== $start_date ) {
+				$query_args['meta_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter the editor preview by meeting date range.
+					[
+						'key'     => 'edbs_meeting_date',
+						'value'   => $start_date,
+						'compare' => '>=',
+						'type'    => 'DATE',
+					],
+				];
+			} else {
+				$query_args['meta_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter the editor preview by meeting date range.
+					[
+						'key'     => 'edbs_meeting_date',
+						'value'   => $end_date,
+						'compare' => '<=',
+						'type'    => 'DATE',
+					],
+				];
+			}
+		} elseif ( ! empty( $attributes['includedYears'] ) ) {
 			$years = array_filter( array_map( 'trim', explode( ',', $attributes['includedYears'] ) ) );
 			if ( $years ) {
 				$query_args['date_query']             = array_map(
