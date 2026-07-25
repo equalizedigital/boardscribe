@@ -98,7 +98,7 @@ The plugin exposes a full set of actions and filters for extending functionality
 
 ### Source Code and Build Process
 
-BoardScribe is GPL-licensed, and the human-readable source for every compiled file it ships is included in the plugin itself, under `src/`:
+BoardScribe is GPL-licensed and developed in the open at [github.com/equalizedigital/boardscribe](https://github.com/equalizedigital/boardscribe). The human-readable source for every compiled file the plugin ships lives in that repository, under `src/`:
 
 * `assets/build/boardscribe.js` is built from `src/js/` (front-end table rendering, pagination, and the display-template registry).
 * `assets/build/block/index.js` is built from `src/js/block/` (the Board Meetings block editor script).
@@ -106,12 +106,12 @@ BoardScribe is GPL-licensed, and the human-readable source for every compiled fi
 
 No third-party JavaScript libraries are bundled. The build output contains only the plugin's own code plus webpack's module runtime; `@wordpress/*` imports resolve to the `wp.*` globals WordPress already enqueues, and are not included in the bundles.
 
-To rebuild the compiled assets from source, run the following from the plugin directory:
+To rebuild the compiled assets from source, clone the repository and run:
 
 `npm install`
 `npm run build`
 
-The build is [@wordpress/scripts](https://www.npmjs.com/package/@wordpress/scripts) (webpack and Babel), configured by the bundled `webpack.config.js` and `package.json`. `npm run start` runs the same build in watch mode, and `npm run lint:js` lints the source.
+The build is [@wordpress/scripts](https://www.npmjs.com/package/@wordpress/scripts) (webpack and Babel), configured by `webpack.config.js` and `package.json` in the repository. `npm run start` runs the same build in watch mode, and `npm run lint:js` lints the source.
 
 ### About Equalize Digital
 
