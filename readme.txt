@@ -96,6 +96,23 @@ Each meeting post stores:
 
 The plugin exposes a full set of actions and filters for extending functionality. See the [plugin documentation](https://equalizedigital.com) for details.
 
+### Source Code and Build Process
+
+BoardScribe is GPL-licensed, and the human-readable source for every compiled file it ships is included in the plugin itself, under `src/`:
+
+* `assets/build/boardscribe.js` is built from `src/js/` (front-end table rendering, pagination, and the display-template registry).
+* `assets/build/block/index.js` is built from `src/js/block/` (the Board Meetings block editor script).
+* `assets/build/builder/index.js` is built from `src/js/builder/` (the admin Shortcode Builder app).
+
+No third-party JavaScript libraries are bundled. The build output contains only the plugin's own code plus webpack's module runtime; `@wordpress/*` imports resolve to the `wp.*` globals WordPress already enqueues, and are not included in the bundles.
+
+To rebuild the compiled assets from source, run the following from the plugin directory:
+
+`npm install`
+`npm run build`
+
+The build is [@wordpress/scripts](https://www.npmjs.com/package/@wordpress/scripts) (webpack and Babel), configured by the bundled `webpack.config.js` and `package.json`. `npm run start` runs the same build in watch mode, and `npm run lint:js` lints the source.
+
 ### About Equalize Digital
 
 [Equalize Digital](https://equalizedigital.com) is a mission-driven WordPress accessibility company working toward a world where everyone has equal access to the web, regardless of ability. Our team has been building custom WordPress websites, themes, and plugins since 2010, and we are the trusted accessibility partner for organizations across government, higher education, nonprofit, and enterprise. We build tools like [Accessibility Checker](https://wordpress.org/plugins/accessibility-checker/), and BoardScribe extends that mission to public meeting records.

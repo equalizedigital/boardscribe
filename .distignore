@@ -10,14 +10,21 @@ dist
 docs
 node_modules
 scripts
-src
 tests
 vendor/bin
+
+# NOT excluded, deliberately: src/, webpack.config.js and package.json.
+# WP.org guideline 4 requires public access to the source of any compiled
+# asset, and assets/build/ ships minified. The plugin's own repo is private,
+# so the source and its build tooling travel inside the zip instead, and
+# readme.txt documents the build steps. Don't add them back here.
 
 # Client data — never ship, tracked or not
 *.csv
 
 # Dev/config files
+# (composer.json is NOT listed here — it ships, because vendor/ ships and
+# Plugin Check flags missing_composer_json_file without it.)
 .distignore
 .editorconfig
 .eslintrc
@@ -25,12 +32,9 @@ vendor/bin
 .phpunit.result.cache
 CLAUDE.md
 README.md
-composer.json
 composer.lock
 docker-compose.yml
-package.json
 package-lock.json
 phpcs.xml
 phpunit.dev.xml
 phpunit.xml.dist
-webpack.config.js
