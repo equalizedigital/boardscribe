@@ -1,0 +1,121 @@
+name: Generate POT file
+
+on:
+  workflow_dispatch:
+    inputs:
+      base:
+        description: 'Base branch to build from and create the PR against. Leave empty to use the branch this was dispatched on.'
+        required: false
+
+# Manual dispatch only - deliberately no push or pull_request trigger, so this
+# never fires off a branch or a PR. That is also why there is no branch gating
+# on the job: there is no automatic event left to filter.
+
+jobs:
+  make-pot:
+    runs-on: ubuntu-latest
+    steps:
+      # Checked out at `base`, not just PR'd against it. create-pull-request
+      # commits onto whatever HEAD it finds, so if this built one branch and
+      # targeted another, every commit between the two would be swept into the
+      # translation PR. Empty input falls back to the dispatched branch, which
+      # keeps build and target the same by default.
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.base || github.ref_name }}
+          # The dist build runs npm and composer against this checkout, so the
+          # GITHUB_TOKEN is kept out of .git/config. create-pull-request does
+          # not need it: it configures its own http.<host>/.extraheader from
+          # its `token` input when it pushes.
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      - name: Build plugin
+        run: |
+          npm run dist:keep-build-folder
+
+      # `wp i18n make-pot` is static analysis over the source tree, so it needs
+      # neither a database nor an installed WordPress.
+      - name: Set up PHP with wp-cli
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: wp-cli
+          coverage: none
+
+      # make-pot writes over the committed copy in dist/, which is also the
+      # baseline the next step diffs against, so that copy is stashed first.
+      # The source argument stays `.` (the plugin root): make-pot resolves its
+      # `#:` references against that, not against the working directory.
+      - name: Generate POT file
+        run: |
+          cd dist/boardscribe
+          if [ -f languages/boardscribe.pot ]; then
+            cp languages/boardscribe.pot "${RUNNER_TEMP}/boardscribe.pot.baseline"
+          fi
+          wp i18n make-pot . languages/boardscribe.pot
+
+      - name: Check if POT file changed (ignoring some headers)
+        id: pot_diff
+        run: |
+          if [ -f dist/boardscribe/languages/boardscribe.pot ] && [ -f "${RUNNER_TEMP}/boardscribe.pot.baseline" ]; then
+            diff_output=$(diff \
+              <(grep -vE '^("?(POT-Creation-Date|PO-Revision-Date|X-Generator|Project-Id-Version):|#:|$)' dist/boardscribe/languages/boardscribe.pot) \
+              <(grep -vE '^("?(POT-Creation-Date|PO-Revision-Date|X-Generator|Project-Id-Version):|#:|$)' "${RUNNER_TEMP}/boardscribe.pot.baseline") || true)
+            if [ -n "$diff_output" ]; then
+              echo "pot_changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "pot_changed=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "pot_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload POT file as artifact
+        if: steps.pot_diff.outputs.pot_changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: boardscribe-i18n
+          path: dist/boardscribe/languages/boardscribe.pot
+
+      - name: Set up Git for PR
+        if: steps.pot_diff.outputs.pot_changed == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Only the .pot is copied back, and add-paths below is limited to it, so
+      # any .po/.mo/.json the translation service later adds to languages/ are
+      # never touched by a workflow run.
+      - name: Copy updated POT file to languages folder
+        if: steps.pot_diff.outputs.pot_changed == 'true'
+        run: |
+          cp dist/boardscribe/languages/boardscribe.pot ./languages/boardscribe.pot
+
+      - name: Create or Update Pull Request with updated POT file
+        if: steps.pot_diff.outputs.pot_changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          add-paths: ./languages/boardscribe.pot
+          commit-message: Update POT translation file
+          title: Update POT translation file
+          body: This PR updates the POT translation file generated by the workflow.
+          branch: update-translations/${{ github.event.inputs.base || github.ref_name }}
+          base: ${{ github.event.inputs.base || github.ref_name }}
+          delete-branch: true

@@ -1,7 +1,8 @@
 # Directories that must never ship in a release/SVN payload.
-# The canonical zip recipe lives in .claude/skills/package-plugins/SKILL.md
-# (an allowlist); this file is the matching denylist for wp dist-archive
-# or any other tooling that packages by exclusion.
+# The canonical allowlist is package.json's "files" field, used by
+# `npm run dist` (scripts/dist.sh); this file is the matching denylist for
+# wp dist-archive or any other tooling that packages by exclusion. Keep the
+# two in step - a path added to one usually needs the other updating too.
 .claude
 .git
 .github

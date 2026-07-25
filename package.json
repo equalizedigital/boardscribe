@@ -1,11 +1,27 @@
 {
 	"name": "boardscribe",
 	"version": "1.0.0",
+	"files": [
+		"boardscribe.php",
+		"block.json",
+		"uninstall.php",
+		"readme.txt",
+		"LICENSE",
+		"assets/build",
+		"assets/css",
+		"assets/images",
+		"includes",
+		"partials",
+		"languages",
+		"vendor"
+	],
 	"description": "Build tooling, tests, and linting for the Equalize Digital BoardScribe plugin",
 	"private": true,
 	"scripts": {
 		"prepare": "husky",
 		"build": "wp-scripts build",
+		"dist": "npm run build && composer install --no-dev --optimize-autoloader && ./scripts/dist.sh && composer install",
+		"dist:keep-build-folder": "npm run build && composer install --no-dev --optimize-autoloader && ./scripts/dist.sh --keep-build-folder",
 		"start": "wp-scripts start",
 		"lint-staged-precommit": "lint-staged",
 		"linting": "./vendor/bin/phpcs && npm run lint:js",
