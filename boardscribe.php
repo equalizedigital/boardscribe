@@ -29,7 +29,7 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 				/* translators: 1: required PHP version, 2: current PHP version */
 				esc_html__( 'BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host.', 'boardscribe' ),
 				'7.4',
-				PHP_VERSION
+				esc_html( PHP_VERSION )
 			)
 			. '</p></div>';
 		}
