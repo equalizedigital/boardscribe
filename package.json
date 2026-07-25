@@ -7,6 +7,7 @@
 		"uninstall.php",
 		"readme.txt",
 		"LICENSE",
+		"composer.json",
 		"assets/build",
 		"assets/css",
 		"assets/images",
@@ -20,7 +21,7 @@
 	"scripts": {
 		"prepare": "husky",
 		"build": "wp-scripts build",
-		"dist": "npm run build && composer install --no-dev --optimize-autoloader && ./scripts/dist.sh && composer install",
+		"dist": "npm run build && composer install --no-dev --optimize-autoloader && ./scripts/dist.sh; rc=$?; composer install; exit $rc",
 		"dist:keep-build-folder": "npm run build && composer install --no-dev --optimize-autoloader && ./scripts/dist.sh --keep-build-folder",
 		"start": "wp-scripts start",
 		"lint-staged-precommit": "lint-staged",

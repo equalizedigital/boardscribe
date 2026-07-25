@@ -69,7 +69,15 @@ if [ -z "$VERSION" ]; then
 # plus composer/ and nothing else - anything more means the --no-dev install
 # did not take, and a zip built from a dev vendor/ is both bloated and wrong.
 if [ -d "$EXTRACT_DIR/vendor" ]; then
-  UNEXPECTED=$(find "$EXTRACT_DIR/vendor" -mindepth 1 -maxdepth 1 ! -name 'autoload.php' ! -name 'composer' -printf '%f\n' 2>/dev/null)
+  UNEXPECTED=""
+  for entry in "$EXTRACT_DIR"/vendor/* "$EXTRACT_DIR"/vendor/.[!.]*; do
+    [ -e "$entry" ] || continue
+    name=$(basename "$entry")
+    case "$name" in
+      autoload.php|composer) ;;
+      *) UNEXPECTED="$UNEXPECTED $name" ;;
+    esac
+  done
   if [ -n "$UNEXPECTED" ]; then
     echo "ERROR: unexpected entries in vendor/ - run 'composer install --no-dev --optimize-autoloader' first:" >&2
     echo "$UNEXPECTED" >&2

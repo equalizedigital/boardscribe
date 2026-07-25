@@ -7,6 +7,13 @@ on:
         description: 'Base branch to build from and create the PR against. Leave empty to use the branch this was dispatched on.'
         required: false
 
+# create-pull-request pushes a branch and opens the PR with GITHUB_TOKEN, so the
+# job needs write on both. Declared explicitly rather than relying on the
+# repository default, matching wp-version-checker.yml in this repo.
+permissions:
+  contents: write
+  pull-requests: write
+
 # Manual dispatch only - deliberately no push or pull_request trigger, so this
 # never fires off a branch or a PR. That is also why there is no branch gating
 # on the job: there is no automatic event left to filter.
