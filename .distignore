@@ -18,6 +18,13 @@ vendor/bin
 *.csv
 
 # Dev/config files
+# (composer.json is NOT listed here — it ships, because vendor/ ships and
+# Plugin Check flags missing_composer_json_file without it.)
+#
+# src/, webpack.config.js and package.json stay excluded: WP.org guideline 4
+# is satisfied by the public github.com/equalizedigital/boardscribe repo,
+# which readme.txt links along with the build steps. If that repo ever goes
+# private again, the source and build tooling have to ship in the zip instead.
 .distignore
 .editorconfig
 .eslintrc
@@ -25,7 +32,6 @@ vendor/bin
 .phpunit.result.cache
 CLAUDE.md
 README.md
-composer.json
 composer.lock
 docker-compose.yml
 package.json
