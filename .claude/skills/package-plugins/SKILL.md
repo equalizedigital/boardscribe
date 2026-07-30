@@ -68,7 +68,9 @@ composer install   # restore dev tooling (phpcs/phpunit/etc.) - don't skip this
 ```
 
 Expected manifest:
-`boardscribe-pro.php`, `readme.txt`, `LICENSE`, `composer.json`, `assets/css/{pro-meta,calendar-templates}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section}.php`, `includes/{Plugin,License/LicenseManager,Admin/ProMetaFields,PostType/MeetingCategory,Block/BlockExtensions,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate,front-end/calendarTemplates,editor/blockEditor}.js`
+`boardscribe-pro.php`, `readme.txt`, `LICENSE`, `composer.json`, `assets/css/pro-meta.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section}.php`, `includes/{Plugin,License/LicenseManager,Admin/ProMetaFields,PostType/MeetingCategory,PostType/MeetingType,Block/BlockExtensions,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate,editor/blockEditor}.js`
+
+Note: as of 2026-07-25 the calendar display templates (`assets/css/calendar-templates.css`, `src/js/front-end/calendarTemplates.js`) do not exist in the Pro repo — they were in an older version of this manifest but no such files are present. `includes/PostType/MeetingType.php` (hierarchical meeting Type taxonomy) is the newest addition. All three ship/don't-ship via the existing wildcard `cp -r` steps, so no script change was needed either way.
 
 Note: Pro no longer ships `block.json`, `build/`, or `partials/block-editor-preview.php` — the block moved to the free plugin (paired `feat/move-block-to-free` branches). Don't re-add them from an old checklist.
 
