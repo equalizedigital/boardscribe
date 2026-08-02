@@ -24,15 +24,18 @@ describe( 'defaultFocus', () => {
 		container.remove();
 	} );
 
-	it( 'does not make anything inside the container permanently focusable', () => {
+	it( 'leaves an existing tabindex on a child element untouched', () => {
 		const container = document.createElement( 'div' );
-		container.innerHTML = '<table><tbody><tr><td>Row</td></tr></tbody></table>';
+		// A pre-existing tabindex="0" here (e.g. a template that still sets
+		// one on its own markup) proves defaultFocus() only ever touches
+		// the container it's given, not anything rendered inside it.
+		container.innerHTML = '<table tabindex="0"><tbody><tr><td>Row</td></tr></tbody></table>';
 		document.body.appendChild( container );
 
 		defaultFocus( container );
 
 		const table = container.querySelector( 'table' );
-		expect( table.hasAttribute( 'tabindex' ) ).toBe( false );
+		expect( table.getAttribute( 'tabindex' ) ).toBe( '0' );
 		expect( document.activeElement ).toBe( container );
 
 		container.remove();
