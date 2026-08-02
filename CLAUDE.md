@@ -121,8 +121,8 @@ composer test                       # phpunit (requires ./scripts/setup-phpunit.
 - Branch from `main`, PR back into `main`.
 - **Commits should be small and atomic** — each commit covers one minimal, self-contained chunk of related changes. Prefer several small commits within a PR over one large one; it keeps review and `git blame`/history useful even when the PR itself bundles a few related fixes.
 - **Use Conventional Commits style wherever possible** (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `test:`, etc.) for commit subject lines.
-- **Always wait for review comments — including AI reviewers (CodeRabbit, Gemini Code Assist)** — before considering a PR done or merging. Don't skim past a "pending"/"in progress" AI review status. When findings land, surface them for discussion before fixing anything.
-- CodeRabbit and Gemini Code Assist both auto-review PRs on this repo; expect both, not just one.
+- **Always wait for review comments — including AI reviewers (CodeRabbit)** — before considering a PR done or merging. Don't skim past a "pending"/"in progress" AI review status. When findings land, surface them for discussion before fixing anything.
+- CodeRabbit auto-reviews PRs on this repo.
 - When replying to review threads, reference the specific commit hash that addressed the finding.
 
 ## Known doc staleness
