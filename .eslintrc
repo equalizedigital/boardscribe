@@ -10,6 +10,12 @@
 	},
 	"overrides": [
 		{
+			"files": [ "**/*.test.js" ],
+			"env": {
+				"jest": true
+			}
+		},
+		{
 			"files": [
 				"src/js/block/**/*.js",
 				"src/js/block/**/*.jsx",
