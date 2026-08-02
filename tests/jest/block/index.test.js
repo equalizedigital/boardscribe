@@ -195,6 +195,7 @@ describe( 'BoardScribe block edit()', () => {
 
 		// column_labels group, including a simulated Pro field - proves
 		// third-party registry additions need no block-specific code.
+		expect( controlFor( container, 'text', 'Title' ) ).not.toBeNull();
 		expect( controlFor( container, 'text', 'Location' ) ).not.toBeNull();
 
 		// hide_columns group - "Title" here is a checkbox, distinct from
