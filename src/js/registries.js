@@ -27,7 +27,9 @@ window.edbsExtraColumns = window.edbsExtraColumns || [];
 //       Replace the default aria-live "Showing X to Y of Z" text.
 //   focus( container, instanceCfg )                             - optional.
 //       Move focus after a pagination-triggered re-render. The default
-//       focuses the first [tabindex="0"] element in the container.
+//       focuses the container itself, via a temporary tabindex="-1"
+//       removed again right after - the table (or tables) a template
+//       renders inside it are never made focusable themselves.
 //   buildRequestUrl( instanceCfg, page )                        - optional.
 //       Return the URL to fetch instead of the default query string -
 //       core still performs the fetch, error handling, and JSON parsing.

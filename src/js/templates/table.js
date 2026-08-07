@@ -48,7 +48,7 @@ export function buildTableHtml( meetings, instanceCfg ) {
 	// browsers (most notably Safari/VoiceOver) - explicit roles keep the
 	// table announced as a table, with header/cell relationships intact,
 	// regardless of that CSS.
-	let table = '<table tabindex="0" role="table" class="edbs-boardscribe-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
+	let table = '<table role="table" class="edbs-boardscribe-table ' + templateClass + ' ' + equalColumnsClass + ' ' + tableClass + '">' +
 		'<thead class="desktop" role="rowgroup"><tr role="row">';
 
 	if ( ! cfg.hideTitle ) {
