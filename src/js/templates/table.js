@@ -87,6 +87,19 @@ export function buildTableHtml( meetings, instanceCfg ) {
 
 	table += '</tr></thead><tbody role="rowgroup">';
 
+	// Every row needs exactly one cell marked as its row header so screen
+	// readers can announce which row a cell belongs to. The title is the
+	// natural label, but it's an optional column - when it's hidden the
+	// date takes over, as it's the only other core column whose value
+	// identifies the row (agenda/minutes cells are identical link text on
+	// every row, so promoting one of those would announce nothing useful).
+	let rowHeaderColumn = '';
+	if ( ! cfg.hideTitle ) {
+		rowHeaderColumn = 'title';
+	} else if ( ! cfg.hideDate ) {
+		rowHeaderColumn = 'date';
+	}
+
 	// Cell content below (meeting.title, meeting.date, meeting.agenda,
 	// meeting.minutes, and any Pro-registered renderCell() output) is
 	// inserted as trusted, pre-escaped HTML by contract - the REST
@@ -104,10 +117,10 @@ export function buildTableHtml( meetings, instanceCfg ) {
 			// as a row header - `scope` is only valid on <th> and browsers
 			// silently ignore it here, leaving the row with no accessible
 			// header at all.
-			table += '<td data-label="' + escapeAttribute( labelTitle ) + '" role="rowheader">' + ( meeting.title || '' ) + '</td>';
+			table += '<td data-label="' + escapeAttribute( labelTitle ) + '" role="' + ( 'title' === rowHeaderColumn ? 'rowheader' : 'cell' ) + '">' + ( meeting.title || '' ) + '</td>';
 		}
 		if ( ! cfg.hideDate ) {
-			table += '<td data-label="' + escapeAttribute( labelDate ) + '" role="cell">' + ( meeting.date || '' ) + '</td>';
+			table += '<td data-label="' + escapeAttribute( labelDate ) + '" role="' + ( 'date' === rowHeaderColumn ? 'rowheader' : 'cell' ) + '">' + ( meeting.date || '' ) + '</td>';
 		}
 		if ( ! cfg.hideAgenda ) {
 			table += '<td data-label="' + escapeAttribute( labelAgenda ) + '" role="cell">' + ( meeting.agenda || '' ) + '</td>';
