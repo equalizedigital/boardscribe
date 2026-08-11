@@ -1,6 +1,6 @@
 # BoardScribe (by Equalize Digital)
 
-WordPress plugin — display name "BoardScribe", WP.org slug/text domain `boardscribe`, code prefix `edbs_`/`EDBS_`; git repo `equalizedigital/boardscribe` (renamed from the historical `equalize-digital-meeting-minutes` — old remote URLs redirect), local checkout directory `boardscribe`. Manages meeting minutes as a custom post type (`edbs_boardscribe`), displayed via a `[edbs_boardscribe]` shortcode backed by a public REST endpoint (`/edbs/v1/boardscribe/`), plus a Gutenberg block (`equalize-digital/boardscribe`) that renders through the same shortcode pipeline (moved here from Pro — the block name is stored in existing content and must never change). Native WordPress storage only — no ACF dependency (removed during the restructure; some docs still mention it, see Known Doc Staleness below).
+WordPress plugin — display name "BoardScribe", WP.org slug/text domain `boardscribe`, code prefix `edbs_`/`EDBS_`; git repo `equalizedigital/boardscribe` (renamed from the historical `equalize-digital-meeting-minutes` — old remote URLs redirect), local checkout directory `boardscribe`. Manages meeting minutes as a custom post type (`edbs_boardscribe`), displayed via a `[edbs_boardscribe]` shortcode backed by a public REST endpoint (`/edbs/v1/boardscribe/`), plus a Gutenberg block (`equalize-digital/boardscribe`) that renders through the same shortcode pipeline (moved here from Pro — the block name is stored in existing content and must never change). Native WordPress storage only — no ACF dependency (removed during the restructure).
 
 ## This is the free plugin — Pro is a separate sibling repo
 
@@ -9,7 +9,7 @@ This repo is the **free, WordPress.org-distributed** half of a freemium product.
 - Every feature added to this free plugin should ask "how would Pro hook into or override this?" before being considered done.
 - Prefer `apply_filters()`/`do_action()` extension points over hardcoding, especially around: CPT registration args, REST route args/query building, row/output formatting, and anywhere shortcode/table markup is assembled.
 - If you extract or refactor logic that Pro would need to reuse (e.g. the per-row escaping/formatting logic), expose it as a callable public method rather than leaving it inline — duplicated logic in Pro risks re-diverging from security fixes made here.
-- See `docs/PREMIUM-FEATURES.md` for the full premium feature list and the free/premium split, and `docs/MARKET-RESEARCH.md` for the business context behind that split.
+- The premium feature list, the free/premium split, and the business context behind that split are tracked privately, not in this public repo. When a change hinges on which side of the free/Pro line a feature falls, ask rather than inferring it from the code.
 - Full audit of what's needed for Pro to extend "basically everything" is an ongoing effort — check recent PRs/commit history for the state of this work before assuming a gap exists.
 
 ## Directory structure
@@ -124,7 +124,3 @@ composer test                       # phpunit (requires ./scripts/setup-phpunit.
 - **Always wait for review comments — including AI reviewers (CodeRabbit, Gemini Code Assist)** — before considering a PR done or merging. Don't skim past a "pending"/"in progress" AI review status. When findings land, surface them for discussion before fixing anything.
 - CodeRabbit and Gemini Code Assist both auto-review PRs on this repo; expect both, not just one.
 - When replying to review threads, reference the specific commit hash that addressed the finding.
-
-## Known doc staleness
-
-`docs/PREMIUM-FEATURES.md` and `docs/MARKET-RESEARCH.md` both still list "ACF integration" under the free-tier feature set. This is stale — the ACF dependency was fully removed during the plugin restructure in favor of native `register_post_meta()` + a custom meta box (this was itself a "Critical Blocker" item in `docs/PRODUCTION-READINESS.md`). Don't treat those two docs' free/premium split as 100% current without cross-checking against the actual code.
