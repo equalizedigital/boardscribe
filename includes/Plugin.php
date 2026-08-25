@@ -42,7 +42,7 @@ class Plugin {
 	/**
 	 * Returns the single instance.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return Plugin
 	 */
@@ -56,14 +56,14 @@ class Plugin {
 	/**
 	 * Private constructor — use get_instance().
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 */
 	private function __construct() {}
 
 	/**
 	 * Boots the plugin. Hooked to plugins_loaded.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -90,7 +90,7 @@ class Plugin {
 		/**
 		 * Fires after all free plugin components are registered. Pro plugin's sole entry point.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param Plugin $plugin The plugin instance.
 		 */
@@ -100,7 +100,7 @@ class Plugin {
 	/**
 	 * Adds agenda/minutes link filters for Accessibility Checker Pro.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $additional_filters Existing filter names.
 	 * @return array
@@ -114,7 +114,7 @@ class Plugin {
 	/**
 	 * Gets a single plugin setting with fallback to defaults.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $key           The setting key.
 	 * @param mixed  $default_value Optional override default (falls back to DEFAULTS constant).
