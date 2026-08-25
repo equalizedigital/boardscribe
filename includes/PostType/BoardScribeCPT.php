@@ -19,7 +19,7 @@ class BoardScribeCPT {
 	/**
 	 * Hooks the CPT registration into WordPress init.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -30,7 +30,7 @@ class BoardScribeCPT {
 	/**
 	 * Registers the edbs_meeting custom post type.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -66,7 +66,7 @@ class BoardScribeCPT {
 		 * Filters the edbs_meeting CPT registration args. Pro plugin uses
 		 * this to enable public/rewrite/archive support or a custom capability_type.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param array $args The register_post_type() args.
 		 */
@@ -76,7 +76,7 @@ class BoardScribeCPT {
 		 * Fires before the BoardScribe CPT is registered. Register taxonomies
 		 * that need to bind to the CPT here.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 */
 		do_action( 'edbs_before_register_cpt' );
 
@@ -86,7 +86,7 @@ class BoardScribeCPT {
 		 * Fires after the BoardScribe CPT is registered. Register taxonomies
 		 * or rewrite rules here.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 */
 		do_action( 'edbs_after_register_cpt' );
 	}

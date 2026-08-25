@@ -40,7 +40,7 @@ class FieldRegistry {
 	/**
 	 * Hooks the free plugin's own fields into the registry filter.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -57,7 +57,7 @@ class FieldRegistry {
 	 * state to invalidate, matching every other single-purpose filter
 	 * in this plugin.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return array[] List of field descriptors, see add_core_fields().
 	 */
@@ -102,7 +102,7 @@ class FieldRegistry {
 	 *     @type string|null   $block_attribute_key Overrides the camelCase block-attribute key derived from $key/config_key.
 	 * }
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array[] $fields Field descriptors contributed by earlier-priority callbacks.
 	 * @return array[]
@@ -302,7 +302,7 @@ class FieldRegistry {
 	 * key/configKey/default for the builder's shortcode generation and
 	 * preview instance config.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, placeholder: ?string, description: ?string}>
 	 */
@@ -332,7 +332,7 @@ class FieldRegistry {
 	 * instance-config value, using the field's own sanitize_callback
 	 * if it has one, otherwise a built-in resolver for its type.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $field     The field descriptor, see add_core_fields().
 	 * @param mixed $raw_value The raw shortcode-attribute value.
@@ -384,7 +384,7 @@ class FieldRegistry {
 	 * field from its snake_case $key, unless the descriptor overrides
 	 * it explicitly.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $field The field descriptor.
 	 * @return string
@@ -402,7 +402,7 @@ class FieldRegistry {
 	 * name for instance config and the block attribute — unless the
 	 * descriptor overrides it explicitly (e.g. class -> className).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $field The field descriptor.
 	 * @return string
@@ -420,7 +420,7 @@ class FieldRegistry {
 	 * by the held_date_format and not_held_date_format field descriptors,
 	 * which differ only in their fallback value.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param mixed  $value         Raw date-format value.
 	 * @param string $default_value Fallback value when invalid.
@@ -436,7 +436,7 @@ class FieldRegistry {
 	 * string (no filter) for anything that isn't a valid Y-m-d date —
 	 * same fallback-to-safe-default pattern as sanitize_date_format().
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param mixed $value Raw start_date/end_date value.
 	 * @return string A Y-m-d date string, or ''.
@@ -454,7 +454,7 @@ class FieldRegistry {
 	 * relying on DateTime's silent rollover to the next valid date -
 	 * checkdate() is the strict check purpose-built for this.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param mixed $value The raw start_date/end_date value.
 	 * @return bool
@@ -484,7 +484,7 @@ class FieldRegistry {
 	 * reaches the instance config, to prevent stored XSS via the
 	 * shortcode attribute.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param mixed $class_list Raw, space-separated class names.
 	 * @return string Sanitized, space-separated class names.
@@ -503,7 +503,7 @@ class FieldRegistry {
 	 * posts_per_page=0, not "all") or flip a mistyped negative like
 	 * "-5" into a positive 5. A genuine positive count is returned as-is.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param mixed $value The raw posts_per_page value.
 	 * @return int

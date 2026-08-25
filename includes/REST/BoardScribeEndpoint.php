@@ -25,7 +25,7 @@ class BoardScribeEndpoint {
 	/**
 	 * Hooks REST route registration into WordPress.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -36,7 +36,7 @@ class BoardScribeEndpoint {
 	/**
 	 * Registers the custom REST route.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -77,7 +77,7 @@ class BoardScribeEndpoint {
 		 * need a builder/block field should be registered on
 		 * edbs_shortcode_field_registry with rest_arg => true instead.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param array $args The REST route args schema.
 		 */
@@ -98,7 +98,7 @@ class BoardScribeEndpoint {
 	/**
 	 * Handles GET requests to the boardscribe endpoint.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param \WP_REST_Request $request The REST request object.
 	 * @return \WP_REST_Response
@@ -124,7 +124,7 @@ class BoardScribeEndpoint {
 			 * no-limit option must resolve to a bounded query — otherwise any
 			 * anonymous caller could request every record in one response.
 			 *
-			 * @since x.x.x
+			 * @since 1.0.0
 			 *
 			 * @param int $absolute_max Upper bound substituted for -1. Default 500.
 			 */
@@ -135,7 +135,7 @@ class BoardScribeEndpoint {
 			 *
 			 * Bounds arbitrary positive values sent directly to the public endpoint.
 			 *
-			 * @since x.x.x
+			 * @since 1.0.0
 			 *
 			 * @param int $max_per_page Maximum posts_per_page. Default 100.
 			 */
@@ -208,7 +208,7 @@ class BoardScribeEndpoint {
 		 * Filters the WP_Query args before querying meetings.
 		 * Pro plugin can add taxonomy queries, additional meta filters, etc.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param array            $args    The WP_Query args.
 		 * @param \WP_REST_Request $request The REST request.
@@ -247,7 +247,7 @@ class BoardScribeEndpoint {
 		 * Filters the full REST response before it is returned.
 		 * Pro plugin can add top-level fields (e.g., available categories).
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param array            $response The response data.
 		 * @param \WP_REST_Request $request  The REST request.
@@ -265,7 +265,7 @@ class BoardScribeEndpoint {
 	 * feed, a "most recent meeting" widget) can call this directly instead
 	 * of re-implementing the same escaping logic themselves.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param int                   $post_id     The meeting post ID.
 	 * @param array                 $format_args {
@@ -308,7 +308,7 @@ class BoardScribeEndpoint {
 		 * held/not-held status. Sort order is unaffected — it's driven by the
 		 * raw edbs_meeting_date value, not this display string.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param string $formatted_date   The computed/escaped date display string.
 		 * @param int    $post_id          The post ID.
@@ -356,7 +356,7 @@ class BoardScribeEndpoint {
 		 * Filters a single meeting row before it is added to the response.
 		 * Pro plugin can add extra fields (e.g., category, attachments).
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param array                  $row     The meeting row data.
 		 * @param int                    $post_id The post ID.
@@ -385,7 +385,7 @@ class BoardScribeEndpoint {
 	 * param), and a strict type hint would throw a TypeError instead of
 	 * just failing validation.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param mixed $value The raw held_date_format/not_held_date_format value.
 	 * @return bool
@@ -408,7 +408,7 @@ class BoardScribeEndpoint {
 	 * with the exact same format list as this endpoint, instead of
 	 * maintaining a copy that could silently diverge.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $date_string The raw date string from post meta.
 	 * @return \DateTime|null

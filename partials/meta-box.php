@@ -63,7 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 * field it takes priority over, rather than at the end of the box
 		 * with the generic edbs_meta_fields hook.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param \WP_Post $post The current post.
 		 */
@@ -98,7 +98,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 * URL field it takes priority over, rather than at the end of the
 		 * box with the generic edbs_meta_fields hook.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param \WP_Post $post The current post.
 		 */
@@ -126,7 +126,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 * Fires after the default meta box fields are rendered. Pro plugin can
 		 * use this to append additional fields.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param \WP_Post $post The current post.
 		 */

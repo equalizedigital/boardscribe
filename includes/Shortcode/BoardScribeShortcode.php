@@ -34,7 +34,7 @@ class BoardScribeShortcode {
 	/**
 	 * Hooks shortcode and asset enqueuing into WordPress.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -48,7 +48,7 @@ class BoardScribeShortcode {
 	 * content. Page builders that render shortcodes late are handled by the
 	 * fallback enqueue inside render().
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -68,7 +68,7 @@ class BoardScribeShortcode {
 	 * the edbsConfig localization and the edbs_enqueue_assets action, so
 	 * Pro's extra columns/templates render in the preview too.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -101,7 +101,7 @@ class BoardScribeShortcode {
 		 * Fires after the plugin assets are enqueued.
 		 * Pro plugin can enqueue its own assets here.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 */
 		do_action( 'edbs_enqueue_assets' );
 	}
@@ -110,7 +110,7 @@ class BoardScribeShortcode {
 	 * Calls wp_localize_script once per page load to pass global
 	 * config and i18n strings to the JavaScript.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -148,7 +148,7 @@ class BoardScribeShortcode {
 	/**
 	 * Renders the [edbs_boardscribe] shortcode output.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $atts Shortcode attributes.
 	 * @return string HTML output.
@@ -193,7 +193,7 @@ class BoardScribeShortcode {
 			 * Pro plugin can use this to render e.g. a search box, a date
 			 * range picker, or an "add to calendar" button.
 			 *
-			 * @since x.x.x
+			 * @since 1.0.0
 			 *
 			 * @param string $instance_id The unique instance ID for this shortcode invocation.
 			 * @param array  $atts        The resolved shortcode attributes.
@@ -215,7 +215,7 @@ class BoardScribeShortcode {
 			 * Pro plugin can use this to render e.g. a comment/feedback form
 			 * or a print button.
 			 *
-			 * @since x.x.x
+			 * @since 1.0.0
 			 *
 			 * @param string $instance_id The unique instance ID for this shortcode invocation.
 			 * @param array  $atts        The resolved shortcode attributes.

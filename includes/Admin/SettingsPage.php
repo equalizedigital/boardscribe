@@ -49,7 +49,7 @@ class SettingsPage {
 	/**
 	 * Hooks settings registration and admin menu into WordPress.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -62,7 +62,7 @@ class SettingsPage {
 	/**
 	 * Returns the settings page tab definitions, keyed by tab slug.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return array<string, array{icon:string,label:string}>
 	 */
@@ -89,7 +89,7 @@ class SettingsPage {
 		 * controls display order, so a callback can splice a tab in before
 		 * "support" rather than only appending.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param array<string, array{icon:string,label:string}> $tabs Tab definitions.
 		 */
@@ -100,7 +100,7 @@ class SettingsPage {
 	 * Returns the current tab slug, defaulting to "general" when absent or
 	 * unrecognized.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -114,7 +114,7 @@ class SettingsPage {
 	/**
 	 * Builds the admin URL for a settings tab.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $tab The tab slug.
 	 * @return string
@@ -133,7 +133,7 @@ class SettingsPage {
 	/**
 	 * Adds the Settings submenu under the BoardScribe CPT menu.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -151,7 +151,7 @@ class SettingsPage {
 	/**
 	 * Registers the persistent plugin settings.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -186,7 +186,7 @@ class SettingsPage {
 	 * Enqueues settings-page assets, plus the shortcode builder app on the
 	 * builder tab (its live preview runs the real frontend pipeline).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $hook The current admin page hook.
 	 * @return void
@@ -242,7 +242,7 @@ class SettingsPage {
 	/**
 	 * Renders the General section intro copy.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -253,7 +253,7 @@ class SettingsPage {
 	/**
 	 * Renders the delete on uninstall settings field.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -286,7 +286,7 @@ class SettingsPage {
 	/**
 	 * Sanitizes settings before saving.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $input Raw input from the settings form.
 	 * @return array Sanitized settings.
@@ -300,7 +300,7 @@ class SettingsPage {
 	/**
 	 * Renders the settings page HTML.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -317,7 +317,7 @@ class SettingsPage {
 	/**
 	 * Renders the sidebar tab navigation.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $current_tab The active tab slug.
 	 * @return void
@@ -342,7 +342,7 @@ class SettingsPage {
 	/**
 	 * Renders the panel header (icon + label) for the current tab.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $current_tab The active tab slug.
 	 * @return void
@@ -364,7 +364,7 @@ class SettingsPage {
 	/**
 	 * Renders the active tab's panel content.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $current_tab The active tab slug.
 	 * @return void
@@ -390,7 +390,7 @@ class SettingsPage {
 				 * Only fires for tabs present in the (filtered) tab list, since
 				 * get_current_tab() falls back to "general" for unknown slugs.
 				 *
-				 * @since x.x.x
+				 * @since 1.0.0
 				 */
 				do_action( "edbs_settings_tab_content_{$current_tab}" );
 				break;
@@ -400,7 +400,7 @@ class SettingsPage {
 	/**
 	 * Renders the General tab (persistent settings form).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -419,7 +419,7 @@ class SettingsPage {
 		 * for sections with their own form (e.g. license management) that don't use
 		 * the Settings API.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 */
 		do_action( 'edbs_settings_fields' );
 	}
@@ -427,7 +427,7 @@ class SettingsPage {
 	/**
 	 * Renders the Shortcode Builder tab (React app mount point).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -443,7 +443,7 @@ class SettingsPage {
 	/**
 	 * Renders the Support tab (documentation and contact links).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
