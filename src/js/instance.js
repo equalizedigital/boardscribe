@@ -163,7 +163,17 @@ export function initInstance( container ) {
 
 		request
 			.then( function( data ) {
-				renderInstance( data, refocus );
+				// Caught separately from the request promise below so a
+				// throw from renderInstance() (e.g. a broken template or
+				// edbs:table-rendered listener) isn't misreported to
+				// consumers as an edbs:fetch-error - the request itself
+				// succeeded.
+				try {
+					renderInstance( data, refocus );
+				} catch ( error ) {
+					// eslint-disable-next-line no-console -- Surface render failures for debugging; there is no other error-reporting mechanism here.
+					console.error( 'EDBS: render error:', error );
+				}
 			} )
 			.catch( function( error ) {
 				// eslint-disable-next-line no-console -- Surface fetch failures for debugging; there is no other error-reporting mechanism here.
