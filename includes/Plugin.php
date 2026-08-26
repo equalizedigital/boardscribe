@@ -54,11 +54,35 @@ class Plugin {
 	}
 
 	/**
+	 * Option storing the date the plugin was first activated.
+	 */
+	const ACTIVATION_DATE_OPTION = 'edbs_activation_date';
+
+	/**
 	 * Private constructor — use get_instance().
 	 *
 	 * @since 1.0.0
 	 */
 	private function __construct() {}
+
+	/**
+	 * Runs on plugin activation.
+	 *
+	 * Records the first-activation date, used to report how long a site has
+	 * been running BoardScribe on outbound documentation links. The CPT is
+	 * registered with `public`/`rewrite`/`has_archive` all false, so there are
+	 * no rewrite rules to flush here.
+	 *
+	 * `add_option()` (not `update_option()`) so a deactivate/reactivate cycle
+	 * keeps the original date rather than restarting the clock.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public static function activate(): void {
+		add_option( self::ACTIVATION_DATE_OPTION, gmdate( 'Y-m-d H:i:s' ) );
+	}
 
 	/**
 	 * Boots the plugin. Hooked to plugins_loaded.

@@ -64,6 +64,8 @@ require_once EDBS_DIR . 'vendor/autoload.php';
 // when the autoloader guard above just bailed.
 define( 'EDBS_VERSION', '1.0.0' );
 
+register_activation_hook( __FILE__, [ 'EqualizeDigital\BoardScribe\Plugin', 'activate' ] );
+
 // Boot the plugin.
 add_action(
 	'plugins_loaded',

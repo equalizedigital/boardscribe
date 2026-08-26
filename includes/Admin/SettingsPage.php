@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use EqualizeDigital\BoardScribe\Helpers\Helpers;
 use EqualizeDigital\BoardScribe\Plugin;
 use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
@@ -441,6 +442,26 @@ class SettingsPage {
 	}
 
 	/**
+	 * Builds a UTM-tagged link for the Support tab.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $url         Absolute URL, or a path relative to the BoardScribe site section.
+	 * @param string $utm_content Identifies which link on the tab was clicked.
+	 *
+	 * @return string
+	 */
+	private function support_url( string $url, string $utm_content ): string {
+		return Helpers::utm_link_builder(
+			$url,
+			[
+				'utm_campaign' => 'settings-support',
+				'utm_content'  => $utm_content,
+			]
+		);
+	}
+
+	/**
 	 * Renders the Support tab (documentation and contact links).
 	 *
 	 * @since 1.0.0
@@ -448,16 +469,42 @@ class SettingsPage {
 	 * @return void
 	 */
 	private function render_support_tab(): void {
-		// Placeholder links — swap for real BoardScribe documentation URLs.
 		$quick_links = [
-			__( 'Getting Started with BoardScribe', 'boardscribe' ),
-			__( 'Displaying Meetings with the Shortcode', 'boardscribe' ),
-			__( 'Using the BoardScribe Block', 'boardscribe' ),
-			__( 'Adding a Meeting', 'boardscribe' ),
-			__( 'Agenda and Minutes Links', 'boardscribe' ),
-			__( 'Is BoardScribe Accessible?', 'boardscribe' ),
-			__( 'BoardScribe Developer Guide', 'boardscribe' ),
-			__( 'BoardScribe Hooks Reference', 'boardscribe' ),
+			[
+				'url'         => '/documentation/downloading-and-installing-boardscribe/',
+				'label'       => __( 'Downloading and Installing BoardScribe', 'boardscribe' ),
+				'utm_content' => 'downloading-and-installing-boardscribe',
+			],
+			[
+				'url'         => '/documentation/boardscribe-settings/',
+				'label'       => __( 'BoardScribe Settings', 'boardscribe' ),
+				'utm_content' => 'boardscribe-settings',
+			],
+			[
+				'url'         => '/documentation/board-meetings-post-type/',
+				'label'       => __( 'Board Meetings Post Type', 'boardscribe' ),
+				'utm_content' => 'board-meetings-post-type',
+			],
+			[
+				'url'         => '/documentation/shortcode-builder/',
+				'label'       => __( 'Shortcode Builder', 'boardscribe' ),
+				'utm_content' => 'shortcode-builder',
+			],
+			[
+				'url'         => '/documentation/is-boardscribe-accessible/',
+				'label'       => __( 'Is BoardScribe accessible?', 'boardscribe' ),
+				'utm_content' => 'is-boardscribe-accessible',
+			],
+			[
+				'url'         => '/boardscribe-documentation/what-languages-is-boardscribe-available-in/',
+				'label'       => __( 'What languages is BoardScribe translated into?', 'boardscribe' ),
+				'utm_content' => 'what-languages-is-boardscribe-available-in',
+			],
+			[
+				'url'         => '/documentation/how-do-i-add-file-type-and-size-information-to-links/',
+				'label'       => __( 'How do I add file size and type information to links?', 'boardscribe' ),
+				'utm_content' => 'how-do-i-add-file-type-and-size-information-to-links',
+			],
 		];
 		?>
 		<div class="edbs-settings-panel-sub">
@@ -465,7 +512,7 @@ class SettingsPage {
 			<p class="edbs-settings-support-description">
 				<?php esc_html_e( 'Need help? Check out our documentation for step-by-step guides and feature walkthroughs.', 'boardscribe' ); ?>
 			</p>
-			<a class="button button-secondary" href="#" target="_blank" rel="noopener noreferrer">
+			<a class="button button-secondary" href="<?php echo esc_url( $this->support_url( '/documentation/', 'button-documentation' ) ); ?>" target="_blank" rel="noopener noreferrer">
 				<?php esc_html_e( 'View Documentation', 'boardscribe' ); ?>
 				<span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'boardscribe' ); ?></span>
 			</a>
@@ -476,7 +523,7 @@ class SettingsPage {
 			<p class="edbs-settings-support-description">
 				<?php esc_html_e( 'Have questions or need help? Reach out to our support team.', 'boardscribe' ); ?>
 			</p>
-			<a class="button button-secondary" href="#" target="_blank" rel="noopener noreferrer">
+			<a class="button button-secondary" href="<?php echo esc_url( $this->support_url( 'https://my.equalizedigital.com/support/', 'button-support' ) ); ?>" target="_blank" rel="noopener noreferrer">
 				<?php esc_html_e( 'Contact Support', 'boardscribe' ); ?>
 				<span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'boardscribe' ); ?></span>
 			</a>
@@ -485,10 +532,10 @@ class SettingsPage {
 		<div class="edbs-settings-panel-sub">
 			<h2><?php esc_html_e( 'Quick Links', 'boardscribe' ); ?></h2>
 			<ul class="edbs-settings-links-list">
-				<?php foreach ( $quick_links as $label ) : ?>
+				<?php foreach ( $quick_links as $link ) : ?>
 					<li>
-						<a href="#" target="_blank" rel="noopener noreferrer">
-							<?php echo esc_html( $label ); ?>
+						<a href="<?php echo esc_url( $this->support_url( $link['url'], $link['utm_content'] ) ); ?>" target="_blank" rel="noopener noreferrer">
+							<?php echo esc_html( $link['label'] ); ?>
 							<span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'boardscribe' ); ?></span>
 						</a>
 					</li>
