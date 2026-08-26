@@ -81,7 +81,9 @@ window.edbsTemplates = window.edbsTemplates || {};
 //   edbs:fetch-error       { error, instanceCfg }        - when the
 //       request for a page's data fails (network error or non-OK response).
 //
-// `data` is the REST response - buildRequestUrl() only redirects where core
-// fetches from, core still parses the result as a normal REST response. Only
-// a template's own request() override can resolve to a different shape, so
-// `data`'s shape depends on whether the active template defines one.
+// `data` is the parsed JSON response. buildRequestUrl() only changes the
+// fetch URL - core does not validate or transform what comes back, so the
+// endpoint it points to must return the shape the active renderers expect.
+// A template's own request() override can resolve to a different shape
+// entirely, in which case any renderers it doesn't also override must be
+// replaced too.
