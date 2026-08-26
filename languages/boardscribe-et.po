@@ -1,0 +1,563 @@
+# Copyright (C) 2026 Equalize Digital
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BoardScribe 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: boardscribe\n"
+"Language: et\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Plugin Name of the plugin
+#: boardscribe.php
+#: includes/Block/BoardScribeBlock.php:79
+#: partials/settings-page.php:22
+msgid "BoardScribe"
+msgstr "BoardScribe"
+
+#. Description of the plugin
+#: boardscribe.php
+msgid "Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
+msgstr "Avaldage oma saidil ligipääsetavaid ja otsitavaid koosolekute päevakordi ning protokolle – loodud avalik-õiguslikele asutustele, korteriühistutele ja mittetulundusühingutele, kes vajavad avatud ja organiseeritud dokumentatsiooni."
+
+#. Author of the plugin
+#: boardscribe.php
+msgid "Equalize Digital"
+msgstr "Equalize Digital"
+
+#. Author URI of the plugin
+#: boardscribe.php
+msgid "https://equalizedigital.com"
+msgstr "https://equalizedigital.com"
+
+#. translators: 1: required PHP version, 2: current PHP version
+#: boardscribe.php:30
+#, php-format
+msgid "BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
+msgstr "BoardScribe vajab PHP versiooni %1$s või uuemat. Teie kasutate PHP versiooni %2$s. Palun uuendage PHP-d või võtke ühendust oma teenusepakkujaga."
+
+#: boardscribe.php:52
+msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
+msgstr "BoardScribe'i automaatlaadija on puudu. Installige uuesti ametlikust zip-failist või käivitage „composer install“, kui arendate lähtekoodist."
+
+#: includes/Admin/MetaBox.php:126
+msgid "Meeting date in Y-m-d format."
+msgstr "Koosoleku kuupäev vormingus AAAA-KK-PP."
+
+#: includes/Admin/MetaBox.php:139
+msgid "URL to the meeting agenda document."
+msgstr "Koosoleku päevakorra dokumendi URL."
+
+#: includes/Admin/MetaBox.php:152
+msgid "URL to the published minutes document for this meeting."
+msgstr "Selle koosoleku avaldatud protokolli dokumendi URL."
+
+#: includes/Admin/MetaBox.php:165
+msgid "Whether the meeting was not held."
+msgstr "Kas koosolek jäi toimumata."
+
+#: includes/Admin/MetaBox.php:194
+msgid "Meeting Details"
+msgstr "Koosoleku üksikasjad"
+
+#: includes/Admin/MetaBox.php:346
+msgctxt "default generated meeting title"
+msgid "Board Meeting"
+msgstr "Juhatuse koosolek"
+
+#. translators: 1: "Board Meeting" label, 2: formatted meeting date.
+#: includes/Admin/MetaBox.php:354
+#, php-format
+msgctxt "default generated meeting title with date"
+msgid "%1$s - %2$s"
+msgstr "%1$s – %2$s"
+
+#: includes/Admin/SettingsPage.php:74
+msgid "General"
+msgstr "Üldine"
+
+#: includes/Admin/SettingsPage.php:78
+#: includes/Admin/SettingsPage.php:490
+msgid "Shortcode Builder"
+msgstr "Lühikoodi koostaja"
+
+#: includes/Admin/SettingsPage.php:82
+msgid "Support"
+msgstr "Tugi"
+
+#: includes/Admin/SettingsPage.php:144
+#: includes/Admin/SettingsPage.php:480
+msgid "BoardScribe Settings"
+msgstr "BoardScribe'i seaded"
+
+#: includes/Admin/SettingsPage.php:145
+msgid "Settings"
+msgstr "Seaded"
+
+#: includes/Admin/SettingsPage.php:172
+msgid "General Settings"
+msgstr "Üldised seaded"
+
+#: includes/Admin/SettingsPage.php:179
+#: includes/Admin/SettingsPage.php:267
+msgid "Delete Data on Uninstall"
+msgstr "Kustuta andmed eemaldamisel"
+
+#: includes/Admin/SettingsPage.php:251
+msgid "Configure general settings for the BoardScribe plugin."
+msgstr "Seadistage BoardScribe'i plugina üldised seaded."
+
+#: includes/Admin/SettingsPage.php:278
+msgid "Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted."
+msgstr "Eemalda kõik BoardScribe'i koosolekute postitused ja plugina seaded, kui see plugin kustutatakse."
+
+#: includes/Admin/SettingsPage.php:282
+msgid "Warning: this cannot be undone."
+msgstr "Hoiatus: seda tegevust ei saa tagasi võtta."
+
+#: includes/Admin/SettingsPage.php:328
+msgid "BoardScribe settings"
+msgstr "BoardScribe'i seaded"
+
+#: includes/Admin/SettingsPage.php:437
+msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+msgstr "Seadistage allpool oma lühikoodi valikud, seejärel kopeerige loodud lühikood ja kleepige see mis tahes lehele või postitusse."
+
+#: includes/Admin/SettingsPage.php:439
+msgid "The shortcode builder requires JavaScript."
+msgstr "Lühikoodi koostaja vajab JavaScripti."
+
+#: includes/Admin/SettingsPage.php:475
+msgid "Downloading and Installing BoardScribe"
+msgstr "BoardScribe'i allalaadimine ja installimine"
+
+#: includes/Admin/SettingsPage.php:485
+msgid "Board Meetings Post Type"
+msgstr "Juhatuse koosolekute postituse tüüp"
+
+#: includes/Admin/SettingsPage.php:495
+msgid "Is BoardScribe accessible?"
+msgstr "Kas BoardScribe on ligipääsetav?"
+
+#: includes/Admin/SettingsPage.php:500
+msgid "What languages is BoardScribe translated into?"
+msgstr "Mis keeltesse on BoardScribe tõlgitud?"
+
+#: includes/Admin/SettingsPage.php:505
+msgid "How do I add file size and type information to links?"
+msgstr "Kuidas lisada linkidele faili suuruse ja tüübi teavet?"
+
+#: includes/Admin/SettingsPage.php:511
+msgid "Documentation"
+msgstr "Dokumentatsioon"
+
+#: includes/Admin/SettingsPage.php:513
+msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
+msgstr "Vajate abi? Vaadake meie dokumentatsiooni samm-sammuliste juhiste ja funktsioonide tutvustuste saamiseks."
+
+#: includes/Admin/SettingsPage.php:516
+msgid "View Documentation"
+msgstr "Vaata dokumentatsiooni"
+
+#: includes/Admin/SettingsPage.php:517
+#: includes/Admin/SettingsPage.php:528
+#: includes/Admin/SettingsPage.php:539
+msgid "(opens in a new tab)"
+msgstr "(avaneb uuel vahelehel)"
+
+#: includes/Admin/SettingsPage.php:522
+msgid "Contact Us"
+msgstr "Võta meiega ühendust"
+
+#: includes/Admin/SettingsPage.php:524
+msgid "Have questions or need help? Reach out to our support team."
+msgstr "Kas teil on küsimusi või vajate abi? Võtke ühendust meie tugimeeskonnaga."
+
+#: includes/Admin/SettingsPage.php:527
+msgid "Contact Support"
+msgstr "Võta ühendust toega"
+
+#: includes/Admin/SettingsPage.php:533
+msgid "Quick Links"
+msgstr "Kiirlingid"
+
+#: includes/Block/BoardScribeBlock.php:448
+#: includes/Shortcode/BoardScribeShortcode.php:128
+#: includes/Shortcode/FieldRegistry.php:234
+#: includes/Shortcode/FieldRegistry.php:278
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Pealkiri"
+
+#: includes/Block/BoardScribeBlock.php:453
+#: includes/Shortcode/BoardScribeShortcode.php:129
+#: includes/Shortcode/FieldRegistry.php:241
+#: includes/Shortcode/FieldRegistry.php:285
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Kuupäev"
+
+#: includes/Block/BoardScribeBlock.php:458
+#: includes/Shortcode/BoardScribeShortcode.php:130
+#: includes/Shortcode/FieldRegistry.php:248
+#: includes/Shortcode/FieldRegistry.php:292
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Päevakord"
+
+#: includes/Block/BoardScribeBlock.php:463
+#: includes/Shortcode/BoardScribeShortcode.php:131
+#: includes/Shortcode/FieldRegistry.php:255
+#: includes/Shortcode/FieldRegistry.php:299
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Protokoll"
+
+#: includes/PostType/BoardScribeCPT.php:39
+msgctxt "Post Type General Name"
+msgid "Board Meetings"
+msgstr "Juhatuse koosolekud"
+
+#: includes/PostType/BoardScribeCPT.php:40
+msgctxt "Post Type Singular Name"
+msgid "Board Meeting"
+msgstr "Juhatuse koosolek"
+
+#: includes/PostType/BoardScribeCPT.php:41
+msgid "Board Meetings"
+msgstr "Juhatuse koosolekud"
+
+#: includes/PostType/BoardScribeCPT.php:42
+#: includes/PostType/BoardScribeCPT.php:48
+msgid "Board Meeting"
+msgstr "Juhatuse koosolek"
+
+#: includes/PostType/BoardScribeCPT.php:43
+msgid "Add Meeting"
+msgstr "Lisa koosolek"
+
+#: includes/PostType/BoardScribeCPT.php:44
+msgid "Add New Meeting"
+msgstr "Lisa uus koosolek"
+
+#: includes/REST/BoardScribeEndpoint.php:114
+#: includes/REST/BoardScribeEndpoint.php:285
+msgid "View Agenda"
+msgstr "Vaata päevakorda"
+
+#: includes/REST/BoardScribeEndpoint.php:115
+#: includes/REST/BoardScribeEndpoint.php:286
+msgid "View Minutes"
+msgstr "Vaata protokolli"
+
+#: includes/REST/BoardScribeEndpoint.php:301
+msgid "Date not available"
+msgstr "Kuupäev pole saadaval"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date
+#. translators: 1: link label e.g. "View Minutes", 2: meeting date
+#: includes/REST/BoardScribeEndpoint.php:326
+#: includes/REST/BoardScribeEndpoint.php:340
+#, php-format
+msgid "%1$s for %2$s"
+msgstr "%2$s %1$s"
+
+#: includes/REST/BoardScribeEndpoint.php:332
+msgid "Agenda not available"
+msgstr "Päevakord pole saadaval"
+
+#: includes/REST/BoardScribeEndpoint.php:346
+msgid "Minutes not available"
+msgstr "Protokoll pole saadaval"
+
+#: includes/REST/BoardScribeEndpoint.php:351
+msgid "Meeting not held"
+msgstr "Toimumata jäänud"
+
+#: includes/Shortcode/BoardScribeShortcode.php:132
+#: assets/build/boardscribe.js:1
+msgid "Previous"
+msgstr "Eelmine"
+
+#: includes/Shortcode/BoardScribeShortcode.php:133
+#: assets/build/boardscribe.js:3
+msgid "Next"
+msgstr "Järgmine"
+
+#: includes/Shortcode/BoardScribeShortcode.php:134
+#: assets/build/boardscribe.js:1
+msgid "Previous Page"
+msgstr "Eelmine lehekülg"
+
+#. translators: %s: page number.
+#: includes/Shortcode/BoardScribeShortcode.php:135
+#: assets/build/boardscribe.js:3
+msgid "Next Page"
+msgstr "Järgmine lehekülg"
+
+#: includes/Shortcode/BoardScribeShortcode.php:136
+#: assets/build/boardscribe.js:1
+msgid "Pagination"
+msgstr "Lehekülgede numeratsioon"
+
+#. translators: %s: page number
+#: includes/Shortcode/BoardScribeShortcode.php:138
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Page %s"
+msgstr "Lehekülg %s"
+
+#. translators: 1: first entry number, 2: last entry number, 3: total entries
+#: includes/Shortcode/BoardScribeShortcode.php:140
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Showing %1$s to %2$s of %3$s entries"
+msgstr "Kuvatakse %1$s kuni %2$s kokku %3$s kirjest"
+
+#: includes/Shortcode/FieldRegistry.php:129
+msgid "Included Years"
+msgstr "Kaasatud aastad"
+
+#: includes/Shortcode/FieldRegistry.php:132
+msgid "Comma-separated list of years. Leave blank to show all years."
+msgstr "Komadega eraldatud aastate loend. Jätke tühjaks, et näidata kõiki aastaid."
+
+#: includes/Shortcode/FieldRegistry.php:139
+msgid "Start Date"
+msgstr "Alguskuupäev"
+
+#: includes/Shortcode/FieldRegistry.php:146
+msgid "Only show meetings on or after this date. Takes priority over Included Years."
+msgstr "Näita ainult koosolekuid, mis toimuvad sel kuupäeval või hiljem. On prioriteetsem kui kaasatud aastad."
+
+#: includes/Shortcode/FieldRegistry.php:155
+msgid "End Date"
+msgstr "Lõpukuupäev"
+
+#: includes/Shortcode/FieldRegistry.php:157
+msgid "Only show meetings on or before this date. Takes priority over Included Years."
+msgstr "Näita ainult koosolekuid, mis toimuvad sel kuupäeval või varem. On prioriteetsem kui kaasatud aastad."
+
+#: includes/Shortcode/FieldRegistry.php:166
+msgid "Posts Per Page"
+msgstr "Postitusi lehel"
+
+#: includes/Shortcode/FieldRegistry.php:174
+msgid "Held Date Format"
+msgstr "Toimunud koosoleku kuupäeva vorming"
+
+#: includes/Shortcode/FieldRegistry.php:178
+msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
+msgstr "PHP date() vorming. Täieliku viite leiate aadressilt php.net/manual/en/datetime.format.php."
+
+#: includes/Shortcode/FieldRegistry.php:189
+msgid "Not Held Date Format"
+msgstr "Toimumata jäänud koosoleku kuupäeva vorming"
+
+#: includes/Shortcode/FieldRegistry.php:201
+msgid "Display Template"
+msgstr "Kuvamise mall"
+
+#: includes/Shortcode/FieldRegistry.php:209
+msgid "Table (default)"
+msgstr "Tabel (vaikimisi)"
+
+#: includes/Shortcode/FieldRegistry.php:216
+msgid "Force all columns to the same width"
+msgstr "Sunni kõik veerud samale laiusele"
+
+#: includes/Shortcode/FieldRegistry.php:218
+msgid "Helps align columns consistently for vertical rhythm across rows."
+msgstr "Aitab joondada veerge järjepidevalt, et hoida ridade vahel ühtlast vertikaalset rütmi."
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "Custom CSS Class"
+msgstr "Kohandatud CSS-klass"
+
+#: includes/Shortcode/FieldRegistry.php:262
+msgid "Agenda Link Label"
+msgstr "Päevakorra lingi silt"
+
+#: includes/Shortcode/FieldRegistry.php:270
+msgid "Minutes Link Label"
+msgstr "Protokolli lingi silt"
+
+#: partials/block-editor-preview.php:55
+msgid "No published meetings found."
+msgstr "Avaldatud koosolekuid ei leitud."
+
+#: partials/meta-box.php:23
+msgid "Meeting Date"
+msgstr "Koosoleku kuupäev"
+
+#: partials/meta-box.php:34
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Kohustuslik. Valige kuupäev, millal koosolek toimus või toimub."
+
+#: partials/meta-box.php:39
+msgid "Agenda URL"
+msgstr "Päevakorra URL"
+
+#: partials/meta-box.php:54
+msgid "Choose Agenda File"
+msgstr "Vali päevakorra fail"
+
+#: partials/meta-box.php:55
+#: partials/meta-box.php:90
+msgid "Use this file"
+msgstr "Kasuta seda faili"
+
+#: partials/meta-box.php:56
+#: partials/meta-box.php:91
+msgid "Media Library"
+msgstr "Meediateek"
+
+#: partials/meta-box.php:74
+msgid "Minutes URL"
+msgstr "Protokolli URL"
+
+#: partials/meta-box.php:89
+msgid "Choose Minutes File"
+msgstr "Vali protokolli fail"
+
+#: partials/meta-box.php:109
+msgid "Meeting Not Held"
+msgstr "Koosolek jäi toimumata"
+
+#: partials/meta-box.php:120
+msgid "This meeting was not held"
+msgstr "See koosolek jäi toimumata"
+
+#. translators: %s: plugin version number.
+#: partials/settings-page.php:27
+#, php-format
+msgid "Version %s"
+msgstr "Versioon %s"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Ignored: a start/end date is set below, which takes priority."
+msgstr "Ignoreeritud: allpool on määratud algus-/lõpukuupäev, mis on prioriteetsem."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or after this date. Overrides Included Years above as soon as either date is set."
+msgstr "Näita ainult koosolekuid, mis toimuvad sel kuupäeval või hiljem. Alistab ülaltoodud kaasatud aastad kohe, kui üks kuupäevadest on määratud."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or before this date. Overrides Included Years above as soon as either date is set."
+msgstr "Näita ainult koosolekuid, mis toimuvad sel kuupäeval või varem. Alistab ülaltoodud kaasatud aastad kohe, kui üks kuupäevadest on määratud."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Display Settings"
+msgstr "Kuvamise seaded"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Column Labels"
+msgstr "Veergude sildid"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Link Labels"
+msgstr "Linkide sildid"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Hide Columns"
+msgstr "Peida veerud"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Show Columns"
+msgstr "Näita veerge"
+
+#: assets/build/block/index.js:1
+msgid "Show all meetings"
+msgstr "Näita kõiki koosolekuid"
+
+#: assets/build/block/index.js:1
+msgid "Ignores the per-page limit below and fetches every meeting in one request."
+msgstr "Ignoreerib allpool olevat lehekülje piirangut ja pärib kõik koosolekud ühe päringuga."
+
+#: assets/build/block/index.js:1
+msgid "Records Per Page"
+msgstr "Kirjeid lehel"
+
+#: assets/build/builder/index.js:1
+msgid "Preview"
+msgstr "Eelvaade"
+
+#: assets/build/builder/index.js:1
+msgid "Show all"
+msgstr "Näita kõiki"
+
+#: assets/build/builder/index.js:1
+msgid "Copy"
+msgstr "Kopeeri"
+
+#: assets/build/builder/index.js:1
+msgid "Your Shortcode"
+msgstr "Teie lühikood"
+
+#: assets/build/builder/index.js:1
+msgid "Copied!"
+msgstr "Kopeeritud!"
+
+#: assets/build/builder/index.js:1
+msgid "Shortcode copied to clipboard."
+msgstr "Lühikood kopeeriti lõikelauale."
+
+#: assets/build/builder/index.js:1
+msgid "Copying failed. Select the shortcode text and copy it manually."
+msgstr "Kopeerimine ebaõnnestus. Valige lühikoodi tekst ja kopeerige see käsitsi."
+
+#: block.json
+msgctxt "block title"
+msgid "Board Meetings"
+msgstr "Juhatuse koosolekud"
+
+#: block.json
+msgctxt "block description"
+msgid "Display a paginated, accessible table of board meetings, with agenda and minutes links."
+msgstr "Kuva lehekülgedeks jaotatud ligipääsetav tabel juhatuse koosolekutest koos päevakorra ja protokolli linkidega."
+
+#: block.json
+msgctxt "block keyword"
+msgid "meeting"
+msgstr "koosolek"
+
+#: block.json
+msgctxt "block keyword"
+msgid "minutes"
+msgstr "protokoll"
+
+#: block.json
+msgctxt "block keyword"
+msgid "agenda"
+msgstr "päevakord"
+
+#: block.json
+msgctxt "block keyword"
+msgid "notes"
+msgstr "märkmed"
+
+#: block.json
+msgctxt "block keyword"
+msgid "table"
+msgstr "tabel"
+
+#: block.json
+msgctxt "block keyword"
+msgid "boardscribe"
+msgstr "boardscribe"
