@@ -100,6 +100,18 @@ class FieldRegistry {
 	 *     @type bool          $rest_arg            Whether this field also becomes a REST route arg.
 	 *     @type string|null   $config_key          Overrides the camelCase instance-config key derived from $key.
 	 *     @type string|null   $block_attribute_key Overrides the camelCase block-attribute key derived from $key/config_key.
+	 *     @type bool          $hidden_from_ui      Optional, default false. Excludes the field from js_schema() —
+	 *                                              the settings-page builder app and the block's InspectorControls
+	 *                                              both consume js_schema(), so this hides the field's picker
+	 *                                              control from both without affecting all() (shortcode-attribute
+	 *                                              defaults/parsing, REST arg registration, and the block's
+	 *                                              attribute schema all still come from all(), so a value already
+	 *                                              saved in existing content — e.g. a Pro field on a shortcode
+	 *                                              created before a license lapsed — keeps parsing and rendering
+	 *                                              correctly; only the ability to newly pick the field disappears).
+	 *                                              Intended for a licensable plugin gating which fields a NEW
+	 *                                              shortcode/block instance can be configured with, without
+	 *                                              breaking instances that already used it.
 	 * }
 	 *
 	 * @since 1.0.0
@@ -310,6 +322,10 @@ class FieldRegistry {
 		$schema = [];
 
 		foreach ( self::all() as $field ) {
+			if ( ! empty( $field['hidden_from_ui'] ) ) {
+				continue;
+			}
+
 			$schema[] = [
 				'key'          => $field['key'],
 				'attributeKey' => self::block_attribute_key( $field ),
