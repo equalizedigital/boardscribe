@@ -2,7 +2,7 @@
 Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
 Tags: board meetings, meeting minutes, meeting agenda, accessibility, minutes
 Requires at least: 6.7
-Tested up to: 7.0
+Tested up to: 7.1
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
