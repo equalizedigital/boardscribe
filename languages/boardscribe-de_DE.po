@@ -1,0 +1,563 @@
+# Copyright (C) 2026 Equalize Digital
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BoardScribe 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: boardscribe\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Plugin Name of the plugin
+#: boardscribe.php
+#: includes/Block/BoardScribeBlock.php:79
+#: partials/settings-page.php:22
+msgid "BoardScribe"
+msgstr "BoardScribe"
+
+#. Description of the plugin
+#: boardscribe.php
+msgid "Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
+msgstr "Veröffentlichen Sie barrierefreie, durchsuchbare Sitzungstagesordnungen und Protokolle auf Ihrer Website – entwickelt für öffentliche Einrichtungen, Hausverwaltungen und gemeinnützige Organisationen, die offene, organisierte Aufzeichnungen benötigen."
+
+#. Author of the plugin
+#: boardscribe.php
+msgid "Equalize Digital"
+msgstr "Equalize Digital"
+
+#. Author URI of the plugin
+#: boardscribe.php
+msgid "https://equalizedigital.com"
+msgstr "https://equalizedigital.com"
+
+#. translators: 1: required PHP version, 2: current PHP version
+#: boardscribe.php:30
+#, php-format
+msgid "BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
+msgstr "BoardScribe erfordert PHP %1$s oder höher. Sie verwenden PHP %2$s. Bitte aktualisieren Sie PHP oder kontaktieren Sie Ihren Host."
+
+#: boardscribe.php:52
+msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
+msgstr "Der Autoloader von BoardScribe fehlt. Installieren Sie das Plugin aus einer veröffentlichten ZIP-Datei neu oder führen Sie „composer install“ aus, wenn Sie aus dem Quellcode entwickeln."
+
+#: includes/Admin/MetaBox.php:126
+msgid "Meeting date in Y-m-d format."
+msgstr "Sitzungsdatum im Format Y-m-d."
+
+#: includes/Admin/MetaBox.php:139
+msgid "URL to the meeting agenda document."
+msgstr "URL zum Dokument der Tagesordnung."
+
+#: includes/Admin/MetaBox.php:152
+msgid "URL to the published minutes document for this meeting."
+msgstr "URL zum veröffentlichten Protokoll dieser Sitzung."
+
+#: includes/Admin/MetaBox.php:165
+msgid "Whether the meeting was not held."
+msgstr "Ob die Sitzung nicht stattgefunden hat."
+
+#: includes/Admin/MetaBox.php:194
+msgid "Meeting Details"
+msgstr "Sitzungsdetails"
+
+#: includes/Admin/MetaBox.php:346
+msgctxt "default generated meeting title"
+msgid "Board Meeting"
+msgstr "Vorstandssitzung"
+
+#. translators: 1: "Board Meeting" label, 2: formatted meeting date.
+#: includes/Admin/MetaBox.php:354
+#, php-format
+msgctxt "default generated meeting title with date"
+msgid "%1$s - %2$s"
+msgstr "%1$s – %2$s"
+
+#: includes/Admin/SettingsPage.php:74
+msgid "General"
+msgstr "Allgemein"
+
+#: includes/Admin/SettingsPage.php:78
+#: includes/Admin/SettingsPage.php:490
+msgid "Shortcode Builder"
+msgstr "Shortcode-Generator"
+
+#: includes/Admin/SettingsPage.php:82
+msgid "Support"
+msgstr "Support"
+
+#: includes/Admin/SettingsPage.php:144
+#: includes/Admin/SettingsPage.php:480
+msgid "BoardScribe Settings"
+msgstr "BoardScribe-Einstellungen"
+
+#: includes/Admin/SettingsPage.php:145
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: includes/Admin/SettingsPage.php:172
+msgid "General Settings"
+msgstr "Allgemeine Einstellungen"
+
+#: includes/Admin/SettingsPage.php:179
+#: includes/Admin/SettingsPage.php:267
+msgid "Delete Data on Uninstall"
+msgstr "Daten bei Deinstallation löschen"
+
+#: includes/Admin/SettingsPage.php:251
+msgid "Configure general settings for the BoardScribe plugin."
+msgstr "Konfigurieren Sie die allgemeinen Einstellungen für das BoardScribe-Plugin."
+
+#: includes/Admin/SettingsPage.php:278
+msgid "Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted."
+msgstr "Alle BoardScribe-Sitzungsbeiträge und Plugin-Einstellungen entfernen, wenn dieses Plugin gelöscht wird."
+
+#: includes/Admin/SettingsPage.php:282
+msgid "Warning: this cannot be undone."
+msgstr "Warnung: Dies kann nicht rückgängig gemacht werden."
+
+#: includes/Admin/SettingsPage.php:328
+msgid "BoardScribe settings"
+msgstr "BoardScribe-Einstellungen"
+
+#: includes/Admin/SettingsPage.php:437
+msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+msgstr "Konfigurieren Sie unten Ihre Shortcode-Optionen, kopieren Sie dann den generierten Shortcode und fügen Sie ihn in eine beliebige Seite oder einen Beitrag ein."
+
+#: includes/Admin/SettingsPage.php:439
+msgid "The shortcode builder requires JavaScript."
+msgstr "Der Shortcode-Generator erfordert JavaScript."
+
+#: includes/Admin/SettingsPage.php:475
+msgid "Downloading and Installing BoardScribe"
+msgstr "Herunterladen und Installieren von BoardScribe"
+
+#: includes/Admin/SettingsPage.php:485
+msgid "Board Meetings Post Type"
+msgstr "Beitragstyp für Vorstandssitzungen"
+
+#: includes/Admin/SettingsPage.php:495
+msgid "Is BoardScribe accessible?"
+msgstr "Ist BoardScribe barrierefrei?"
+
+#: includes/Admin/SettingsPage.php:500
+msgid "What languages is BoardScribe translated into?"
+msgstr "In welche Sprachen ist BoardScribe übersetzt?"
+
+#: includes/Admin/SettingsPage.php:505
+msgid "How do I add file size and type information to links?"
+msgstr "Wie füge ich Dateigröße und Typinformationen zu Links hinzu?"
+
+#: includes/Admin/SettingsPage.php:511
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: includes/Admin/SettingsPage.php:513
+msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
+msgstr "Benötigen Sie Hilfe? In unserer Dokumentation finden Sie Schritt-für-Schritt-Anleitungen und Funktionsübersichten."
+
+#: includes/Admin/SettingsPage.php:516
+msgid "View Documentation"
+msgstr "Dokumentation anzeigen"
+
+#: includes/Admin/SettingsPage.php:517
+#: includes/Admin/SettingsPage.php:528
+#: includes/Admin/SettingsPage.php:539
+msgid "(opens in a new tab)"
+msgstr "(öffnet in neuem Tab)"
+
+#: includes/Admin/SettingsPage.php:522
+msgid "Contact Us"
+msgstr "Kontaktieren Sie uns"
+
+#: includes/Admin/SettingsPage.php:524
+msgid "Have questions or need help? Reach out to our support team."
+msgstr "Haben Sie Fragen oder benötigen Sie Hilfe? Wenden Sie sich an unser Support-Team."
+
+#: includes/Admin/SettingsPage.php:527
+msgid "Contact Support"
+msgstr "Support kontaktieren"
+
+#: includes/Admin/SettingsPage.php:533
+msgid "Quick Links"
+msgstr "Quick-Links"
+
+#: includes/Block/BoardScribeBlock.php:448
+#: includes/Shortcode/BoardScribeShortcode.php:128
+#: includes/Shortcode/FieldRegistry.php:234
+#: includes/Shortcode/FieldRegistry.php:278
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Titel"
+
+#: includes/Block/BoardScribeBlock.php:453
+#: includes/Shortcode/BoardScribeShortcode.php:129
+#: includes/Shortcode/FieldRegistry.php:241
+#: includes/Shortcode/FieldRegistry.php:285
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Datum"
+
+#: includes/Block/BoardScribeBlock.php:458
+#: includes/Shortcode/BoardScribeShortcode.php:130
+#: includes/Shortcode/FieldRegistry.php:248
+#: includes/Shortcode/FieldRegistry.php:292
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Tagesordnung"
+
+#: includes/Block/BoardScribeBlock.php:463
+#: includes/Shortcode/BoardScribeShortcode.php:131
+#: includes/Shortcode/FieldRegistry.php:255
+#: includes/Shortcode/FieldRegistry.php:299
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Protokoll"
+
+#: includes/PostType/BoardScribeCPT.php:39
+msgctxt "Post Type General Name"
+msgid "Board Meetings"
+msgstr "Vorstandssitzungen"
+
+#: includes/PostType/BoardScribeCPT.php:40
+msgctxt "Post Type Singular Name"
+msgid "Board Meeting"
+msgstr "Vorstandssitzung"
+
+#: includes/PostType/BoardScribeCPT.php:41
+msgid "Board Meetings"
+msgstr "Vorstandssitzungen"
+
+#: includes/PostType/BoardScribeCPT.php:42
+#: includes/PostType/BoardScribeCPT.php:48
+msgid "Board Meeting"
+msgstr "Vorstandssitzung"
+
+#: includes/PostType/BoardScribeCPT.php:43
+msgid "Add Meeting"
+msgstr "Sitzung hinzufügen"
+
+#: includes/PostType/BoardScribeCPT.php:44
+msgid "Add New Meeting"
+msgstr "Neue Sitzung hinzufügen"
+
+#: includes/REST/BoardScribeEndpoint.php:114
+#: includes/REST/BoardScribeEndpoint.php:285
+msgid "View Agenda"
+msgstr "Tagesordnung anzeigen"
+
+#: includes/REST/BoardScribeEndpoint.php:115
+#: includes/REST/BoardScribeEndpoint.php:286
+msgid "View Minutes"
+msgstr "Protokoll anzeigen"
+
+#: includes/REST/BoardScribeEndpoint.php:301
+msgid "Date not available"
+msgstr "Datum nicht verfügbar"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date
+#. translators: 1: link label e.g. "View Minutes", 2: meeting date
+#: includes/REST/BoardScribeEndpoint.php:326
+#: includes/REST/BoardScribeEndpoint.php:340
+#, php-format
+msgid "%1$s for %2$s"
+msgstr "%1$s für %2$s"
+
+#: includes/REST/BoardScribeEndpoint.php:332
+msgid "Agenda not available"
+msgstr "Tagesordnung nicht verfügbar"
+
+#: includes/REST/BoardScribeEndpoint.php:346
+msgid "Minutes not available"
+msgstr "Protokoll nicht verfügbar"
+
+#: includes/REST/BoardScribeEndpoint.php:351
+msgid "Meeting not held"
+msgstr "Sitzung hat nicht stattgefunden"
+
+#: includes/Shortcode/BoardScribeShortcode.php:132
+#: assets/build/boardscribe.js:1
+msgid "Previous"
+msgstr "Zurück"
+
+#: includes/Shortcode/BoardScribeShortcode.php:133
+#: assets/build/boardscribe.js:3
+msgid "Next"
+msgstr "Weiter"
+
+#: includes/Shortcode/BoardScribeShortcode.php:134
+#: assets/build/boardscribe.js:1
+msgid "Previous Page"
+msgstr "Vorherige Seite"
+
+#. translators: %s: page number.
+#: includes/Shortcode/BoardScribeShortcode.php:135
+#: assets/build/boardscribe.js:3
+msgid "Next Page"
+msgstr "Nächste Seite"
+
+#: includes/Shortcode/BoardScribeShortcode.php:136
+#: assets/build/boardscribe.js:1
+msgid "Pagination"
+msgstr "Seitennummerierung"
+
+#. translators: %s: page number
+#: includes/Shortcode/BoardScribeShortcode.php:138
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Page %s"
+msgstr "Seite %s"
+
+#. translators: 1: first entry number, 2: last entry number, 3: total entries
+#: includes/Shortcode/BoardScribeShortcode.php:140
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Showing %1$s to %2$s of %3$s entries"
+msgstr "Zeige %1$s bis %2$s von %3$s Einträgen"
+
+#: includes/Shortcode/FieldRegistry.php:129
+msgid "Included Years"
+msgstr "Enthaltene Jahre"
+
+#: includes/Shortcode/FieldRegistry.php:132
+msgid "Comma-separated list of years. Leave blank to show all years."
+msgstr "Kommagetrennte Liste von Jahren. Leer lassen, um alle Jahre anzuzeigen."
+
+#: includes/Shortcode/FieldRegistry.php:139
+msgid "Start Date"
+msgstr "Startdatum"
+
+#: includes/Shortcode/FieldRegistry.php:146
+msgid "Only show meetings on or after this date. Takes priority over Included Years."
+msgstr "Nur Sitzungen an oder nach diesem Datum anzeigen. Hat Vorrang vor „Enthaltene Jahre“."
+
+#: includes/Shortcode/FieldRegistry.php:155
+msgid "End Date"
+msgstr "Enddatum"
+
+#: includes/Shortcode/FieldRegistry.php:157
+msgid "Only show meetings on or before this date. Takes priority over Included Years."
+msgstr "Nur Sitzungen an oder vor diesem Datum anzeigen. Hat Vorrang vor „Enthaltene Jahre“."
+
+#: includes/Shortcode/FieldRegistry.php:166
+msgid "Posts Per Page"
+msgstr "Beiträge pro Seite"
+
+#: includes/Shortcode/FieldRegistry.php:174
+msgid "Held Date Format"
+msgstr "Datumsformat (stattgefunden)"
+
+#: includes/Shortcode/FieldRegistry.php:178
+msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
+msgstr "PHP date()-Format. Siehe php.net/manual/de/datetime.format.php für die vollständige Referenz."
+
+#: includes/Shortcode/FieldRegistry.php:189
+msgid "Not Held Date Format"
+msgstr "Datumsformat (nicht stattgefunden)"
+
+#: includes/Shortcode/FieldRegistry.php:201
+msgid "Display Template"
+msgstr "Anzeige-Template"
+
+#: includes/Shortcode/FieldRegistry.php:209
+msgid "Table (default)"
+msgstr "Tabelle (Standard)"
+
+#: includes/Shortcode/FieldRegistry.php:216
+msgid "Force all columns to the same width"
+msgstr "Alle Spalten auf die gleiche Breite erzwingen"
+
+#: includes/Shortcode/FieldRegistry.php:218
+msgid "Helps align columns consistently for vertical rhythm across rows."
+msgstr "Hilft dabei, Spalten konsistent auszurichten, um einen vertikalen Rhythmus über Zeilen hinweg zu gewährleisten."
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "Custom CSS Class"
+msgstr "Benutzerdefinierte CSS-Klasse"
+
+#: includes/Shortcode/FieldRegistry.php:262
+msgid "Agenda Link Label"
+msgstr "Beschriftung für Tagesordnungs-Link"
+
+#: includes/Shortcode/FieldRegistry.php:270
+msgid "Minutes Link Label"
+msgstr "Beschriftung für Protokoll-Link"
+
+#: partials/block-editor-preview.php:55
+msgid "No published meetings found."
+msgstr "Keine veröffentlichten Sitzungen gefunden."
+
+#: partials/meta-box.php:23
+msgid "Meeting Date"
+msgstr "Sitzungsdatum"
+
+#: partials/meta-box.php:34
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Erforderlich. Wählen Sie das Datum aus, an dem die Sitzung stattgefunden hat oder stattfinden wird."
+
+#: partials/meta-box.php:39
+msgid "Agenda URL"
+msgstr "Tagesordnungs-URL"
+
+#: partials/meta-box.php:54
+msgid "Choose Agenda File"
+msgstr "Tagesordnungsdatei auswählen"
+
+#: partials/meta-box.php:55
+#: partials/meta-box.php:90
+msgid "Use this file"
+msgstr "Diese Datei verwenden"
+
+#: partials/meta-box.php:56
+#: partials/meta-box.php:91
+msgid "Media Library"
+msgstr "Mediathek"
+
+#: partials/meta-box.php:74
+msgid "Minutes URL"
+msgstr "Protokoll-URL"
+
+#: partials/meta-box.php:89
+msgid "Choose Minutes File"
+msgstr "Protokolldatei auswählen"
+
+#: partials/meta-box.php:109
+msgid "Meeting Not Held"
+msgstr "Sitzung hat nicht stattgefunden"
+
+#: partials/meta-box.php:120
+msgid "This meeting was not held"
+msgstr "Diese Sitzung hat nicht stattgefunden"
+
+#. translators: %s: plugin version number.
+#: partials/settings-page.php:27
+#, php-format
+msgid "Version %s"
+msgstr "Version %s"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Ignored: a start/end date is set below, which takes priority."
+msgstr "Ignoriert: Unten ist ein Start-/Enddatum festgelegt, das Vorrang hat."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or after this date. Overrides Included Years above as soon as either date is set."
+msgstr "Nur Sitzungen an oder nach diesem Datum anzeigen. Überschreibt „Enthaltene Jahre“ oben, sobald eines der Daten festgelegt ist."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or before this date. Overrides Included Years above as soon as either date is set."
+msgstr "Nur Sitzungen an oder vor diesem Datum anzeigen. Überschreibt „Enthaltene Jahre“ oben, sobald eines der Daten festgelegt ist."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Display Settings"
+msgstr "Anzeigeeinstellungen"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Column Labels"
+msgstr "Spaltenbeschriftungen"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Link Labels"
+msgstr "Link-Beschriftungen"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Hide Columns"
+msgstr "Spalten ausblenden"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Show Columns"
+msgstr "Spalten anzeigen"
+
+#: assets/build/block/index.js:1
+msgid "Show all meetings"
+msgstr "Alle Sitzungen anzeigen"
+
+#: assets/build/block/index.js:1
+msgid "Ignores the per-page limit below and fetches every meeting in one request."
+msgstr "Ignoriert das Limit pro Seite unten und ruft jede Sitzung in einer einzigen Anfrage ab."
+
+#: assets/build/block/index.js:1
+msgid "Records Per Page"
+msgstr "Einträge pro Seite"
+
+#: assets/build/builder/index.js:1
+msgid "Preview"
+msgstr "Vorschau"
+
+#: assets/build/builder/index.js:1
+msgid "Show all"
+msgstr "Alle anzeigen"
+
+#: assets/build/builder/index.js:1
+msgid "Copy"
+msgstr "Kopieren"
+
+#: assets/build/builder/index.js:1
+msgid "Your Shortcode"
+msgstr "Ihr Shortcode"
+
+#: assets/build/builder/index.js:1
+msgid "Copied!"
+msgstr "Kopiert!"
+
+#: assets/build/builder/index.js:1
+msgid "Shortcode copied to clipboard."
+msgstr "Shortcode in die Zwischenablage kopiert."
+
+#: assets/build/builder/index.js:1
+msgid "Copying failed. Select the shortcode text and copy it manually."
+msgstr "Kopieren fehlgeschlagen. Markieren Sie den Shortcode-Text und kopieren Sie ihn manuell."
+
+#: block.json
+msgctxt "block title"
+msgid "Board Meetings"
+msgstr "Vorstandssitzungen"
+
+#: block.json
+msgctxt "block description"
+msgid "Display a paginated, accessible table of board meetings, with agenda and minutes links."
+msgstr "Zeigt eine barrierefreie Tabelle mit Vorstandssitzungen inklusive Seitennummerierung sowie Links zu Tagesordnungen und Protokollen an."
+
+#: block.json
+msgctxt "block keyword"
+msgid "meeting"
+msgstr "Sitzung"
+
+#: block.json
+msgctxt "block keyword"
+msgid "minutes"
+msgstr "Protokoll"
+
+#: block.json
+msgctxt "block keyword"
+msgid "agenda"
+msgstr "Tagesordnung"
+
+#: block.json
+msgctxt "block keyword"
+msgid "notes"
+msgstr "Notizen"
+
+#: block.json
+msgctxt "block keyword"
+msgid "table"
+msgstr "Tabelle"
+
+#: block.json
+msgctxt "block keyword"
+msgid "boardscribe"
+msgstr "boardscribe"
