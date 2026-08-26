@@ -22,6 +22,7 @@ includes/
   PostType/BoardScribeCPT.php          CPT registration
   Admin/MetaBox.php                    Native meta box UI + save handling
   Admin/SettingsPage.php               Tabbed settings page (General / Shortcode Builder / Support); the Builder tab enqueues the React builder app
+  Helpers/Helpers.php                  UTM link builder for outbound equalizedigital.com links (edition + days_active reporting)
   REST/BoardScribeEndpoint.php      /edbs/v1/boardscribe/ REST route + query/row building
   Shortcode/BoardScribeShortcode.php Shortcode registration, asset enqueuing, instance config
   Block/BoardScribeBlock.php           Server-registered block wrapping the shortcode pipeline + editor preview
@@ -44,7 +45,7 @@ assets/css/boardscribe.css             Frontend styles
 assets/css/builder.css                 Admin Shortcode Builder tab layout (two-column, sticky preview)
 assets/css/settings.css                Settings page layout (sidebar + tabbed panel, BoardScribe brand colors)
 assets/images/logo.png                 BoardScribe logo shown in the settings sidebar header
-uninstall.php                         Opt-in data cleanup on plugin deletion
+uninstall.php                         Opt-in data cleanup on plugin deletion (edbs_settings, edbs_activation_date)
 docs/                                 Planning docs (market research, premium features, readiness checklist) — not user-facing
 tests/                                PHPUnit setup
 ```
@@ -70,6 +71,7 @@ Keep this list current when adding or removing hooks — it's the primary refere
 | `edbs_before_meta_box_fields` / `edbs_meta_fields` | action | `Admin/MetaBox.php` | Render additional meta box fields before/after the defaults. |
 | `edbs_after_agenda_url_field` / `edbs_after_minutes_url_field` | action | `partials/meta-box.php` | Fire immediately after the Agenda URL / Minutes URL field's own `<tr>`, so a plugin adding a field tightly coupled to one of those URLs (e.g. Pro's Document picker, which the URL field defers to) can render its row directly underneath it — `edbs_meta_fields` only fires once, after every default field. |
 | `edbs_save_meeting_meta` | action | `Admin/MetaBox.php` | Fires after the default meta fields are saved — save Pro's own meta here. |
+| `edbs_utm_query_args` | filter | `Helpers/Helpers.php` | Query parameters appended to outbound equalizedigital.com links by `Helpers::utm_link_builder()` (utm_source/medium/campaign/content plus php_version, platform, platform_version, software, software_version, days_active). `software` is `free`, `pro-unlicensed`, or `pro` — resolved by reading Pro's `edbs_pro_license_status` option directly, since free can't call `LicenseManager::is_licensed()`. **If Pro ever renames that option, this breaks silently**; Pro should then override `software` through this filter. |
 | `edbs_settings_fields` | action | `Admin/SettingsPage.php` | Add sections to the General tab's form outside the Settings API (e.g. license management). Fires inside the General tab only. |
 | `edbs_settings_tabs` | filter | `Admin/SettingsPage.php` | Register a settings-page tab. Filters the tab map (slug => `[ 'icon' => dashicons class, 'label' => string ]`); array order is display order. Core tabs: `general`, `builder`, `support`. Pro adds e.g. an `import` tab here (paired with the action below), replacing its old standalone `edbs-import` submenu. Pro enqueues its tab's own assets keyed off the `edbs_meeting_page_edbs-settings` hook + active `tab` query var (same pattern as the builder tab). |
 | `edbs_settings_tab_content_{$tab}` | action | `Admin/SettingsPage.php` | Renders the panel content for a non-core tab registered via `edbs_settings_tabs`. The dynamic portion is the tab slug (e.g. `edbs_settings_tab_content_import`). Only fires for tabs present in the filtered tab list. |
