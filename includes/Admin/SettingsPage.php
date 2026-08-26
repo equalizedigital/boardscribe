@@ -496,7 +496,7 @@ class SettingsPage {
 				'utm_content' => 'is-boardscribe-accessible',
 			],
 			[
-				'url'         => '/boardscribe-documentation/what-languages-is-boardscribe-available-in/',
+				'url'         => '/documentation/what-languages-is-boardscribe-available-in/',
 				'label'       => __( 'What languages is BoardScribe translated into?', 'boardscribe' ),
 				'utm_content' => 'what-languages-is-boardscribe-available-in',
 			],
