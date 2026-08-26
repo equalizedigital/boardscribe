@@ -1,8 +1,8 @@
 === BoardScribe ===
 Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
-Tags: board meetings, meeting minutes, meeting agenda, agenda, minutes
+Tags: board meetings, meeting minutes, meeting agenda, accessibility, minutes
 Requires at least: 6.7
-Tested up to: 7.0
+Tested up to: 7.1
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -37,12 +37,26 @@ Built for city councils, county boards, school boards, HOAs, and nonprofits that
 
 No ACF. No third-party dependencies. Just native WordPress storage, a shortcode builder that writes the shortcode for you, and developer hooks throughout for anyone who wants to extend it further.
 
+### Accessibility Is Built In, Not Bolted On
+
+Plenty of plugins output a table and call it accessible. BoardScribe is built by an accessibility company, and every detail of the output is designed for the people who rely on screen readers, keyboards, and magnification.
+
+* **Descriptive link names.** Every agenda and minutes link is announced with the meeting it belongs to, "View Agenda for Monday, January 5, 2026", instead of twenty identical "View Agenda" links. Screen reader users who pull up the page's list of links can actually tell them apart (WCAG 2.4.4, Link Purpose).
+* **Real table semantics.** Column headers are marked up with `scope`, and each row's meeting title is marked as that row's header, so a screen reader announces "Minutes, Regular Board Meeting, January 5" rather than a bare, context-free link.
+* **Pagination that announces itself.** Moving between pages updates a polite live region, so screen reader users are told the results changed and which page they are on. Sighted users are not the only ones who notice the table refreshed.
+* **Keyboard support that respects your place.** After a page change, focus moves into the new results instead of dumping you back at the top of the page, and the table itself is reachable and scrollable by keyboard.
+* **No silent blanks.** A meeting with no minutes posted yet announces "Minutes not available" to screen readers, rather than leaving an empty cell a screen reader simply skips.
+* **Responsive without losing meaning.** When columns stack on a phone, every cell keeps its label, so the table never collapses into an unlabeled pile of dates and links.
+* **Your words, in your language.** Column headers and link text are all editable and fully translatable, so you are never stuck with wording that does not fit your board.
+
+One honest note: BoardScribe makes your meeting index accessible. It cannot fix the documents you link to. If your agendas and minutes are scanned images, publish them as HTML or properly tagged PDFs so the content is readable too.
+
 ### Features
 
 * **Native meeting records.** A custom post type with native meta boxes. No ACF or other plugins required.
 * **Shortcode builder.** Generate a ready-to-copy shortcode from the admin settings page.
 * **Board Meetings block.** A Gutenberg block with sidebar controls. No shortcode required.
-* **Accessible table display.** Paginated, screen-reader-friendly output via the `[edbs_boardscribe]` shortcode.
+* **Accessible table display.** Paginated output via the `[edbs_boardscribe]` shortcode, with descriptive link names, announced page changes, and proper table semantics.
 * **Multiple instances.** Use several shortcodes on one page, each independently configured.
 * **Responsive layout.** Columns stack cleanly on small screens with accessible labels.
 * **REST API.** A public endpoint for fetching meeting data.
@@ -66,7 +80,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 **Attributes:**
 
 * `included_years` - Comma-separated years to display (e.g. `2023,2024`). Default: all years.
-* `start_date`, `end_date` - Only show meetings in this date range (`YYYY-MM-DD`, inclusive on both ends). Either can be used alone for an open-ended range. Takes priority over `included_years` when set — useful for fiscal years that don't align to the calendar year (e.g. `start_date="2025-07-01" end_date="2026-06-30"`).
+* `start_date`, `end_date` - Only show meetings in this date range (`YYYY-MM-DD`, inclusive on both ends). Either can be used alone for an open-ended range. Takes priority over `included_years` when set, which is useful for fiscal years that don't align to the calendar year (e.g. `start_date="2025-07-01" end_date="2026-06-30"`).
 * `posts_per_page` - Entries per page. Use `-1` to show all. Default: `20`.
 * `held_date_format` - PHP date format for meetings that were held. Default: `l, F j, Y`.
 * `not_held_date_format` - PHP date format for meetings not held. Default: `F Y`.
@@ -144,6 +158,18 @@ Ready to make your meeting records open and accessible? Install BoardScribe and 
 = Do I need Advanced Custom Fields (ACF) to use this plugin? =
 
 No. This plugin uses native WordPress meta fields and requires no third-party plugins.
+
+= Is BoardScribe accessible? =
+
+Yes, and specifically so. The meetings table uses proper table semantics (`scope` on column headers, a row header on each meeting title), gives every agenda and minutes link a unique descriptive name that includes the meeting it belongs to, announces page changes through a polite live region, moves keyboard focus into the new results after pagination, and keeps a visible label on every cell when columns stack on small screens. Meetings missing an agenda or minutes announce that fact to screen readers instead of leaving a blank cell. See "Accessibility Is Built In, Not Bolted On" above for the full list.
+
+= Does BoardScribe help with ADA, Section 508, or WCAG compliance? =
+
+It helps, but no plugin can make a site compliant on its own. BoardScribe's output follows WCAG 2.1 Level AA patterns, which is the standard referenced by the ADA Title II web rule, Section 508, and most state accessibility policies. Your overall compliance still depends on your theme, your other content, and, importantly, the agenda and minutes documents themselves. A perfectly accessible table linking to scanned image PDFs is still an accessibility barrier. If you want to test your whole site, our free [Accessibility Checker](https://wordpress.org/plugins/accessibility-checker/) plugin scans your pages for issues.
+
+= Will BoardScribe's table work for keyboard-only and screen reader users? =
+
+Yes. The table is reachable and scrollable by keyboard, pagination controls are real buttons with accessible names and an `aria-current` marker on the current page, and focus lands inside the refreshed results after a page change rather than resetting to the top of the page.
 
 = How do I display board meetings on a page? =
 

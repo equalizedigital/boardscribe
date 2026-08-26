@@ -61,7 +61,7 @@ Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode 
 Expected manifest:
 `boardscribe-pro.php`, `readme.txt`, `LICENSE`, `composer.json`, `languages/boardscribe-pro.pot`, `assets/css/{admin-document-picker,pro-meta}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section}.php`, `includes/{Plugin,License/LicenseManager,Admin/{ProMetaFields,DocumentPicker},PostType/{MeetingCategory,MeetingType,DocumentCPT,MeetingDocumentRelationship},Block/BlockExtensions,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate,editor/blockEditor}.js`
 
-Note: verified against a real `npm run dist`. Since this list was last written by hand, `includes/` gained `DocumentPicker`, `DocumentCPT`, `MeetingDocumentRelationship` and `MeetingType`, `assets/css` gained `admin-document-picker.css` and lost `calendar-templates.css`, and `src/js/front-end/calendarTemplates.js` is gone.
+Note: verified against a real `npm run dist`, and against the Pro repo's own paired `add-dist-build-and-make-pot` branch (which adds `languages/boardscribe-pro.pot` and its own `scripts/dist.sh`). Since this list was last written by hand, `includes/` gained `DocumentPicker`, `DocumentCPT`, `MeetingDocumentRelationship` and `MeetingType`, `assets/css` gained `admin-document-picker.css` and lost `calendar-templates.css`, and `src/js/front-end/calendarTemplates.js` is gone.
 
 Note: Pro no longer ships `block.json`, `build/`, or `partials/block-editor-preview.php` — the block moved to the free plugin (paired `feat/move-block-to-free` branches). Don't re-add them from an old checklist.
 

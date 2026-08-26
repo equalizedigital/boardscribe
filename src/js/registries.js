@@ -27,7 +27,9 @@ window.edbsExtraColumns = window.edbsExtraColumns || [];
 //       Replace the default aria-live "Showing X to Y of Z" text.
 //   focus( container, instanceCfg )                             - optional.
 //       Move focus after a pagination-triggered re-render. The default
-//       focuses the first [tabindex="0"] element in the container.
+//       focuses the container itself, via a temporary tabindex="-1"
+//       removed again right after - the table (or tables) a template
+//       renders inside it are never made focusable themselves.
 //   buildRequestUrl( instanceCfg, page )                        - optional.
 //       Return the URL to fetch instead of the default query string -
 //       core still performs the fetch, error handling, and JSON parsing.
@@ -59,3 +61,31 @@ window.edbsExtraColumns = window.edbsExtraColumns || [];
 // itself, so the returned table carries the calling template's own
 // edbs-template-<name> class.
 window.edbsTemplates = window.edbsTemplates || {};
+
+// Lifecycle events. Each instance (instance.js) dispatches namespaced,
+// bubbling CustomEvents on its own .edbs-boardscribe-wrap container - bind
+// with container.addEventListener( name, handler ) for one instance, or
+// document.addEventListener( name, handler ) to catch every instance on the
+// page (event.target is the container that fired it). No import/build step
+// needed, matching the plain-global registries above. event.detail always
+// includes instanceCfg; see each event for the rest of its shape.
+//
+//   edbs:table-rendered    { data, instanceCfg }         - after the
+//       template's render() call finishes updating the table/list markup.
+//   edbs:info-rendered     { data, instanceCfg }         - after the
+//       aria-live "Showing X to Y of Z" text is updated. Only fires when
+//       the instance has an info element.
+//   edbs:pagination-rendered { data, instanceCfg }       - after the
+//       pagination controls are (re)rendered.
+//   edbs:page-changed      { page, instanceCfg }         - when the user
+//       triggers navigation to a new page (goToPage()), before the
+//       refetch/re-render it kicks off - `page` is the 1-based target page.
+//   edbs:fetch-error       { error, instanceCfg }        - when the
+//       request for a page's data fails (network error or non-OK response).
+//
+// `data` is the parsed JSON response. buildRequestUrl() only changes the
+// fetch URL - core does not validate or transform what comes back, so the
+// endpoint it points to must return the shape the active renderers expect.
+// A template's own request() override can resolve to a different shape
+// entirely, in which case any renderers it doesn't also override must be
+// replaced too.

@@ -44,7 +44,7 @@ class BoardScribeBlock {
 	 * that registration land first (and skipping ours below) keeps an
 	 * old-Pro/new-free combination working with no _doing_it_wrong notice.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -62,7 +62,7 @@ class BoardScribeBlock {
 	 * Pro build has already added it (see register_block() for the same
 	 * old-Pro concern).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $categories Existing block categories.
 	 * @return array The category list with the BoardScribe category appended.
@@ -86,7 +86,7 @@ class BoardScribeBlock {
 	/**
 	 * Registers the block type from block.json with a PHP render callback.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -129,7 +129,7 @@ class BoardScribeBlock {
 	 * array shallow-merges over block.json's metadata, so this replaces
 	 * block.json's own (absent) "attributes" key entirely.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return array<string, array{type: string, default: mixed}>
 	 */
@@ -168,7 +168,7 @@ class BoardScribeBlock {
 	 * server-rendered HTML table is returned so the editor shows real content.
 	 * On the front end the JS-driven shortcode output is returned as normal.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array  $attributes Block attributes from the editor.
 	 * @param string $content    Inner block content (unused — no inner blocks).
@@ -188,7 +188,7 @@ class BoardScribeBlock {
 	/**
 	 * Builds a shortcode attribute string from block attributes.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string Shortcode attribute string (leading space included if non-empty).
@@ -227,7 +227,7 @@ class BoardScribeBlock {
 	 * edbs_meeting_row_data filter, so Pro row fields are present — and
 	 * renders a static table over a filterable column list.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string HTML preview.
@@ -241,7 +241,7 @@ class BoardScribeBlock {
 		 * year-timeline, which wants more than one year group visible)
 		 * can raise it.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param int   $max_rows   Maximum preview rows. Default 5.
 		 * @param array $attributes Block attributes.
@@ -358,7 +358,7 @@ class BoardScribeBlock {
 		 *                                 added via edbs_meeting_row_data are available.
 		 * }
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param array $columns    Column definitions, see above.
 		 * @param array $attributes Block attributes.
@@ -372,7 +372,7 @@ class BoardScribeBlock {
 		 * that owns a display template hooks here (e.g. Pro's year-timeline
 		 * renders one table per year via render_preview_table()).
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param string|null        $preview    The preview HTML, or null to use the default.
 		 * @param array              $attributes Block attributes.
@@ -396,7 +396,7 @@ class BoardScribeBlock {
 	 * of re-implementing the table markup — the PHP analogue of the front
 	 * end's window.edbsBuildTable().
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $columns    Column definitions, see the edbs_block_preview_columns filter.
 	 * @param array $rows       List of { post: \WP_Post, row: array } entries.
@@ -425,7 +425,7 @@ class BoardScribeBlock {
 	 * mirroring the front-end table template's label resolution and
 	 * hide-toggle handling (src/js/templates/table.js).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return array Column definitions, see the edbs_block_preview_columns filter.

@@ -22,7 +22,7 @@ class MetaBox {
 	/**
 	 * Hooks meta registration and meta box into WordPress.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -36,7 +36,7 @@ class MetaBox {
 	/**
 	 * Enqueues the media library and the meta box picker script.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $hook The current admin page hook.
 	 * @return void
@@ -61,7 +61,7 @@ class MetaBox {
 	/**
 	 * Returns the inline JavaScript for the media library URL picker.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -100,7 +100,7 @@ JS;
 	/**
 	 * Registers the four meeting meta fields for the REST API and block editor.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -172,7 +172,7 @@ JS;
 	/**
 	 * Registers the Meeting Details meta box on the edit screen.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -181,7 +181,7 @@ JS;
 		 * Filters whether to show the native meta box UI. Return false to replace
 		 * it with a custom UI.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param bool $show Whether to show the native meta box.
 		 */
@@ -202,7 +202,7 @@ JS;
 	/**
 	 * Renders the Meeting Details meta box HTML.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param \WP_Post $post The current post object.
 	 * @return void
@@ -219,7 +219,7 @@ JS;
 		 * Fires before the default meta box fields are rendered. Pro plugin can
 		 * use this to prepend additional fields.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param \WP_Post $post The current post.
 		 */
@@ -231,7 +231,7 @@ JS;
 	/**
 	 * Saves the meeting meta fields on post save.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param int $post_id The post ID being saved.
 	 * @return void
@@ -280,7 +280,7 @@ JS;
 		 * Fires after the default meta fields are saved. Pro plugin can hook here
 		 * to save additional meta.
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param int $post_id The post ID.
 		 */
@@ -298,7 +298,7 @@ JS;
 	 * and unhooks its own save handler around wp_update_post() to avoid a
 	 * save_post recursion loop.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param int $post_id The post ID being saved.
 	 * @return void
@@ -336,7 +336,7 @@ JS;
 	 * Builds the default meeting title ("Board Meeting" plus the formatted
 	 * meeting date). Public and filterable so Pro can reuse or override it.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.0
 	 *
 	 * @param string $meeting_date The raw edbs_meeting_date meta value (Y-m-d).
 	 * @param int    $post_id      The post ID the title is being generated for.
@@ -363,7 +363,7 @@ JS;
 		 * Filters the auto-generated title used when a meeting is saved without
 		 * one. Pro plugin can override the format (e.g. include the meeting series).
 		 *
-		 * @since x.x.x
+		 * @since 1.0.0
 		 *
 		 * @param string $title        The generated title.
 		 * @param string $meeting_date The raw meeting date meta value.

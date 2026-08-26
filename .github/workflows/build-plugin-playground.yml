@@ -1,0 +1,228 @@
+name: Build BoardScribe Plugin + Playground Link
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled]
+  release:
+    types: [created, published]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read          # wordpress-playground-action verifies the artifact exists before linking
+
+jobs:
+  build-plugin:
+    name: Build plugin zip
+    runs-on: ubuntu-latest
+    # Run on release, manual, or PR when the gha-build label is added
+    if: |
+      github.event_name == 'release' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'gha-build'))
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-vendor-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-vendor-
+
+      - name: Install npm dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install --ignore-scripts --prefer-offline --no-audit
+
+      - name: Build the frontend bundle
+        run: npm run build
+
+      - name: Install Composer dependencies (production only)
+        run: composer install --no-dev --optimize-autoloader --prefer-dist --no-progress --no-interaction
+
+      - name: Extract plugin version and commit hash
+        id: version
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          VERSION=$(grep "Version:" boardscribe.php | head -1 | sed 's/.*Version:[[:space:]]*\([^ ]*\).*/\1/')
+
+          # On a pull_request, actions/checkout builds the ephemeral
+          # refs/pull/N/merge commit, so `git rev-parse HEAD` is a SHA that does
+          # not appear in the PR's commit list and means nothing to a reviewer.
+          # Use head.sha there so the artifact filename, the build comment and
+          # the PR's own commit list all agree on one SHA.
+          if [ -n "${HEAD_SHA}" ]; then
+            SHORT_SHA="${HEAD_SHA:0:8}"
+          else
+            SHORT_SHA=$(git rev-parse --short=8 HEAD)
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "built_at=$(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_OUTPUT
+          echo "Plugin version: $VERSION"
+          echo "Short commit hash: $SHORT_SHA"
+
+      - name: Build dist zip
+        id: build
+        env:
+          # VERSION comes from the plugin's own `Version:` header, which is part
+          # of the PR diff and so attacker-controlled on a fork PR. A ${{ }}
+          # splice lands in the script text before bash parses it, making a
+          # crafted version string executable; via env: it stays inert data.
+          VERSION: ${{ steps.version.outputs.version }}
+          SHORT_SHA: ${{ steps.version.outputs.short_sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          # Construct the zip filename based on trigger mode
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # PR: boardscribe-{version}-{prnumber}-{hash}.zip
+            ZIP_NAME="boardscribe-${VERSION}-${PR_NUMBER}-${SHORT_SHA}.zip"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual: boardscribe-{version}-{hash}.zip
+            ZIP_NAME="boardscribe-${VERSION}-${SHORT_SHA}.zip"
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            # Release: boardscribe-{version}.zip
+            ZIP_NAME="boardscribe-${VERSION}.zip"
+          else
+            # Fallback
+            ZIP_NAME="boardscribe-${VERSION}-${SHORT_SHA}.zip"
+          fi
+
+          mkdir -p builds
+          TMP_DIR=$(mktemp -d)
+          STAGE="$TMP_DIR/boardscribe"
+          trap 'rm -rf -- "$TMP_DIR"' EXIT
+
+          mkdir -p "$STAGE/assets"
+          cp -r \
+            boardscribe.php block.json uninstall.php readme.txt LICENSE composer.json \
+            includes partials languages vendor \
+            "$STAGE"/
+          cp -r assets/build assets/css assets/images "$STAGE/assets/"
+          find "$STAGE" -name '.DS_Store' -delete
+
+          ( cd "$TMP_DIR" && zip -q -r "$OLDPWD/builds/$ZIP_NAME" boardscribe )
+
+          ZIP_BASENAME="${ZIP_NAME%.zip}"
+          ZIP_FOLDER="builds/$ZIP_BASENAME"
+          unzip -q "builds/$ZIP_NAME" -d "$ZIP_FOLDER"
+
+          echo "ZIP_PATH=builds/$ZIP_NAME" >> $GITHUB_ENV
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+          echo "ZIP_NAME_NO_EXT=$ZIP_BASENAME" >> $GITHUB_ENV
+          echo "ZIP_FOLDER=$ZIP_FOLDER" >> $GITHUB_ENV
+          echo "Produced zip: builds/$ZIP_NAME"
+          echo "Produced folder: $ZIP_FOLDER"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_NAME_NO_EXT }}
+          path: ${{ env.ZIP_FOLDER }}
+          if-no-files-found: error
+
+      # Skipped on release: nightly.link serves Actions artifacts, not release assets.
+      # plugin-slug is pinned so the activation path never depends on slug inference.
+      - name: Playground link
+        id: playground
+        if: github.event_name != 'release'
+        uses: pattonwebz/wordpress-playground-action@v0
+        with:
+          artifact-name: ${{ env.ZIP_NAME_NO_EXT }}
+          plugin-slug: boardscribe
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          post-comment: ${{ github.event_name == 'pull_request' }}
+          pr-number: ${{ github.event.pull_request.number }}
+          # Fork PRs (e.g. first-time contributors) always get a read-only
+          # GITHUB_TOKEN under the pull_request trigger, so post-comment can
+          # never succeed there no matter what permissions: grants above.
+          # Warn instead of failing the whole build in that case; the
+          # Playground link still lands in the job summary either way.
+          skip-comment-on-missing-permission: 'true'
+          comment-template: |
+            ✅ BoardScribe build
+
+            - **Artifact**: [Download {artifact_name}.zip]({artifact_url})
+            - **Workflow run**: [View logs]({run_url})
+            - **Playground**: [Open with plugin preinstalled]({playground_url})
+
+            <sub>Built from [`${{ steps.version.outputs.short_sha }}`](${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}) · ${{ steps.version.outputs.built_at }}</sub>
+
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_PATH }}
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove triggering label from PR
+        # always(): a failed build must still drop the label. Re-adding a label
+        # that is already present emits no `labeled` event, so leaving it on
+        # would make the trigger dead until someone removed it by hand.
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                name: 'gha-build',
+              });
+              console.log(`Removed label 'gha-build' from PR #${prNumber}`);
+            } catch (e) {
+              console.log(`Could not remove label 'gha-build' from PR #${prNumber}: ${e.message}`);
+            }
+
+      - name: Summary
+        env:
+          PLAYGROUND_URL: ${{ steps.playground.outputs.playground-url }}
+          ZIP_PATH: ${{ env.ZIP_PATH }}
+        run: |
+          echo "=== Build Summary ==="
+          echo "Zip: ${ZIP_PATH}"
+          if [ -n "${PLAYGROUND_URL:-}" ]; then
+            echo "Playground: ${PLAYGROUND_URL}"
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            echo "Playground: not built (releases ship the zip as a release asset)"
+          else
+            echo "Playground: not built for this run"
+          fi
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "Uploaded to release: ${{ github.event.release.html_url }}"
+          fi
