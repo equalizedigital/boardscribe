@@ -35,3 +35,4 @@ foreach ( $edbs_meeting_post_ids as $edbs_meeting_post_id ) {
 
 // Delete plugin settings.
 delete_option( 'edbs_settings' );
+delete_option( 'edbs_activation_date' );
