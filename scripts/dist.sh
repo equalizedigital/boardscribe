@@ -92,13 +92,22 @@ echo "Building plugin package for version: $VERSION"
 
 # Create final distributable zip. WordPress derives the install path from the
 # single top-level directory, so it has to be named exactly like the slug.
+# Built under a temp name and moved into place only once complete - zipping
+# straight to $FINAL_ZIP would leave a truncated file sitting at the real
+# release path if zip failed partway (disk full, permissions), indistinguishable
+# from a good build without re-checking. The temp file stays inside $DIST_DIR
+# so the final mv is a same-filesystem rename, not a copy.
 cd "$DIST_DIR" || exit 1
 FINAL_ZIP="${SLUG}-${VERSION}.zip"
-rm -f "$FINAL_ZIP"
-zip -r "$FINAL_ZIP" "$SLUG" > /dev/null || { echo "ERROR: zip failed"; exit 1; }
+TMP_ZIP=".${FINAL_ZIP}.tmp"
+rm -f "$TMP_ZIP"
+zip -r "$TMP_ZIP" "$SLUG" > /dev/null || { echo "ERROR: zip failed"; rm -f "$TMP_ZIP"; exit 1; }
 
 # Remove .po files (ignore errors if none)
-zip -d "$FINAL_ZIP" "${SLUG}/languages/*.po" > /dev/null || true
+zip -d "$TMP_ZIP" "${SLUG}/languages/*.po" > /dev/null || true
+
+rm -f "$FINAL_ZIP"
+mv "$TMP_ZIP" "$FINAL_ZIP"
 
 cd ..
 
