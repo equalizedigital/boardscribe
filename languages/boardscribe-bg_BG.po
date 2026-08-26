@@ -1,0 +1,563 @@
+# Copyright (C) 2026 Equalize Digital
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BoardScribe 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: boardscribe\n"
+"Language: bg_BG\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Plugin Name of the plugin
+#: boardscribe.php
+#: includes/Block/BoardScribeBlock.php:79
+#: partials/settings-page.php:22
+msgid "BoardScribe"
+msgstr "BoardScribe"
+
+#. Description of the plugin
+#: boardscribe.php
+msgid "Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
+msgstr "Публикувайте достъпни и лесни за търсене дневни редове и протоколи от заседания на Вашия сайт — създаден за публични органи, сдружения на собствениците и организации с нестопанска цел, които се нуждаят от открити и организирани записи."
+
+#. Author of the plugin
+#: boardscribe.php
+msgid "Equalize Digital"
+msgstr "Equalize Digital"
+
+#. Author URI of the plugin
+#: boardscribe.php
+msgid "https://equalizedigital.com"
+msgstr "https://equalizedigital.com"
+
+#. translators: 1: required PHP version, 2: current PHP version
+#: boardscribe.php:30
+#, php-format
+msgid "BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
+msgstr "BoardScribe изисква PHP %1$s или по-нова версия. Вие използвате PHP %2$s. Моля, надстройте PHP или се свържете с Вашия хостинг доставчик."
+
+#: boardscribe.php:52
+msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
+msgstr "Липсва автозаредителят на BoardScribe. Инсталирайте отново от официален zip архив или изпълнете `composer install`, ако разработвате от изходен код."
+
+#: includes/Admin/MetaBox.php:126
+msgid "Meeting date in Y-m-d format."
+msgstr "Дата на заседанието във формат Y-m-d."
+
+#: includes/Admin/MetaBox.php:139
+msgid "URL to the meeting agenda document."
+msgstr "URL адрес към документа с дневния ред на заседанието."
+
+#: includes/Admin/MetaBox.php:152
+msgid "URL to the published minutes document for this meeting."
+msgstr "URL адрес към публикувания протокол за това заседание."
+
+#: includes/Admin/MetaBox.php:165
+msgid "Whether the meeting was not held."
+msgstr "Дали заседанието не се е провело."
+
+#: includes/Admin/MetaBox.php:194
+msgid "Meeting Details"
+msgstr "Детайли за заседанието"
+
+#: includes/Admin/MetaBox.php:346
+msgctxt "default generated meeting title"
+msgid "Board Meeting"
+msgstr "Заседание на управителния съвет"
+
+#. translators: 1: "Board Meeting" label, 2: formatted meeting date.
+#: includes/Admin/MetaBox.php:354
+#, php-format
+msgctxt "default generated meeting title with date"
+msgid "%1$s - %2$s"
+msgstr "%1$s – %2$s"
+
+#: includes/Admin/SettingsPage.php:74
+msgid "General"
+msgstr "Общи"
+
+#: includes/Admin/SettingsPage.php:78
+#: includes/Admin/SettingsPage.php:490
+msgid "Shortcode Builder"
+msgstr "Генератор на кратки кодове"
+
+#: includes/Admin/SettingsPage.php:82
+msgid "Support"
+msgstr "Поддръжка"
+
+#: includes/Admin/SettingsPage.php:144
+#: includes/Admin/SettingsPage.php:480
+msgid "BoardScribe Settings"
+msgstr "Настройки на BoardScribe"
+
+#: includes/Admin/SettingsPage.php:145
+msgid "Settings"
+msgstr "Настройки"
+
+#: includes/Admin/SettingsPage.php:172
+msgid "General Settings"
+msgstr "Общи настройки"
+
+#: includes/Admin/SettingsPage.php:179
+#: includes/Admin/SettingsPage.php:267
+msgid "Delete Data on Uninstall"
+msgstr "Изтриване на данните при деинсталиране"
+
+#: includes/Admin/SettingsPage.php:251
+msgid "Configure general settings for the BoardScribe plugin."
+msgstr "Конфигуриране на общите настройки за плъгина BoardScribe."
+
+#: includes/Admin/SettingsPage.php:278
+msgid "Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted."
+msgstr "Премахване на всички публикации за заседания на BoardScribe и настройки на плъгина при изтриването му."
+
+#: includes/Admin/SettingsPage.php:282
+msgid "Warning: this cannot be undone."
+msgstr "Предупреждение: това действие е необратимо."
+
+#: includes/Admin/SettingsPage.php:328
+msgid "BoardScribe settings"
+msgstr "Настройки на BoardScribe"
+
+#: includes/Admin/SettingsPage.php:437
+msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+msgstr "Конфигурирайте опциите за краткия код по-долу, след което копирайте генерирания код и го поставете в която и да е страница или публикация."
+
+#: includes/Admin/SettingsPage.php:439
+msgid "The shortcode builder requires JavaScript."
+msgstr "Генераторът на кратки кодове изисква JavaScript."
+
+#: includes/Admin/SettingsPage.php:475
+msgid "Downloading and Installing BoardScribe"
+msgstr "Изтегляне и инсталиране на BoardScribe"
+
+#: includes/Admin/SettingsPage.php:485
+msgid "Board Meetings Post Type"
+msgstr "Тип публикация за заседания на управителния съвет"
+
+#: includes/Admin/SettingsPage.php:495
+msgid "Is BoardScribe accessible?"
+msgstr "Достъпен ли е BoardScribe?"
+
+#: includes/Admin/SettingsPage.php:500
+msgid "What languages is BoardScribe translated into?"
+msgstr "На какви езици е преведен BoardScribe?"
+
+#: includes/Admin/SettingsPage.php:505
+msgid "How do I add file size and type information to links?"
+msgstr "Как да добавя информация за размера и типа на файла към връзките?"
+
+#: includes/Admin/SettingsPage.php:511
+msgid "Documentation"
+msgstr "Документация"
+
+#: includes/Admin/SettingsPage.php:513
+msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
+msgstr "Нуждаете се от помощ? Разгледайте нашата документация за ръководства стъпка по стъпка и преглед на функциите."
+
+#: includes/Admin/SettingsPage.php:516
+msgid "View Documentation"
+msgstr "Преглед на документацията"
+
+#: includes/Admin/SettingsPage.php:517
+#: includes/Admin/SettingsPage.php:528
+#: includes/Admin/SettingsPage.php:539
+msgid "(opens in a new tab)"
+msgstr "(отваря се в нов подпрозорец)"
+
+#: includes/Admin/SettingsPage.php:522
+msgid "Contact Us"
+msgstr "Свържете се с нас"
+
+#: includes/Admin/SettingsPage.php:524
+msgid "Have questions or need help? Reach out to our support team."
+msgstr "Имате въпроси или нужда от помощ? Свържете се с нашия екип по поддръжка."
+
+#: includes/Admin/SettingsPage.php:527
+msgid "Contact Support"
+msgstr "Свържете се с поддръжката"
+
+#: includes/Admin/SettingsPage.php:533
+msgid "Quick Links"
+msgstr "Бързи връзки"
+
+#: includes/Block/BoardScribeBlock.php:448
+#: includes/Shortcode/BoardScribeShortcode.php:128
+#: includes/Shortcode/FieldRegistry.php:234
+#: includes/Shortcode/FieldRegistry.php:278
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Заглавие"
+
+#: includes/Block/BoardScribeBlock.php:453
+#: includes/Shortcode/BoardScribeShortcode.php:129
+#: includes/Shortcode/FieldRegistry.php:241
+#: includes/Shortcode/FieldRegistry.php:285
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Дата"
+
+#: includes/Block/BoardScribeBlock.php:458
+#: includes/Shortcode/BoardScribeShortcode.php:130
+#: includes/Shortcode/FieldRegistry.php:248
+#: includes/Shortcode/FieldRegistry.php:292
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Дневен ред"
+
+#: includes/Block/BoardScribeBlock.php:463
+#: includes/Shortcode/BoardScribeShortcode.php:131
+#: includes/Shortcode/FieldRegistry.php:255
+#: includes/Shortcode/FieldRegistry.php:299
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Протокол"
+
+#: includes/PostType/BoardScribeCPT.php:39
+msgctxt "Post Type General Name"
+msgid "Board Meetings"
+msgstr "Заседания на управителния съвет"
+
+#: includes/PostType/BoardScribeCPT.php:40
+msgctxt "Post Type Singular Name"
+msgid "Board Meeting"
+msgstr "Заседание на управителния съвет"
+
+#: includes/PostType/BoardScribeCPT.php:41
+msgid "Board Meetings"
+msgstr "Заседания на управителния съвет"
+
+#: includes/PostType/BoardScribeCPT.php:42
+#: includes/PostType/BoardScribeCPT.php:48
+msgid "Board Meeting"
+msgstr "Заседание на управителния съвет"
+
+#: includes/PostType/BoardScribeCPT.php:43
+msgid "Add Meeting"
+msgstr "Добавяне на заседание"
+
+#: includes/PostType/BoardScribeCPT.php:44
+msgid "Add New Meeting"
+msgstr "Добавяне на ново заседание"
+
+#: includes/REST/BoardScribeEndpoint.php:114
+#: includes/REST/BoardScribeEndpoint.php:285
+msgid "View Agenda"
+msgstr "Преглед на дневния ред"
+
+#: includes/REST/BoardScribeEndpoint.php:115
+#: includes/REST/BoardScribeEndpoint.php:286
+msgid "View Minutes"
+msgstr "Преглед на протокола"
+
+#: includes/REST/BoardScribeEndpoint.php:301
+msgid "Date not available"
+msgstr "Датата не е налична"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date
+#. translators: 1: link label e.g. "View Minutes", 2: meeting date
+#: includes/REST/BoardScribeEndpoint.php:326
+#: includes/REST/BoardScribeEndpoint.php:340
+#, php-format
+msgid "%1$s for %2$s"
+msgstr "%1$s за %2$s"
+
+#: includes/REST/BoardScribeEndpoint.php:332
+msgid "Agenda not available"
+msgstr "Дневният ред не е наличен"
+
+#: includes/REST/BoardScribeEndpoint.php:346
+msgid "Minutes not available"
+msgstr "Протоколът не е наличен"
+
+#: includes/REST/BoardScribeEndpoint.php:351
+msgid "Meeting not held"
+msgstr "Заседанието не се е провело"
+
+#: includes/Shortcode/BoardScribeShortcode.php:132
+#: assets/build/boardscribe.js:1
+msgid "Previous"
+msgstr "Предишна"
+
+#: includes/Shortcode/BoardScribeShortcode.php:133
+#: assets/build/boardscribe.js:3
+msgid "Next"
+msgstr "Следваща"
+
+#: includes/Shortcode/BoardScribeShortcode.php:134
+#: assets/build/boardscribe.js:1
+msgid "Previous Page"
+msgstr "Предишна страница"
+
+#. translators: %s: page number.
+#: includes/Shortcode/BoardScribeShortcode.php:135
+#: assets/build/boardscribe.js:3
+msgid "Next Page"
+msgstr "Следваща страница"
+
+#: includes/Shortcode/BoardScribeShortcode.php:136
+#: assets/build/boardscribe.js:1
+msgid "Pagination"
+msgstr "Странициране"
+
+#. translators: %s: page number
+#: includes/Shortcode/BoardScribeShortcode.php:138
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Page %s"
+msgstr "Страница %s"
+
+#. translators: 1: first entry number, 2: last entry number, 3: total entries
+#: includes/Shortcode/BoardScribeShortcode.php:140
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Showing %1$s to %2$s of %3$s entries"
+msgstr "Показване на %1$s до %2$s от общо %3$s записа"
+
+#: includes/Shortcode/FieldRegistry.php:129
+msgid "Included Years"
+msgstr "Включени години"
+
+#: includes/Shortcode/FieldRegistry.php:132
+msgid "Comma-separated list of years. Leave blank to show all years."
+msgstr "Списък с години, разделени със запетая. Оставете празно, за да се показват всички години."
+
+#: includes/Shortcode/FieldRegistry.php:139
+msgid "Start Date"
+msgstr "Начална дата"
+
+#: includes/Shortcode/FieldRegistry.php:146
+msgid "Only show meetings on or after this date. Takes priority over Included Years."
+msgstr "Показване само на заседания на или след тази дата. Има приоритет пред „Включени години“."
+
+#: includes/Shortcode/FieldRegistry.php:155
+msgid "End Date"
+msgstr "Крайна дата"
+
+#: includes/Shortcode/FieldRegistry.php:157
+msgid "Only show meetings on or before this date. Takes priority over Included Years."
+msgstr "Показване само на заседания на или преди тази дата. Има приоритет пред „Включени години“."
+
+#: includes/Shortcode/FieldRegistry.php:166
+msgid "Posts Per Page"
+msgstr "Публикации на страница"
+
+#: includes/Shortcode/FieldRegistry.php:174
+msgid "Held Date Format"
+msgstr "Формат на датата на провеждане"
+
+#: includes/Shortcode/FieldRegistry.php:178
+msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
+msgstr "PHP date() формат. Вижте php.net/manual/en/datetime.format.php за пълна справка."
+
+#: includes/Shortcode/FieldRegistry.php:189
+msgid "Not Held Date Format"
+msgstr "Формат на датата при непроведено заседание"
+
+#: includes/Shortcode/FieldRegistry.php:201
+msgid "Display Template"
+msgstr "Шаблон за показване"
+
+#: includes/Shortcode/FieldRegistry.php:209
+msgid "Table (default)"
+msgstr "Таблица (по подразбиране)"
+
+#: includes/Shortcode/FieldRegistry.php:216
+msgid "Force all columns to the same width"
+msgstr "Принудително задаване на еднаква ширина за всички колони"
+
+#: includes/Shortcode/FieldRegistry.php:218
+msgid "Helps align columns consistently for vertical rhythm across rows."
+msgstr "Помага за последователното подравняване на колоните за вертикален ритъм между редовете."
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "Custom CSS Class"
+msgstr "Персонализиран CSS клас"
+
+#: includes/Shortcode/FieldRegistry.php:262
+msgid "Agenda Link Label"
+msgstr "Етикет на връзката към дневния ред"
+
+#: includes/Shortcode/FieldRegistry.php:270
+msgid "Minutes Link Label"
+msgstr "Етикет на връзката към протокола"
+
+#: partials/block-editor-preview.php:55
+msgid "No published meetings found."
+msgstr "Не са намерени публикувани заседания."
+
+#: partials/meta-box.php:23
+msgid "Meeting Date"
+msgstr "Дата на заседанието"
+
+#: partials/meta-box.php:34
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Задължително. Изберете датата, на която се е провело или ще се проведе заседанието."
+
+#: partials/meta-box.php:39
+msgid "Agenda URL"
+msgstr "URL на дневния ред"
+
+#: partials/meta-box.php:54
+msgid "Choose Agenda File"
+msgstr "Избор на файл с дневен ред"
+
+#: partials/meta-box.php:55
+#: partials/meta-box.php:90
+msgid "Use this file"
+msgstr "Използване на този файл"
+
+#: partials/meta-box.php:56
+#: partials/meta-box.php:91
+msgid "Media Library"
+msgstr "Медийна библиотека"
+
+#: partials/meta-box.php:74
+msgid "Minutes URL"
+msgstr "URL на протокола"
+
+#: partials/meta-box.php:89
+msgid "Choose Minutes File"
+msgstr "Избор на файл с протокол"
+
+#: partials/meta-box.php:109
+msgid "Meeting Not Held"
+msgstr "Заседанието не се е провело"
+
+#: partials/meta-box.php:120
+msgid "This meeting was not held"
+msgstr "Това заседание не се е провело"
+
+#. translators: %s: plugin version number.
+#: partials/settings-page.php:27
+#, php-format
+msgid "Version %s"
+msgstr "Версия %s"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Ignored: a start/end date is set below, which takes priority."
+msgstr "Игнорирано: по-долу е зададена начална/крайна дата, която е с приоритет."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or after this date. Overrides Included Years above as soon as either date is set."
+msgstr "Показване само на заседания на или след тази дата. Заменя „Включени години“ веднага щом бъде зададена някоя от датите."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or before this date. Overrides Included Years above as soon as either date is set."
+msgstr "Показване само на заседания на или преди тази дата. Заменя „Включени години“ веднага щом бъде зададена някоя от датите."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Display Settings"
+msgstr "Настройки на дисплея"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Column Labels"
+msgstr "Етикети на колоните"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Link Labels"
+msgstr "Етикети на връзките"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Hide Columns"
+msgstr "Скриване на колони"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Show Columns"
+msgstr "Показване на колони"
+
+#: assets/build/block/index.js:1
+msgid "Show all meetings"
+msgstr "Показване на всички заседания"
+
+#: assets/build/block/index.js:1
+msgid "Ignores the per-page limit below and fetches every meeting in one request."
+msgstr "Игнорира лимита за брой на страница по-долу и извлича всяко заседание в една заявка."
+
+#: assets/build/block/index.js:1
+msgid "Records Per Page"
+msgstr "Записи на страница"
+
+#: assets/build/builder/index.js:1
+msgid "Preview"
+msgstr "Преглед"
+
+#: assets/build/builder/index.js:1
+msgid "Show all"
+msgstr "Показване на всички"
+
+#: assets/build/builder/index.js:1
+msgid "Copy"
+msgstr "Копиране"
+
+#: assets/build/builder/index.js:1
+msgid "Your Shortcode"
+msgstr "Вашият кратък код"
+
+#: assets/build/builder/index.js:1
+msgid "Copied!"
+msgstr "Копирано!"
+
+#: assets/build/builder/index.js:1
+msgid "Shortcode copied to clipboard."
+msgstr "Краткият код е копиран в клипборда."
+
+#: assets/build/builder/index.js:1
+msgid "Copying failed. Select the shortcode text and copy it manually."
+msgstr "Копирането неуспешно. Маркирайте текста на краткия код и го копирайте ръчно."
+
+#: block.json
+msgctxt "block title"
+msgid "Board Meetings"
+msgstr "Заседания на управителния съвет"
+
+#: block.json
+msgctxt "block description"
+msgid "Display a paginated, accessible table of board meetings, with agenda and minutes links."
+msgstr "Показване на достъпна таблица със заседания на управителния съвет със странициране и връзки към дневния ред и протокола."
+
+#: block.json
+msgctxt "block keyword"
+msgid "meeting"
+msgstr "заседание"
+
+#: block.json
+msgctxt "block keyword"
+msgid "minutes"
+msgstr "протокол"
+
+#: block.json
+msgctxt "block keyword"
+msgid "agenda"
+msgstr "дневен ред"
+
+#: block.json
+msgctxt "block keyword"
+msgid "notes"
+msgstr "бележки"
+
+#: block.json
+msgctxt "block keyword"
+msgid "table"
+msgstr "таблица"
+
+#: block.json
+msgctxt "block keyword"
+msgid "boardscribe"
+msgstr "boardscribe"
