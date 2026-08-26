@@ -28,8 +28,8 @@
 		"linting": "./vendor/bin/phpcs && npm run lint:js",
 		"lint:php": "./vendor/bin/phpcs",
 		"lint:php:fix": "./vendor/bin/phpcbf",
-		"lint:js": "wp-scripts lint-js src/js tests/jest webpack.config.js",
-		"lint:js:fix": "wp-scripts lint-js src/js tests/jest webpack.config.js --fix",
+		"lint:js": "wp-scripts lint-js src/js tests/jest webpack.config.js jest.config.js",
+		"lint:js:fix": "wp-scripts lint-js src/js tests/jest webpack.config.js jest.config.js --fix",
 		"test:js": "wp-scripts test-unit-js",
 		"test:php": "./scripts/setup-phpunit.sh",
 		"test:php:run": "docker compose exec phpunit vendor/bin/phpunit",
@@ -41,6 +41,7 @@
 		"*.js": "wp-scripts lint-js"
 	},
 	"devDependencies": {
+		"@wordpress/element": "^8.5.0",
 		"@wordpress/escape-html": "^3.50.0",
 		"@wordpress/eslint-plugin": "^17.5.0",
 		"@wordpress/i18n": "^6.23.0",
