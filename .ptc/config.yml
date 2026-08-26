@@ -1,0 +1,9 @@
+source_locale: en
+files:
+  - file: languages/boardscribe.pot
+    output: languages/boardscribe-{{lang}}.po
+    additional_translation_files:
+      - type: mo
+        path: languages/boardscribe-{{lang}}.mo
+      - type: wp
+        path: languages/boardscribe-{{lang}}.json
