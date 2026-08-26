@@ -92,13 +92,32 @@ echo "Building plugin package for version: $VERSION"
 
 # Create final distributable zip. WordPress derives the install path from the
 # single top-level directory, so it has to be named exactly like the slug.
+# Built under a temp name and moved into place only once complete - zipping
+# straight to $FINAL_ZIP would leave a truncated file sitting at the real
+# release path if zip failed partway (disk full, permissions), indistinguishable
+# from a good build without re-checking. The temp file stays inside $DIST_DIR
+# so the final mv is a same-filesystem rename, not a copy.
 cd "$DIST_DIR" || exit 1
 FINAL_ZIP="${SLUG}-${VERSION}.zip"
-rm -f "$FINAL_ZIP"
-zip -r "$FINAL_ZIP" "$SLUG" > /dev/null || { echo "ERROR: zip failed"; exit 1; }
+TMP_ZIP=".${FINAL_ZIP}.tmp"
+rm -f "$TMP_ZIP"
+zip -r "$TMP_ZIP" "$SLUG" > /dev/null || { echo "ERROR: zip failed"; rm -f "$TMP_ZIP"; exit 1; }
 
-# Remove .po files (ignore errors if none)
-zip -d "$FINAL_ZIP" "${SLUG}/languages/*.po" > /dev/null || true
+# Remove .po files. zip -d exits 12 for "nothing to do" (no .po files
+# matched) - that's fine, but any other nonzero status is a real failure
+# and must not let a zip that still contains .po files reach $FINAL_ZIP.
+zip -d "$TMP_ZIP" "${SLUG}/languages/*.po" > /dev/null
+ZIP_D_STATUS=$?
+if [ "$ZIP_D_STATUS" -ne 0 ] && [ "$ZIP_D_STATUS" -ne 12 ]; then
+  echo "ERROR: zip -d failed removing .po files (exit $ZIP_D_STATUS)" >&2
+  rm -f "$TMP_ZIP"
+  exit 1
+fi
+
+# mv -f overwrites $FINAL_ZIP directly (a same-filesystem rename, so this
+# is atomic) instead of rm-then-mv, which would leave no zip at all at the
+# release path if the mv step failed after the rm already ran.
+mv -f "$TMP_ZIP" "$FINAL_ZIP" || { echo "ERROR: mv failed"; rm -f "$TMP_ZIP"; exit 1; }
 
 cd ..
 
