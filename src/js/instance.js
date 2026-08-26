@@ -30,6 +30,21 @@ export function initInstance( container ) {
 		return;
 	}
 
+	/**
+	 * Dispatches a namespaced, bubbling CustomEvent on this instance's
+	 * container so add-ons can bind without any build-time coupling to
+	 * this bundle (document.addEventListener/container.addEventListener
+	 * work with no imports) - the same no-dependency principle as the
+	 * window.edbsTemplates/edbsExtraColumns registries. See the event
+	 * contract docs in registries.js.
+	 *
+	 * @param {string} name   - Event name, e.g. "edbs:table-rendered".
+	 * @param {Object} detail - Data passed as event.detail.
+	 */
+	function emit( name, detail ) {
+		container.dispatchEvent( new CustomEvent( name, { bubbles: true, detail } ) );
+	}
+
 	// Resolve this instance's display template; unknown or missing
 	// names fall back to the built-in table.
 	const requested = instanceCfg.template;
@@ -71,6 +86,7 @@ export function initInstance( container ) {
 			return;
 		}
 		currentPage = targetPage;
+		emit( 'edbs:page-changed', { page: targetPage, instanceCfg } );
 		updateUrl( targetPage );
 		fetchMeetings( true );
 	}
@@ -85,12 +101,16 @@ export function initInstance( container ) {
 		maxNumPages = parseInt( data.max_num_pages, 10 ) || maxNumPages;
 
 		template.render( data, instanceCfg, tableEl );
+		emit( 'edbs:table-rendered', { data, instanceCfg } );
+
 		// Template renderInfo overrides can't be assumed to null-check the
 		// element the way the core default does.
 		if ( infoEl ) {
 			( template.renderInfo || defaultRenderInfo )( data, instanceCfg, infoEl );
+			emit( 'edbs:info-rendered', { data, instanceCfg } );
 		}
 		( template.renderPagination || defaultRenderPagination )( data, instanceCfg, paginationEl, goToPage );
+		emit( 'edbs:pagination-rendered', { data, instanceCfg } );
 
 		// Shift focus into the list when pagination is clicked.
 		if ( refocus ) {
@@ -143,11 +163,22 @@ export function initInstance( container ) {
 
 		request
 			.then( function( data ) {
-				renderInstance( data, refocus );
+				// Caught separately from the request promise below so a
+				// throw from renderInstance() (e.g. a broken template or
+				// edbs:table-rendered listener) isn't misreported to
+				// consumers as an edbs:fetch-error - the request itself
+				// succeeded.
+				try {
+					renderInstance( data, refocus );
+				} catch ( error ) {
+					// eslint-disable-next-line no-console -- Surface render failures for debugging; there is no other error-reporting mechanism here.
+					console.error( 'EDBS: render error:', error );
+				}
 			} )
 			.catch( function( error ) {
 				// eslint-disable-next-line no-console -- Surface fetch failures for debugging; there is no other error-reporting mechanism here.
 				console.error( 'EDBS: fetch error:', error );
+				emit( 'edbs:fetch-error', { error, instanceCfg } );
 			} );
 	}
 
