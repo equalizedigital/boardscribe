@@ -1,0 +1,563 @@
+# Copyright (C) 2026 Equalize Digital
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BoardScribe 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: boardscribe\n"
+"Language: lv\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
+
+#. Plugin Name of the plugin
+#: boardscribe.php
+#: includes/Block/BoardScribeBlock.php:79
+#: partials/settings-page.php:22
+msgid "BoardScribe"
+msgstr "BoardScribe"
+
+#. Description of the plugin
+#: boardscribe.php
+msgid "Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
+msgstr "Publicējiet piekļūstamas, meklējamas sēžu darba kārtības un protokolus savā vietnē — izstrādāts valsts iestādēm, dzīvokļu īpašnieku biedrībām un bezpeļņas organizācijām, kurām nepieciešami atklāti, sakārtoti ieraksti."
+
+#. Author of the plugin
+#: boardscribe.php
+msgid "Equalize Digital"
+msgstr "Equalize Digital"
+
+#. Author URI of the plugin
+#: boardscribe.php
+msgid "https://equalizedigital.com"
+msgstr "https://equalizedigital.com"
+
+#. translators: 1: required PHP version, 2: current PHP version
+#: boardscribe.php:30
+#, php-format
+msgid "BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
+msgstr "BoardScribe nepieciešama PHP versija %1$s vai jaunāka. Jūs izmantojat PHP %2$s. Lūdzu, atjauniniet PHP vai sazinieties ar savu pakalpojumu sniedzēju."
+
+#: boardscribe.php:52
+msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
+msgstr "BoardScribe trūkst automātiskās ielādes faila (autoloader). Instalējiet atkārtoti no oficiālā zip arhīva vai palaidiet “composer install”, ja veicat izstrādi no pirmkoda."
+
+#: includes/Admin/MetaBox.php:126
+msgid "Meeting date in Y-m-d format."
+msgstr "Sēdes datums Y-m-d formātā."
+
+#: includes/Admin/MetaBox.php:139
+msgid "URL to the meeting agenda document."
+msgstr "URL uz sēdes darba kārtības dokumentu."
+
+#: includes/Admin/MetaBox.php:152
+msgid "URL to the published minutes document for this meeting."
+msgstr "URL uz šīs sēdes publicēto protokolu."
+
+#: includes/Admin/MetaBox.php:165
+msgid "Whether the meeting was not held."
+msgstr "Vai sēde nenotika."
+
+#: includes/Admin/MetaBox.php:194
+msgid "Meeting Details"
+msgstr "Sēdes informācija"
+
+#: includes/Admin/MetaBox.php:346
+msgctxt "default generated meeting title"
+msgid "Board Meeting"
+msgstr "Valdes sēde"
+
+#. translators: 1: "Board Meeting" label, 2: formatted meeting date.
+#: includes/Admin/MetaBox.php:354
+#, php-format
+msgctxt "default generated meeting title with date"
+msgid "%1$s - %2$s"
+msgstr "%1$s - %2$s"
+
+#: includes/Admin/SettingsPage.php:74
+msgid "General"
+msgstr "Vispārīgi"
+
+#: includes/Admin/SettingsPage.php:78
+#: includes/Admin/SettingsPage.php:490
+msgid "Shortcode Builder"
+msgstr "Īskoda veidotājs"
+
+#: includes/Admin/SettingsPage.php:82
+msgid "Support"
+msgstr "Atbalsts"
+
+#: includes/Admin/SettingsPage.php:144
+#: includes/Admin/SettingsPage.php:480
+msgid "BoardScribe Settings"
+msgstr "BoardScribe iestatījumi"
+
+#: includes/Admin/SettingsPage.php:145
+msgid "Settings"
+msgstr "Iestatījumi"
+
+#: includes/Admin/SettingsPage.php:172
+msgid "General Settings"
+msgstr "Vispārīgie iestatījumi"
+
+#: includes/Admin/SettingsPage.php:179
+#: includes/Admin/SettingsPage.php:267
+msgid "Delete Data on Uninstall"
+msgstr "Dzēst datus atinstalējot"
+
+#: includes/Admin/SettingsPage.php:251
+msgid "Configure general settings for the BoardScribe plugin."
+msgstr "Konfigurējiet BoardScribe spraudņa vispārīgos iestatījumus."
+
+#: includes/Admin/SettingsPage.php:278
+msgid "Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted."
+msgstr "Dzēšot šo spraudni, noņemt visus BoardScribe sēžu ierakstus un spraudņa iestatījumus."
+
+#: includes/Admin/SettingsPage.php:282
+msgid "Warning: this cannot be undone."
+msgstr "Brīdinājums: šo darbību nevar atsaukt."
+
+#: includes/Admin/SettingsPage.php:328
+msgid "BoardScribe settings"
+msgstr "BoardScribe iestatījumi"
+
+#: includes/Admin/SettingsPage.php:437
+msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+msgstr "Zemāk konfigurējiet īskoda opcijas, pēc tam nokopējiet ģenerēto īskodu un ielīmējiet to jebkurā lapā vai ierakstā."
+
+#: includes/Admin/SettingsPage.php:439
+msgid "The shortcode builder requires JavaScript."
+msgstr "Īskoda veidotājam ir nepieciešams JavaScript."
+
+#: includes/Admin/SettingsPage.php:475
+msgid "Downloading and Installing BoardScribe"
+msgstr "BoardScribe lejupielāde un instalēšana"
+
+#: includes/Admin/SettingsPage.php:485
+msgid "Board Meetings Post Type"
+msgstr "Valdes sēžu ieraksta veids"
+
+#: includes/Admin/SettingsPage.php:495
+msgid "Is BoardScribe accessible?"
+msgstr "Vai BoardScribe ir piekļūstams?"
+
+#: includes/Admin/SettingsPage.php:500
+msgid "What languages is BoardScribe translated into?"
+msgstr "Kādās valodās BoardScribe ir tulkots?"
+
+#: includes/Admin/SettingsPage.php:505
+msgid "How do I add file size and type information to links?"
+msgstr "Kā saitēm pievienot informāciju par faila izmēru un veidu?"
+
+#: includes/Admin/SettingsPage.php:511
+msgid "Documentation"
+msgstr "Dokumentācija"
+
+#: includes/Admin/SettingsPage.php:513
+msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
+msgstr "Nepieciešama palīdzība? Skatiet mūsu dokumentāciju, lai iegūtu pamācības un funkciju aprakstus."
+
+#: includes/Admin/SettingsPage.php:516
+msgid "View Documentation"
+msgstr "Skatīt dokumentāciju"
+
+#: includes/Admin/SettingsPage.php:517
+#: includes/Admin/SettingsPage.php:528
+#: includes/Admin/SettingsPage.php:539
+msgid "(opens in a new tab)"
+msgstr "(atveras jaunā cilnē)"
+
+#: includes/Admin/SettingsPage.php:522
+msgid "Contact Us"
+msgstr "Sazinieties ar mums"
+
+#: includes/Admin/SettingsPage.php:524
+msgid "Have questions or need help? Reach out to our support team."
+msgstr "Ir jautājumi vai nepieciešama palīdzība? Sazinieties ar mūsu atbalsta komandu."
+
+#: includes/Admin/SettingsPage.php:527
+msgid "Contact Support"
+msgstr "Sazināties ar atbalstu"
+
+#: includes/Admin/SettingsPage.php:533
+msgid "Quick Links"
+msgstr "Ātrās saites"
+
+#: includes/Block/BoardScribeBlock.php:448
+#: includes/Shortcode/BoardScribeShortcode.php:128
+#: includes/Shortcode/FieldRegistry.php:234
+#: includes/Shortcode/FieldRegistry.php:278
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Nosaukums"
+
+#: includes/Block/BoardScribeBlock.php:453
+#: includes/Shortcode/BoardScribeShortcode.php:129
+#: includes/Shortcode/FieldRegistry.php:241
+#: includes/Shortcode/FieldRegistry.php:285
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Datums"
+
+#: includes/Block/BoardScribeBlock.php:458
+#: includes/Shortcode/BoardScribeShortcode.php:130
+#: includes/Shortcode/FieldRegistry.php:248
+#: includes/Shortcode/FieldRegistry.php:292
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Darba kārtība"
+
+#: includes/Block/BoardScribeBlock.php:463
+#: includes/Shortcode/BoardScribeShortcode.php:131
+#: includes/Shortcode/FieldRegistry.php:255
+#: includes/Shortcode/FieldRegistry.php:299
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Protokols"
+
+#: includes/PostType/BoardScribeCPT.php:39
+msgctxt "Post Type General Name"
+msgid "Board Meetings"
+msgstr "Valdes sēdes"
+
+#: includes/PostType/BoardScribeCPT.php:40
+msgctxt "Post Type Singular Name"
+msgid "Board Meeting"
+msgstr "Valdes sēde"
+
+#: includes/PostType/BoardScribeCPT.php:41
+msgid "Board Meetings"
+msgstr "Valdes sēdes"
+
+#: includes/PostType/BoardScribeCPT.php:42
+#: includes/PostType/BoardScribeCPT.php:48
+msgid "Board Meeting"
+msgstr "Valdes sēde"
+
+#: includes/PostType/BoardScribeCPT.php:43
+msgid "Add Meeting"
+msgstr "Pievienot sēdi"
+
+#: includes/PostType/BoardScribeCPT.php:44
+msgid "Add New Meeting"
+msgstr "Pievienot jaunu sēdi"
+
+#: includes/REST/BoardScribeEndpoint.php:114
+#: includes/REST/BoardScribeEndpoint.php:285
+msgid "View Agenda"
+msgstr "Skatīt darba kārtību"
+
+#: includes/REST/BoardScribeEndpoint.php:115
+#: includes/REST/BoardScribeEndpoint.php:286
+msgid "View Minutes"
+msgstr "Skatīt protokolu"
+
+#: includes/REST/BoardScribeEndpoint.php:301
+msgid "Date not available"
+msgstr "Datums nav pieejams"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date
+#. translators: 1: link label e.g. "View Minutes", 2: meeting date
+#: includes/REST/BoardScribeEndpoint.php:326
+#: includes/REST/BoardScribeEndpoint.php:340
+#, php-format
+msgid "%1$s for %2$s"
+msgstr "%1$s datumam %2$s"
+
+#: includes/REST/BoardScribeEndpoint.php:332
+msgid "Agenda not available"
+msgstr "Darba kārtība nav pieejama"
+
+#: includes/REST/BoardScribeEndpoint.php:346
+msgid "Minutes not available"
+msgstr "Protokols nav pieejams"
+
+#: includes/REST/BoardScribeEndpoint.php:351
+msgid "Meeting not held"
+msgstr "Sēde nenotika"
+
+#: includes/Shortcode/BoardScribeShortcode.php:132
+#: assets/build/boardscribe.js:1
+msgid "Previous"
+msgstr "Iepriekšējā"
+
+#: includes/Shortcode/BoardScribeShortcode.php:133
+#: assets/build/boardscribe.js:3
+msgid "Next"
+msgstr "Nākamā"
+
+#: includes/Shortcode/BoardScribeShortcode.php:134
+#: assets/build/boardscribe.js:1
+msgid "Previous Page"
+msgstr "Iepriekšējā lapa"
+
+#. translators: %s: page number.
+#: includes/Shortcode/BoardScribeShortcode.php:135
+#: assets/build/boardscribe.js:3
+msgid "Next Page"
+msgstr "Nākamā lapa"
+
+#: includes/Shortcode/BoardScribeShortcode.php:136
+#: assets/build/boardscribe.js:1
+msgid "Pagination"
+msgstr "Lappušu numerācija"
+
+#. translators: %s: page number
+#: includes/Shortcode/BoardScribeShortcode.php:138
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Page %s"
+msgstr "Lapa %s"
+
+#. translators: 1: first entry number, 2: last entry number, 3: total entries
+#: includes/Shortcode/BoardScribeShortcode.php:140
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Showing %1$s to %2$s of %3$s entries"
+msgstr "Rāda no %1$s līdz %2$s no kopā %3$s ierakstiem"
+
+#: includes/Shortcode/FieldRegistry.php:129
+msgid "Included Years"
+msgstr "Iekļautie gadi"
+
+#: includes/Shortcode/FieldRegistry.php:132
+msgid "Comma-separated list of years. Leave blank to show all years."
+msgstr "Ar komatu atdalīts gadu saraksts. Atstājiet tukšu, lai rādītu visus gadus."
+
+#: includes/Shortcode/FieldRegistry.php:139
+msgid "Start Date"
+msgstr "Sākuma datums"
+
+#: includes/Shortcode/FieldRegistry.php:146
+msgid "Only show meetings on or after this date. Takes priority over Included Years."
+msgstr "Rādīt tikai sēdes, kas notiek šajā datumā vai vēlāk. Tam ir prioritāte pār “Iekļautie gadi”."
+
+#: includes/Shortcode/FieldRegistry.php:155
+msgid "End Date"
+msgstr "Beigu datums"
+
+#: includes/Shortcode/FieldRegistry.php:157
+msgid "Only show meetings on or before this date. Takes priority over Included Years."
+msgstr "Rādīt tikai sēdes, kas notiek šajā datumā vai agrāk. Tam ir prioritāte pār “Iekļautie gadi”."
+
+#: includes/Shortcode/FieldRegistry.php:166
+msgid "Posts Per Page"
+msgstr "Ieraksti lapā"
+
+#: includes/Shortcode/FieldRegistry.php:174
+msgid "Held Date Format"
+msgstr "Notikušas sēdes datuma formāts"
+
+#: includes/Shortcode/FieldRegistry.php:178
+msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
+msgstr "PHP date() formāts. Pilnu informāciju skatiet php.net/manual/en/datetime.format.php."
+
+#: includes/Shortcode/FieldRegistry.php:189
+msgid "Not Held Date Format"
+msgstr "Nenotikušas sēdes datuma formāts"
+
+#: includes/Shortcode/FieldRegistry.php:201
+msgid "Display Template"
+msgstr "Attēlošanas veidne"
+
+#: includes/Shortcode/FieldRegistry.php:209
+msgid "Table (default)"
+msgstr "Tabula (noklusējuma)"
+
+#: includes/Shortcode/FieldRegistry.php:216
+msgid "Force all columns to the same width"
+msgstr "Piespiest visas kolonnas vienādā platumā"
+
+#: includes/Shortcode/FieldRegistry.php:218
+msgid "Helps align columns consistently for vertical rhythm across rows."
+msgstr "Palīdz konsekventi izlīdzināt kolonnas vertikālam ritmam visās rindās."
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "Custom CSS Class"
+msgstr "Pielāgota CSS klase"
+
+#: includes/Shortcode/FieldRegistry.php:262
+msgid "Agenda Link Label"
+msgstr "Darba kārtības saites etiķete"
+
+#: includes/Shortcode/FieldRegistry.php:270
+msgid "Minutes Link Label"
+msgstr "Protokola saites etiķete"
+
+#: partials/block-editor-preview.php:55
+msgid "No published meetings found."
+msgstr "Nav atrasta neviena publicēta sēde."
+
+#: partials/meta-box.php:23
+msgid "Meeting Date"
+msgstr "Sēdes datums"
+
+#: partials/meta-box.php:34
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Obligāts. Izvēlieties datumu, kurā sēde notika vai notiks."
+
+#: partials/meta-box.php:39
+msgid "Agenda URL"
+msgstr "Darba kārtības URL"
+
+#: partials/meta-box.php:54
+msgid "Choose Agenda File"
+msgstr "Izvēlēties darba kārtības failu"
+
+#: partials/meta-box.php:55
+#: partials/meta-box.php:90
+msgid "Use this file"
+msgstr "Izmantot šo failu"
+
+#: partials/meta-box.php:56
+#: partials/meta-box.php:91
+msgid "Media Library"
+msgstr "Mediju bibliotēka"
+
+#: partials/meta-box.php:74
+msgid "Minutes URL"
+msgstr "Protokola URL"
+
+#: partials/meta-box.php:89
+msgid "Choose Minutes File"
+msgstr "Izvēlēties protokola failu"
+
+#: partials/meta-box.php:109
+msgid "Meeting Not Held"
+msgstr "Sēde nenotika"
+
+#: partials/meta-box.php:120
+msgid "This meeting was not held"
+msgstr "Šī sēde nenotika"
+
+#. translators: %s: plugin version number.
+#: partials/settings-page.php:27
+#, php-format
+msgid "Version %s"
+msgstr "Versija %s"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Ignored: a start/end date is set below, which takes priority."
+msgstr "Ignorēts: zemāk ir iestatīts sākuma/beigu datums, kam ir prioritāte."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or after this date. Overrides Included Years above as soon as either date is set."
+msgstr "Rādīt tikai sēdes, kas notiek šajā datumā vai vēlāk. Pārraksta augstāk norādītos “Iekļautie gadi”, tiklīdz ir iestatīts kāds no datumiem."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or before this date. Overrides Included Years above as soon as either date is set."
+msgstr "Rādīt tikai sēdes, kas notiek šajā datumā vai agrāk. Pārraksta augstāk norādītos “Iekļautie gadi”, tiklīdz ir iestatīts kāds no datumiem."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Display Settings"
+msgstr "Attēlošanas iestatījumi"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Column Labels"
+msgstr "Kolonnu etiķetes"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Link Labels"
+msgstr "Saišu etiķetes"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Hide Columns"
+msgstr "Slēpt kolonnas"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Show Columns"
+msgstr "Rādīt kolonnas"
+
+#: assets/build/block/index.js:1
+msgid "Show all meetings"
+msgstr "Rādīt visas sēdes"
+
+#: assets/build/block/index.js:1
+msgid "Ignores the per-page limit below and fetches every meeting in one request."
+msgstr "Ignorē zemāk norādīto ierakstu skaitu lapā un ielādē visas sēdes vienā pieprasījumā."
+
+#: assets/build/block/index.js:1
+msgid "Records Per Page"
+msgstr "Ieraksti lapā"
+
+#: assets/build/builder/index.js:1
+msgid "Preview"
+msgstr "Priekšskatījums"
+
+#: assets/build/builder/index.js:1
+msgid "Show all"
+msgstr "Rādīt visu"
+
+#: assets/build/builder/index.js:1
+msgid "Copy"
+msgstr "Kopēt"
+
+#: assets/build/builder/index.js:1
+msgid "Your Shortcode"
+msgstr "Jūsu īskods"
+
+#: assets/build/builder/index.js:1
+msgid "Copied!"
+msgstr "Nokopēts!"
+
+#: assets/build/builder/index.js:1
+msgid "Shortcode copied to clipboard."
+msgstr "Īskods nokopēts starpliktuvē."
+
+#: assets/build/builder/index.js:1
+msgid "Copying failed. Select the shortcode text and copy it manually."
+msgstr "Kopēšana neizdevās. Atlasiet īskoda tekstu un nokopējiet to manuāli."
+
+#: block.json
+msgctxt "block title"
+msgid "Board Meetings"
+msgstr "Valdes sēdes"
+
+#: block.json
+msgctxt "block description"
+msgid "Display a paginated, accessible table of board meetings, with agenda and minutes links."
+msgstr "Attēlot piekļūstamu valdes sēžu tabulu ar lappušu numerāciju un saitēm uz darba kārtībām un protokoliem."
+
+#: block.json
+msgctxt "block keyword"
+msgid "meeting"
+msgstr "sēde"
+
+#: block.json
+msgctxt "block keyword"
+msgid "minutes"
+msgstr "protokols"
+
+#: block.json
+msgctxt "block keyword"
+msgid "agenda"
+msgstr "darba kārtība"
+
+#: block.json
+msgctxt "block keyword"
+msgid "notes"
+msgstr "piezīmes"
+
+#: block.json
+msgctxt "block keyword"
+msgid "table"
+msgstr "tabula"
+
+#: block.json
+msgctxt "block keyword"
+msgid "boardscribe"
+msgstr "boardscribe"

@@ -1,0 +1,563 @@
+# Copyright (C) 2026 Equalize Digital
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BoardScribe 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: boardscribe\n"
+"Language: sv_SE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Plugin Name of the plugin
+#: boardscribe.php
+#: includes/Block/BoardScribeBlock.php:79
+#: partials/settings-page.php:22
+msgid "BoardScribe"
+msgstr "BoardScribe"
+
+#. Description of the plugin
+#: boardscribe.php
+msgid "Publish accessible, searchable meeting agendas and minutes on your site — built for public bodies, HOAs, and nonprofits that need open, organized records."
+msgstr "Publicera tillgängliga, sökbara dagordningar och protokoll på din webbplats – byggt för offentliga organ, bostadsrättsföreningar och ideella föreningar som behöver öppna, organiserade register."
+
+#. Author of the plugin
+#: boardscribe.php
+msgid "Equalize Digital"
+msgstr "Equalize Digital"
+
+#. Author URI of the plugin
+#: boardscribe.php
+msgid "https://equalizedigital.com"
+msgstr "https://equalizedigital.com"
+
+#. translators: 1: required PHP version, 2: current PHP version
+#: boardscribe.php:30
+#, php-format
+msgid "BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
+msgstr "BoardScribe kräver PHP %1$s eller högre. Du använder PHP %2$s. Uppgradera PHP eller kontakta ditt webbhotell."
+
+#: boardscribe.php:52
+msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
+msgstr "BoardScribe saknar sin autoloader. Installera om från en utgiven zip-fil, eller kör `composer install` om du utvecklar från källkoden."
+
+#: includes/Admin/MetaBox.php:126
+msgid "Meeting date in Y-m-d format."
+msgstr "Mötesdatum i formatet ÅÅÅÅ-MM-DD."
+
+#: includes/Admin/MetaBox.php:139
+msgid "URL to the meeting agenda document."
+msgstr "URL till mötets dagordning."
+
+#: includes/Admin/MetaBox.php:152
+msgid "URL to the published minutes document for this meeting."
+msgstr "URL till det publicerade protokollet för detta möte."
+
+#: includes/Admin/MetaBox.php:165
+msgid "Whether the meeting was not held."
+msgstr "Huruvida mötet var inställt."
+
+#: includes/Admin/MetaBox.php:194
+msgid "Meeting Details"
+msgstr "Mötesdetaljer"
+
+#: includes/Admin/MetaBox.php:346
+msgctxt "default generated meeting title"
+msgid "Board Meeting"
+msgstr "Styrelsemöte"
+
+#. translators: 1: "Board Meeting" label, 2: formatted meeting date.
+#: includes/Admin/MetaBox.php:354
+#, php-format
+msgctxt "default generated meeting title with date"
+msgid "%1$s - %2$s"
+msgstr "%1$s – %2$s"
+
+#: includes/Admin/SettingsPage.php:74
+msgid "General"
+msgstr "Allmänt"
+
+#: includes/Admin/SettingsPage.php:78
+#: includes/Admin/SettingsPage.php:490
+msgid "Shortcode Builder"
+msgstr "Kortkodsbyggare"
+
+#: includes/Admin/SettingsPage.php:82
+msgid "Support"
+msgstr "Support"
+
+#: includes/Admin/SettingsPage.php:144
+#: includes/Admin/SettingsPage.php:480
+msgid "BoardScribe Settings"
+msgstr "Inställningar för BoardScribe"
+
+#: includes/Admin/SettingsPage.php:145
+msgid "Settings"
+msgstr "Inställningar"
+
+#: includes/Admin/SettingsPage.php:172
+msgid "General Settings"
+msgstr "Allmänna inställningar"
+
+#: includes/Admin/SettingsPage.php:179
+#: includes/Admin/SettingsPage.php:267
+msgid "Delete Data on Uninstall"
+msgstr "Radera data vid avinstallation"
+
+#: includes/Admin/SettingsPage.php:251
+msgid "Configure general settings for the BoardScribe plugin."
+msgstr "Konfigurera allmänna inställningar för tillägget BoardScribe."
+
+#: includes/Admin/SettingsPage.php:278
+msgid "Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted."
+msgstr "Ta bort alla mötesinlägg och inställningar för BoardScribe när detta tillägg raderas."
+
+#: includes/Admin/SettingsPage.php:282
+msgid "Warning: this cannot be undone."
+msgstr "Varning: detta kan inte ångras."
+
+#: includes/Admin/SettingsPage.php:328
+msgid "BoardScribe settings"
+msgstr "Inställningar för BoardScribe"
+
+#: includes/Admin/SettingsPage.php:437
+msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+msgstr "Konfigurera dina alternativ för kortkoder nedan, kopiera sedan den genererade kortkoden och klistra in den på valfri sida eller i valfritt inlägg."
+
+#: includes/Admin/SettingsPage.php:439
+msgid "The shortcode builder requires JavaScript."
+msgstr "Kortkodsbyggaren kräver JavaScript."
+
+#: includes/Admin/SettingsPage.php:475
+msgid "Downloading and Installing BoardScribe"
+msgstr "Ladda ner och installera BoardScribe"
+
+#: includes/Admin/SettingsPage.php:485
+msgid "Board Meetings Post Type"
+msgstr "Inläggstyp för styrelsemöten"
+
+#: includes/Admin/SettingsPage.php:495
+msgid "Is BoardScribe accessible?"
+msgstr "Är BoardScribe tillgängligt?"
+
+#: includes/Admin/SettingsPage.php:500
+msgid "What languages is BoardScribe translated into?"
+msgstr "Vilka språk är BoardScribe översatt till?"
+
+#: includes/Admin/SettingsPage.php:505
+msgid "How do I add file size and type information to links?"
+msgstr "Hur lägger jag till information om filstorlek och filtyp i länkar?"
+
+#: includes/Admin/SettingsPage.php:511
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: includes/Admin/SettingsPage.php:513
+msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
+msgstr "Behöver du hjälp? Kolla in vår dokumentation för steg-för-steg-guider och genomgångar av funktioner."
+
+#: includes/Admin/SettingsPage.php:516
+msgid "View Documentation"
+msgstr "Visa dokumentation"
+
+#: includes/Admin/SettingsPage.php:517
+#: includes/Admin/SettingsPage.php:528
+#: includes/Admin/SettingsPage.php:539
+msgid "(opens in a new tab)"
+msgstr "(öppnas i en ny flik)"
+
+#: includes/Admin/SettingsPage.php:522
+msgid "Contact Us"
+msgstr "Kontakta oss"
+
+#: includes/Admin/SettingsPage.php:524
+msgid "Have questions or need help? Reach out to our support team."
+msgstr "Har du frågor eller behöver du hjälp? Kontakta vårt supportteam."
+
+#: includes/Admin/SettingsPage.php:527
+msgid "Contact Support"
+msgstr "Kontakta support"
+
+#: includes/Admin/SettingsPage.php:533
+msgid "Quick Links"
+msgstr "Snabblänkar"
+
+#: includes/Block/BoardScribeBlock.php:448
+#: includes/Shortcode/BoardScribeShortcode.php:128
+#: includes/Shortcode/FieldRegistry.php:234
+#: includes/Shortcode/FieldRegistry.php:278
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Titel"
+
+#: includes/Block/BoardScribeBlock.php:453
+#: includes/Shortcode/BoardScribeShortcode.php:129
+#: includes/Shortcode/FieldRegistry.php:241
+#: includes/Shortcode/FieldRegistry.php:285
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Datum"
+
+#: includes/Block/BoardScribeBlock.php:458
+#: includes/Shortcode/BoardScribeShortcode.php:130
+#: includes/Shortcode/FieldRegistry.php:248
+#: includes/Shortcode/FieldRegistry.php:292
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Dagordning"
+
+#: includes/Block/BoardScribeBlock.php:463
+#: includes/Shortcode/BoardScribeShortcode.php:131
+#: includes/Shortcode/FieldRegistry.php:255
+#: includes/Shortcode/FieldRegistry.php:299
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Protokoll"
+
+#: includes/PostType/BoardScribeCPT.php:39
+msgctxt "Post Type General Name"
+msgid "Board Meetings"
+msgstr "Styrelsemöten"
+
+#: includes/PostType/BoardScribeCPT.php:40
+msgctxt "Post Type Singular Name"
+msgid "Board Meeting"
+msgstr "Styrelsemöte"
+
+#: includes/PostType/BoardScribeCPT.php:41
+msgid "Board Meetings"
+msgstr "Styrelsemöten"
+
+#: includes/PostType/BoardScribeCPT.php:42
+#: includes/PostType/BoardScribeCPT.php:48
+msgid "Board Meeting"
+msgstr "Styrelsemöte"
+
+#: includes/PostType/BoardScribeCPT.php:43
+msgid "Add Meeting"
+msgstr "Lägg till möte"
+
+#: includes/PostType/BoardScribeCPT.php:44
+msgid "Add New Meeting"
+msgstr "Lägg till nytt möte"
+
+#: includes/REST/BoardScribeEndpoint.php:114
+#: includes/REST/BoardScribeEndpoint.php:285
+msgid "View Agenda"
+msgstr "Visa dagordning"
+
+#: includes/REST/BoardScribeEndpoint.php:115
+#: includes/REST/BoardScribeEndpoint.php:286
+msgid "View Minutes"
+msgstr "Visa protokoll"
+
+#: includes/REST/BoardScribeEndpoint.php:301
+msgid "Date not available"
+msgstr "Datum inte tillgängligt"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date
+#. translators: 1: link label e.g. "View Minutes", 2: meeting date
+#: includes/REST/BoardScribeEndpoint.php:326
+#: includes/REST/BoardScribeEndpoint.php:340
+#, php-format
+msgid "%1$s for %2$s"
+msgstr "%1$s för %2$s"
+
+#: includes/REST/BoardScribeEndpoint.php:332
+msgid "Agenda not available"
+msgstr "Dagordning inte tillgänglig"
+
+#: includes/REST/BoardScribeEndpoint.php:346
+msgid "Minutes not available"
+msgstr "Protokoll inte tillgängligt"
+
+#: includes/REST/BoardScribeEndpoint.php:351
+msgid "Meeting not held"
+msgstr "Mötet inställt"
+
+#: includes/Shortcode/BoardScribeShortcode.php:132
+#: assets/build/boardscribe.js:1
+msgid "Previous"
+msgstr "Föregående"
+
+#: includes/Shortcode/BoardScribeShortcode.php:133
+#: assets/build/boardscribe.js:3
+msgid "Next"
+msgstr "Nästa"
+
+#: includes/Shortcode/BoardScribeShortcode.php:134
+#: assets/build/boardscribe.js:1
+msgid "Previous Page"
+msgstr "Föregående sida"
+
+#. translators: %s: page number.
+#: includes/Shortcode/BoardScribeShortcode.php:135
+#: assets/build/boardscribe.js:3
+msgid "Next Page"
+msgstr "Nästa sida"
+
+#: includes/Shortcode/BoardScribeShortcode.php:136
+#: assets/build/boardscribe.js:1
+msgid "Pagination"
+msgstr "Sidnumrering"
+
+#. translators: %s: page number
+#: includes/Shortcode/BoardScribeShortcode.php:138
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Page %s"
+msgstr "Sida %s"
+
+#. translators: 1: first entry number, 2: last entry number, 3: total entries
+#: includes/Shortcode/BoardScribeShortcode.php:140
+#: assets/build/boardscribe.js:1
+#, php-format, js-format
+msgid "Showing %1$s to %2$s of %3$s entries"
+msgstr "Visar %1$s till %2$s av %3$s poster"
+
+#: includes/Shortcode/FieldRegistry.php:129
+msgid "Included Years"
+msgstr "Inkluderade år"
+
+#: includes/Shortcode/FieldRegistry.php:132
+msgid "Comma-separated list of years. Leave blank to show all years."
+msgstr "Kommaseparerad lista över år. Lämna tomt för att visa alla år."
+
+#: includes/Shortcode/FieldRegistry.php:139
+msgid "Start Date"
+msgstr "Startdatum"
+
+#: includes/Shortcode/FieldRegistry.php:146
+msgid "Only show meetings on or after this date. Takes priority over Included Years."
+msgstr "Visa endast möten på eller efter detta datum. Har företräde framför Inkluderade år."
+
+#: includes/Shortcode/FieldRegistry.php:155
+msgid "End Date"
+msgstr "Slutdatum"
+
+#: includes/Shortcode/FieldRegistry.php:157
+msgid "Only show meetings on or before this date. Takes priority over Included Years."
+msgstr "Visa endast möten på eller före detta datum. Har företräde framför Inkluderade år."
+
+#: includes/Shortcode/FieldRegistry.php:166
+msgid "Posts Per Page"
+msgstr "Inlägg per sida"
+
+#: includes/Shortcode/FieldRegistry.php:174
+msgid "Held Date Format"
+msgstr "Datumformat för genomförda möten"
+
+#: includes/Shortcode/FieldRegistry.php:178
+msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
+msgstr "PHP date()-format. Se php.net/manual/en/datetime.format.php för fullständig referens."
+
+#: includes/Shortcode/FieldRegistry.php:189
+msgid "Not Held Date Format"
+msgstr "Datumformat för inställda möten"
+
+#: includes/Shortcode/FieldRegistry.php:201
+msgid "Display Template"
+msgstr "Visningsmall"
+
+#: includes/Shortcode/FieldRegistry.php:209
+msgid "Table (default)"
+msgstr "Tabell (standard)"
+
+#: includes/Shortcode/FieldRegistry.php:216
+msgid "Force all columns to the same width"
+msgstr "Tvinga alla kolumner till samma bredd"
+
+#: includes/Shortcode/FieldRegistry.php:218
+msgid "Helps align columns consistently for vertical rhythm across rows."
+msgstr "Hjälper till att justera kolumner konsekvent för vertikal rytm över rader."
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "Custom CSS Class"
+msgstr "Anpassad CSS-klass"
+
+#: includes/Shortcode/FieldRegistry.php:262
+msgid "Agenda Link Label"
+msgstr "Etikett för länk till dagordning"
+
+#: includes/Shortcode/FieldRegistry.php:270
+msgid "Minutes Link Label"
+msgstr "Etikett för länk till protokoll"
+
+#: partials/block-editor-preview.php:55
+msgid "No published meetings found."
+msgstr "Inga publicerade möten hittades."
+
+#: partials/meta-box.php:23
+msgid "Meeting Date"
+msgstr "Mötesdatum"
+
+#: partials/meta-box.php:34
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Obligatoriskt. Välj det datum då mötet hölls eller kommer att hållas."
+
+#: partials/meta-box.php:39
+msgid "Agenda URL"
+msgstr "URL till dagordning"
+
+#: partials/meta-box.php:54
+msgid "Choose Agenda File"
+msgstr "Välj fil för dagordning"
+
+#: partials/meta-box.php:55
+#: partials/meta-box.php:90
+msgid "Use this file"
+msgstr "Använd denna fil"
+
+#: partials/meta-box.php:56
+#: partials/meta-box.php:91
+msgid "Media Library"
+msgstr "Mediebibliotek"
+
+#: partials/meta-box.php:74
+msgid "Minutes URL"
+msgstr "URL till protokoll"
+
+#: partials/meta-box.php:89
+msgid "Choose Minutes File"
+msgstr "Välj fil för protokoll"
+
+#: partials/meta-box.php:109
+msgid "Meeting Not Held"
+msgstr "Mötet inställt"
+
+#: partials/meta-box.php:120
+msgid "This meeting was not held"
+msgstr "Detta möte blev inställt"
+
+#. translators: %s: plugin version number.
+#: partials/settings-page.php:27
+#, php-format
+msgid "Version %s"
+msgstr "Version %s"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Ignored: a start/end date is set below, which takes priority."
+msgstr "Ignorerat: ett start-/slutdatum är angivet nedan, vilket har företräde."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or after this date. Overrides Included Years above as soon as either date is set."
+msgstr "Visa endast möten på eller efter detta datum. Åsidosätter Inkluderade år ovan så snart något datum har angetts."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or before this date. Overrides Included Years above as soon as either date is set."
+msgstr "Visa endast möten på eller före detta datum. Åsidosätter Inkluderade år ovan så snart något datum har angetts."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Display Settings"
+msgstr "Visningsinställningar"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Column Labels"
+msgstr "Kolumnetiketter"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Link Labels"
+msgstr "Länketiketter"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Hide Columns"
+msgstr "Dölj kolumner"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Show Columns"
+msgstr "Visa kolumner"
+
+#: assets/build/block/index.js:1
+msgid "Show all meetings"
+msgstr "Visa alla möten"
+
+#: assets/build/block/index.js:1
+msgid "Ignores the per-page limit below and fetches every meeting in one request."
+msgstr "Ignorerar gränsen för poster per sida nedan och hämtar alla möten i en begäran."
+
+#: assets/build/block/index.js:1
+msgid "Records Per Page"
+msgstr "Poster per sida"
+
+#: assets/build/builder/index.js:1
+msgid "Preview"
+msgstr "Förhandsgranska"
+
+#: assets/build/builder/index.js:1
+msgid "Show all"
+msgstr "Visa alla"
+
+#: assets/build/builder/index.js:1
+msgid "Copy"
+msgstr "Kopiera"
+
+#: assets/build/builder/index.js:1
+msgid "Your Shortcode"
+msgstr "Din kortkod"
+
+#: assets/build/builder/index.js:1
+msgid "Copied!"
+msgstr "Kopierat!"
+
+#: assets/build/builder/index.js:1
+msgid "Shortcode copied to clipboard."
+msgstr "Kortkoden har kopierats till urklipp."
+
+#: assets/build/builder/index.js:1
+msgid "Copying failed. Select the shortcode text and copy it manually."
+msgstr "Kopieringen misslyckades. Markera kortkodstexten och kopiera den manuellt."
+
+#: block.json
+msgctxt "block title"
+msgid "Board Meetings"
+msgstr "Styrelsemöten"
+
+#: block.json
+msgctxt "block description"
+msgid "Display a paginated, accessible table of board meetings, with agenda and minutes links."
+msgstr "Visa en sidnumrerad, tillgänglig tabell över styrelsemöten med länkar till dagordning och protokoll."
+
+#: block.json
+msgctxt "block keyword"
+msgid "meeting"
+msgstr "möte"
+
+#: block.json
+msgctxt "block keyword"
+msgid "minutes"
+msgstr "protokoll"
+
+#: block.json
+msgctxt "block keyword"
+msgid "agenda"
+msgstr "dagordning"
+
+#: block.json
+msgctxt "block keyword"
+msgid "notes"
+msgstr "anteckningar"
+
+#: block.json
+msgctxt "block keyword"
+msgid "table"
+msgstr "tabell"
+
+#: block.json
+msgctxt "block keyword"
+msgid "boardscribe"
+msgstr "boardscribe"
