@@ -523,7 +523,7 @@ class SettingsPage {
 			<p class="edbs-settings-support-description">
 				<?php esc_html_e( 'Have questions or need help? Reach out to our support team.', 'boardscribe' ); ?>
 			</p>
-			<a class="button button-secondary" href="<?php echo esc_url( $this->support_url( 'https://my.equalizedigital.com/support/', 'button-support' ) ); ?>" target="_blank" rel="noopener noreferrer">
+			<a class="button button-secondary" href="<?php echo esc_url( 'https://wordpress.org/support/plugin/boardscribe/' ); ?>" target="_blank" rel="noopener noreferrer">
 				<?php esc_html_e( 'Contact Support', 'boardscribe' ); ?>
 				<span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'boardscribe' ); ?></span>
 			</a>
