@@ -9,21 +9,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-16T20:34:58+00:00\n"
+"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/PostType/BoardScribeCPT.php:41
+#: includes/Block/BoardScribeBlock.php:79
+#: partials/settings-page.php:22
 msgid "BoardScribe"
-msgstr ""
-
-#. Plugin URI of the plugin
-#. Author URI of the plugin
-#: boardscribe.php
-msgid "https://equalizedigital.com"
 msgstr ""
 
 #. Description of the plugin
@@ -36,235 +31,360 @@ msgstr ""
 msgid "Equalize Digital"
 msgstr ""
 
+#. Author URI of the plugin
+#: boardscribe.php
+msgid "https://equalizedigital.com"
+msgstr ""
+
 #. translators: 1: required PHP version, 2: current PHP version
-#: boardscribe.php:31
+#: boardscribe.php:30
 #, php-format
 msgid "BoardScribe requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade PHP or contact your host."
 msgstr ""
 
-#: boardscribe.php:53
+#: boardscribe.php:52
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr ""
 
-#: includes/Admin/MetaBox.php:124
+#: includes/Admin/MetaBox.php:126
 msgid "Meeting date in Y-m-d format."
 msgstr ""
 
-#: includes/Admin/MetaBox.php:137
+#: includes/Admin/MetaBox.php:139
 msgid "URL to the meeting agenda document."
 msgstr ""
 
-#: includes/Admin/MetaBox.php:150
+#: includes/Admin/MetaBox.php:152
 msgid "URL to the published minutes document for this meeting."
 msgstr ""
 
-#: includes/Admin/MetaBox.php:163
+#: includes/Admin/MetaBox.php:165
 msgid "Whether the meeting was not held."
 msgstr ""
 
-#: includes/Admin/MetaBox.php:192
+#: includes/Admin/MetaBox.php:194
 msgid "Meeting Details"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:50
-msgid "BoardScribe Settings"
+#: includes/Admin/MetaBox.php:346
+msgctxt "default generated meeting title"
+msgid "Board Meeting"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:51
-msgid "Settings"
+#. translators: 1: "Board Meeting" label, 2: formatted meeting date.
+#: includes/Admin/MetaBox.php:354
+#, php-format
+msgctxt "default generated meeting title with date"
+msgid "%1$s - %2$s"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:74
+msgid "General"
 msgstr ""
 
 #: includes/Admin/SettingsPage.php:78
-msgid "Advanced"
+#: includes/Admin/SettingsPage.php:490
+msgid "Shortcode Builder"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:85
+#: includes/Admin/SettingsPage.php:82
+msgid "Support"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:144
+#: includes/Admin/SettingsPage.php:480
+msgid "BoardScribe Settings"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:145
+msgid "Settings"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:172
+msgid "General Settings"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:179
+#: includes/Admin/SettingsPage.php:267
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:292
-msgid "Show all"
+#: includes/Admin/SettingsPage.php:251
+msgid "Configure general settings for the BoardScribe plugin."
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:415
+#: includes/Admin/SettingsPage.php:278
 msgid "Remove all BoardScribe meeting posts and plugin settings when this plugin is deleted."
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:417
+#: includes/Admin/SettingsPage.php:282
 msgid "Warning: this cannot be undone."
 msgstr ""
 
-#: includes/Block/BoardScribeBlock.php:400
-#: includes/Shortcode/BoardScribeShortcode.php:123
-#: includes/Shortcode/FieldRegistry.php:192
-#: includes/Shortcode/FieldRegistry.php:236
-#: src/js/templates/table.js:32
+#: includes/Admin/SettingsPage.php:328
+msgid "BoardScribe settings"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:437
+msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:439
+msgid "The shortcode builder requires JavaScript."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:475
+msgid "Downloading and Installing BoardScribe"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:485
+msgid "Board Meetings Post Type"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:495
+msgid "Is BoardScribe accessible?"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:500
+msgid "What languages is BoardScribe translated into?"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:505
+msgid "How do I add file size and type information to links?"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:511
+msgid "Documentation"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:513
+msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:516
+msgid "View Documentation"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:517
+#: includes/Admin/SettingsPage.php:528
+#: includes/Admin/SettingsPage.php:539
+msgid "(opens in a new tab)"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:522
+msgid "Contact Us"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:524
+msgid "Have questions or need help? Reach out to our support team."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:527
+msgid "Contact Support"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:533
+msgid "Quick Links"
+msgstr ""
+
+#: includes/Block/BoardScribeBlock.php:448
+#: includes/Shortcode/BoardScribeShortcode.php:128
+#: includes/Shortcode/FieldRegistry.php:234
+#: includes/Shortcode/FieldRegistry.php:278
+#: assets/build/boardscribe.js:1
 msgid "Title"
 msgstr ""
 
-#: includes/Block/BoardScribeBlock.php:405
-#: includes/Shortcode/BoardScribeShortcode.php:124
-#: includes/Shortcode/FieldRegistry.php:199
-#: includes/Shortcode/FieldRegistry.php:243
-#: src/js/templates/table.js:33
+#: includes/Block/BoardScribeBlock.php:453
+#: includes/Shortcode/BoardScribeShortcode.php:129
+#: includes/Shortcode/FieldRegistry.php:241
+#: includes/Shortcode/FieldRegistry.php:285
+#: assets/build/boardscribe.js:1
 msgid "Date"
 msgstr ""
 
-#: includes/Block/BoardScribeBlock.php:410
-#: includes/Shortcode/BoardScribeShortcode.php:125
-#: includes/Shortcode/FieldRegistry.php:206
-#: includes/Shortcode/FieldRegistry.php:250
-#: src/js/templates/table.js:34
+#: includes/Block/BoardScribeBlock.php:458
+#: includes/Shortcode/BoardScribeShortcode.php:130
+#: includes/Shortcode/FieldRegistry.php:248
+#: includes/Shortcode/FieldRegistry.php:292
+#: assets/build/boardscribe.js:1
 msgid "Agenda"
 msgstr ""
 
-#: includes/Block/BoardScribeBlock.php:415
-#: includes/Shortcode/BoardScribeShortcode.php:126
-#: includes/Shortcode/FieldRegistry.php:213
-#: includes/Shortcode/FieldRegistry.php:257
-#: src/js/templates/table.js:35
+#: includes/Block/BoardScribeBlock.php:463
+#: includes/Shortcode/BoardScribeShortcode.php:131
+#: includes/Shortcode/FieldRegistry.php:255
+#: includes/Shortcode/FieldRegistry.php:299
+#: assets/build/boardscribe.js:1
 msgid "Minutes"
 msgstr ""
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
-msgid "BoardScribe Meetings"
+msgid "Board Meetings"
 msgstr ""
 
 #: includes/PostType/BoardScribeCPT.php:40
 msgctxt "Post Type Singular Name"
-msgid "BoardScribe Meeting"
+msgid "Board Meeting"
+msgstr ""
+
+#: includes/PostType/BoardScribeCPT.php:41
+msgid "Board Meetings"
 msgstr ""
 
 #: includes/PostType/BoardScribeCPT.php:42
-#: includes/PostType/BoardScribeCPT.php:46
-msgid "BoardScribe Meeting"
+#: includes/PostType/BoardScribeCPT.php:48
+msgid "Board Meeting"
 msgstr ""
 
-#: includes/REST/BoardScribeEndpoint.php:112
-#: includes/REST/BoardScribeEndpoint.php:255
+#: includes/PostType/BoardScribeCPT.php:43
+msgid "Add Meeting"
+msgstr ""
+
+#: includes/PostType/BoardScribeCPT.php:44
+msgid "Add New Meeting"
+msgstr ""
+
+#: includes/REST/BoardScribeEndpoint.php:114
+#: includes/REST/BoardScribeEndpoint.php:285
 msgid "View Agenda"
 msgstr ""
 
-#: includes/REST/BoardScribeEndpoint.php:113
-#: includes/REST/BoardScribeEndpoint.php:256
+#: includes/REST/BoardScribeEndpoint.php:115
+#: includes/REST/BoardScribeEndpoint.php:286
 msgid "View Minutes"
 msgstr ""
 
-#: includes/REST/BoardScribeEndpoint.php:271
+#: includes/REST/BoardScribeEndpoint.php:301
 msgid "Date not available"
 msgstr ""
 
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
 #. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:296
-#: includes/REST/BoardScribeEndpoint.php:310
+#: includes/REST/BoardScribeEndpoint.php:326
+#: includes/REST/BoardScribeEndpoint.php:340
 #, php-format
 msgid "%1$s for %2$s"
 msgstr ""
 
-#: includes/REST/BoardScribeEndpoint.php:302
+#: includes/REST/BoardScribeEndpoint.php:332
 msgid "Agenda not available"
 msgstr ""
 
-#: includes/REST/BoardScribeEndpoint.php:316
+#: includes/REST/BoardScribeEndpoint.php:346
 msgid "Minutes not available"
 msgstr ""
 
-#: includes/REST/BoardScribeEndpoint.php:321
+#: includes/REST/BoardScribeEndpoint.php:351
 msgid "Meeting not held"
 msgstr ""
 
-#: includes/Shortcode/BoardScribeShortcode.php:127
-#: src/js/defaults/renderPagination.js:63
+#: includes/Shortcode/BoardScribeShortcode.php:132
+#: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr ""
 
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: src/js/defaults/renderPagination.js:89
+#: includes/Shortcode/BoardScribeShortcode.php:133
+#: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr ""
 
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: src/js/defaults/renderPagination.js:61
+#: includes/Shortcode/BoardScribeShortcode.php:134
+#: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr ""
 
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: src/js/defaults/renderPagination.js:87
+#. translators: %s: page number.
+#: includes/Shortcode/BoardScribeShortcode.php:135
+#: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr ""
 
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: src/js/defaults/renderPagination.js:56
+#: includes/Shortcode/BoardScribeShortcode.php:136
+#: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr ""
 
 #. translators: %s: page number
-#. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:133
-#: src/js/defaults/renderPagination.js:75
+#: includes/Shortcode/BoardScribeShortcode.php:138
+#: assets/build/boardscribe.js:1
 #, php-format,js-format
 msgid "Page %s"
 msgstr ""
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#. translators: %1$s: first entry number, %2$s: last entry number, %3$s: total number of entries.
-#: includes/Shortcode/BoardScribeShortcode.php:135
-#: src/js/defaults/renderInfo.js:23
+#: includes/Shortcode/BoardScribeShortcode.php:140
+#: assets/build/boardscribe.js:1
 #, php-format,js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:116
+#: includes/Shortcode/FieldRegistry.php:129
 msgid "Included Years"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:119
+#: includes/Shortcode/FieldRegistry.php:132
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:126
+#: includes/Shortcode/FieldRegistry.php:139
+msgid "Start Date"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:146
+msgid "Only show meetings on or after this date. Takes priority over Included Years."
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:155
+msgid "End Date"
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:157
+msgid "Only show meetings on or before this date. Takes priority over Included Years."
+msgstr ""
+
+#: includes/Shortcode/FieldRegistry.php:166
 msgid "Posts Per Page"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:134
+#: includes/Shortcode/FieldRegistry.php:174
 msgid "Held Date Format"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:136
+#: includes/Shortcode/FieldRegistry.php:178
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:147
+#: includes/Shortcode/FieldRegistry.php:189
 msgid "Not Held Date Format"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:159
+#: includes/Shortcode/FieldRegistry.php:201
 msgid "Display Template"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:167
+#: includes/Shortcode/FieldRegistry.php:209
 msgid "Table (default)"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:216
 msgid "Force all columns to the same width"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:176
+#: includes/Shortcode/FieldRegistry.php:218
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:182
+#: includes/Shortcode/FieldRegistry.php:224
 msgid "Custom CSS Class"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:220
+#: includes/Shortcode/FieldRegistry.php:262
 msgid "Agenda Link Label"
 msgstr ""
 
-#: includes/Shortcode/FieldRegistry.php:228
+#: includes/Shortcode/FieldRegistry.php:270
 msgid "Minutes Link Label"
 msgstr ""
 
@@ -277,7 +397,7 @@ msgid "Meeting Date"
 msgstr ""
 
 #: partials/meta-box.php:34
-msgid "Required. Format: YYYY-MM-DD"
+msgid "Required. Select the date the meeting was or will be held."
 msgstr ""
 
 #: partials/meta-box.php:39
@@ -289,103 +409,120 @@ msgid "Choose Agenda File"
 msgstr ""
 
 #: partials/meta-box.php:55
-#: partials/meta-box.php:77
+#: partials/meta-box.php:90
 msgid "Use this file"
 msgstr ""
 
 #: partials/meta-box.php:56
-#: partials/meta-box.php:78
+#: partials/meta-box.php:91
 msgid "Media Library"
 msgstr ""
 
-#: partials/meta-box.php:61
+#: partials/meta-box.php:74
 msgid "Minutes URL"
 msgstr ""
 
-#: partials/meta-box.php:76
+#: partials/meta-box.php:89
 msgid "Choose Minutes File"
 msgstr ""
 
-#: partials/meta-box.php:83
+#: partials/meta-box.php:109
 msgid "Meeting Not Held"
 msgstr ""
 
-#: partials/meta-box.php:94
+#: partials/meta-box.php:120
 msgid "This meeting was not held"
 msgstr ""
 
-#: partials/settings-page.php:16
-msgid "Shortcode Builder"
+#. translators: %s: plugin version number.
+#: partials/settings-page.php:27
+#, php-format
+msgid "Version %s"
 msgstr ""
 
-#: partials/settings-page.php:17
-msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Ignored: a start/end date is set below, which takes priority."
 msgstr ""
 
-#: partials/settings-page.php:46
-#: src/js/block/index.js:32
-msgid "Column Labels"
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or after this date. Overrides Included Years above as soon as either date is set."
 msgstr ""
 
-#: partials/settings-page.php:47
-#: src/js/block/index.js:33
-msgid "Link Labels"
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Only show meetings on or before this date. Overrides Included Years above as soon as either date is set."
 msgstr ""
 
-#: partials/settings-page.php:48
-#: src/js/block/index.js:34
-msgid "Hide Columns"
-msgstr ""
-
-#: partials/settings-page.php:49
-#: src/js/block/index.js:35
-msgid "Show Columns"
-msgstr ""
-
-#: partials/settings-page.php:73
-msgid "Leave blank to use the default label."
-msgstr ""
-
-#: partials/settings-page.php:85
-msgid "Text shown inside each link. Leave blank to use the default."
-msgstr ""
-
-#: partials/settings-page.php:108
-msgid "Enable additional columns."
-msgstr ""
-
-#: partials/settings-page.php:116
-msgid "Your Shortcode"
-msgstr ""
-
-#: partials/settings-page.php:130
-#: partials/settings-page.php:133
-msgid "Copy"
-msgstr ""
-
-#: partials/settings-page.php:131
-msgid "Copied!"
-msgstr ""
-
-#: src/js/block/index.js:31
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr ""
 
-#: src/js/block/index.js:212
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Column Labels"
+msgstr ""
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Link Labels"
+msgstr ""
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Hide Columns"
+msgstr ""
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
+msgid "Show Columns"
+msgstr ""
+
+#: assets/build/block/index.js:1
 msgid "Show all meetings"
 msgstr ""
 
-#: src/js/block/index.js:213
+#: assets/build/block/index.js:1
 msgid "Ignores the per-page limit below and fetches every meeting in one request."
 msgstr ""
 
-#: src/js/block/index.js:219
+#: assets/build/block/index.js:1
 msgid "Records Per Page"
+msgstr ""
+
+#: assets/build/builder/index.js:1
+msgid "Preview"
+msgstr ""
+
+#: assets/build/builder/index.js:1
+msgid "Show all"
+msgstr ""
+
+#: assets/build/builder/index.js:1
+msgid "Copy"
+msgstr ""
+
+#: assets/build/builder/index.js:1
+msgid "Your Shortcode"
+msgstr ""
+
+#: assets/build/builder/index.js:1
+msgid "Copied!"
+msgstr ""
+
+#: assets/build/builder/index.js:1
+msgid "Shortcode copied to clipboard."
+msgstr ""
+
+#: assets/build/builder/index.js:1
+msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr ""
 
 #: block.json
 msgctxt "block title"
-msgid "BoardScribe"
+msgid "Board Meetings"
 msgstr ""
 
 #: block.json
