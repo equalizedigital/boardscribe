@@ -14,7 +14,7 @@ Post board meeting minutes and agendas accessibly. Government, nonprofits, schoo
 
 ### Easily Publish Board Meeting Agendas and Minutes
 
-**BoardScribe** makes it easy to publish board meetings dates, agendas, and minutes on your WordPress website. The plugin creates a document library with blocks and shortcodes to support your compliance not just with "sunshine" and open meetings laws, but also accessibility laws like Section 508, the ADA, and EN 301 549.
+**BoardScribe** makes it easy to publish board meeting dates, agendas, and minutes on your WordPress website. The plugin creates a document library with blocks and shortcodes to support your compliance not just with "sunshine" and open meetings laws, but also accessibility laws like Section 508, the ADA, and EN 301 549.
 
 BoardScribe comes from Equalize Digital, the team behind [Accessibility Checker](https://equalizedigital.com/accessibility-checker), the WordPress accessibility plugin trusted by more than 17,000 websites worldwide. We bring that same accessibility-first approach to displaying your board's agendas and minutes.
 
@@ -46,7 +46,7 @@ BoardScribe is simple to use and **works in all themes and page builders**, incl
 * Include file type and size information via integration with Accessibility Checker.
 * Supports displaying meetings all together, grouped by year, or custom fiscal years.
 * Mark meetings as cancelled so they remain in the public record, but with a unique format.
-* Mobile responsive tables that can be read on any device without sideways scrolling.
+* Mobile-responsive tables that can be read on any device without sideways scrolling.
 
 ### Accessibility Is Built In, Not Bolted On
 
@@ -188,7 +188,7 @@ Yes. Use the `start_date` and `end_date` shortcode attributes or block settings 
 
 = Can I use the shortcode or block more than once on the same page? =
 
-Yes. Each shortcode and block instance is independently configured and rendered. You can use multiple shortcodes or block on a single page to display different years, formats, or column configurations.
+Yes. Each shortcode and block instance is independently configured and rendered. You can use multiple shortcodes or blocks on a single page to display different years, formats, or column configurations.
 
 = What date format is used to store meeting dates? =
 
