@@ -210,9 +210,13 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 
 == Screenshots ==
 
-1. Accessible board meetings table with agenda and minutes links, displayed on the front end.
-2. Adding a board meeting (date, agenda URL, and minutes URL) in the WordPress admin.
-3. The Shortcode Builder generating a ready-to-paste meeting minutes shortcode.
+1. Board meeting post type edit screen with fields for Meeting Date, Agenda URL, Minutes URL, and a check box to indicate if the meeting was not held.
+2. Board meeting tables output on the front end by fiscal year. Tables have columns for meeting title, date, view agenda link, and view minutes link. There is a meeting that has a month and year date format (rather than a full date), which is marked as not held. Pagination buttons are below the table.
+3. Browser dev tools inspector open showing that view minutes links have an aria-label that appends the date to make links unique. Also shown in the code: title cells have a role of rowheader, and a polite aria-live container announces pagination changes.
+4. Mobile view of BoardScribe table: each meeting displays as a stacked card with TITLE, DATE, AGENDA, and MINUTES labels retained, instead of a horizontally scrolling table.
+5. Multiple Board Meetings blocks in the block editor with heading blocks. Each block has a unique style controlled by detailed options within the block settings in the right sidebar.
+6. BoardScribe Shortcode Builder shows a form for display settings at right and a generated shortcode at right with a copy button above a live preview.
+7. BoardScribe general settings showing an option to delete all BoardScribe meeting posts and plugin settings when BoardScribe is deleted.
 
 == Changelog ==
 
