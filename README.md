@@ -68,7 +68,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 
 ## Gutenberg Block
 
-A **BoardScribe** block (`equalize-digital/boardscribe`) is also available in the block editor, listed under the "BoardScribe" block category. It renders through the same shortcode pipeline and its Inspector Controls expose the same set of options as the shortcode attributes above (including any added by add-ons).
+A **BoardScribe** block (`equalize-digital/boardscribe`) is also available in the block editor, listed under the "BoardScribe" block category. It renders through the same shortcode pipeline and its Inspector Controls expose the same set of options as the shortcode attributes above (including any added by add-ons), with a few caveats: only fields the registry flags with `rest_arg` are also exposed as REST parameters, a field marked `hidden_from_ui` is excluded from both the block's Inspector Controls and the settings-page builder (though still valid on existing shortcodes/blocks that already use it), and `class`/`className` isn't rendered by the block's generic Inspector loop at all, it's handled by Gutenberg's native "Additional CSS Class(es)" Advanced-panel field instead.
 
 ## Meta Fields
 
