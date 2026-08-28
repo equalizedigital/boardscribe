@@ -236,6 +236,16 @@ There are various ways you can contribute:
 
 Please also review our [Code of Conduct](.github/CODE_OF_CONDUCT.md) and [Security Policy](.github/SECURITY.md) before contributing.
 
+## Developer docs
+
+This repository includes generated developer documentation to make it easier to work with the plugin:
+
+- [`docs/hooks.md`](docs/hooks.md) - a generated inventory of every `edbs_` PHP action and filter in the plugin, kept current by a weekly CI job. It's a mechanical supplement to the curated [Developer Hooks](#developer-hooks) section above, not a replacement for it: it doesn't cover the JavaScript registries/events or the reusable PHP methods documented there. Regenerate it locally with:
+
+```bash
+composer run generate-hooks-docs
+```
+
 ## License
 
 This plugin is licensed under the [GPLv2 or later](LICENSE).
