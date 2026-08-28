@@ -116,12 +116,12 @@ composer test                       # phpunit (requires ./scripts/setup-phpunit.
 
 ## CI checks (GitHub Actions)
 
-`CS`, `Lint: JS`, `Build: JS` (webpack build must compile; the bundle itself is gitignored so CI is the only guard), `Lint: PHP` (7.4–8.2), `Security check`, `Test` (multiple PHP × WP version combos). `WordPress version checker` and `backport-to-develop` workflows exist but are not load-bearing for feature PRs (the backport workflow is currently disabled — `.disabled` suffix — because it targets a `develop` branch that doesn't exist in this repo).
+`CS`, `Lint: JS`, `Build: JS` (webpack build must compile; the bundle itself is gitignored so CI is the only guard), `Lint: PHP` (7.4–8.2), `Security check`, `Test` (multiple PHP × WP version combos). `WordPress version checker` is not load-bearing for feature PRs. `backport-to-develop` runs on every PR merged into `main` and opens an automatic backport PR of that same branch into `develop`, so a change that lands on `main` (a hotfix, a release-prep commit) doesn't silently drift out of `develop`.
 
 ## Workflow
 
 - **One PR per logical change** — don't bundle unrelated fixes together.
-- Branch from `main`, PR back into `main`.
+- Two long-lived branches: `develop` (active development, target most feature/fix PRs here) and `main` (stable/release branch, matches what's tagged for WordPress.org). Branch off `develop` for normal work; the `backport-to-develop` workflow auto-opens a PR to reconcile anything merged directly into `main`.
 - **Commits should be small and atomic** — each commit covers one minimal, self-contained chunk of related changes. Prefer several small commits within a PR over one large one; it keeps review and `git blame`/history useful even when the PR itself bundles a few related fixes.
 - **Use Conventional Commits style wherever possible** (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `test:`, etc.) for commit subject lines.
 - **Always wait for review comments — including AI reviewers (CodeRabbit, Gemini Code Assist)** — before considering a PR done or merging. Don't skim past a "pending"/"in progress" AI review status. When findings land, surface them for discussion before fixing anything.

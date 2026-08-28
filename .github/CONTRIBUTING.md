@@ -36,15 +36,26 @@ Make sure your problem does not exist as a ticket already by searching through [
 
 #### Fixing an issue
 
-* Fork the repository on GitHub.
-* Create a branch off `main` for your change.
+* Fork the repository on GitHub (make sure to use the `develop` branch).
 * Make the changes to your forked repository.
 * Ensure you stick to the [WordPress Coding Standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/) and you properly document any new functions, actions and filters following the [documentation standards](https://make.wordpress.org/core/handbook/best-practices/inline-documentation-standards/php/).
 * Run `composer check-cs`, `composer lint`, and `npm run lint:js` locally before opening your pull request — these are also enforced by CI.
 * When committing, reference your issue and include a note about the fix. Prefer [Conventional Commits](https://www.conventionalcommits.org/) style subject lines (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `test:`).
-* Push the changes to your fork and submit a pull request to the `main` branch of the BoardScribe repository.
+* Push the changes to your fork and submit a pull request to the `develop` branch of the BoardScribe repository.
 
 We will review your pull request and merge when everything is in order. We will help you to make sure the code complies with the standards described above.
+
+### Automated Backport Process
+When a pull request is merged into the `main` branch, an automated workflow will create a backport pull request to merge the same feature branch into the `develop` branch. This ensures that changes in `main` are also applied to the development branch without directly merging `main` into `develop`.
+
+**How it works:**
+- The workflow triggers automatically when a PR is merged into `main`
+- It extracts the original branch name that was merged
+- If the branch still exists, it creates a new PR to merge that branch into `develop`
+- The backport PR is labeled with `backport` and `automated` labels
+- If the branch no longer exists, the workflow logs a message indicating manual backport may be needed
+
+**No action required** - this process is fully automated and requires no manual intervention in most cases.
 
 #### 'Patch welcome' issues
 Some issues are labeled 'patch-welcome'. This means we see the value in the particular enhancement being suggested but have decided for now not to prioritize it. If you however decide to write a patch for it, we'll gladly include it after some code review.
