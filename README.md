@@ -5,6 +5,13 @@
 [![Security](https://github.com/equalizedigital/boardscribe/actions/workflows/security.yml/badge.svg)](https://github.com/equalizedigital/boardscribe/actions/workflows/security.yml)
 [![Test](https://github.com/equalizedigital/boardscribe/actions/workflows/phpunit.yml/badge.svg)](https://github.com/equalizedigital/boardscribe/actions/workflows/phpunit.yml)
 
+[![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/boardscribe.svg)](https://wordpress.org/plugins/boardscribe/)
+![WordPress Plugin: Tested WP Version](https://img.shields.io/wordpress/plugin/tested/boardscribe.svg)
+[![WordPress Plugin Active Installs](https://img.shields.io/wordpress/plugin/installs/boardscribe.svg)](https://wordpress.org/plugins/boardscribe/advanced/)
+[![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/boardscribe.svg)](https://wordpress.org/plugins/boardscribe/advanced/)
+[![WordPress Plugin Rating](https://img.shields.io/wordpress/plugin/stars/boardscribe.svg)](https://wordpress.org/support/plugin/boardscribe/reviews/)
+[![GitHub](https://img.shields.io/github/license/equalizedigital/boardscribe.svg)](https://github.com/equalizedigital/boardscribe/blob/main/LICENSE)
+
 # BoardScribe
 
 ## What is this?
