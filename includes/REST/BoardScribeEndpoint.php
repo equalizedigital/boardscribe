@@ -125,6 +125,7 @@ class BoardScribeEndpoint {
 		if ( -1 === $posts_per_page ) {
 			/**
 			 * Filters the absolute ceiling applied to "show all" (`-1`) requests.
+			 * Also bounds get_available_years()'s own query, for the same reason.
 			 *
 			 * The endpoint is public, so even the shortcode builder's explicit
 			 * no-limit option must resolve to a bounded query — otherwise any
@@ -279,20 +280,34 @@ class BoardScribeEndpoint {
 	 * It is scoped by edbs_rest_query_args, so Pro's taxonomy/meta
 	 * constraints still apply.
 	 *
+	 * Bounded the same way get_meetings() bounds a -1/"show all" request
+	 * (edbs_rest_absolute_max_per_page, default 500) — this is an
+	 * anonymous, unauthenticated route, so nothing here may run an
+	 * unbounded query. Ordered newest-first so a capped result still
+	 * favors the years a switcher's users care about most. Uses WP_Query
+	 * with suppress_filters => false (get_posts()'s default is true) so
+	 * it stays in sync with get_meetings()'s own WP_Query on any
+	 * posts_where/posts_join clause a plugin adds for visibility scoping.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param \WP_REST_Request $request The originating REST request, passed through to edbs_rest_query_args.
 	 * @return int[] Years, e.g. [ 2026, 2025, 2023 ].
 	 */
 	private function get_available_years( \WP_REST_Request $request ): array {
+		$max_posts = (int) apply_filters( 'edbs_rest_absolute_max_per_page', 500 );
+
 		$args = [
-			'post_type'      => 'edbs_meeting',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
-			'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to filter to posts that have a meeting date set.
-			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
+			'post_type'        => 'edbs_meeting',
+			'post_status'      => 'publish',
+			'posts_per_page'   => $max_posts,
+			'fields'           => 'ids',
+			'no_found_rows'    => true,
+			'suppress_filters' => false,
+			'meta_key'         => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to filter to posts that have a meeting date set, and to order by it below.
+			'orderby'          => 'meta_value',
+			'order'            => 'DESC',
+			'meta_query'       => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
 				[
 					'key'     => 'edbs_meeting_date',
 					'compare' => 'EXISTS',
@@ -304,15 +319,23 @@ class BoardScribeEndpoint {
 		// type-hinted against WP_REST_Request keeps working unchanged.
 		$args = apply_filters( 'edbs_rest_query_args', $args, $request );
 
-		// Not a paginated list — a Pro callback's pagination/order keys
-		// shouldn't carry over here.
-		unset( $args['paged'], $args['orderby'], $args['order'] );
-		$args['posts_per_page'] = -1;
-		$args['fields']         = 'ids';
-		$args['no_found_rows']  = true;
+		// Not a paginated list — a Pro callback's pagination key
+		// shouldn't carry over, and the bound above isn't overridable
+		// (this route is anonymous regardless of what a callback sets).
+		unset( $args['paged'] );
+		$args['posts_per_page']   = $max_posts;
+		$args['fields']           = 'ids';
+		$args['no_found_rows']    = true;
+		$args['suppress_filters'] = false;
+
+		$post_ids = ( new \WP_Query( $args ) )->posts;
+
+		// One query to prime the meta cache instead of one per post below
+		// - fields => 'ids' skips WP_Query's own cache priming.
+		update_meta_cache( 'post', $post_ids );
 
 		$years = [];
-		foreach ( get_posts( $args ) as $post_id ) {
+		foreach ( $post_ids as $post_id ) {
 			// parse_date(), not SQL YEAR() — handles legacy d/m/Y and
 			// m/d/Y meta values MySQL's YEAR() can't parse.
 			$date_object = self::parse_date( (string) get_post_meta( $post_id, 'edbs_meeting_date', true ) );

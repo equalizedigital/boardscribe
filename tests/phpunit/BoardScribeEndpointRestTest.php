@@ -336,4 +336,64 @@ class BoardScribeEndpointRestTest extends TestCase {
 
 		$this->assertSame( [ 2023 ], $data['available_years'] );
 	}
+
+	/**
+	 * available_years is bounded by edbs_rest_absolute_max_per_page, the
+	 * same cap get_meetings() applies to -1/"show all" requests — this is
+	 * an anonymous route, so its query can't be allowed to run unbounded.
+	 */
+	public function test_available_years_is_bounded_by_absolute_max_per_page(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2026-01-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2025-01-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2023-01-01' ] );
+
+		$callback = static function (): int {
+			return 2;
+		};
+		add_filter( 'edbs_rest_absolute_max_per_page', $callback );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		remove_filter( 'edbs_rest_absolute_max_per_page', $callback );
+
+		// Capped to the 2 most recent meetings (newest-first order), so
+		// the oldest year (2023) is excluded rather than every year
+		// being scanned regardless of cost.
+		$this->assertSame( [ 2026, 2025 ], $data['available_years'] );
+	}
+
+	/**
+	 * available_years uses suppress_filters => false, matching
+	 * get_meetings()'s own WP_Query - a posts_where/posts_join clause a
+	 * visibility-scoping plugin adds to the main query must apply here
+	 * too, or the switcher could reveal the existence of a year whose
+	 * only meetings are meant to be hidden.
+	 */
+	public function test_available_years_honors_posts_where_clause_filters(): void {
+		$hidden_id = $this->create_meeting( [ 'edbs_meeting_date' => '2025-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+
+		$callback = static function ( string $where, \WP_Query $query ) use ( $hidden_id ): string {
+			global $wpdb;
+			if ( 'edbs_meeting' === $query->get( 'post_type' ) ) {
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID != %d", $hidden_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $wpdb->posts is a core table name, not user input.
+			}
+			return $where;
+		};
+		add_filter( 'posts_where', $callback, 10, 2 );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		remove_filter( 'posts_where', $callback );
+
+		$this->assertSame( [ 2024 ], $data['available_years'] );
+	}
 }
