@@ -75,11 +75,11 @@ export function initInstance( container ) {
 	// Read the initial page/year from the URL so shared/bookmarked links work.
 	const initParams = new URLSearchParams( window.location.search );
 	let currentPage = urlState ? Math.max( 1, parseInt( initParams.get( pageParam ), 10 ) || 1 ) : 1;
-	// Unknown until either the URL specifies one, or the first response's
-	// available_years arrives and the newest year is selected by default -
-	// see renderInstance()'s yearView branch below.
+	// Defaults to the newest available year once known - see renderInstance().
 	let currentYear = urlState ? ( parseInt( initParams.get( yearParam ), 10 ) || null ) : null;
 	let maxNumPages = 1;
+	// Only the latest fetchMeetings() call's response is allowed to render.
+	let latestRequestId = 0;
 
 	/**
 	 * Navigates this instance to the given page: updates the URL and
@@ -127,16 +127,17 @@ export function initInstance( container ) {
 		// max_num_pages - goToPage() keeps its last known bound.
 		maxNumPages = parseInt( data.max_num_pages, 10 ) || maxNumPages;
 
-		// The first year-view response arrives unscoped (see
-		// defaultBuildRequestUrl) so it can report the full available_years
-		// list - default to its newest year and silently refetch scoped to
-		// it, rather than rendering an unscoped first page under a year
-		// switcher that claims to show a single year.
-		if ( instanceCfg.yearView && ! currentYear && Array.isArray( data.available_years ) && data.available_years.length ) {
-			currentYear = data.available_years[ 0 ];
-			instanceCfg.currentYear = currentYear;
-			fetchMeetings( refocus );
-			return;
+		if ( instanceCfg.yearView && Array.isArray( data.available_years ) && data.available_years.length ) {
+			// No year selected yet, or a stale/deleted year from the URL -
+			// fall back to the newest available year and refetch scoped to it.
+			if ( ! currentYear || -1 === data.available_years.indexOf( currentYear ) ) {
+				currentYear = data.available_years[ 0 ];
+				instanceCfg.currentYear = currentYear;
+				currentPage = 1;
+				updateUrl();
+				fetchMeetings( refocus );
+				return;
+			}
 		}
 
 		template.render( data, instanceCfg, tableEl );
@@ -201,6 +202,7 @@ export function initInstance( container ) {
 	function fetchMeetings( refocus ) {
 		refocus = refocus || false;
 		instanceCfg.currentYear = currentYear;
+		const requestId = ++latestRequestId;
 
 		// A template can take over the request entirely (request), or
 		// just point the default fetch elsewhere (buildRequestUrl).
@@ -216,6 +218,9 @@ export function initInstance( container ) {
 
 		request
 			.then( function( data ) {
+				if ( requestId !== latestRequestId ) {
+					return;
+				}
 				// Caught separately from the request promise below so a
 				// throw from renderInstance() (e.g. a broken template or
 				// edbs:table-rendered listener) isn't misreported to
@@ -229,6 +234,9 @@ export function initInstance( container ) {
 				}
 			} )
 			.catch( function( error ) {
+				if ( requestId !== latestRequestId ) {
+					return;
+				}
 				// eslint-disable-next-line no-console -- Surface fetch failures for debugging; there is no other error-reporting mechanism here.
 				console.error( 'EDBS: fetch error:', error );
 				emit( 'edbs:fetch-error', { error, instanceCfg } );
