@@ -41,12 +41,17 @@ class BoardScribeEndpoint {
 	 * @return void
 	 */
 	public function register_route(): void {
-		// "page" is REST-only pagination, not a shortcode/builder/block
-		// field, so it isn't sourced from the field registry.
+		// "page" and "include_available_years" are REST-only params, not
+		// shortcode/builder/block fields, so they aren't sourced from the
+		// field registry.
 		$args = [
-			'page' => [
+			'page'                    => [
 				'default'           => 1,
 				'sanitize_callback' => 'absint',
+			],
+			'include_available_years' => [
+				'default'           => false,
+				'sanitize_callback' => 'rest_sanitize_boolean',
 			],
 		];
 
@@ -104,15 +109,16 @@ class BoardScribeEndpoint {
 	 * @return \WP_REST_Response
 	 */
 	public function get_meetings( \WP_REST_Request $request ): \WP_REST_Response {
-		$page                 = $request->get_param( 'page' );
-		$posts_per_page       = $request->get_param( 'posts_per_page' );
-		$held_date_format     = $request->get_param( 'held_date_format' );
-		$not_held_date_format = $request->get_param( 'not_held_date_format' );
-		$included_years       = $request->get_param( 'included_years' );
-		$start_date           = $request->get_param( 'start_date' );
-		$end_date             = $request->get_param( 'end_date' );
-		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
-		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
+		$page                    = $request->get_param( 'page' );
+		$include_available_years = $request->get_param( 'include_available_years' );
+		$posts_per_page          = $request->get_param( 'posts_per_page' );
+		$held_date_format        = $request->get_param( 'held_date_format' );
+		$not_held_date_format    = $request->get_param( 'not_held_date_format' );
+		$included_years          = $request->get_param( 'included_years' );
+		$start_date              = $request->get_param( 'start_date' );
+		$end_date                = $request->get_param( 'end_date' );
+		$agenda_link_label       = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
+		$minutes_link_label      = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
 
 		$posts_per_page = (int) $posts_per_page;
 
@@ -243,6 +249,13 @@ class BoardScribeEndpoint {
 			'total_entries' => $query->found_posts,
 		];
 
+		if ( $include_available_years ) {
+			// Independent of $args' included_years/start_date/end_date
+			// filtering above — a year switcher needs every year that has
+			// data, not just the currently-selected one.
+			$response['available_years'] = $this->get_available_years();
+		}
+
 		/**
 		 * Filters the full REST response before it is returned.
 		 * Pro plugin can add top-level fields (e.g., available categories).
@@ -255,6 +268,39 @@ class BoardScribeEndpoint {
 		$response = apply_filters( 'edbs_rest_response', $response, $request );
 
 		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * Returns the distinct calendar years that have at least one published
+	 * meeting with a date set, newest first.
+	 *
+	 * Deliberately not scoped by any of get_meetings()'s own filtering
+	 * (included_years/start_date/end_date) — a year switcher needs the
+	 * full list of years with data so it can offer every one of them,
+	 * not just whichever year the current request happens to be showing.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int[] Years, e.g. [ 2026, 2025, 2023 ].
+	 */
+	private function get_available_years(): array {
+		global $wpdb;
+
+		// No user input in this query (post_type/post_status/meta_key are
+		// hard-coded literals), so there is nothing to $wpdb->prepare().
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- no field-registry/query-cache API covers a distinct-years aggregate; result count is tiny and this only runs when a year switcher explicitly requests it.
+		$years = $wpdb->get_col(
+			"SELECT DISTINCT YEAR( pm.meta_value ) AS meeting_year
+			FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			WHERE pm.meta_key = 'edbs_meeting_date'
+				AND p.post_type = 'edbs_meeting'
+				AND p.post_status = 'publish'
+				AND pm.meta_value != ''
+			ORDER BY meeting_year DESC"
+		);
+
+		return array_map( 'intval', $years );
 	}
 
 	/**

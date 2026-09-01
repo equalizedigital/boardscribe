@@ -247,4 +247,45 @@ class BoardScribeEndpointRestTest extends TestCase {
 
 		$this->assertSame( 400, $response->get_status() );
 	}
+
+	/**
+	 * available_years is omitted by default — a year switcher opts in
+	 * explicitly so ordinary requests stay as cheap as today.
+	 */
+	public function test_available_years_omitted_by_default(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+
+		$request  = new \WP_REST_Request( 'GET', self::ROUTE );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertArrayNotHasKey( 'available_years', $data );
+	}
+
+	/**
+	 * include_available_years=1 returns every distinct year that has a
+	 * meeting with a date set, newest first, regardless of any
+	 * included_years/start_date/end_date filtering on the same request —
+	 * a year switcher needs the full list to offer, not just whichever
+	 * year the request happens to be scoped to.
+	 */
+	public function test_include_available_years_returns_distinct_years_unfiltered(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2023-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-11-01' ] ); // Same year as above — must not duplicate.
+		$this->create_meeting( [ 'edbs_meeting_date' => '2026-01-15' ] );
+		$this->create_meeting(); // No date meta — must not surface as a year.
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+		$request->set_param( 'included_years', '2024' ); // Scopes meetings, not available_years.
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertArrayHasKey( 'available_years', $data );
+		$this->assertSame( [ 2026, 2024, 2023 ], $data['available_years'] );
+		// The meetings list itself is still scoped by included_years.
+		$this->assertSame( 2, $data['total_entries'] );
+	}
 }
