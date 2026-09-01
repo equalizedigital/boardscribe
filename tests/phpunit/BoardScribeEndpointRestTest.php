@@ -249,8 +249,7 @@ class BoardScribeEndpointRestTest extends TestCase {
 	}
 
 	/**
-	 * available_years is omitted by default — a year switcher opts in
-	 * explicitly so ordinary requests stay as cheap as today.
+	 * available_years is omitted unless requested.
 	 */
 	public function test_available_years_omitted_by_default(): void {
 		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
@@ -263,11 +262,8 @@ class BoardScribeEndpointRestTest extends TestCase {
 	}
 
 	/**
-	 * include_available_years=1 returns every distinct year that has a
-	 * meeting with a date set, newest first, regardless of any
-	 * included_years/start_date/end_date filtering on the same request —
-	 * a year switcher needs the full list to offer, not just whichever
-	 * year the request happens to be scoped to.
+	 * include_available_years=1 returns every distinct year with a
+	 * meeting, newest first, ignoring included_years on the same request.
 	 */
 	public function test_include_available_years_returns_distinct_years_unfiltered(): void {
 		$this->create_meeting( [ 'edbs_meeting_date' => '2023-05-01' ] );
@@ -287,5 +283,50 @@ class BoardScribeEndpointRestTest extends TestCase {
 		$this->assertSame( [ 2026, 2024, 2023 ], $data['available_years'] );
 		// The meetings list itself is still scoped by included_years.
 		$this->assertSame( 2, $data['total_entries'] );
+	}
+
+	/**
+	 * available_years is scoped by edbs_rest_query_args too, so a Pro
+	 * callback excluding posts from the main query excludes them here.
+	 */
+	public function test_available_years_is_scoped_by_edbs_rest_query_args(): void {
+		$excluded_id = $this->create_meeting( [ 'edbs_meeting_date' => '2025-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+
+		$callback = static function ( array $args ) use ( $excluded_id ): array {
+			$args['post__not_in'] = [ $excluded_id ];
+			return $args;
+		};
+		add_filter( 'edbs_rest_query_args', $callback );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		remove_filter( 'edbs_rest_query_args', $callback );
+
+		$this->assertSame( [ 2024 ], $data['available_years'] );
+	}
+
+	/**
+	 * available_years parses legacy d/m/Y and m/d/Y dates correctly,
+	 * unlike a raw SQL YEAR() on those formats.
+	 */
+	public function test_available_years_parses_legacy_slash_formatted_dates(): void {
+		// m/d/Y with day > 12 isn't covered here: parse_date() tries d/m/Y
+		// first, and DateTime's lenient overflow "succeeds" on it with the
+		// wrong date instead of falling through - a pre-existing bug in
+		// parse_date() itself, unrelated to this endpoint.
+		$this->create_meeting( [ 'edbs_meeting_date' => '15/03/2023' ] ); // d/m/Y
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( [ 2023 ], $data['available_years'] );
 	}
 }

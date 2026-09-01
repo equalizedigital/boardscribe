@@ -274,33 +274,56 @@ class BoardScribeEndpoint {
 	 * Returns the distinct calendar years that have at least one published
 	 * meeting with a date set, newest first.
 	 *
-	 * Deliberately not scoped by any of get_meetings()'s own filtering
-	 * (included_years/start_date/end_date) — a year switcher needs the
-	 * full list of years with data so it can offer every one of them,
-	 * not just whichever year the current request happens to be showing.
+	 * Not scoped by get_meetings()'s date filters (included_years/
+	 * start_date/end_date) — a year switcher needs every year with data.
+	 * It is scoped by edbs_rest_query_args, so Pro's taxonomy/meta
+	 * constraints still apply.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return int[] Years, e.g. [ 2026, 2025, 2023 ].
 	 */
 	private function get_available_years(): array {
-		global $wpdb;
+		$args = [
+			'post_type'      => 'edbs_meeting',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to filter to posts that have a meeting date set.
+			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
+				[
+					'key'     => 'edbs_meeting_date',
+					'compare' => 'EXISTS',
+				],
+			],
+		];
 
-		// No user input in this query (post_type/post_status/meta_key are
-		// hard-coded literals), so there is nothing to $wpdb->prepare().
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- no field-registry/query-cache API covers a distinct-years aggregate; result count is tiny and this only runs when a year switcher explicitly requests it.
-		$years = $wpdb->get_col(
-			"SELECT DISTINCT YEAR( pm.meta_value ) AS meeting_year
-			FROM {$wpdb->postmeta} pm
-			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-			WHERE pm.meta_key = 'edbs_meeting_date'
-				AND p.post_type = 'edbs_meeting'
-				AND p.post_status = 'publish'
-				AND pm.meta_value != ''
-			ORDER BY meeting_year DESC"
-		);
+		// Reuses get_meetings()'s own filter, with $request null since
+		// this isn't a real REST dispatch.
+		$args = apply_filters( 'edbs_rest_query_args', $args, null );
 
-		return array_map( 'intval', $years );
+		// Not a paginated list — a Pro callback's pagination/order keys
+		// shouldn't carry over here.
+		unset( $args['paged'], $args['orderby'], $args['order'] );
+		$args['posts_per_page'] = -1;
+		$args['fields']         = 'ids';
+		$args['no_found_rows']  = true;
+
+		$years = [];
+		foreach ( get_posts( $args ) as $post_id ) {
+			// parse_date(), not SQL YEAR() — handles legacy d/m/Y and
+			// m/d/Y meta values MySQL's YEAR() can't parse.
+			$date_object = self::parse_date( (string) get_post_meta( $post_id, 'edbs_meeting_date', true ) );
+			if ( $date_object ) {
+				$years[ (int) $date_object->format( 'Y' ) ] = true;
+			}
+		}
+
+		$years = array_keys( $years );
+		rsort( $years );
+
+		return $years;
 	}
 
 	/**
