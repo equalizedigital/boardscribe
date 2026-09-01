@@ -218,6 +218,14 @@ class FieldRegistry {
 					'description' => __( 'Helps align columns consistently for vertical rhythm across rows.', 'boardscribe' ),
 				],
 				[
+					'key'         => 'year_view',
+					'type'        => self::TYPE_CHECKBOX,
+					'group'       => 'general',
+					'label'       => __( 'Single Year View', 'boardscribe' ),
+					'default'     => false,
+					'description' => __( 'Show one year at a time with a year switcher, instead of one long paginated list.', 'boardscribe' ),
+				],
+				[
 					'key'                 => 'class',
 					'type'                => self::TYPE_TEXT,
 					'group'               => 'general',
