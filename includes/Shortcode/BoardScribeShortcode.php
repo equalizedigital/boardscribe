@@ -138,6 +138,10 @@ class BoardScribeShortcode {
 					'pageNum'        => __( 'Page %s', 'boardscribe' ),
 					/* translators: 1: first entry number, 2: last entry number, 3: total entries */
 					'showingEntries' => __( 'Showing %1$s to %2$s of %3$s entries', 'boardscribe' ),
+					'yearLabel'      => __( 'Year', 'boardscribe' ),
+					'selectYear'     => __( 'Select year', 'boardscribe' ),
+					'previousYear'   => __( 'Previous Year', 'boardscribe' ),
+					'nextYear'       => __( 'Next Year', 'boardscribe' ),
 				],
 			]
 		);
@@ -200,6 +204,7 @@ class BoardScribeShortcode {
 			 */
 			do_action( 'edbs_before_table', $instance_id, $atts );
 			?>
+			<div id="edbs-year-switcher-<?php echo esc_attr( $instance_id ); ?>" class="edbs-year-switcher-container"></div>
 			<div id="edbs-table-<?php echo esc_attr( $instance_id ); ?>" class="edbs-table-container"></div>
 			<div id="edbs-pagination-<?php echo esc_attr( $instance_id ); ?>" class="edbs-pagination-container"></div>
 			<div
