@@ -293,11 +293,17 @@ class BoardScribeEndpointRestTest extends TestCase {
 		$excluded_id = $this->create_meeting( [ 'edbs_meeting_date' => '2025-05-01' ] );
 		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
 
-		$callback = static function ( array $args ) use ( $excluded_id ): array {
+		// A type-hinted $request param (matching the filter's documented
+		// signature) proves get_available_years() passes the real
+		// WP_REST_Request through, not null - a callback declared this
+		// way would fatal on a null argument.
+		$received_request = null;
+		$callback          = static function ( array $args, \WP_REST_Request $request ) use ( $excluded_id, &$received_request ): array {
+			$received_request      = $request;
 			$args['post__not_in'] = [ $excluded_id ];
 			return $args;
 		};
-		add_filter( 'edbs_rest_query_args', $callback );
+		add_filter( 'edbs_rest_query_args', $callback, 10, 2 );
 
 		$request = new \WP_REST_Request( 'GET', self::ROUTE );
 		$request->set_param( 'include_available_years', '1' );
@@ -308,6 +314,7 @@ class BoardScribeEndpointRestTest extends TestCase {
 		remove_filter( 'edbs_rest_query_args', $callback );
 
 		$this->assertSame( [ 2024 ], $data['available_years'] );
+		$this->assertSame( $request, $received_request );
 	}
 
 	/**

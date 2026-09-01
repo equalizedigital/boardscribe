@@ -253,7 +253,7 @@ class BoardScribeEndpoint {
 			// Independent of $args' included_years/start_date/end_date
 			// filtering above — a year switcher needs every year that has
 			// data, not just the currently-selected one.
-			$response['available_years'] = $this->get_available_years();
+			$response['available_years'] = $this->get_available_years( $request );
 		}
 
 		/**
@@ -281,9 +281,10 @@ class BoardScribeEndpoint {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param \WP_REST_Request $request The originating REST request, passed through to edbs_rest_query_args.
 	 * @return int[] Years, e.g. [ 2026, 2025, 2023 ].
 	 */
-	private function get_available_years(): array {
+	private function get_available_years( \WP_REST_Request $request ): array {
 		$args = [
 			'post_type'      => 'edbs_meeting',
 			'post_status'    => 'publish',
@@ -299,9 +300,9 @@ class BoardScribeEndpoint {
 			],
 		];
 
-		// Reuses get_meetings()'s own filter, with $request null since
-		// this isn't a real REST dispatch.
-		$args = apply_filters( 'edbs_rest_query_args', $args, null );
+		// Reuses get_meetings()'s own filter and request, so a callback
+		// type-hinted against WP_REST_Request keeps working unchanged.
+		$args = apply_filters( 'edbs_rest_query_args', $args, $request );
 
 		// Not a paginated list — a Pro callback's pagination/order keys
 		// shouldn't carry over here.
