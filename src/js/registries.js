@@ -25,6 +25,12 @@ window.edbsExtraColumns = window.edbsExtraColumns || [];
 //       navigate; core handles URL state and refetching.
 //   renderInfo( data, instanceCfg, element )                    - optional.
 //       Replace the default aria-live "Showing X to Y of Z" text.
+//   renderYearSwitcher( data, instanceCfg, container, goToYear ) - optional.
+//       Replace the default year switcher (a year <select> plus prev/next
+//       buttons). Only invoked when instanceCfg.yearView is true. Call
+//       goToYear( year ) to navigate; core handles URL state and
+//       refetching, and resets the current page to 1. data.available_years
+//       is the full, unfiltered list of years with meetings, newest first.
 //   focus( container, instanceCfg )                             - optional.
 //       Move focus after a pagination-triggered re-render. The default
 //       focuses the container itself, via a temporary tabindex="-1"
@@ -80,6 +86,14 @@ window.edbsTemplates = window.edbsTemplates || {};
 //   edbs:page-changed      { page, instanceCfg }         - when the user
 //       triggers navigation to a new page (goToPage()), before the
 //       refetch/re-render it kicks off - `page` is the 1-based target page.
+//   edbs:year-switcher-rendered { data, instanceCfg }    - after the year
+//       switcher controls are (re)rendered. Only fires when
+//       instanceCfg.yearView is true and the instance has a year-switcher
+//       element.
+//   edbs:year-changed      { year, instanceCfg }         - when the user
+//       triggers navigation to a new year (goToYear()), before the
+//       refetch/re-render it kicks off - `year` is the target year. Only
+//       fires when instanceCfg.yearView is true.
 //   edbs:fetch-error       { error, instanceCfg }        - when the
 //       request for a page's data fails (network error or non-OK response).
 //

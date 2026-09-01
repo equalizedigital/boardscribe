@@ -29,5 +29,18 @@ export function defaultBuildRequestUrl( instanceCfg, page ) {
 	url.searchParams.set( 'minutes_link_label', instanceCfg.minutesLinkLabel || '' );
 	url.searchParams.set( 'category', instanceCfg.category || '' );
 	url.searchParams.set( 'page', page );
+
+	if ( instanceCfg.yearView ) {
+		// The year switcher needs the full list of years with data, and
+		// (once known) scopes the query to a single one - overriding
+		// whatever static included_years the instance was configured with.
+		url.searchParams.set( 'include_available_years', '1' );
+		if ( instanceCfg.currentYear ) {
+			url.searchParams.set( 'included_years', String( instanceCfg.currentYear ) );
+		} else {
+			url.searchParams.delete( 'included_years' );
+		}
+	}
+
 	return url.toString();
 }

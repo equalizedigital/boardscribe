@@ -1,5 +1,6 @@
 import { defaultRenderInfo } from './defaults/renderInfo';
 import { defaultRenderPagination } from './defaults/renderPagination';
+import { defaultRenderYearSwitcher } from './defaults/renderYearSwitcher';
 import { defaultBuildRequestUrl } from './defaults/request';
 import { defaultFocus } from './defaults/focus';
 
@@ -25,6 +26,7 @@ export function initInstance( container ) {
 	const tableEl = document.getElementById( 'edbs-table-' + id );
 	const paginationEl = document.getElementById( 'edbs-pagination-' + id );
 	const infoEl = document.getElementById( 'edbs-info-' + id );
+	const yearSwitcherEl = document.getElementById( 'edbs-year-switcher-' + id );
 
 	if ( ! tableEl || ! paginationEl ) {
 		return;
@@ -66,12 +68,17 @@ export function initInstance( container ) {
 	// window-level listeners. Front-end instances keep the default.
 	const urlState = false !== instanceCfg.urlState;
 
-	// Query param name for this instance, e.g. "edbs_page_1".
+	// Query param names for this instance, e.g. "edbs_page_1"/"edbs_year_1".
 	const pageParam = 'edbs_page_' + id.replace( 'edbs_', '' );
+	const yearParam = 'edbs_year_' + id.replace( 'edbs_', '' );
 
-	// Read the initial page from the URL so shared/bookmarked links work.
+	// Read the initial page/year from the URL so shared/bookmarked links work.
 	const initParams = new URLSearchParams( window.location.search );
 	let currentPage = urlState ? Math.max( 1, parseInt( initParams.get( pageParam ), 10 ) || 1 ) : 1;
+	// Unknown until either the URL specifies one, or the first response's
+	// available_years arrives and the newest year is selected by default -
+	// see renderInstance()'s yearView branch below.
+	let currentYear = urlState ? ( parseInt( initParams.get( yearParam ), 10 ) || null ) : null;
 	let maxNumPages = 1;
 
 	/**
@@ -87,7 +94,27 @@ export function initInstance( container ) {
 		}
 		currentPage = targetPage;
 		emit( 'edbs:page-changed', { page: targetPage, instanceCfg } );
-		updateUrl( targetPage );
+		updateUrl();
+		fetchMeetings( true );
+	}
+
+	/**
+	 * Navigates this instance to the given year: resets to page 1, updates
+	 * the URL, and refetches. Passed to the template's year-switcher
+	 * renderer. Only relevant when instanceCfg.yearView is true.
+	 *
+	 * @param {number} targetYear - The calendar year to show.
+	 */
+	function goToYear( targetYear ) {
+		targetYear = parseInt( targetYear, 10 );
+		if ( isNaN( targetYear ) ) {
+			return;
+		}
+		currentYear = targetYear;
+		instanceCfg.currentYear = currentYear;
+		currentPage = 1;
+		emit( 'edbs:year-changed', { year: targetYear, instanceCfg } );
+		updateUrl();
 		fetchMeetings( true );
 	}
 
@@ -99,6 +126,18 @@ export function initInstance( container ) {
 		// Tolerate template-defined response shapes that omit
 		// max_num_pages - goToPage() keeps its last known bound.
 		maxNumPages = parseInt( data.max_num_pages, 10 ) || maxNumPages;
+
+		// The first year-view response arrives unscoped (see
+		// defaultBuildRequestUrl) so it can report the full available_years
+		// list - default to its newest year and silently refetch scoped to
+		// it, rather than rendering an unscoped first page under a year
+		// switcher that claims to show a single year.
+		if ( instanceCfg.yearView && ! currentYear && Array.isArray( data.available_years ) && data.available_years.length ) {
+			currentYear = data.available_years[ 0 ];
+			instanceCfg.currentYear = currentYear;
+			fetchMeetings( refocus );
+			return;
+		}
 
 		template.render( data, instanceCfg, tableEl );
 		emit( 'edbs:table-rendered', { data, instanceCfg } );
@@ -112,6 +151,11 @@ export function initInstance( container ) {
 		( template.renderPagination || defaultRenderPagination )( data, instanceCfg, paginationEl, goToPage );
 		emit( 'edbs:pagination-rendered', { data, instanceCfg } );
 
+		if ( instanceCfg.yearView && yearSwitcherEl ) {
+			( template.renderYearSwitcher || defaultRenderYearSwitcher )( data, instanceCfg, yearSwitcherEl, goToYear );
+			emit( 'edbs:year-switcher-rendered', { data, instanceCfg } );
+		}
+
 		// Shift focus into the list when pagination is clicked.
 		if ( refocus ) {
 			setTimeout( function() {
@@ -120,18 +164,23 @@ export function initInstance( container ) {
 		}
 	}
 
-	function updateUrl( page ) {
+	function updateUrl() {
 		if ( ! urlState ) {
 			return;
 		}
 		const params = new URLSearchParams( window.location.search );
-		if ( page <= 1 ) {
+		if ( currentPage <= 1 ) {
 			params.delete( pageParam );
 		} else {
-			params.set( pageParam, page );
+			params.set( pageParam, currentPage );
+		}
+		if ( instanceCfg.yearView && currentYear ) {
+			params.set( yearParam, currentYear );
+		} else {
+			params.delete( yearParam );
 		}
 		const qs = params.toString();
-		history.pushState( { [ pageParam ]: page }, '', qs ? '?' + qs : window.location.pathname );
+		history.pushState( { [ pageParam ]: currentPage, [ yearParam ]: currentYear }, '', qs ? '?' + qs : window.location.pathname );
 	}
 
 	// Sync this instance when the user navigates back/forward.
@@ -139,8 +188,11 @@ export function initInstance( container ) {
 		window.addEventListener( 'popstate', function() {
 			const params = new URLSearchParams( window.location.search );
 			const popped = Math.max( 1, parseInt( params.get( pageParam ), 10 ) || 1 );
-			if ( popped !== currentPage ) {
+			const poppedYear = parseInt( params.get( yearParam ), 10 ) || null;
+			if ( popped !== currentPage || poppedYear !== currentYear ) {
 				currentPage = popped;
+				currentYear = poppedYear;
+				instanceCfg.currentYear = currentYear;
 				fetchMeetings( false );
 			}
 		} );
@@ -148,6 +200,7 @@ export function initInstance( container ) {
 
 	function fetchMeetings( refocus ) {
 		refocus = refocus || false;
+		instanceCfg.currentYear = currentYear;
 
 		// A template can take over the request entirely (request), or
 		// just point the default fetch elsewhere (buildRequestUrl).
