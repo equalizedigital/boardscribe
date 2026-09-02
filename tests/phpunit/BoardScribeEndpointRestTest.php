@@ -247,4 +247,153 @@ class BoardScribeEndpointRestTest extends TestCase {
 
 		$this->assertSame( 400, $response->get_status() );
 	}
+
+	/**
+	 * available_years is omitted unless requested.
+	 */
+	public function test_available_years_omitted_by_default(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+
+		$request  = new \WP_REST_Request( 'GET', self::ROUTE );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertArrayNotHasKey( 'available_years', $data );
+	}
+
+	/**
+	 * include_available_years=1 returns every distinct year with a
+	 * meeting, newest first, ignoring included_years on the same request.
+	 */
+	public function test_include_available_years_returns_distinct_years_unfiltered(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2023-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-11-01' ] ); // Same year as above — must not duplicate.
+		$this->create_meeting( [ 'edbs_meeting_date' => '2026-01-15' ] );
+		$this->create_meeting(); // No date meta — must not surface as a year.
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+		$request->set_param( 'included_years', '2024' ); // Scopes meetings, not available_years.
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertArrayHasKey( 'available_years', $data );
+		$this->assertSame( [ 2026, 2024, 2023 ], $data['available_years'] );
+		// The meetings list itself is still scoped by included_years.
+		$this->assertSame( 2, $data['total_entries'] );
+	}
+
+	/**
+	 * available_years is scoped by edbs_rest_query_args too, so a Pro
+	 * callback excluding posts from the main query excludes them here.
+	 */
+	public function test_available_years_is_scoped_by_edbs_rest_query_args(): void {
+		$excluded_id = $this->create_meeting( [ 'edbs_meeting_date' => '2025-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+
+		// A type-hinted $request param (matching the filter's documented
+		// signature) proves get_available_years() passes the real
+		// WP_REST_Request through, not null - a callback declared this
+		// way would fatal on a null argument.
+		$received_request = null;
+		$callback          = static function ( array $args, \WP_REST_Request $request ) use ( $excluded_id, &$received_request ): array {
+			$received_request      = $request;
+			$args['post__not_in'] = [ $excluded_id ];
+			return $args;
+		};
+		add_filter( 'edbs_rest_query_args', $callback, 10, 2 );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		remove_filter( 'edbs_rest_query_args', $callback );
+
+		$this->assertSame( [ 2024 ], $data['available_years'] );
+		$this->assertSame( $request, $received_request );
+	}
+
+	/**
+	 * available_years parses legacy d/m/Y and m/d/Y dates correctly,
+	 * unlike a raw SQL YEAR() on those formats.
+	 */
+	public function test_available_years_parses_legacy_slash_formatted_dates(): void {
+		// m/d/Y with day > 12 isn't covered here: parse_date() tries d/m/Y
+		// first, and DateTime's lenient overflow "succeeds" on it with the
+		// wrong date instead of falling through - a pre-existing bug in
+		// parse_date() itself, unrelated to this endpoint.
+		$this->create_meeting( [ 'edbs_meeting_date' => '15/03/2023' ] ); // d/m/Y
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( [ 2023 ], $data['available_years'] );
+	}
+
+	/**
+	 * available_years is bounded by edbs_rest_absolute_max_per_page, the
+	 * same cap get_meetings() applies to -1/"show all" requests — this is
+	 * an anonymous route, so its query can't be allowed to run unbounded.
+	 */
+	public function test_available_years_is_bounded_by_absolute_max_per_page(): void {
+		$this->create_meeting( [ 'edbs_meeting_date' => '2026-01-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2025-01-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2023-01-01' ] );
+
+		$callback = static function (): int {
+			return 2;
+		};
+		add_filter( 'edbs_rest_absolute_max_per_page', $callback );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		remove_filter( 'edbs_rest_absolute_max_per_page', $callback );
+
+		// Capped to the 2 most recent meetings (newest-first order), so
+		// the oldest year (2023) is excluded rather than every year
+		// being scanned regardless of cost.
+		$this->assertSame( [ 2026, 2025 ], $data['available_years'] );
+	}
+
+	/**
+	 * available_years uses suppress_filters => false, matching
+	 * get_meetings()'s own WP_Query - a posts_where/posts_join clause a
+	 * visibility-scoping plugin adds to the main query must apply here
+	 * too, or the switcher could reveal the existence of a year whose
+	 * only meetings are meant to be hidden.
+	 */
+	public function test_available_years_honors_posts_where_clause_filters(): void {
+		$hidden_id = $this->create_meeting( [ 'edbs_meeting_date' => '2025-05-01' ] );
+		$this->create_meeting( [ 'edbs_meeting_date' => '2024-05-01' ] );
+
+		$callback = static function ( string $where, \WP_Query $query ) use ( $hidden_id ): string {
+			global $wpdb;
+			if ( 'edbs_meeting' === $query->get( 'post_type' ) ) {
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID != %d", $hidden_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $wpdb->posts is a core table name, not user input.
+			}
+			return $where;
+		};
+		add_filter( 'posts_where', $callback, 10, 2 );
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'include_available_years', '1' );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		remove_filter( 'posts_where', $callback );
+
+		$this->assertSame( [ 2024 ], $data['available_years'] );
+	}
 }
