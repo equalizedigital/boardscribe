@@ -7,12 +7,19 @@
 
 namespace EqualizeDigital\BoardScribe\Import;
 
+use EqualizeDigital\BoardScribe\Admin\MetaBox;
+
 /**
  * Provides a bulk CSV import admin page under the BoardScribe menu.
  *
  * Core recognised columns (see columns()): title, date, agenda_url,
  * minutes_url, not_held, publish_date.
  *
+ * - title        : Optional. A blank title falls back to the same
+ *                  auto-generated "Board Meeting - {date}" title
+ *                  (MetaBox::generate_default_title(), filterable via
+ *                  edbs_default_meeting_title) used when a meeting is
+ *                  saved without one in the admin meta box.
  * - date         : Y-m-d format (e.g. 2024-03-15)
  * - not_held     : "yes" or "1" to mark the meeting as not held
  * - publish_date : Optional. Any date/time PHP's native date parser
@@ -58,8 +65,8 @@ class CsvImporter {
 	public function columns(): array {
 		$columns = [
 			'title'        => [
-				'required' => true,
-				'notes'    => __( 'Meeting title', 'boardscribe' ),
+				'required' => false,
+				'notes'    => __( 'Meeting title. If blank, auto-generated from the date (e.g. "Board Meeting - March 15, 2025").', 'boardscribe' ),
 			],
 			'date'         => [
 				'required' => true,
@@ -195,6 +202,7 @@ class CsvImporter {
 		}
 
 		$required_columns = array_keys( array_filter( $this->columns(), fn( array $column ): bool => ! empty( $column['required'] ) ) );
+		$meta_box         = new MetaBox();
 
 		$imported = 0;
 		$skipped  = 0;
@@ -247,8 +255,13 @@ class CsvImporter {
 				}
 			}
 
+			$title = sanitize_text_field( trim( $data['title'] ?? '' ) );
+			if ( '' === $title ) {
+				$title = $meta_box->generate_default_title( $date );
+			}
+
 			$post_args = [
-				'post_title'  => sanitize_text_field( trim( $data['title'] ) ),
+				'post_title'  => $title,
 				'post_type'   => 'edbs_meeting',
 				'post_status' => 'publish',
 			];
