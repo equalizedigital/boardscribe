@@ -201,9 +201,13 @@ class CsvImporter {
 		$headers  = null;
 
 		while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- idiomatic fgetcsv loop pattern.
-			// First row: extract and normalise headers.
+			// First row: extract and normalise headers. Strips a leading
+			// UTF-8 BOM from the first header - common in CSVs exported from
+			// Excel - which would otherwise make the "title" column
+			// unrecognisable and skip every row.
 			if ( null === $headers ) {
-				$headers = array_map( 'strtolower', array_map( 'trim', $row ) );
+				$headers    = array_map( 'strtolower', array_map( 'trim', $row ) );
+				$headers[0] = preg_replace( '/^\xEF\xBB\xBF/', '', $headers[0] );
 				continue;
 			}
 
@@ -212,7 +216,7 @@ class CsvImporter {
 				continue;
 			}
 
-			$data = array_combine( $headers, $row );
+			$data = array_combine( $headers, array_map( 'trim', $row ) );
 
 			// Validate required columns.
 			foreach ( $required_columns as $col ) {
