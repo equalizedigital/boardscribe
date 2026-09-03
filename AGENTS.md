@@ -1,6 +1,6 @@
 # BoardScribe (by Equalize Digital)
 
-Guidance for coding agents working in this repository. `CLAUDE.md` imports this file, so Claude Code, Codex and anything else that reads `AGENTS.md` all get the same instructions — keep this file self-contained and edit it here rather than adding a second copy. Repo-specific procedures (packaging a release, free/Pro release sync) live as Claude Code skills in `.claude/skills/`.
+Guidance for coding agents working in this repository. `CLAUDE.md` imports this file, so Claude Code, Codex and anything else that reads `AGENTS.md` all get the same instructions — keep this file self-contained and edit it here rather than adding a second copy.
 
 WordPress plugin — display name "BoardScribe", WP.org slug/text domain `boardscribe`, code prefix `edbs_`/`EDBS_`; git repo `equalizedigital/boardscribe` (renamed from the historical `equalize-digital-meeting-minutes` — old remote URLs redirect), local checkout directory `boardscribe`. Manages meeting minutes as a custom post type (`edbs_boardscribe`), displayed via a `[edbs_boardscribe]` shortcode backed by a public REST endpoint (`/edbs/v1/boardscribe/`), plus a Gutenberg block (`equalize-digital/boardscribe`) that renders through the same shortcode pipeline (moved here from Pro — the block name is stored in existing content and must never change). Native WordPress storage only — no ACF dependency (removed during the restructure).
 
