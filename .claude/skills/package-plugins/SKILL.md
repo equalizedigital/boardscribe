@@ -50,7 +50,7 @@ The zip contents below were verified against a real `npm run dist` run.
 `npm run dist`. Its `files` allowlist lives in `package.json`.
 
 Expected manifest (verify with `unzip -l`):
-`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `composer.json`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,block-editor-preview}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/build/builder/{index.js,index.asset.php}`, `assets/css/{boardscribe,builder,settings}.css`, `assets/images/logo.svg`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock}.php`
+`boardscribe.php`, `block.json`, `uninstall.php`, `readme.txt`, `LICENSE`, `composer.json`, `languages/boardscribe.pot`, `partials/{meta-box,settings-page,block-editor-preview,csv-import-page}.php`, `assets/build/boardscribe.js`, `assets/build/block/{index.js,index.asset.php}`, `assets/build/builder/{index.js,index.asset.php}`, `assets/css/{boardscribe,builder,settings}.css`, `assets/images/logo.svg`, `vendor/autoload.php`, `vendor/composer/*.php`, `includes/Plugin.php`, `includes/{Admin/{MetaBox,SettingsPage},PostType/BoardScribeCPT,REST/BoardScribeEndpoint,Shortcode/{FieldRegistry,BoardScribeShortcode},Block/BoardScribeBlock,Import/CsvImporter}.php`
 
 Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode Builder React app, PRO-1228) ship via the existing wildcard `cp -r assets/build assets/css assets/images` step below with no script change — this manifest entry just documents that they're expected, not new/unexpected, when verifying with `unzip -l`. `assets/images/logo.svg` (settings-sidebar logo, rendered by partials/settings-page.php) ships via that same step — it was missing from the copy list until a build review caught the broken logo; keep `assets/images` in it.
 
@@ -59,11 +59,13 @@ Note: `assets/build/builder/` and `assets/css/builder.css` (the admin Shortcode 
 `npm run dist`, using the same `scripts/dist.sh` as free bar the slug, driven by its own `files` allowlist. No JS build step.
 
 Expected manifest:
-`boardscribe-pro.php`, `readme.txt`, `LICENSE`, `composer.json`, `languages/boardscribe-pro.pot`, `assets/css/{admin-document-picker,pro-meta}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,csv-import-page,license-section}.php`, `includes/{Plugin,License/LicenseManager,Admin/{ProMetaFields,DocumentPicker},PostType/{MeetingCategory,MeetingType,DocumentCPT,MeetingDocumentRelationship},Block/BlockExtensions,Import/CsvImporter}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate,editor/blockEditor}.js`
+`boardscribe-pro.php`, `readme.txt`, `LICENSE`, `composer.json`, `languages/boardscribe-pro.pot`, `assets/css/{admin-document-picker,pro-meta}.css`, `vendor/autoload.php`, `vendor/composer/*.php`, `partials/{pro-meta-fields,license-section}.php`, `includes/{Plugin,License/LicenseManager,Admin/{ProMetaFields,DocumentPicker},PostType/{MeetingCategory,MeetingType,DocumentCPT,MeetingDocumentRelationship},Block/BlockExtensions}.php`, `src/js/{admin/proMeta,front-end/proColumns,front-end/yearTimelineTemplate,editor/blockEditor}.js`
 
 Note: verified against a real `npm run dist`, and against the Pro repo's own paired `add-dist-build-and-make-pot` branch (which adds `languages/boardscribe-pro.pot` and its own `scripts/dist.sh`). Since this list was last written by hand, `includes/` gained `DocumentPicker`, `DocumentCPT`, `MeetingDocumentRelationship` and `MeetingType`, `assets/css` gained `admin-document-picker.css` and lost `calendar-templates.css`, and `src/js/front-end/calendarTemplates.js` is gone.
 
 Note: Pro no longer ships `block.json`, `build/`, or `partials/block-editor-preview.php` — the block moved to the free plugin (paired `feat/move-block-to-free` branches). Don't re-add them from an old checklist.
+
+Note: Pro no longer ships `includes/Import/CsvImporter.php` or `partials/csv-import-page.php` — the CSV importer moved to the free plugin (paired branches moving the importer). Pro now only extends free's importer via `edbs_csv_import_columns`/`edbs_csv_import_row_meta` (in `ProMetaFields` and `MeetingCategory`). Don't re-add the old importer files from a stale checklist.
 
 Note: `partials/shortcode-builder-fields.php` no longer exists (deleted in the shortcode-field-registry refactor, PR boardscribe#19 / boardscribe-pro#11 (repos since renamed from equalize-digital-meeting-minutes/meeting-minutes-pro)) — don't re-add it if an old checklist still references it.
 

@@ -50,7 +50,7 @@ class FieldRegistryValidateIsoDateTest extends TestCase {
 	 * A non-existent calendar date (e.g. Feb 30, or a non-leap-year Feb 29)
 	 * is rejected outright via checkdate() rather than silently rolling
 	 * forward to the next valid date - the same class of bug fixed in
-	 * CsvImporter::parse_publish_date() (see boardscribe-pro).
+	 * CsvImporter::parse_publish_date() in this repo.
 	 *
 	 * @dataProvider provide_invalid_calendar_dates
 	 * @param string $date Date string under test.
