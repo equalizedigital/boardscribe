@@ -82,11 +82,19 @@ class CsvImporter {
 			],
 			'not_held'     => [
 				'required' => false,
-				'notes'    => __( 'yes / 1 / true', 'boardscribe' ),
+				'notes'    => sprintf(
+					/* translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated. */
+					__( 'Accepted values: %s', 'boardscribe' ),
+					'yes / 1 / true'
+				),
 			],
 			'publish_date' => [
 				'required' => false,
-				'notes'    => __( 'Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above.', 'boardscribe' ),
+				'notes'    => sprintf(
+					/* translators: %s: example date/time formats — these are literal examples, not to be translated. */
+					__( 'Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above.', 'boardscribe' ),
+					'2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00'
+				),
 			],
 		];
 
