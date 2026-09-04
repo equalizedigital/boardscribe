@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -237,24 +237,28 @@ msgstr "Buong URL sa file ng adyenda"
 msgid "Full URL to minutes file"
 msgstr "Buong URL sa file ng katitikan"
 
-#: includes/Import/CsvImporter.php:85
-msgid "yes / 1 / true"
-msgstr "oo / 1 / true"
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Mga tinatanggap na value: %s"
 
-#: includes/Import/CsvImporter.php:89
-msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Anumang makikilalang petsa o petsa/oras (hal. 2024-03-15, 2024-03-15 14:30:00, o 2024-03-15T14:30:00-05:00). Itinatakda nito ang aktwal na petsa ng pag-publish sa WordPress sa halip na ang sandali ng pag-import — gamitin ito para i-backdate ang mga nakaraang pagpupulong. Hindi nito naaapektuhan ang petsa ng pagpupulong/pagkakasunod-sunod sa itaas."
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Anumang makikilalang petsa o petsa/oras (hal. %s). Itinatakda nito ang aktwal na petsa ng pag-publish sa WordPress sa halip na ang sandali ng pag-import — gamitin ito para i-backdate ang mga nakaraang pagpupulong. Hindi nito naaapektuhan ang petsa ng pagpupulong/pagkakasunod-sunod sa itaas."
 
-#: includes/Import/CsvImporter.php:126
+#: includes/Import/CsvImporter.php:134
 #: partials/csv-import-page.php:85
 msgid "Import"
 msgstr "I-import"
 
-#: includes/Import/CsvImporter.php:151
+#: includes/Import/CsvImporter.php:159
 msgid "Security check failed."
 msgstr "Nabigo ang security check."
 
-#: includes/Import/CsvImporter.php:155
+#: includes/Import/CsvImporter.php:163
 msgid "Insufficient permissions."
 msgstr "Walang sapat na pahintulot."
 
