@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -237,24 +237,28 @@ msgstr "URL penuh ke fail agenda"
 msgid "Full URL to minutes file"
 msgstr "URL penuh ke fail minit"
 
-#: includes/Import/CsvImporter.php:85
-msgid "yes / 1 / true"
-msgstr "ya / 1 / benar"
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Nilai yang diterima: %s"
 
-#: includes/Import/CsvImporter.php:89
-msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Sebarang tarikh atau tarikh/masa yang boleh dikenali (cth. 2024-03-15, 2024-03-15 14:30:00, atau 2024-03-15T14:30:00-05:00). Menetapkan tarikh kiriman WordPress yang sebenar dan bukannya waktu import — gunakan ini untuk menetapkan tarikh mesyuarat sejarah yang terdahulu. Tidak menjejaskan tarikh mesyuarat/tertib susunan di atas."
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Sebarang tarikh atau tarikh/masa yang boleh dikenali (cth. %s). Menetapkan tarikh penerbitan WordPress yang sebenar dan bukannya masa import — gunakan ini untuk menetapkan tarikh lampau bagi mesyuarat sejarah. Tidak menjejaskan tarikh mesyuarat/tertib susunan di atas."
 
-#: includes/Import/CsvImporter.php:126
+#: includes/Import/CsvImporter.php:134
 #: partials/csv-import-page.php:85
 msgid "Import"
 msgstr "Import"
 
-#: includes/Import/CsvImporter.php:151
+#: includes/Import/CsvImporter.php:159
 msgid "Security check failed."
 msgstr "Semakan keselamatan gagal."
 
-#: includes/Import/CsvImporter.php:155
+#: includes/Import/CsvImporter.php:163
 msgid "Insufficient permissions."
 msgstr "Keizinan tidak mencukupi."
 

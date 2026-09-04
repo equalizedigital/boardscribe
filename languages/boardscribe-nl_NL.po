@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -237,24 +237,28 @@ msgstr "Volledige URL naar agendabestand"
 msgid "Full URL to minutes file"
 msgstr "Volledige URL naar notulenbestand"
 
-#: includes/Import/CsvImporter.php:85
-msgid "yes / 1 / true"
-msgstr "ja / 1 / true"
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Geaccepteerde waarden: %s"
 
-#: includes/Import/CsvImporter.php:89
-msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Elke herkenbare datum of datum/tijd (bijv. 2024-03-15, 2024-03-15 14:30:00, of 2024-03-15T14:30:00-05:00). Stelt de feitelijke WordPress-publicatiedatum in in plaats van het moment van importeren — gebruik dit om historische vergaderingen met terugwerkende kracht te dateren. Heeft geen invloed op de bovenstaande vergaderdatum of sorteervolgorde."
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Elke herkenbare datum of datum/tijd (bijv. %s). Stelt de feitelijke WordPress-publicatiedatum in in plaats van het moment van importeren — gebruik dit om historische vergaderingen met terugwerkende kracht te dateren. Heeft geen invloed op de hierboven genoemde vergaderdatum of sorteervolgorde."
 
-#: includes/Import/CsvImporter.php:126
+#: includes/Import/CsvImporter.php:134
 #: partials/csv-import-page.php:85
 msgid "Import"
 msgstr "Importeren"
 
-#: includes/Import/CsvImporter.php:151
+#: includes/Import/CsvImporter.php:159
 msgid "Security check failed."
 msgstr "Beveiligingscontrole mislukt."
 
-#: includes/Import/CsvImporter.php:155
+#: includes/Import/CsvImporter.php:163
 msgid "Insufficient permissions."
 msgstr "Onvoldoende rechten."
 
