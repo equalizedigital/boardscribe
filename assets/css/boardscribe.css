@@ -19,27 +19,6 @@
     cursor: not-allowed;
 }
 
-.edbs-year-switcher-buttons {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 10px;
-}
-
-.edbs-year-switcher-button {
-    padding: 10px 15px;
-    cursor: pointer;
-}
-
-.edbs-year-switcher-button[disabled] {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.edbs-year-switcher-select {
-    padding: 8px 10px;
-}
-
 .edbs-boardscribe-table {
     width: 100%;
     border-collapse: collapse;
