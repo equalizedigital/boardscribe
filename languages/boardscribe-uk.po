@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,43 @@ msgstr "Порядок денний"
 msgid "Minutes"
 msgstr "Протокол"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Назва засідання. Якщо залишити порожнім, назва генерується автоматично на основі дати (наприклад, «Засідання правління — 15 березня 2025 року»)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Формат: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "Повна URL-адреса файлу порядку денного"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "Повна URL-адреса файлу протоколу"
+
+#: includes/Import/CsvImporter.php:85
+msgid "yes / 1 / true"
+msgstr "yes / 1 / true"
+
+#: includes/Import/CsvImporter.php:89
+msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Будь-яка розпізнавана дата або дата й час (наприклад, 2024-03-15, 2024-03-15 14:30:00 або 2024-03-15T14:30:00-05:00). Встановлює фактичну дату публікації WordPress замість моменту імпорту — використовуйте це для додавання минулих засідань. Не впливає на дату засідання або порядок сортування вище."
+
+#: includes/Import/CsvImporter.php:126
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Імпортувати"
+
+#: includes/Import/CsvImporter.php:151
+msgid "Security check failed."
+msgstr "Помилка перевірки безпеки."
+
+#: includes/Import/CsvImporter.php:155
+msgid "Insufficient permissions."
+msgstr "Недостатньо прав."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +430,56 @@ msgstr "Текст посилання на протокол"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Опублікованих засідань не знайдено."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Імпорт завершено. Імпортовано %1$d рядків, пропущено %2$d."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Файл не завантажено. Будь ласка, виберіть CSV-файл і спробуйте ще раз."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Неправильний тип файлу. Будь ласка, завантажте файл.csv."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Виникла невідома помилка."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Завантажте CSV-файл для масового імпорту засідань. Перший рядок має бути заголовком."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "Формат CSV"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Стовпець"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Обов’язково"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Примітки"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Так"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Ні"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSV-файл"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

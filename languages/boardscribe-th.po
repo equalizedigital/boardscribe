@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,43 @@ msgstr "ระเบียบวาระ"
 msgid "Minutes"
 msgstr "รายงานการประชุม"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "หัวข้อการประชุม หากเว้นว่างไว้ ระบบจะสร้างให้โดยอัตโนมัติจากวันที่ (เช่น “การประชุมคณะกรรมการ - 15 มีนาคม 2025”)"
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "รูปแบบ: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "URL แบบเต็มไปยังไฟล์ระเบียบวาระการประชุม"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "URL แบบเต็มไปยังไฟล์รายงานการประชุม"
+
+#: includes/Import/CsvImporter.php:85
+msgid "yes / 1 / true"
+msgstr "yes / 1 / true"
+
+#: includes/Import/CsvImporter.php:89
+msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "วันที่หรือวันเวลาใด ๆ ที่สามารถระบุได้ (เช่น 2024-03-15, 2024-03-15 14:30:00 หรือ 2024-03-15T14:30:00-05:00) ใช้สำหรับตั้งค่าวันที่เผยแพร่จริงใน WordPress แทนที่จะเป็นเวลาที่นำเข้า — ใช้สิ่งนี้เพื่อลงวันที่ย้อนหลังสำหรับการประชุมในอดีต ซึ่งจะไม่มีผลต่อวันที่จัดการประชุมหรือลำดับการเรียงลำดับด้านบน"
+
+#: includes/Import/CsvImporter.php:126
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "นำเข้า"
+
+#: includes/Import/CsvImporter.php:151
+msgid "Security check failed."
+msgstr "การตรวจสอบความปลอดภัยล้มเหลว"
+
+#: includes/Import/CsvImporter.php:155
+msgid "Insufficient permissions."
+msgstr "สิทธิ์การใช้งานไม่เพียงพอ"
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +430,56 @@ msgstr "ป้ายกำกับลิงก์รายงานการป
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "ไม่พบการประชุมที่เผยแพร่"
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "นำเข้าเสร็จสมบูรณ์ นำเข้าแล้ว %1$d แถว ข้ามไป %2$d แถว"
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "ไม่มีไฟล์ถูกอัปโหลด กรุณาเลือกไฟล์ CSV แล้วลองใหม่อีกครั้ง"
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์.csv"
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "เกิดข้อผิดพลาดที่ไม่รู้จัก"
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "อัปโหลดไฟล์ CSV เพื่อนำเข้าการประชุมจำนวนมาก แถวแรกต้องเป็นแถวส่วนหัว"
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "รูปแบบ CSV"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "คอลัมน์"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "จำเป็น"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "หมายเหตุ"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "ใช่"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "ไม่"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "ไฟล์ CSV"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

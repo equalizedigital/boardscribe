@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,43 @@ msgstr "Ajandaha"
 msgid "Minutes"
 msgstr "Diiwaanka Kulanka"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Ciwaanka kulanka. Haddii uu maran yahay, waxaa si toos ah looga soo saarayaa taariikhda (tusaale “Kulanka guddiga - Maarso 15, 2025”)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Habka: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "URL-ka buuxa ee faylka ajandaha"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "URL-ka buuxa ee faylka diiwaanka kulanka"
+
+#: includes/Import/CsvImporter.php:85
+msgid "yes / 1 / true"
+msgstr "haa / 1 / run"
+
+#: includes/Import/CsvImporter.php:89
+msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Taariikh kasta ama taariikh/wakhti kasta oo la aqoonsan karo (tusaale 2024-03-15, 2024-03-15 14:30:00, ama 2024-03-15T14:30:00-05:00). Waxay dejinaysaa taariikhda dhabta ah ee baahinta WordPress halkii ay ka ahaan lahayd xilliga soo dejinta — u isticmaal tan si aad dib ugu taariikhayso kulannadii hore. Ma saamayneyso taariikhda kulanka/habka kala horreynta ee kor ku xusan."
+
+#: includes/Import/CsvImporter.php:126
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Soo deji"
+
+#: includes/Import/CsvImporter.php:151
+msgid "Security check failed."
+msgstr "Hubinta nabadgelyadu waa fashilantay."
+
+#: includes/Import/CsvImporter.php:155
+msgid "Insufficient permissions."
+msgstr "Ma haysatid oggolaansho ku filan."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +430,56 @@ msgstr "Sumadda xiriiriyaha diiwaanka kulanka"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Wax kulan ah oo la baahiyay lama helin."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Soo dejintii waa dhammaatay. %1$d saf ayaa la soo dejiyay, %2$d waa laga booday."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Ma jiro fayl la soo geliyay. Fadlan dooro fayl CSV ah oo isku day mar kale."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Nooca faylku ma saxna. Fadlan soo geli fayl .csv ah."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Khalad aan la garanayn ayaa dhacay."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Soo geli fayl CSV ah si aad kulannada ugu soo dejiso si wadajir ah. Safka hore waa inuu ahaadaa safka ciwaanka."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "Habka CSV"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Tiirka"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Loo baahan yahay"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Xusuusin"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Haa"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Maya"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "Faylka CSV"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"
