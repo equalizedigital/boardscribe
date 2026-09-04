@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,47 @@ msgstr "Ordem de Trabalhos"
 msgid "Minutes"
 msgstr "Atas"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Título da reunião. Se estiver em branco, será gerado automaticamente a partir da data (ex.: “Reunião de Direção - 15 de março de 2025”)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Formato: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "URL completo para o ficheiro da ordem de trabalhos"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "URL completo para o ficheiro das atas"
+
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Valores aceites: %s"
+
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Qualquer data ou data/hora reconhecível (ex.: %s). Define a data de publicação real do WordPress em vez do momento da importação — utilize esta opção para retroceder reuniões históricas. Não afeta a data da reunião ou a ordem de ordenação acima."
+
+#: includes/Import/CsvImporter.php:134
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Importar"
+
+#: includes/Import/CsvImporter.php:159
+msgid "Security check failed."
+msgstr "A verificação de segurança falhou."
+
+#: includes/Import/CsvImporter.php:163
+msgid "Insufficient permissions."
+msgstr "Permissões insuficientes."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +434,56 @@ msgstr "Rótulo do link das atas"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Não foram encontradas reuniões publicadas."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Importação concluída. %1$d linhas importadas, %2$d ignoradas."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Nenhum ficheiro foi carregado. Escolha um ficheiro CSV e tente novamente."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Tipo de ficheiro inválido. Carregue um ficheiro .csv."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Ocorreu um erro desconhecido."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Carregue um ficheiro CSV para importar reuniões em massa. A primeira linha deve ser uma linha de cabeçalho."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "Formato CSV"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Coluna"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Obrigatório"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Notas"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Sim"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Não"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "Ficheiro CSV"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

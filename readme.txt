@@ -3,7 +3,7 @@ Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
 Tags: accessibility, document library, document management, meetings, agenda
 Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -219,6 +219,9 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 7. BoardScribe general settings showing an option to delete all BoardScribe meeting posts and plugin settings when BoardScribe is deleted.
 
 == Changelog ==
+
+= 1.1.0 =
+* Added CSV bulk importer for meeting minutes.
 
 = 1.0.0 =
 * Initial release.

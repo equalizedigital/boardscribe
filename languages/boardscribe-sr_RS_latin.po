@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,47 @@ msgstr "Dnevni red"
 msgid "Minutes"
 msgstr "Zapisnik"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Naslov sastanka. Ako je prazno, automatski se generiše na osnovu datuma (npr. „Sastanak odbora – 15. mart 2025.“)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Format: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "Puna URL adresa do datoteke dnevnog reda"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "Puna URL adresa do datoteke zapisnika"
+
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Prihvaćene vrednosti: %s"
+
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Bilo koji prepoznatljiv datum ili datum/vreme (npr. %s). Postavlja stvarni WordPress datum objavljivanja umesto trenutka uvoza – koristite ovo za retroaktivno datiranje istorijskih sastanaka. Ne utiče na gorenavedeni datum sastanka ili redosled sortiranja."
+
+#: includes/Import/CsvImporter.php:134
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Uvezi"
+
+#: includes/Import/CsvImporter.php:159
+msgid "Security check failed."
+msgstr "Bezbednosna provera nije uspela."
+
+#: includes/Import/CsvImporter.php:163
+msgid "Insufficient permissions."
+msgstr "Nedovoljne dozvole."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +434,56 @@ msgstr "Oznaka linka za zapisnik"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Nije pronađen nijedan objavljeni sastanak."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Uvoz je završen. %1$d redova je uvezeno, %2$d je preskočeno."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Nijedna datoteka nije otpremljena. Izaberite CSV datoteku i pokušajte ponovo."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Nevažeći tip datoteke. Otpremite .csv datoteku."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Došlo je do nepoznate greške."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Otpremite CSV datoteku za masovni uvoz sastanaka. Prvi red mora biti zaglavlje."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "CSV format"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Kolona"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Obavezno"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Napomene"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Da"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Ne"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSV datoteka"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

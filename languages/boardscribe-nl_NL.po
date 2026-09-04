@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,47 @@ msgstr "Agenda"
 msgid "Minutes"
 msgstr "Notulen"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Vergadertitel. Indien leeg, wordt deze automatisch gegenereerd op basis van de datum (bijv. “Bestuursvergadering - 15 maart 2025”)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Formaat: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "Volledige URL naar agendabestand"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "Volledige URL naar notulenbestand"
+
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Geaccepteerde waarden: %s"
+
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Elke herkenbare datum of datum/tijd (bijv. %s). Stelt de feitelijke WordPress-publicatiedatum in in plaats van het moment van importeren — gebruik dit om historische vergaderingen met terugwerkende kracht te dateren. Heeft geen invloed op de hierboven genoemde vergaderdatum of sorteervolgorde."
+
+#: includes/Import/CsvImporter.php:134
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Importeren"
+
+#: includes/Import/CsvImporter.php:159
+msgid "Security check failed."
+msgstr "Beveiligingscontrole mislukt."
+
+#: includes/Import/CsvImporter.php:163
+msgid "Insufficient permissions."
+msgstr "Onvoldoende rechten."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +434,56 @@ msgstr "Linklabel notulen"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Geen gepubliceerde vergaderingen gevonden."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Importeren voltooid. %1$d rijen geïmporteerd, %2$d overgeslagen."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Er is geen bestand geüpload. Kies een CSV-bestand en probeer het opnieuw."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Ongeldig bestandstype. Upload een .csv-bestand."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Er is een onbekende fout opgetreden."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Upload een CSV-bestand om vergaderingen in bulk te importeren. De eerste rij moet een koprij zijn."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "CSV-formaat"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Kolom"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Vereist"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Opmerkingen"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Ja"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Nee"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSV-bestand"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

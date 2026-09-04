@@ -25,3 +25,7 @@ docs-local
 
 # Client data files must never be committed
 docs/*.csv
+
+# Claude Code (personal, not committed — .claude/settings.json is shared)
+.claude/settings.local.json
+.claude/worktrees/

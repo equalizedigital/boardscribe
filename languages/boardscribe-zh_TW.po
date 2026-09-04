@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,47 @@ msgstr "議程"
 msgid "Minutes"
 msgstr "會議紀錄"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "會議標題。如果留空，將根據日期自動產生（例如：「委員會會議 - 2025 年 3 月 15 日」）。"
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "格式：YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "議程檔案的完整 URL"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "會議紀錄檔案的完整 URL"
+
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "接受的值：%s"
+
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "任何可識別的日期或日期/時間（例如 %s）。這會設定實際的 WordPress 發佈日期，而非匯入當下的時間 — 請使用此功能來回溯歷史會議的日期。這不會影響上方的會議日期或排序順序。"
+
+#: includes/Import/CsvImporter.php:134
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "匯入"
+
+#: includes/Import/CsvImporter.php:159
+msgid "Security check failed."
+msgstr "安全性檢查失敗。"
+
+#: includes/Import/CsvImporter.php:163
+msgid "Insufficient permissions."
+msgstr "權限不足。"
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +434,56 @@ msgstr "會議紀錄連結標籤"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "找不到已發佈的會議。"
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "匯入完成。已匯入 %1$d 列，已跳過 %2$d 列。"
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "未上傳任何檔案。請選擇一個 CSV 檔案並重試。"
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "檔案類型無效。請上傳.csv 檔案。"
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "發生未知錯誤。"
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "上傳 CSV 檔案以批次匯入會議。第一列必須是標題列。"
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "CSV 格式"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "欄位"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "必填"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "備註"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "是"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "否"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSV 檔案"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

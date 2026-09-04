@@ -125,7 +125,7 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 
 **Contract impact / version pairing:** **new Pro requires the paired new free release.** On an older free plugin, new Pro's block is simply gone (nothing registers it) and `ProMetaFields::get_meeting_year()` fatals calling the then-private `parse_date()`. The reverse skew (old Pro + new free) is handled by the registration guard above.
 
-**Action for Pro before release:** confirm Pro no longer ships `block.json`/`build/` (packaging manifests updated in `package-plugins` skill), that `BlockExtensions` is booted, and that the paired free release is published first.
+**Action for Pro before release:** confirm Pro no longer ships `block.json`/`build/` (update packaging manifests accordingly), that `BlockExtensions` is booted, and that the paired free release is published first.
 
 ---
 

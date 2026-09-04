@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,47 @@ msgstr "Adyenda"
 msgid "Minutes"
 msgstr "Katitikan"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Pamagat ng pagpupulong. Kung blangko, awtomatikong i-ge-generate mula sa petsa (hal. \"Board Meeting - Marso 15, 2025\")."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Format: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "Buong URL sa file ng adyenda"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "Buong URL sa file ng katitikan"
+
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Mga tinatanggap na value: %s"
+
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Anumang makikilalang petsa o petsa/oras (hal. %s). Itinatakda nito ang aktwal na petsa ng pag-publish sa WordPress sa halip na ang sandali ng pag-import — gamitin ito para i-backdate ang mga nakaraang pagpupulong. Hindi nito naaapektuhan ang petsa ng pagpupulong/pagkakasunod-sunod sa itaas."
+
+#: includes/Import/CsvImporter.php:134
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "I-import"
+
+#: includes/Import/CsvImporter.php:159
+msgid "Security check failed."
+msgstr "Nabigo ang security check."
+
+#: includes/Import/CsvImporter.php:163
+msgid "Insufficient permissions."
+msgstr "Walang sapat na pahintulot."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +434,56 @@ msgstr "Label ng link ng katitikan"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Walang nahanap na mga na-publish na pagpupulong."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Tapos na ang pag-import. %1$d na row ang na-import, %2$d ang nilaktawan."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Walang file na na-upload. Pakisuyong pumili ng CSV file at subukang muli."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Invalid na uri ng file. Pakisuyong mag-upload ng .csv file."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "May naganap na hindi kilalang error."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Mag-upload ng CSV file para sa bulk-import ng mga pagpupulong. Ang unang row ay dapat na header row."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "Format ng CSV"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Column"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Kinakailangan"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Mga tala"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Oo"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Hindi"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSV file"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

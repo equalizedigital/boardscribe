@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,47 @@ msgstr "Tagesordnung"
 msgid "Minutes"
 msgstr "Protokoll"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Sitzungstitel. Falls leer, wird dieser automatisch aus dem Datum generiert (z. B. „Vorstandssitzung – 15. März 2025“)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Format: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "Vollständige URL zur Tagesordnungs-Datei"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "Vollständige URL zur Protokoll-Datei"
+
+#. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
+#: includes/Import/CsvImporter.php:87
+#, php-format
+msgid "Accepted values: %s"
+msgstr "Akzeptierte Werte: %s"
+
+#. translators: %s: example date/time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:95
+#, php-format
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Jedes erkennbare Datum oder Datum/Uhrzeit (z. B. %s). Legt das tatsächliche WordPress-Veröffentlichungsdatum anstelle des Zeitpunkts des Imports fest – verwenden Sie dies, um historische Sitzungen zurückzudatieren. Hat keinen Einfluss auf das oben genannte Sitzungsdatum oder die Sortierreihenfolge."
+
+#: includes/Import/CsvImporter.php:134
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Importieren"
+
+#: includes/Import/CsvImporter.php:159
+msgid "Security check failed."
+msgstr "Sicherheitsprüfung fehlgeschlagen."
+
+#: includes/Import/CsvImporter.php:163
+msgid "Insufficient permissions."
+msgstr "Unzureichende Berechtigungen."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +434,56 @@ msgstr "Beschriftung für Protokoll-Link"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Keine veröffentlichten Sitzungen gefunden."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Import abgeschlossen. %1$d Zeilen importiert, %2$d übersprungen."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Es wurde keine Datei hochgeladen. Bitte wählen Sie eine CSV-Datei aus und versuchen Sie es erneut."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Ungültiger Dateityp. Bitte laden Sie eine .csv-Datei hoch."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Ein unbekannter Fehler ist aufgetreten."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Laden Sie eine CSV-Datei hoch, um Sitzungen per Massenimport zu importieren. Die erste Zeile muss eine Kopfzeile sein."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "CSV-Format"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Spalte"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Erforderlich"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Hinweise"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Ja"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Nein"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSV-Datei"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"
