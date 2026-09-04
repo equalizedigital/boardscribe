@@ -220,6 +220,9 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 
 == Changelog ==
 
+= 1.1.0 =
+* Added CSV bulk importer for meeting minutes.
+
 = 1.0.0 =
 * Initial release.
 * Custom post type with native meta boxes (no ACF dependency).
