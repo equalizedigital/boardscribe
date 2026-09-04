@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,43 @@ msgstr "アジェンダ"
 msgid "Minutes"
 msgstr "議事録"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "会合のタイトル。空欄の場合、日付から自動生成されます（例：「理事会 - 2025年3月15日」）。"
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "形式: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "アジェンダファイルへのフルURL"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "議事録ファイルへのフルURL"
+
+#: includes/Import/CsvImporter.php:85
+msgid "yes / 1 / true"
+msgstr "yes / 1 / true"
+
+#: includes/Import/CsvImporter.php:89
+msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "認識可能な日付または日時（例：2024-03-15、2024-03-15 14:30:00、または2024-03-15T14:30:00-05:00）。インポートした瞬間ではなく、実際のWordPress公開日を設定します。過去の会合を遡って登録する場合に使用してください。上記の会合日や並べ替え順には影響しません。"
+
+#: includes/Import/CsvImporter.php:126
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "インポート"
+
+#: includes/Import/CsvImporter.php:151
+msgid "Security check failed."
+msgstr "セキュリティチェックに失敗しました。"
+
+#: includes/Import/CsvImporter.php:155
+msgid "Insufficient permissions."
+msgstr "権限が不足しています。"
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +430,56 @@ msgstr "議事録リンクのラベル"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "公開済みの会合が見つかりませんでした。"
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "インポートが完了しました。%1$d 行をインポートし、%2$d 行をスキップしました。"
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "ファイルがアップロードされませんでした。CSVファイルを選択して、もう一度お試しください。"
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "無効なファイル形式です。.csvファイルをアップロードしてください。"
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "不明なエラーが発生しました。"
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "CSVファイルをアップロードして、会合を一括インポートします。最初の行はヘッダー行である必要があります。"
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "CSV形式"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "列"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "必須"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "備考"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "はい"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "いいえ"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSVファイル"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

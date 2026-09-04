@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,43 @@ msgstr "Orden del día"
 msgid "Minutes"
 msgstr "Actas"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Título de la reunión. Si se deja en blanco, se genera automáticamente a partir de la fecha (por ejemplo, “Reunión de la junta - 15 de marzo de 2025”)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Formato: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "URL completa al archivo del orden del día"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "URL completa al archivo de las actas"
+
+#: includes/Import/CsvImporter.php:85
+msgid "yes / 1 / true"
+msgstr "sí / 1 / verdadero"
+
+#: includes/Import/CsvImporter.php:89
+msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Cualquier fecha o fecha/hora reconocible (por ejemplo, 2024-03-15, 2024-03-15 14:30:00 o 2024-03-15T14:30:00-05:00). Establece la fecha de publicación real de WordPress en lugar del momento de la importación; use esto para antedatar reuniones históricas. No afecta la fecha de la reunión ni el orden de clasificación anterior."
+
+#: includes/Import/CsvImporter.php:126
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Importar"
+
+#: includes/Import/CsvImporter.php:151
+msgid "Security check failed."
+msgstr "Falló la comprobación de seguridad."
+
+#: includes/Import/CsvImporter.php:155
+msgid "Insufficient permissions."
+msgstr "Permisos insuficientes."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +430,56 @@ msgstr "Etiqueta del enlace de las actas"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "No se encontraron reuniones publicadas."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Importación completada. %1$d filas importadas, %2$d omitidas."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "No se subió ningún archivo. Elija un archivo CSV e intente de nuevo."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Tipo de archivo no válido. Suba un archivo .csv."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Ocurrió un error desconocido."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Suba un archivo CSV para importar reuniones de forma masiva. La primera fila debe ser una fila de encabezado."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "Formato CSV"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Columna"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Obligatorio"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Notas"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Sí"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "No"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "Archivo CSV"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

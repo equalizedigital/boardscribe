@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,43 @@ msgstr "Chương trình họp"
 msgid "Minutes"
 msgstr "Biên bản"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Tiêu đề cuộc họp. Nếu để trống, tiêu đề sẽ được tạo tự động từ ngày (ví dụ: “Cuộc họp Hội đồng - Ngày 15 tháng 3 năm 2025”)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Định dạng: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "URL đầy đủ đến tệp chương trình họp"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "URL đầy đủ đến tệp biên bản"
+
+#: includes/Import/CsvImporter.php:85
+msgid "yes / 1 / true"
+msgstr "yes / 1 / true"
+
+#: includes/Import/CsvImporter.php:89
+msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Bất kỳ ngày hoặc ngày/giờ nào có thể nhận dạng được (ví dụ: 2024-03-15, 2024-03-15 14:30:00, hoặc 2024-03-15T14:30:00-05:00). Thiết lập ngày đăng WordPress thực tế thay vì thời điểm nhập — sử dụng tùy chọn này để lùi ngày cho các cuộc họp trong quá khứ. Không ảnh hưởng đến ngày họp/thứ tự sắp xếp ở trên."
+
+#: includes/Import/CsvImporter.php:126
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Nhập"
+
+#: includes/Import/CsvImporter.php:151
+msgid "Security check failed."
+msgstr "Kiểm tra bảo mật thất bại."
+
+#: includes/Import/CsvImporter.php:155
+msgid "Insufficient permissions."
+msgstr "Không đủ quyền hạn."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +430,56 @@ msgstr "Nhãn liên kết Biên bản"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Không tìm thấy cuộc họp nào đã xuất bản."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Hoàn tất nhập dữ liệu. Đã nhập %1$d hàng, bỏ qua %2$d hàng."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Không có tệp nào được tải lên. Vui lòng chọn một tệp CSV và thử lại."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Loại tệp không hợp lệ. Vui lòng tải lên tệp .csv."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Đã xảy ra lỗi không xác định."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Tải lên tệp CSV để nhập hàng loạt các cuộc họp. Hàng đầu tiên phải là hàng tiêu đề."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "Định dạng CSV"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Cột"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Bắt buộc"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Ghi chú"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Có"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Không"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "Tệp CSV"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"

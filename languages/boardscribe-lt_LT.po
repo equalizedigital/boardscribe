@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-26T18:08:17+00:00\n"
+"POT-Creation-Date: 2026-09-04T13:59:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: boardscribe\n"
@@ -221,6 +221,43 @@ msgstr "Darbotvarkė"
 msgid "Minutes"
 msgstr "Protokolas"
 
+#: includes/Import/CsvImporter.php:69
+msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
+msgstr "Posėdžio antraštė. Jei paliksite tuščią, bus sugeneruota automatiškai pagal datą (pvz., „Valdybos posėdis – 2025 m. kovo 15 d.“)."
+
+#: includes/Import/CsvImporter.php:73
+msgid "Format: YYYY-MM-DD"
+msgstr "Formatas: YYYY-MM-DD"
+
+#: includes/Import/CsvImporter.php:77
+msgid "Full URL to agenda file"
+msgstr "Pilnas darbotvarkės failo URL"
+
+#: includes/Import/CsvImporter.php:81
+msgid "Full URL to minutes file"
+msgstr "Pilnas protokolo failo URL"
+
+#: includes/Import/CsvImporter.php:85
+msgid "yes / 1 / true"
+msgstr "taip / 1 / true"
+
+#: includes/Import/CsvImporter.php:89
+msgid "Any recognizable date or date/time (e.g. 2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
+msgstr "Bet kokia atpažįstama data arba data ir laikas (pvz., 2024-03-15, 2024-03-15 14:30:00 arba 2024-03-15T14:30:00-05:00). Nustato faktinę „WordPress“ paskelbimo datą, o ne importavimo momentą – naudokite tai istoriniams posėdžiams datuoti atgaline data. Tai neturi įtakos aukščiau nurodytai posėdžio datai ar rūšiavimo tvarkai."
+
+#: includes/Import/CsvImporter.php:126
+#: partials/csv-import-page.php:85
+msgid "Import"
+msgstr "Importuoti"
+
+#: includes/Import/CsvImporter.php:151
+msgid "Security check failed."
+msgstr "Saugos patikra nepavyko."
+
+#: includes/Import/CsvImporter.php:155
+msgid "Insufficient permissions."
+msgstr "Nepakankamos teisės."
+
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
 msgid "Board Meetings"
@@ -393,6 +430,56 @@ msgstr "Protokolo nuorodos etiketė"
 #: partials/block-editor-preview.php:55
 msgid "No published meetings found."
 msgstr "Paskelbtų posėdžių nerasta."
+
+#. translators: 1: number imported, 2: number skipped
+#: partials/csv-import-page.php:23
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Importavimas baigtas. Importuota eilučių: %1$d, praleista: %2$d."
+
+#: partials/csv-import-page.php:37
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Failas nebuvo įkeltas. Pasirinkite CSV failą ir bandykite dar kartą."
+
+#: partials/csv-import-page.php:38
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Netinkamas failo tipas. Įkelkite .csv failą."
+
+#: partials/csv-import-page.php:41
+msgid "An unknown error occurred."
+msgstr "Įvyko nežinoma klaida."
+
+#: partials/csv-import-page.php:48
+msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
+msgstr "Įkelkite CSV failą, kad galėtumėte masiškai importuoti posėdžius. Pirmoji eilutė turi būti antraštės eilutė."
+
+#: partials/csv-import-page.php:50
+msgid "CSV Format"
+msgstr "CSV formatas"
+
+#: partials/csv-import-page.php:54
+msgid "Column"
+msgstr "Stulpelis"
+
+#: partials/csv-import-page.php:55
+msgid "Required"
+msgstr "Privaloma"
+
+#: partials/csv-import-page.php:56
+msgid "Notes"
+msgstr "Pastabos"
+
+#: partials/csv-import-page.php:63
+msgid "Yes"
+msgstr "Taip"
+
+#: partials/csv-import-page.php:63
+msgid "No"
+msgstr "Ne"
+
+#: partials/csv-import-page.php:77
+msgid "CSV File"
+msgstr "CSV failas"
 
 #: partials/meta-box.php:23
 msgid "Meeting Date"
