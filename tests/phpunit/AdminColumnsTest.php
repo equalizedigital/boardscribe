@@ -155,8 +155,33 @@ class AdminColumnsTest extends TestCase {
 	}
 
 	/**
+	 * Runs $callback with $query installed as the actual global WordPress
+	 * main query, restoring the previous global afterward.
+	 *
+	 * WP_Query::is_main_query() compares the instance against the global
+	 * $wp_the_query by identity - assigning an is_main_query property has
+	 * no effect on it, so tests that need is_main_query() to return true
+	 * must swap the global itself.
+	 *
+	 * @param \WP_Query $query    The query to install as the main query.
+	 * @param callable  $callback Receives no arguments; runs with the global installed.
+	 * @return void
+	 */
+	private function as_main_query( \WP_Query $query, callable $callback ): void {
+		$previous_wp_the_query   = $GLOBALS['wp_the_query'] ?? null;
+		$GLOBALS['wp_the_query'] = $query;
+
+		try {
+			$callback();
+		} finally {
+			$GLOBALS['wp_the_query'] = $previous_wp_the_query;
+		}
+	}
+
+	/**
 	 * Sorting a main edbs_meeting admin query by "edbs_meeting_date"
-	 * rewrites it to order by the raw meta value.
+	 * rewrites it to order by an EXISTS/NOT EXISTS meta_query rather than
+	 * a plain meta_key, so undated meetings aren't inner-joined out.
 	 */
 	public function test_sort_by_meeting_date_rewrites_matching_query(): void {
 		set_current_screen( 'edit-edbs_meeting' );
@@ -164,12 +189,22 @@ class AdminColumnsTest extends TestCase {
 		$query = new WP_Query();
 		$query->set( 'post_type', 'edbs_meeting' );
 		$query->set( 'orderby', 'edbs_meeting_date' );
-		$query->is_main_query = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- WP_Query's own property.
+		$query->set( 'order', 'ASC' );
 
-		$this->admin_columns->sort_by_meeting_date( $query );
+		$this->as_main_query(
+			$query,
+			function () use ( $query ) {
+				$this->admin_columns->sort_by_meeting_date( $query );
+			}
+		);
 
-		$this->assertSame( 'edbs_meeting_date', $query->get( 'meta_key' ) );
-		$this->assertSame( 'meta_value', $query->get( 'orderby' ) );
+		$meta_query = $query->get( 'meta_query' );
+		$this->assertSame( 'OR', $meta_query['relation'] );
+		$this->assertSame( 'edbs_meeting_date', $meta_query['meeting_date_clause']['key'] );
+		$this->assertSame( 'EXISTS', $meta_query['meeting_date_clause']['compare'] );
+		$this->assertSame( 'edbs_meeting_date', $meta_query[1]['key'] );
+		$this->assertSame( 'NOT EXISTS', $meta_query[1]['compare'] );
+		$this->assertSame( [ 'meeting_date_clause' => 'ASC' ], $query->get( 'orderby' ) );
 	}
 
 	/**
@@ -177,15 +212,53 @@ class AdminColumnsTest extends TestCase {
 	 * untouched.
 	 */
 	public function test_sort_by_meeting_date_ignores_unrelated_query(): void {
+		set_current_screen( 'edit-edbs_meeting' );
+
 		$query = new WP_Query();
 		$query->set( 'post_type', 'post' );
 		$query->set( 'orderby', 'edbs_meeting_date' );
-		$query->is_main_query = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- WP_Query's own property.
 
-		$this->admin_columns->sort_by_meeting_date( $query );
+		$this->as_main_query(
+			$query,
+			function () use ( $query ) {
+				$this->admin_columns->sort_by_meeting_date( $query );
+			}
+		);
 
-		$this->assertSame( '', $query->get( 'meta_key' ) );
+		$this->assertSame( '', $query->get( 'meta_query' ) );
 		$this->assertSame( 'edbs_meeting_date', $query->get( 'orderby' ) );
+	}
+
+	/**
+	 * Regression coverage for the INNER JOIN pitfall: a meeting with no
+	 * edbs_meeting_date meta at all must still appear in the admin list
+	 * when it's sorted by Meeting Date, not just when it's unsorted.
+	 */
+	public function test_sort_by_meeting_date_keeps_undated_meetings(): void {
+		set_current_screen( 'edit-edbs_meeting' );
+
+		$dated_id   = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $dated_id, 'edbs_meeting_date', '2024-03-15' );
+		$undated_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+
+		$query = new WP_Query();
+
+		$this->as_main_query(
+			$query,
+			function () use ( $query ) {
+				$query->query(
+					[
+						'post_type' => 'edbs_meeting',
+						'orderby'   => 'edbs_meeting_date',
+						'order'     => 'DESC',
+						'fields'    => 'ids',
+					]
+				);
+			}
+		);
+
+		$this->assertContains( $dated_id, $query->posts );
+		$this->assertContains( $undated_id, $query->posts );
 	}
 
 	/**

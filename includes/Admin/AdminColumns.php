@@ -256,7 +256,24 @@ class AdminColumns {
 			return;
 		}
 
-		$query->set( 'meta_key', 'edbs_meeting_date' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to sort by meeting date.
-		$query->set( 'orderby', 'meta_value' );
+		// A plain meta_key + orderby=meta_value pairing inner-joins postmeta,
+		// which would silently drop meetings that have never had a date set
+		// from the list entirely. Querying EXISTS/NOT EXISTS instead keeps
+		// them in the results, sorted after (or before) the dated ones.
+		$query->set(
+			'meta_query', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to sort by meeting date while keeping undated meetings in the list.
+			[
+				'relation'            => 'OR',
+				'meeting_date_clause' => [
+					'key'     => 'edbs_meeting_date',
+					'compare' => 'EXISTS',
+				],
+				[
+					'key'     => 'edbs_meeting_date',
+					'compare' => 'NOT EXISTS',
+				],
+			]
+		);
+		$query->set( 'orderby', [ 'meeting_date_clause' => $query->get( 'order' ) ? $query->get( 'order' ) : 'DESC' ] );
 	}
 }
