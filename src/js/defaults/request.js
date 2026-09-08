@@ -13,21 +13,34 @@ import { apiBaseUrl } from '../config';
  * URL/URLSearchParams merges onto whatever's already there instead of
  * assuming either form.
  *
+ * Query params are driven entirely by edbsConfig.restArgMap (see
+ * FieldRegistry::rest_arg_map()) rather than a hardcoded field list, so
+ * a field any plugin (free or Pro, e.g. Pro's `category`) marks rest_arg
+ * forwards here with no edit to this file. Falls back to the free
+ * plugin's own core rest_arg fields when restArgMap wasn't localized at
+ * all (e.g. a unit test stubbing window.edbsConfig) - a Pro-only field
+ * like `category` is simply absent from instanceCfg in that case too.
+ *
  * @param {Object} instanceCfg - The per-instance configuration.
  * @param {number} page        - The 1-based page number to request.
  * @return {string} The URL to fetch.
  */
 export function defaultBuildRequestUrl( instanceCfg, page ) {
 	const url = new URL( apiBaseUrl, window.location.origin );
-	url.searchParams.set( 'included_years', instanceCfg.includedYears || '' );
-	url.searchParams.set( 'start_date', instanceCfg.startDate || '' );
-	url.searchParams.set( 'end_date', instanceCfg.endDate || '' );
-	url.searchParams.set( 'held_date_format', instanceCfg.heldDateFormat || 'l, F j, Y' );
-	url.searchParams.set( 'not_held_date_format', instanceCfg.notHeldDateFormat || 'F Y' );
-	url.searchParams.set( 'posts_per_page', instanceCfg.postsPerPage || 20 );
-	url.searchParams.set( 'agenda_link_label', instanceCfg.agendaLinkLabel || '' );
-	url.searchParams.set( 'minutes_link_label', instanceCfg.minutesLinkLabel || '' );
-	url.searchParams.set( 'category', instanceCfg.category || '' );
+	const restArgMap = ( window.edbsConfig && window.edbsConfig.restArgMap ) || [
+		{ key: 'included_years', configKey: 'includedYears' },
+		{ key: 'start_date', configKey: 'startDate' },
+		{ key: 'end_date', configKey: 'endDate' },
+		{ key: 'held_date_format', configKey: 'heldDateFormat' },
+		{ key: 'not_held_date_format', configKey: 'notHeldDateFormat' },
+		{ key: 'posts_per_page', configKey: 'postsPerPage' },
+		{ key: 'agenda_link_label', configKey: 'agendaLinkLabel' },
+		{ key: 'minutes_link_label', configKey: 'minutesLinkLabel' },
+	];
+
+	restArgMap.forEach( function( field ) {
+		url.searchParams.set( field.key, instanceCfg[ field.configKey ] ?? '' );
+	} );
 	url.searchParams.set( 'page', page );
 	return url.toString();
 }
