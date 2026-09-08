@@ -28,6 +28,7 @@ export function defaultBuildRequestUrl( instanceCfg, page ) {
 	url.searchParams.set( 'agenda_link_label', instanceCfg.agendaLinkLabel || '' );
 	url.searchParams.set( 'minutes_link_label', instanceCfg.minutesLinkLabel || '' );
 	url.searchParams.set( 'category', instanceCfg.category || '' );
+	url.searchParams.set( 'order', instanceCfg.order || '' );
 	url.searchParams.set( 'page', page );
 	return url.toString();
 }
