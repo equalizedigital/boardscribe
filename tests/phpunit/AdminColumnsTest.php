@@ -202,8 +202,8 @@ class AdminColumnsTest extends TestCase {
 		$this->assertSame( 'OR', $meta_query['relation'] );
 		$this->assertSame( 'edbs_meeting_date', $meta_query['meeting_date_clause']['key'] );
 		$this->assertSame( 'EXISTS', $meta_query['meeting_date_clause']['compare'] );
-		$this->assertSame( 'edbs_meeting_date', $meta_query[1]['key'] );
-		$this->assertSame( 'NOT EXISTS', $meta_query[1]['compare'] );
+		$this->assertSame( 'edbs_meeting_date', $meta_query[0]['key'] );
+		$this->assertSame( 'NOT EXISTS', $meta_query[0]['compare'] );
 		$this->assertSame( [ 'meeting_date_clause' => 'ASC' ], $query->get( 'orderby' ) );
 	}
 
