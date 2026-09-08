@@ -20,6 +20,7 @@ use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
 use EqualizeDigital\BoardScribe\Shortcode\MeetingDateScope;
+use EqualizeDigital\BoardScribe\Shortcode\MeetingSort;
 
 /**
  * Singleton plugin bootstrap. Wires all components together.
@@ -109,6 +110,7 @@ class Plugin {
 		( new BoardScribeBlock() )->register();
 		( new CsvImporter() )->register();
 		( new MeetingDateScope() )->register();
+		( new MeetingSort() )->register();
 
 		add_filter(
 			'edac_fix_file_size_and_type_additional_filters',
