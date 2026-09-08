@@ -19,6 +19,7 @@ use EqualizeDigital\BoardScribe\PostType\BoardScribeCPT;
 use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\MeetingDateScope;
 use EqualizeDigital\BoardScribe\Shortcode\MeetingSort;
 
 /**
@@ -108,6 +109,7 @@ class Plugin {
 		( new BoardScribeShortcode() )->register();
 		( new BoardScribeBlock() )->register();
 		( new CsvImporter() )->register();
+		( new MeetingDateScope() )->register();
 		( new MeetingSort() )->register();
 
 		add_filter(
