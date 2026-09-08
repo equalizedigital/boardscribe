@@ -336,8 +336,12 @@ class BoardScribeBlock {
 		 */
 		$fake_request = new \WP_REST_Request();
 		foreach ( FieldRegistry::rest_arg_map() as $field ) {
-			if ( array_key_exists( $field['configKey'], $attributes ) ) {
-				$fake_request->set_param( $field['key'], $attributes[ $field['configKey'] ] );
+			// $attributes is the block's attribute array, keyed by each
+			// field's block_attribute_key (see build_block_attributes()
+			// above) - not its configKey, which can differ (e.g. class's
+			// tableClass config key vs. className attribute key).
+			if ( array_key_exists( $field['attributeKey'], $attributes ) ) {
+				$fake_request->set_param( $field['key'], $attributes[ $field['attributeKey'] ] );
 			}
 		}
 		$query_args = apply_filters( 'edbs_rest_query_args', $query_args, $fake_request );

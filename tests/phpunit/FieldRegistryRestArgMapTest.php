@@ -77,6 +77,38 @@ class FieldRegistryRestArgMapTest extends TestCase {
 	}
 
 	/**
+	 * A rest_arg field whose block_attribute_key differs from its
+	 * config_key (the class/className/tableClass shape, but on a
+	 * rest_arg field this time) resolves both independently - the block
+	 * editor preview looks fields up by attributeKey (since $attributes
+	 * is the block's attribute array), while request.js looks them up by
+	 * configKey (since instance config uses that key instead). Using the
+	 * wrong one for either consumer would silently drop the field.
+	 */
+	public function test_diverging_config_and_attribute_keys_both_resolve(): void {
+		$this->callback = static function ( array $fields ) {
+			$fields[] = [
+				'key'                 => 'edbs_test_diverging_field',
+				'type'                => 'text',
+				'group'               => 'general',
+				'label'               => 'Diverging keys',
+				'default'             => '',
+				'rest_arg'            => true,
+				'config_key'          => 'divergingConfigKey',
+				'block_attribute_key' => 'divergingAttributeKey',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
+
+		$by_key = array_column( FieldRegistry::rest_arg_map(), null, 'key' );
+		$field  = $by_key['edbs_test_diverging_field'];
+
+		$this->assertSame( 'divergingConfigKey', $field['configKey'] );
+		$this->assertSame( 'divergingAttributeKey', $field['attributeKey'] );
+	}
+
+	/**
 	 * A filtered field that omits rest_arg (or sets it falsy) is excluded,
 	 * same as a core field with no rest_arg key.
 	 */
