@@ -305,6 +305,40 @@ class FieldRegistry {
 	}
 
 	/**
+	 * Returns {key, configKey} pairs for every field marked rest_arg
+	 * (see add_core_fields()'s docblock) - the REST query-param name and
+	 * its matching camelCase instance-config/block-attribute key.
+	 *
+	 * Single source of truth for "which fields does the endpoint accept,
+	 * and what's each one called on the JS side" - consumed by the
+	 * front-end request builder (so any field a plugin marks rest_arg
+	 * forwards to the endpoint with no request.js edit needed) and the
+	 * block editor's preview (so it can build a matching fake REST
+	 * request for the edbs_rest_query_args filter instead of only
+	 * hardcoding the free plugin's own query logic).
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<int, array{key: string, configKey: string}>
+	 */
+	public static function rest_arg_map(): array {
+		$map = [];
+
+		foreach ( self::all() as $field ) {
+			if ( empty( $field['rest_arg'] ) ) {
+				continue;
+			}
+
+			$map[] = [
+				'key'       => $field['key'],
+				'configKey' => self::config_key( $field ),
+			];
+		}
+
+		return $map;
+	}
+
+	/**
 	 * Projects the merged field registry into a JSON-safe shape for JS
 	 * consumers (the block editor's InspectorControls and the shortcode
 	 * builder app) - drops PHP-only keys (sanitize_callback/
