@@ -104,15 +104,16 @@ class BoardScribeEndpoint {
 	 * @return \WP_REST_Response
 	 */
 	public function get_meetings( \WP_REST_Request $request ): \WP_REST_Response {
-		$page                 = $request->get_param( 'page' );
-		$posts_per_page       = $request->get_param( 'posts_per_page' );
-		$held_date_format     = $request->get_param( 'held_date_format' );
-		$not_held_date_format = $request->get_param( 'not_held_date_format' );
-		$included_years       = $request->get_param( 'included_years' );
-		$start_date           = $request->get_param( 'start_date' );
-		$end_date             = $request->get_param( 'end_date' );
-		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
-		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
+		$page                  = $request->get_param( 'page' );
+		$posts_per_page        = $request->get_param( 'posts_per_page' );
+		$held_date_format      = $request->get_param( 'held_date_format' );
+		$not_held_date_format  = $request->get_param( 'not_held_date_format' );
+		$included_years        = $request->get_param( 'included_years' );
+		$start_date            = $request->get_param( 'start_date' );
+		$end_date              = $request->get_param( 'end_date' );
+		$agenda_link_label     = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
+		$minutes_link_label    = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
+		$open_links_new_window = $request->get_param( 'open_links_new_window' );
 
 		$posts_per_page = (int) $posts_per_page;
 
@@ -225,10 +226,11 @@ class BoardScribeEndpoint {
 				$meetings[] = $this->build_meeting_row(
 					get_the_ID(),
 					[
-						'held_date_format'     => $held_date_format,
-						'not_held_date_format' => $not_held_date_format,
-						'agenda_link_label'    => $agenda_link_label,
-						'minutes_link_label'   => $minutes_link_label,
+						'held_date_format'      => $held_date_format,
+						'not_held_date_format'  => $not_held_date_format,
+						'agenda_link_label'     => $agenda_link_label,
+						'minutes_link_label'    => $minutes_link_label,
+						'open_links_new_window' => $open_links_new_window,
 					],
 					$request
 				);
@@ -271,10 +273,11 @@ class BoardScribeEndpoint {
 	 * @param array                 $format_args {
 	 *    Formatting options.
 	 *
-	 *     @type string $held_date_format     PHP date() format for held meetings.
-	 *     @type string $not_held_date_format PHP date() format for not-held meetings.
-	 *     @type string $agenda_link_label    Link text for the agenda link.
-	 *     @type string $minutes_link_label   Link text for the minutes link.
+	 *     @type string $held_date_format      PHP date() format for held meetings.
+	 *     @type string $not_held_date_format  PHP date() format for not-held meetings.
+	 *     @type string $agenda_link_label     Link text for the agenda link.
+	 *     @type string $minutes_link_label    Link text for the minutes link.
+	 *     @type bool   $open_links_new_window Whether the agenda/minutes links open in a new window.
 	 * }
 	 * @param \WP_REST_Request|null $request     The originating REST request, if any.
 	 * @return array
@@ -317,31 +320,19 @@ class BoardScribeEndpoint {
 		$filtered_date  = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
 		$formatted_date = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
 
+		$open_links_new_window = ! empty( $format_args['open_links_new_window'] );
+
 		$agenda_item = $agenda_url
 			? apply_filters(
 				'edbs_agenda_link',
-				'<a href="' . esc_url( $agenda_url ) . '" aria-label="' . esc_attr(
-					sprintf(
-					/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-						__( '%1$s for %2$s', 'boardscribe' ),
-						$agenda_link_label,
-						wp_strip_all_tags( $formatted_date )
-					)
-				) . '">' . esc_html( $agenda_link_label ) . '</a>'
+				self::build_link( $agenda_url, $agenda_link_label, $formatted_date, $open_links_new_window )
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'boardscribe' ) . '</span>';
 
 		$minutes_item = $minutes_url
 			? apply_filters(
 				'edbs_minutes_link',
-				'<a href="' . esc_url( $minutes_url ) . '" aria-label="' . esc_attr(
-					sprintf(
-					/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
-						__( '%1$s for %2$s', 'boardscribe' ),
-						$minutes_link_label,
-						wp_strip_all_tags( $formatted_date )
-					)
-				) . '">' . esc_html( $minutes_link_label ) . '</a>'
+				self::build_link( $minutes_url, $minutes_link_label, $formatted_date, $open_links_new_window )
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'boardscribe' ) . '</span>';
 
@@ -363,6 +354,32 @@ class BoardScribeEndpoint {
 		 * @param \WP_REST_Request|null $request  The REST request, if any.
 		 */
 		return apply_filters( 'edbs_meeting_row_data', $row, $post_id, $request );
+	}
+
+	/**
+	 * Builds one agenda/minutes anchor tag. When $new_window is true, adds
+	 * target="_blank" and an aria-label suffix warning screen reader users
+	 * before they activate it, per WCAG 3.2.2 / Technique H83 — accessibility-checker's
+	 * own link_blank rule flags target="_blank" without this warning.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $url            The agenda/minutes URL.
+	 * @param string $label          Visible link text.
+	 * @param string $formatted_date Escaped, formatted meeting date (used in the aria-label).
+	 * @param bool   $new_window     Whether to open the link in a new window/tab.
+	 * @return string
+	 */
+	private static function build_link( string $url, string $label, string $formatted_date, bool $new_window ): string {
+		$aria_label = $new_window
+			/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
+			? sprintf( __( '%1$s for %2$s (opens in a new window)', 'boardscribe' ), $label, wp_strip_all_tags( $formatted_date ) )
+			/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
+			: sprintf( __( '%1$s for %2$s', 'boardscribe' ), $label, wp_strip_all_tags( $formatted_date ) );
+
+		return '<a href="' . esc_url( $url ) . '"'
+			. ( $new_window ? ' target="_blank" rel="noopener noreferrer"' : '' )
+			. ' aria-label="' . esc_attr( $aria_label ) . '">' . esc_html( $label ) . '</a>';
 	}
 
 	/**

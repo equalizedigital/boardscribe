@@ -350,10 +350,11 @@ class BoardScribeBlock {
 
 		$endpoint    = new BoardScribeEndpoint();
 		$format_args = [
-			'held_date_format'     => $attributes['heldDateFormat'] ?? 'l, F j, Y',
-			'not_held_date_format' => $attributes['notHeldDateFormat'] ?? 'F Y',
-			'agenda_link_label'    => $attributes['agendaLinkLabel'] ?? '',
-			'minutes_link_label'   => $attributes['minutesLinkLabel'] ?? '',
+			'held_date_format'      => $attributes['heldDateFormat'] ?? 'l, F j, Y',
+			'not_held_date_format'  => $attributes['notHeldDateFormat'] ?? 'F Y',
+			'agenda_link_label'     => $attributes['agendaLinkLabel'] ?? '',
+			'minutes_link_label'    => $attributes['minutesLinkLabel'] ?? '',
+			'open_links_new_window' => filter_var( $attributes['openLinksNewWindow'] ?? false, FILTER_VALIDATE_BOOLEAN ),
 		];
 
 		$rows = array_map(
