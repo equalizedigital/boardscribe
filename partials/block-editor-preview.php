@@ -18,43 +18,45 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
-<table
-	class="edbs-boardscribe-table widefat"
-	style="border-collapse:collapse;<?php echo $equal_columns ? ' table-layout:fixed;' : ''; ?>"
->
-	<thead>
-		<tr>
-			<?php foreach ( $visible_columns as $edbs_column ) : ?>
-				<th scope="col" style="padding:8px 12px; text-align:left;"><?php echo esc_html( $edbs_column['label'] ?? '' ); ?></th>
-			<?php endforeach; ?>
-		</tr>
-	</thead>
-	<tbody>
-		<?php if ( $rows ) : ?>
-			<?php foreach ( $rows as $edbs_entry ) : ?>
-				<tr style="border-top:1px solid #ddd;">
-					<?php foreach ( $visible_columns as $edbs_column ) : ?>
-						<td style="padding:8px 12px;">
-							<?php
-							// render_cell() output is pre-escaped HTML by documented
-							// contract (see the edbs_block_preview_columns filter) -
-							// the same trust contract as the front end's
-							// window.edbsExtraColumns renderCell().
-							echo call_user_func( $edbs_column['render_cell'], $edbs_entry['row'], $edbs_entry['post'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							?>
-						</td>
-					<?php endforeach; ?>
-				</tr>
-			<?php endforeach; ?>
-		<?php else : ?>
+<div style="overflow-x:auto;">
+	<table
+		class="edbs-boardscribe-table widefat"
+		style="border-collapse:collapse;<?php echo $equal_columns ? ' table-layout:fixed;' : ''; ?>"
+	>
+		<thead>
 			<tr>
-				<td
-					colspan="<?php echo esc_attr( count( $visible_columns ) ); ?>"
-					style="padding:16px 12px; color:#757575; font-style:italic;"
-				>
-					<?php esc_html_e( 'No published meetings found.', 'boardscribe' ); ?>
-				</td>
+				<?php foreach ( $visible_columns as $edbs_column ) : ?>
+					<th scope="col" style="padding:8px 12px; text-align:left;"><?php echo esc_html( $edbs_column['label'] ?? '' ); ?></th>
+				<?php endforeach; ?>
 			</tr>
-		<?php endif; ?>
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			<?php if ( $rows ) : ?>
+				<?php foreach ( $rows as $edbs_entry ) : ?>
+					<tr style="border-top:1px solid #ddd;">
+						<?php foreach ( $visible_columns as $edbs_column ) : ?>
+							<td style="padding:8px 12px;">
+								<?php
+								// render_cell() output is pre-escaped HTML by documented
+								// contract (see the edbs_block_preview_columns filter) -
+								// the same trust contract as the front end's
+								// window.edbsExtraColumns renderCell().
+								echo call_user_func( $edbs_column['render_cell'], $edbs_entry['row'], $edbs_entry['post'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								?>
+							</td>
+						<?php endforeach; ?>
+					</tr>
+				<?php endforeach; ?>
+			<?php else : ?>
+				<tr>
+					<td
+						colspan="<?php echo esc_attr( count( $visible_columns ) ); ?>"
+						style="padding:16px 12px; color:#757575; font-style:italic;"
+					>
+						<?php esc_html_e( 'No published meetings found.', 'boardscribe' ); ?>
+					</td>
+				</tr>
+			<?php endif; ?>
+		</tbody>
+	</table>
+</div>
