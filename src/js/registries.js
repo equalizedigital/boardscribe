@@ -60,6 +60,30 @@ window.edbsExtraColumns = window.edbsExtraColumns || [];
 // same column-building logic - it already reads instanceCfg.resolvedTemplate
 // itself, so the returned table carries the calling template's own
 // edbs-template-<name> class.
+//
+// window.edbsResolveColumns( instanceCfg ) is the layer beneath that, for a
+// template whose output isn't a table at all (a stacked list, cards, a
+// calendar). It returns the visible columns in render order - the same
+// order, label resolution, hide* handling and window.edbsExtraColumns
+// support edbsBuildTable() uses, since edbsBuildTable() is built on it -
+// leaving the markup entirely to the caller. Each entry:
+//   key         - 'title' | 'date' | 'agenda' | 'minutes', or the extra
+//                 column's own key.
+//   label       - The label as plain text, for attribute and text contexts.
+//                 Escape it at the insertion point.
+//   labelHtml   - The label as header HTML, ready to insert unescaped -
+//                 already escaped for core columns, and the registrant's
+//                 own raw header HTML for extra columns (see the
+//                 edbsExtraColumns contract above).
+//   isRowHeader - True for the one column that identifies the row (the
+//                 title, or the date when the title is hidden; no entry
+//                 carries it when both are hidden). A non-table template
+//                 should give this column whatever prominence its own
+//                 semantics call for - a heading, say - rather than
+//                 reproducing role="rowheader".
+//   render      - function( meeting ) → cell HTML, inserted as raw
+//                 pre-escaped HTML on the same contract as everything else
+//                 here.
 window.edbsTemplates = window.edbsTemplates || {};
 
 // Lifecycle events. Each instance (instance.js) dispatches namespaced,
