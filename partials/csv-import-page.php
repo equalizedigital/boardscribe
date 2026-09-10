@@ -72,7 +72,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<input type="hidden" name="action" value="edbs_csv_import" />
 		<div class="edbs-import__upload-header">
 			<h2 id="edbs-import-heading" class="edbs-import__upload-title"><?php esc_html_e( 'Upload CSV', 'boardscribe' ); ?></h2>
-			<p class="edbs-import__upload-description"><?php esc_html_e( 'Choose a file using the columns above. The first row must be a header row, and each row after it creates one meeting.', 'boardscribe' ); ?></p>
+			<p class="edbs-import__upload-description"><?php esc_html_e( 'Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting.', 'boardscribe' ); ?></p>
 		</div>
 		<div class="edbs-import__file-upload">
 			<label for="edbs_csv" class="edbs-import__file-label"><?php esc_html_e( 'CSV file', 'boardscribe' ); ?></label>
