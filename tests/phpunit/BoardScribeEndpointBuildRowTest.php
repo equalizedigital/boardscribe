@@ -210,6 +210,51 @@ class BoardScribeEndpointBuildRowTest extends TestCase {
 	}
 
 	/**
+	 * With open_links_new_window unset (default), agenda/minutes links
+	 * have no target attribute.
+	 */
+	public function test_links_do_not_open_new_window_by_default(): void {
+		$post_id = $this->create_meeting(
+			[
+				'edbs_meeting_date' => '2024-03-15',
+				'edbs_agenda_url'   => 'https://example.com/agenda.pdf',
+			]
+		);
+
+		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
+
+		$this->assertStringNotContainsString( 'target="_blank"', $row['agenda'] );
+	}
+
+	/**
+	 * With open_links_new_window enabled, agenda/minutes links get
+	 * target="_blank", rel="noopener noreferrer", and an aria-label
+	 * warning screen reader users before they activate the link.
+	 */
+	public function test_links_open_new_window_when_enabled(): void {
+		$post_id = $this->create_meeting(
+			[
+				'edbs_meeting_date' => '2024-03-15',
+				'edbs_agenda_url'   => 'https://example.com/agenda.pdf',
+				'edbs_minutes_url'  => 'https://example.com/minutes.pdf',
+			]
+		);
+
+		$row = $this->endpoint->build_meeting_row(
+			$post_id,
+			array_merge( $this->default_format_args, [ 'open_links_new_window' => true ] )
+		);
+
+		$this->assertStringContainsString( 'target="_blank"', $row['agenda'] );
+		$this->assertStringContainsString( 'rel="noopener noreferrer"', $row['agenda'] );
+		$this->assertStringContainsString( 'opens in a new window', $row['agenda'] );
+
+		$this->assertStringContainsString( 'target="_blank"', $row['minutes'] );
+		$this->assertStringContainsString( 'rel="noopener noreferrer"', $row['minutes'] );
+		$this->assertStringContainsString( 'opens in a new window', $row['minutes'] );
+	}
+
+	/**
 	 * Calling build_meeting_row() with no $request (e.g. from a future
 	 * non-REST caller like a CSV export) does not throw.
 	 */
