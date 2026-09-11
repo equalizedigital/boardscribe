@@ -1,6 +1,6 @@
 import { escapeAttribute } from '@wordpress/escape-html';
 import './registries';
-import { tableTemplate, buildTableHtml } from './templates/table';
+import { tableTemplate, buildTableHtml, resolveColumns } from './templates/table';
 import { initInstance } from './instance';
 
 // Exposed so add-on templates/columns can reuse the same vetted escaping
@@ -19,6 +19,13 @@ window.edbsEscapeAttr = function( value ) {
 // "table" template) for however it lays out multiple tables/sections,
 // instead of re-implementing that column-building logic itself.
 window.edbsBuildTable = buildTableHtml;
+
+// Exposed so an add-on template that renders something other than a table
+// can resolve the same column set (order, labels, hide toggles,
+// window.edbsExtraColumns, which column is the row header) and lay it out
+// its own way, instead of re-implementing that logic. See resolveColumns()
+// in templates/table.js for the entry shape.
+window.edbsResolveColumns = resolveColumns;
 
 window.edbsTemplates.table = window.edbsTemplates.table || tableTemplate;
 
