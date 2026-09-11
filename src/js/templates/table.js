@@ -3,6 +3,42 @@ import { __ } from '@wordpress/i18n';
 import { i18n } from '../config';
 
 /**
+ * Reusable inert parser for htmlToText() below - a <template>'s content is
+ * an inert document fragment, so nothing in it loads, runs, or renders.
+ *
+ * @type {HTMLTemplateElement|null}
+ */
+let textParser = null;
+
+/**
+ * Renders an HTML string down to its text, for the text contexts a label
+ * ends up in (the table's data-label attribute, a list template's <dt>).
+ * Extra-column labels are raw header HTML by documented contract, so
+ * inserting one into a text context unescaped would be an injection and
+ * escaping it would print the tags - neither is what the registrant meant
+ * by a column header.
+ *
+ * Returns the input unchanged when there is no DOM to parse with, and for
+ * any string with no markup in it - which is every column Pro ships.
+ *
+ * @param {string} html - The label's header HTML.
+ * @return {string} The label as plain text.
+ */
+function htmlToText( html ) {
+	if ( ! html || ! /[&<>]/.test( html ) ) {
+		return html;
+	}
+	if ( typeof document === 'undefined' ) {
+		return html;
+	}
+	if ( ! textParser ) {
+		textParser = document.createElement( 'template' );
+	}
+	textParser.innerHTML = html;
+	return textParser.content.textContent || '';
+}
+
+/**
  * Resolves the column set for an instance: which columns are visible, in
  * what order, what each one is labelled, which one identifies the row, and
  * how to render a given meeting's value for it.
@@ -113,15 +149,22 @@ export function resolveColumns( instanceCfg ) {
 
 		// Deliberately NOT escaped: label/getLabel() are raw header HTML by
 		// documented contract - the registrant escapes.
-		const label = ( typeof col.getLabel === 'function' ? col.getLabel( cfg ) : col.label ) || '';
+		const labelHtml = ( typeof col.getLabel === 'function' ? col.getLabel( cfg ) : col.label ) || '';
 
 		columns.push( {
 			key: col.key,
-			label,
-			labelHtml: label,
+			// Text contexts need the label as text, so strip the markup an
+			// extra column is allowed to put in its header. Almost always a
+			// no-op - a registrant returning a plain string (every column
+			// Pro ships) gets it back unchanged.
+			label: htmlToText( labelHtml ),
+			labelHtml,
 			isRowHeader: false,
 			render( meeting ) {
-				if ( col.renderCell ) {
+				// Matches the typeof guards on hidden()/getLabel() above: a
+				// malformed registry entry should fall back to the row
+				// field, not throw and take the whole table/list down.
+				if ( typeof col.renderCell === 'function' ) {
 					return col.renderCell( meeting, cfg );
 				}
 				return ( meeting && meeting[ col.key ] ) || '';

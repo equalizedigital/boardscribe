@@ -70,7 +70,9 @@ window.edbsExtraColumns = window.edbsExtraColumns || [];
 //   key         - 'title' | 'date' | 'agenda' | 'minutes', or the extra
 //                 column's own key.
 //   label       - The label as plain text, for attribute and text contexts.
-//                 Escape it at the insertion point.
+//                 Escape it at the insertion point. An extra column whose
+//                 header is markup is rendered down to its text here, so
+//                 a text context shows "Where", not "<em>Where</em>".
 //   labelHtml   - The label as header HTML, ready to insert unescaped -
 //                 already escaped for core columns, and the registrant's
 //                 own raw header HTML for extra columns (see the
