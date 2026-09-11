@@ -76,7 +76,7 @@ describe( 'resolveColumns', () => {
 		expect( keys( { showLocation: true } ) ).toContain( 'location' );
 	} );
 
-	it( 'resolves an extra column label via getLabel() and keeps it as raw header HTML', () => {
+	it( 'resolves an extra column label via getLabel(), keeping the raw header HTML only in labelHtml', () => {
 		window.edbsExtraColumns = [
 			{ key: 'location', label: 'Location', getLabel: ( cfg ) => cfg.locationLabel || '<em>Where</em>' },
 		];
@@ -84,7 +84,25 @@ describe( 'resolveColumns', () => {
 		const [ location ] = resolveColumns( {} ).slice( -1 );
 
 		expect( location.labelHtml ).toBe( '<em>Where</em>' );
-		expect( location.label ).toBe( '<em>Where</em>' );
+		expect( location.label ).toBe( 'Where' );
+	} );
+
+	it( 'decodes entities in an extra column label for the plain-text form', () => {
+		window.edbsExtraColumns = [ { key: 'location', label: 'Board &amp; Council' } ];
+
+		const [ location ] = resolveColumns( {} ).slice( -1 );
+
+		expect( location.labelHtml ).toBe( 'Board &amp; Council' );
+		expect( location.label ).toBe( 'Board & Council' );
+	} );
+
+	it( 'leaves a plain extra column label untouched in both forms', () => {
+		window.edbsExtraColumns = [ { key: 'location', label: 'Location' } ];
+
+		const [ location ] = resolveColumns( {} ).slice( -1 );
+
+		expect( location.labelHtml ).toBe( 'Location' );
+		expect( location.label ).toBe( 'Location' );
 	} );
 
 	it( 'renders an extra column through renderCell(), passing the instance config', () => {
@@ -105,6 +123,15 @@ describe( 'resolveColumns', () => {
 
 		expect( location.render( MEETING ) ).toBe( 'City Hall, Room 2' );
 		expect( location.render( {} ) ).toBe( '' );
+	} );
+
+	it( 'falls back to the row field rather than throwing when renderCell is not a function', () => {
+		window.edbsExtraColumns = [ { key: 'location', label: 'Location', renderCell: 'not a function' } ];
+
+		const [ location ] = resolveColumns( {} ).slice( -1 );
+
+		expect( () => location.render( MEETING ) ).not.toThrow();
+		expect( location.render( MEETING ) ).toBe( 'City Hall, Room 2' );
 	} );
 
 	it( 'never marks an extra column as the row header', () => {
