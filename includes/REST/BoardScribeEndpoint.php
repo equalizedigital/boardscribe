@@ -403,6 +403,16 @@ class BoardScribeEndpoint {
 	 * Supports Y-m-d (native/ISO), Ymd (ACF default), d/m/Y and m/d/Y
 	 * to handle data previously stored by ACF with varying format settings.
 	 *
+	 * Each format's shape is checked with a strict regex before construction,
+	 * and its extracted day/month/year validated with checkdate(), rather
+	 * than handed straight to DateTime::createFromFormat(). That function is
+	 * lenient about out-of-range values within a format (e.g. month 15 rolls
+	 * over into the next year instead of failing), so trying d/m/Y before
+	 * m/d/Y could otherwise silently misdate an m/d/Y value with day > 12 -
+	 * e.g. "03/15/2023" (March 15) rolling over to 2024-03-03 under d/m/Y
+	 * before m/d/Y is ever tried. Validating first means only a format whose
+	 * components are genuinely in range is ever accepted.
+	 *
 	 * Public and static so Pro features that derive values from the raw
 	 * edbs_meeting_date meta (e.g. year grouping) parse the stored value
 	 * with the exact same format list as this endpoint, instead of
@@ -418,7 +428,27 @@ class BoardScribeEndpoint {
 			return null;
 		}
 
-		foreach ( [ 'Y-m-d', 'Ymd', 'd/m/Y', 'm/d/Y' ] as $format ) {
+		// [ format => [ regex, day group, month group, year group ] ].
+		// Groups are fixed-width to match what each format's picker actually
+		// stores (zero-padded day/month, 4-digit year) - not a general date
+		// parser, just enough to disambiguate this plugin's own legacy
+		// storage formats.
+		$formats = [
+			'Y-m-d' => [ '/^(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})$/', 'day', 'month', 'year' ],
+			'Ymd'   => [ '/^(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})$/', 'day', 'month', 'year' ],
+			'd/m/Y' => [ '/^(?<day>\d{2})\/(?<month>\d{2})\/(?<year>\d{4})$/', 'day', 'month', 'year' ],
+			'm/d/Y' => [ '/^(?<month>\d{2})\/(?<day>\d{2})\/(?<year>\d{4})$/', 'day', 'month', 'year' ],
+		];
+
+		foreach ( $formats as $format => [ $regex, $day_key, $month_key, $year_key ] ) {
+			if ( ! preg_match( $regex, $date_string, $matches ) ) {
+				continue;
+			}
+
+			if ( ! checkdate( (int) $matches[ $month_key ], (int) $matches[ $day_key ], (int) $matches[ $year_key ] ) ) {
+				continue;
+			}
+
 			$date = \DateTime::createFromFormat( $format, $date_string );
 			if ( false !== $date ) {
 				return $date;

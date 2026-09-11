@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use EqualizeDigital\BoardScribe\Admin\AdminColumns;
 use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use EqualizeDigital\BoardScribe\Admin\SettingsPage;
 use EqualizeDigital\BoardScribe\Block\BoardScribeBlock;
@@ -19,6 +20,8 @@ use EqualizeDigital\BoardScribe\PostType\BoardScribeCPT;
 use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\MeetingDateScope;
+use EqualizeDigital\BoardScribe\Shortcode\MeetingSort;
 
 /**
  * Singleton plugin bootstrap. Wires all components together.
@@ -102,11 +105,14 @@ class Plugin {
 		( new FieldRegistry() )->register();
 		( new BoardScribeCPT() )->register();
 		( new MetaBox() )->register();
+		( new AdminColumns() )->register();
 		( new SettingsPage() )->register();
 		( new BoardScribeEndpoint() )->register();
 		( new BoardScribeShortcode() )->register();
 		( new BoardScribeBlock() )->register();
 		( new CsvImporter() )->register();
+		( new MeetingDateScope() )->register();
+		( new MeetingSort() )->register();
 
 		add_filter(
 			'edac_fix_file_size_and_type_additional_filters',

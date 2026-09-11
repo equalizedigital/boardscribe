@@ -123,8 +123,12 @@ class BoardScribeShortcode {
 			'edbs-boardscribe',
 			'edbsConfig',
 			[
-				'apiUrl' => rest_url( 'edbs/v1/boardscribe/' ),
-				'i18n'   => [
+				'apiUrl'     => rest_url( 'edbs/v1/boardscribe/' ),
+				// Drives defaultBuildRequestUrl() so any field a plugin
+				// (free or Pro) marks rest_arg forwards to the endpoint
+				// automatically — see FieldRegistry::rest_arg_map().
+				'restArgMap' => FieldRegistry::rest_arg_map(),
+				'i18n'       => [
 					'colTitle'       => __( 'Title', 'boardscribe' ),
 					'colDate'        => __( 'Date', 'boardscribe' ),
 					'colAgenda'      => __( 'Agenda', 'boardscribe' ),

@@ -324,6 +324,28 @@ class BoardScribeBlock {
 			}
 		}
 
+		/**
+		 * Runs the same edbs_rest_query_args filter the real REST endpoint
+		 * applies (see BoardScribeEndpoint::get_meetings()), so a Pro/
+		 * third-party field with a query-arg mutator (e.g. an order or
+		 * taxonomy filter registered via edbs_shortcode_field_registry)
+		 * also affects this preview instead of only the real front end.
+		 * The fake request only carries rest_arg fields present in
+		 * $attributes — FieldRegistry::rest_arg_map() is the single
+		 * source of truth for which keys those are.
+		 */
+		$fake_request = new \WP_REST_Request();
+		foreach ( FieldRegistry::rest_arg_map() as $field ) {
+			// $attributes is the block's attribute array, keyed by each
+			// field's block_attribute_key (see build_block_attributes()
+			// above) - not its configKey, which can differ (e.g. class's
+			// tableClass config key vs. className attribute key).
+			if ( array_key_exists( $field['attributeKey'], $attributes ) ) {
+				$fake_request->set_param( $field['key'], $attributes[ $field['attributeKey'] ] );
+			}
+		}
+		$query_args = apply_filters( 'edbs_rest_query_args', $query_args, $fake_request );
+
 		$posts = get_posts( $query_args );
 
 		$endpoint    = new BoardScribeEndpoint();

@@ -45,10 +45,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php endif; ?>
 	<?php // phpcs:enable WordPress.Security.NonceVerification.Recommended ?>
 
-	<p><?php esc_html_e( 'Upload a CSV file to bulk-import meetings. The first row must be a header row.', 'boardscribe' ); ?></p>
+	<p><?php esc_html_e( 'Upload a CSV file to bulk-import meetings.', 'boardscribe' ); ?></p>
 
 	<h2><?php esc_html_e( 'CSV Format', 'boardscribe' ); ?></h2>
-	<table class="widefat striped" style="max-width:600px; margin-bottom:24px;">
+	<table class="widefat striped edbs-import__format-table">
 		<thead>
 			<tr>
 				<th><?php esc_html_e( 'Column', 'boardscribe' ); ?></th>
@@ -67,21 +67,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tbody>
 	</table>
 
-	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
+	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data" aria-labelledby="edbs-import-heading" class="edbs-import__upload">
 		<?php wp_nonce_field( 'edbs_csv_import', 'edbs_csv_import_nonce' ); ?>
 		<input type="hidden" name="action" value="edbs_csv_import" />
-		<table class="form-table" role="presentation">
-			<tbody>
-				<tr>
-					<th scope="row">
-						<label for="edbs_csv"><?php esc_html_e( 'CSV File', 'boardscribe' ); ?></label>
-					</th>
-					<td>
-						<input type="file" id="edbs_csv" name="edbs_csv" accept=".csv,text/csv" required />
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<?php submit_button( __( 'Import', 'boardscribe' ) ); ?>
+		<div class="edbs-import__upload-header">
+			<h2 id="edbs-import-heading" class="edbs-import__upload-title"><?php esc_html_e( 'Upload CSV', 'boardscribe' ); ?></h2>
+			<p class="edbs-import__upload-description"><?php esc_html_e( 'Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting.', 'boardscribe' ); ?></p>
+		</div>
+		<div class="edbs-import__file-upload">
+			<label for="edbs_csv" class="edbs-import__file-label"><?php esc_html_e( 'CSV file', 'boardscribe' ); ?></label>
+			<input type="file" id="edbs_csv" name="edbs_csv" accept=".csv,text/csv" required />
+		</div>
+		<div class="edbs-import__actions">
+			<?php submit_button( __( 'Import Meetings', 'boardscribe' ), 'primary', 'submit', false ); ?>
+		</div>
 	</form>
 </div>
