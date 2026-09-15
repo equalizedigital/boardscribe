@@ -186,6 +186,32 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * A field marked saved_externally is skipped by save_field() entirely —
+	 * the plugin owning it is expected to save it itself, typically on the
+	 * edbs_save_meeting_meta action that fires right after.
+	 */
+	public function test_saved_externally_field_is_not_auto_saved(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'              => 'pro_repeater',
+				'type'             => 'html',
+				'label'            => 'Pro Repeater',
+				'saved_externally' => true,
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_repeater'] = 'should-not-be-saved-by-the-generic-loop';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_repeater', true ) );
+	}
+
+	/**
 	 * The edbs_save_meeting_meta action fires after a successful save,
 	 * so Pro plugin can save its own additional meta in the same request.
 	 */
