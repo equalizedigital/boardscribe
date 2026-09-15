@@ -3,7 +3,7 @@ import { useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
-import { classifyResourceUrl } from './resource-utils';
+import { resolveResourceDisplay } from './resource-utils';
 
 /**
  * One row's reorder controls: a drag handle for mouse/touch users (plain
@@ -123,15 +123,19 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel } ) {
  * row directly; picking a Media Library file suggests the new row's
  * title from the attachment's own title (still freely editable after,
  * via each row's "Edit title") - see the modal's onSave below and
- * MediaLibrarySource's docblock in resource-modal.js. Stores its array
- * of `{ label, url }` items as hidden `name="{key}[i][label]"`/`"[url]"`
- * inputs per row, the same shape MetaBox::save_meta() has always skipped
- * (via `saved_externally`) for this field, so the plugin's own save
- * handler is unaffected by how the rows are rendered.
+ * MediaLibrarySource's docblock in resource-modal.js. Stores its array of
+ * `{ label, url, source }` items as hidden `name="{key}[i][label]"`/
+ * `"[url]"`/`"[source]"` inputs per row - `source` is which Add/Replace-modal
+ * source produced that row's url (see resource-modal.js's activeSource
+ * wrapper and resource-utils.js's resolveResourceDisplay()) - the same
+ * shape MetaBox::save_meta() has always skipped (via `saved_externally`)
+ * for this field, so the plugin's own save handler is unaffected by how
+ * the rows are rendered; it just needs to persist the extra property too
+ * (see ProMetaFields::save_label_url_pairs_field() in the Pro repo).
  *
  * @param {Object}   props          Component props.
  * @param {Object}   props.field    Field descriptor from MetaBoxFieldRegistry::js_schema().
- * @param {Array}    props.value    Current items, `[{ label, url }]`.
+ * @param {Array}    props.value    Current items, `[{ label, url, source }]`.
  * @param {Function} props.onChange Called with the new items array.
  * @return {JSX.Element} The field.
  */
@@ -178,7 +182,7 @@ export function ResourceListField( { field, value, onChange } ) {
 			) }
 
 			{ items.map( ( item, index ) => {
-				const { chips, meta } = classifyResourceUrl( item.url );
+				const { chips, meta } = resolveResourceDisplay( item.url, item.source );
 				return (
 					<div
 						className="edbs-resource-list__row"
@@ -217,6 +221,7 @@ export function ResourceListField( { field, value, onChange } ) {
 						>
 							<input type="hidden" name={ `${ field.key }[${ index }][label]` } value={ item.label || '' } readOnly />
 							<input type="hidden" name={ `${ field.key }[${ index }][url]` } value={ item.url || '' } readOnly />
+							<input type="hidden" name={ `${ field.key }[${ index }][source]` } value={ item.source || '' } readOnly />
 						</ResourceCard>
 					</div>
 				);
@@ -236,10 +241,11 @@ export function ResourceListField( { field, value, onChange } ) {
 					fieldLabel={ itemNoun }
 					currentValue={ isAdding ? '' : items[ modalIndex ].url }
 					onSave={ ( url, extra ) => {
+						const source = ( extra && extra.source ) || '';
 						if ( isAdding ) {
-							onChange( [ ...items, { label: ( extra && extra.title ) || '', url } ] );
+							onChange( [ ...items, { label: ( extra && extra.title ) || '', url, source } ] );
 						} else {
-							updateItem( modalIndex, { url } );
+							updateItem( modalIndex, { url, source } );
 						}
 						setModalIndex( null );
 					} }

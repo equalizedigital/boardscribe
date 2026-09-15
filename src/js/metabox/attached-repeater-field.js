@@ -3,7 +3,7 @@ import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { EditableTitle } from './resource-list-field';
 import { ResourceModal } from './resource-modal';
-import { classifyResourceUrl } from './resource-utils';
+import { resolveResourceDisplay } from './resource-utils';
 
 /**
  * An `attached` field's inline repeater - a 'resource' field's own card
@@ -29,11 +29,11 @@ import { classifyResourceUrl } from './resource-utils';
  * caption file (or whatever a future consumer attaches) isn't generally as
  * meaningful an action as it is for a document.
  *
- * Stores the same `{ label, url }` shape ResourceListField uses, as hidden
- * `name="{key}[i][label]"`/`"[url]"` inputs per row - whichever plugin owns
- * the attached field's `saved_externally` save handling (e.g. Pro's
- * ProMetaFields::save_label_url_pairs_field()) reads and saves it the same
- * way.
+ * Stores the same `{ label, url, source }` shape ResourceListField uses, as
+ * hidden `name="{key}[i][label]"`/`"[url]"`/`"[source]"` inputs per row -
+ * whichever plugin owns the attached field's `saved_externally` save
+ * handling (e.g. Pro's ProMetaFields::save_label_url_pairs_field()) reads
+ * and saves it the same way.
  *
  * @param {Object}   props          Component props.
  * @param {Object}   props.field    The attached field's own descriptor:
@@ -78,7 +78,7 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 			<div className="edbs-attached-repeater__heading">{ field.label }</div>
 
 			{ rows.map( ( row, index ) => {
-				const { meta } = classifyResourceUrl( row.url );
+				const { meta } = resolveResourceDisplay( row.url, row.source );
 				return (
 					<div className="edbs-attached-repeater__row" key={ index }>
 						<span className="edbs-attached-repeater__label">
@@ -104,6 +104,7 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 						</Button>
 						<input type="hidden" name={ `${ field.key }[${ index }][label]` } value={ row.label || '' } readOnly />
 						<input type="hidden" name={ `${ field.key }[${ index }][url]` } value={ row.url || '' } readOnly />
+						<input type="hidden" name={ `${ field.key }[${ index }][source]` } value={ row.source || '' } readOnly />
 					</div>
 				);
 			} ) }
@@ -121,8 +122,8 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 					mediaTitle={ field.mediaTitle || sprintf( /* translators: %s: item noun, e.g. "Caption Track". */ __( 'Select a %s File', 'boardscribe' ), itemNoun ) }
 					fieldLabel={ itemNoun }
 					currentValue=""
-					onSave={ ( url ) => {
-						onChange( [ ...rows, { label: field.defaultItemLabel || '', url } ] );
+					onSave={ ( url, extra ) => {
+						onChange( [ ...rows, { label: field.defaultItemLabel || '', url, source: ( extra && extra.source ) || '' } ] );
 						setIsModalOpen( false );
 					} }
 					onClose={ () => setIsModalOpen( false ) }

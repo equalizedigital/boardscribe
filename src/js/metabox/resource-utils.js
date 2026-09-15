@@ -3,10 +3,75 @@ import { __ } from '@wordpress/i18n';
 const VIDEO_EXTENSIONS = [ 'mp4', 'mov', 'webm', 'm4v', 'avi' ];
 
 /**
+ * Extracts a resource URL's filename for display - the last path segment,
+ * decoded, or the raw url when it isn't a well-formed absolute URL (a
+ * relative path, or malformed data). Shared by the Media Library display
+ * path in both resolveResourceDisplay() and the legacy same-origin guess
+ * below.
+ *
+ * @param {string} url The field's raw value.
+ * @return {string} The filename.
+ */
+function filenameOf( url ) {
+	try {
+		const parsed = new URL( url );
+		return decodeURIComponent( parsed.pathname.split( '/' ).pop() || url );
+	} catch ( e ) {
+		return url;
+	}
+}
+
+/**
+ * The Media Library chip + meta line for a URL known (via its `source`,
+ * see resolveResourceDisplay()) to be a Media Library attachment -
+ * unconditional on origin, since an offloaded/CDN'd attachment (S3, Bunny,
+ * Cloudflare R2, etc.) is a real Media Library file despite not sharing
+ * the site's own origin.
+ *
+ * @param {string} url The field's raw value.
+ * @return {{chips: Array<string>, meta: string}} Display chips and the meta line.
+ */
+function mediaLibraryDisplay( url ) {
+	const filename = filenameOf( url );
+	const extension = filename.includes( '.' ) ? filename.split( '.' ).pop().toLowerCase() : '';
+	const chip = VIDEO_EXTENSIONS.includes( extension )
+		? __( 'Media Library video', 'boardscribe' )
+		: __( 'Media Library', 'boardscribe' );
+	return { chips: [ chip ], meta: filename };
+}
+
+/**
+ * The meta line (host + path, or the raw value when it isn't a
+ * well-formed absolute URL) for anything that isn't a Media Library file -
+ * an external link, or a plugin-registered custom source (e.g. Pro's
+ * linked-document source).
+ *
+ * @param {string} url The field's raw value.
+ * @return {string} The meta line.
+ */
+function hostPathMeta( url ) {
+	if ( ! /^https?:\/\//i.test( url ) ) {
+		return url;
+	}
+	try {
+		const parsed = new URL( url );
+		return parsed.host + parsed.pathname + parsed.search;
+	} catch ( e ) {
+		return url;
+	}
+}
+
+/**
  * Classifies a resource field's raw URL value into a display chip + meta
- * line, without any server round-trip - same-origin URLs are treated as
- * Media Library files (video extensions get their own chip), everything
- * else as an external link.
+ * line purely by guessing from the URL's shape (same-origin -> treated as
+ * a Media Library file, video extensions getting their own chip;
+ * everything else -> an external link). No server round-trip, but also no
+ * real knowledge of where the value actually came from - a same-origin
+ * link a user typed by hand reads as "Media Library", and a Media Library
+ * file offloaded to a CDN/S3 (a different origin) reads as "External URL".
+ * Used only as resolveResourceDisplay()'s fallback for a value saved
+ * before source-tracking existed (no sibling `{key}_source` meta), or set
+ * by something that bypassed the meta box UI (e.g. the CSV importer).
  *
  * @param {string} url The field's raw value.
  * @return {{chips: Array<string>, meta: string}} Display chips and the meta line.
@@ -31,19 +96,56 @@ export function classifyResourceUrl( url ) {
 		return { chips: [ __( 'External URL', 'boardscribe' ) ], meta: url };
 	}
 
-	const isSameOrigin = parsed.origin === window.location.origin;
-
-	if ( isSameOrigin ) {
-		const filename = decodeURIComponent( parsed.pathname.split( '/' ).pop() || url );
-		const extension = filename.includes( '.' ) ? filename.split( '.' ).pop().toLowerCase() : '';
-		const chip = VIDEO_EXTENSIONS.includes( extension )
-			? __( 'Media Library video', 'boardscribe' )
-			: __( 'Media Library', 'boardscribe' );
-		return { chips: [ chip ], meta: filename };
+	if ( parsed.origin === window.location.origin ) {
+		return mediaLibraryDisplay( url );
 	}
 
-	const meta = parsed.host + parsed.pathname + parsed.search;
-	return { chips: [ __( 'External URL', 'boardscribe' ) ], meta };
+	return { chips: [ __( 'External URL', 'boardscribe' ) ], meta: hostPathMeta( url ) };
+}
+
+/**
+ * Resolves a resource value's display chip + meta line. Prefers the
+ * `source` id the Add/Replace modal recorded when the value was set (see
+ * resource-modal.js's activeSource wrapper and MetaBox::save_field()'s
+ * `{key}_source` sibling meta) over guessing from the URL's shape -
+ * `source` is authoritative when present, since it's what the user
+ * actually picked, not an inference. Only falls back to the same-origin
+ * guess (classifyResourceUrl()) when no source is known: legacy data
+ * saved before this existed, or set by something that bypassed the meta
+ * box UI entirely (e.g. the CSV importer).
+ *
+ * `source` is one of the built-in 'media_library'/'external_url', or a
+ * plugin-registered id on window.edbsResourceSources (e.g. Pro's
+ * 'document') - the chip then uses that source's own registered `label`,
+ * so a custom source is labeled correctly with zero knowledge of what it
+ * actually is (see resource-modal.js's registry).
+ *
+ * @param {string} url    The field's raw value.
+ * @param {string} source The value's `{key}_source` (or one item's own
+ *                        `source` property, for a resource_list row) -
+ *                        empty/unset falls back to classifyResourceUrl().
+ * @return {{chips: Array<string>, meta: string}} Display chips and the meta line.
+ */
+export function resolveResourceDisplay( url, source ) {
+	if ( ! url ) {
+		return { chips: [], meta: '' };
+	}
+
+	if ( ! source ) {
+		return classifyResourceUrl( url );
+	}
+
+	if ( 'media_library' === source ) {
+		return mediaLibraryDisplay( url );
+	}
+
+	if ( 'external_url' === source ) {
+		return { chips: [ __( 'External URL', 'boardscribe' ) ], meta: hostPathMeta( url ) };
+	}
+
+	const registered = window.edbsResourceSources && window.edbsResourceSources[ source ];
+	const chip = registered ? registered.label : source;
+	return { chips: [ chip ], meta: hostPathMeta( url ) };
 }
 
 /**

@@ -136,6 +136,19 @@ class MetaBox {
 
 		register_post_meta(
 			'edbs_meeting',
+			'edbs_agenda_url_source',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced edbs_agenda_url\'s current value.', 'boardscribe' ),
+					'sanitize_callback' => 'sanitize_key',
+				]
+			)
+		);
+
+		register_post_meta(
+			'edbs_meeting',
 			'edbs_minutes_url',
 			array_merge(
 				$common,
@@ -143,6 +156,19 @@ class MetaBox {
 					'type'              => 'string',
 					'description'       => __( 'URL to the published minutes document for this meeting.', 'boardscribe' ),
 					'sanitize_callback' => 'esc_url_raw',
+				]
+			)
+		);
+
+		register_post_meta(
+			'edbs_meeting',
+			'edbs_minutes_url_source',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced edbs_minutes_url\'s current value.', 'boardscribe' ),
+					'sanitize_callback' => 'sanitize_key',
 				]
 			)
 		);
@@ -234,6 +260,15 @@ class MetaBox {
 			} else {
 				$values[ $field['key'] ] = get_post_meta( $post->ID, $field['key'], true );
 			}
+
+			// A 'resource' field's card chip is driven by which Add/Replace-
+			// modal source produced its value (see resource-utils.js's
+			// resolveResourceDisplay()), tracked in this sibling meta rather
+			// than the field's own schema entry - it isn't a field the
+			// registry renders a row for.
+			if ( 'resource' === ( $field['type'] ?? '' ) ) {
+				$values[ $field['key'] . '_source' ] = get_post_meta( $post->ID, $field['key'] . '_source', true );
+			}
 		}
 		?>
 		<div id="edbs-meeting-meta-box-root" data-values="<?php echo esc_attr( wp_json_encode( $values, JSON_UNESCAPED_SLASHES ) ); ?>">
@@ -318,6 +353,13 @@ class MetaBox {
 			return;
 		}
 
+		// Saved unconditionally, ahead of every branch below (including a
+		// field's own sanitize_callback, which only handles the primary
+		// value) - see save_resource_source()'s docblock.
+		if ( 'resource' === $type ) {
+			$this->save_resource_source( $post_id, $key );
+		}
+
 		if ( ! empty( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
 			update_post_meta(
 				$post_id,
@@ -342,6 +384,37 @@ class MetaBox {
 		}
 
 		update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Saves a 'resource' field's `{key}_source` sibling meta - which
+	 * Add/Replace-modal source (media_library, external_url, or a
+	 * plugin-registered id on window.edbsResourceSources) produced the
+	 * field's current value, stamped on by resource-modal.js and carried
+	 * as a hidden `{key}_source` input alongside the field's own (see
+	 * resource-field.js/resource-list-field.js/attached-repeater-field.js).
+	 * Read here unconditionally rather than as another MetaBoxFieldRegistry
+	 * entry, since it isn't a field the registry renders its own row for -
+	 * every 'resource'-type field gets one automatically, free's own
+	 * (Agenda/Minutes) and any a plugin adds alike. Sanitized with
+	 * sanitize_key() rather than a hard enum so a plugin-registered source
+	 * id round-trips without free needing to know it exists.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @param int    $post_id The post ID being saved.
+	 * @param string $key     The 'resource' field's own meta key.
+	 * @return void
+	 */
+	private function save_resource_source( int $post_id, string $key ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called for every field.
+		$source_key = $key . '_source';
+		if ( ! isset( $_POST[ $source_key ] ) ) {
+			return;
+		}
+
+		update_post_meta( $post_id, $source_key, sanitize_key( wp_unslash( $_POST[ $source_key ] ) ) );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 

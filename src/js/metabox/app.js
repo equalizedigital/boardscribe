@@ -52,6 +52,15 @@ export function MetaBoxApp( { fields, initialValues } ) {
 		const initial = {};
 		fields.forEach( ( field ) => {
 			initial[ field.key ] = startingValue( field, initialValues );
+			// A 'resource' field's value stays a plain URL string (see
+			// resource-field.js), but which Add/Replace-modal source
+			// produced it is tracked in a sibling `{key}_source` meta -
+			// stored here under a synthetic key of the same name rather
+			// than in the field's own schema entry, since it isn't a
+			// field the registry renders a row for.
+			if ( 'resource' === field.type ) {
+				initial[ field.key + '_source' ] = initialValues[ field.key + '_source' ] || '';
+			}
 		} );
 		return initial;
 	} );
@@ -121,10 +130,14 @@ export function MetaBoxApp( { fields, initialValues } ) {
 							<MetaField
 								field={ field }
 								value={ values[ field.key ] }
+								sourceValue={ values[ field.key + '_source' ] }
 								allValues={ values }
 								attachedField={ attachedField }
 								onChange={ ( nextValue ) =>
 									setValues( ( current ) => ( { ...current, [ field.key ]: nextValue } ) )
+								}
+								onSourceChange={ ( nextSource ) =>
+									setValues( ( current ) => ( { ...current, [ field.key + '_source' ]: nextSource } ) )
 								}
 							/>
 						</div>

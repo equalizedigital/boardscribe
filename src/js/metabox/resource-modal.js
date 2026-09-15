@@ -101,12 +101,28 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
  *                                             custom source's render() as `fieldKey` so it can tell which field
  *                                             it's serving when the same source id is shared across fields
  *                                             (e.g. Pro's "document" source, offered on both Agenda and Minutes).
- * @param {Function}      props.onSave         Called with the new value once a source completes.
+ * @param {Function}      props.onSave         Called with the new value, and a second `{ ...extra, source }`
+ *                                             argument, once a source completes - `source` is the completed
+ *                                             source's own id (stamped on by this component, see
+ *                                             handleSourceSave below), always present regardless of whether
+ *                                             the source itself passed its own `extra` (e.g. Media Library's
+ *                                             `{ title }`). Callers that care persist it alongside the value
+ *                                             (see resource-utils.js's resolveResourceDisplay()); callers
+ *                                             that don't can ignore the second argument entirely.
  * @param {Function}      props.onClose        Called to dismiss the modal without saving.
  * @return {JSX.Element} The modal.
  */
 export function ResourceModal( { title, sources, mediaTitle, fieldLabel, currentValue, fieldKey, onSave, onClose } ) {
 	const [ activeSource, setActiveSource ] = useState( 1 === sources.length ? sources[ 0 ] : null );
+
+	// Every source component below just calls onSave(url) or onSave(url,
+	// extra) without knowing (or needing to know) which source it is - the
+	// modal is the one place that already knows, so it stamps activeSource
+	// onto the extra object here rather than every source component doing
+	// it itself. Callers that care (ResourceField, ResourceListField,
+	// AttachedRepeaterField) read extra.source to persist which source
+	// produced the value - see resource-utils.js's resolveResourceDisplay().
+	const handleSourceSave = ( url, extra ) => onSave( url, { ...( extra || {} ), source: activeSource } );
 
 	const registry = {
 		media_library: {
@@ -125,21 +141,21 @@ export function ResourceModal( { title, sources, mediaTitle, fieldLabel, current
 			return (
 				<MediaLibrarySource
 					mediaTitle={ mediaTitle }
-					onSave={ onSave }
+					onSave={ handleSourceSave }
 					onCancel={ 1 === sources.length ? onClose : () => setActiveSource( null ) }
 				/>
 			);
 		}
 
 		if ( 'external_url' === activeSource ) {
-			return <ExternalUrlSource label={ fieldLabel } initialValue={ currentValue } onSave={ onSave } />;
+			return <ExternalUrlSource label={ fieldLabel } initialValue={ currentValue } onSave={ handleSourceSave } />;
 		}
 
 		const CustomSource = window.edbsResourceSources && window.edbsResourceSources[ activeSource ] && window.edbsResourceSources[ activeSource ].render;
 		if ( CustomSource ) {
 			return (
 				<CustomSource
-					onSave={ onSave }
+					onSave={ handleSourceSave }
 					onCancel={ () => setActiveSource( null ) }
 					currentValue={ currentValue }
 					fieldKey={ fieldKey }
