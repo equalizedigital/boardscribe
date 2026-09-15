@@ -21,6 +21,8 @@
 				"src/js/block/**/*.jsx",
 				"src/js/builder/**/*.js",
 				"src/js/builder/**/*.jsx",
+				"src/js/metabox/**/*.js",
+				"src/js/metabox/**/*.jsx",
 				"src/js/shared/**/*.js",
 				"src/js/shared/**/*.jsx"
 			],
