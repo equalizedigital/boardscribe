@@ -149,6 +149,19 @@ class MetaBox {
 
 		register_post_meta(
 			'edbs_meeting',
+			'edbs_agenda_url_edit_url',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'The wp-admin edit screen for edbs_agenda_url\'s underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link.', 'boardscribe' ),
+					'sanitize_callback' => 'esc_url_raw',
+				]
+			)
+		);
+
+		register_post_meta(
+			'edbs_meeting',
 			'edbs_minutes_url',
 			array_merge(
 				$common,
@@ -169,6 +182,19 @@ class MetaBox {
 					'type'              => 'string',
 					'description'       => __( 'Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced edbs_minutes_url\'s current value.', 'boardscribe' ),
 					'sanitize_callback' => 'sanitize_key',
+				]
+			)
+		);
+
+		register_post_meta(
+			'edbs_meeting',
+			'edbs_minutes_url_edit_url',
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'description'       => __( 'The wp-admin edit screen for edbs_minutes_url\'s underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link.', 'boardscribe' ),
+					'sanitize_callback' => 'esc_url_raw',
 				]
 			)
 		);
@@ -263,11 +289,14 @@ class MetaBox {
 
 			// A 'resource' field's card chip is driven by which Add/Replace-
 			// modal source produced its value (see resource-utils.js's
-			// resolveResourceDisplay()), tracked in this sibling meta rather
-			// than the field's own schema entry - it isn't a field the
-			// registry renders a row for.
+			// resolveResourceDisplay()), and its optional "Edit" action by
+			// the underlying post's wp-admin edit URL, if its source has one
+			// (e.g. a linked document) - both tracked in these sibling metas
+			// rather than the field's own schema entry, since neither is a
+			// field the registry renders its own row for.
 			if ( 'resource' === ( $field['type'] ?? '' ) ) {
-				$values[ $field['key'] . '_source' ] = get_post_meta( $post->ID, $field['key'] . '_source', true );
+				$values[ $field['key'] . '_source' ]   = get_post_meta( $post->ID, $field['key'] . '_source', true );
+				$values[ $field['key'] . '_edit_url' ] = get_post_meta( $post->ID, $field['key'] . '_edit_url', true );
 			}
 		}
 		?>
@@ -355,9 +384,11 @@ class MetaBox {
 
 		// Saved unconditionally, ahead of every branch below (including a
 		// field's own sanitize_callback, which only handles the primary
-		// value) - see save_resource_source()'s docblock.
+		// value) - see save_resource_source()/save_resource_edit_url()'s
+		// docblocks.
 		if ( 'resource' === $type ) {
 			$this->save_resource_source( $post_id, $key );
+			$this->save_resource_edit_url( $post_id, $key );
 		}
 
 		if ( ! empty( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
@@ -415,6 +446,33 @@ class MetaBox {
 		}
 
 		update_post_meta( $post_id, $source_key, sanitize_key( wp_unslash( $_POST[ $source_key ] ) ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Saves a 'resource' field's `{key}_edit_url` sibling meta - the
+	 * wp-admin edit screen for the value's underlying post, when its
+	 * source has one (e.g. Pro's linked-document source), carried as a
+	 * hidden `{key}_edit_url` input alongside the field's own (see
+	 * resource-field.js). Empty for a source with no underlying editable
+	 * post (Media Library, external URL) - resource-field.js only renders
+	 * an "Edit" action when this is non-empty. Same generic-mechanism
+	 * shape as save_resource_source() - see that method's docblock.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param int    $post_id The post ID being saved.
+	 * @param string $key     The 'resource' field's own meta key.
+	 * @return void
+	 */
+	private function save_resource_edit_url( int $post_id, string $key ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called for every field.
+		$edit_url_key = $key . '_edit_url';
+		if ( ! isset( $_POST[ $edit_url_key ] ) ) {
+			return;
+		}
+
+		update_post_meta( $post_id, $edit_url_key, esc_url_raw( wp_unslash( $_POST[ $edit_url_key ] ) ) );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 

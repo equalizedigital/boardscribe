@@ -54,12 +54,14 @@ export function MetaBoxApp( { fields, initialValues } ) {
 			initial[ field.key ] = startingValue( field, initialValues );
 			// A 'resource' field's value stays a plain URL string (see
 			// resource-field.js), but which Add/Replace-modal source
-			// produced it is tracked in a sibling `{key}_source` meta -
-			// stored here under a synthetic key of the same name rather
-			// than in the field's own schema entry, since it isn't a
-			// field the registry renders a row for.
+			// produced it, and that source's underlying wp-admin edit URL
+			// (if it has one), are tracked in sibling `{key}_source`/
+			// `{key}_edit_url` meta - stored here under synthetic keys of
+			// the same name rather than in the field's own schema entry,
+			// since neither is a field the registry renders a row for.
 			if ( 'resource' === field.type ) {
 				initial[ field.key + '_source' ] = initialValues[ field.key + '_source' ] || '';
+				initial[ field.key + '_edit_url' ] = initialValues[ field.key + '_edit_url' ] || '';
 			}
 		} );
 		return initial;
@@ -131,6 +133,7 @@ export function MetaBoxApp( { fields, initialValues } ) {
 								field={ field }
 								value={ values[ field.key ] }
 								sourceValue={ values[ field.key + '_source' ] }
+								editUrlValue={ values[ field.key + '_edit_url' ] }
 								allValues={ values }
 								attachedField={ attachedField }
 								onChange={ ( nextValue ) =>
@@ -138,6 +141,9 @@ export function MetaBoxApp( { fields, initialValues } ) {
 								}
 								onSourceChange={ ( nextSource ) =>
 									setValues( ( current ) => ( { ...current, [ field.key + '_source' ]: nextSource } ) )
+								}
+								onEditUrlChange={ ( nextEditUrl ) =>
+									setValues( ( current ) => ( { ...current, [ field.key + '_edit_url' ]: nextEditUrl } ) )
 								}
 							/>
 						</div>

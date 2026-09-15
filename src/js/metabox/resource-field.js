@@ -16,29 +16,37 @@ import { resolveResourceDisplay, resolveResourceTitle } from './resource-utils';
  * card's chip/meta line are derived from the URL plus which source
  * produced it (see resource-utils.js's resolveResourceDisplay()).
  *
- * @param {Object}   props                  Component props.
- * @param {Object}   props.field            Field descriptor from MetaBoxFieldRegistry::js_schema().
- * @param {string}   props.value            Current value (a URL, or '').
- * @param {Function} props.onChange         Called with the new value.
- * @param {string}   [props.sourceValue]    The value's `{key}_source` sibling meta - which Add/Replace-modal
- *                                          source produced the current value ('media_library'/'external_url',
- *                                          or a plugin-registered id) - see MetaBox::save_field() in the PHP
- *                                          repo and resolveResourceDisplay() in resource-utils.js. Empty for
- *                                          legacy data saved before this existed.
- * @param {Function} [props.onSourceChange] Called with the new sourceValue whenever value changes via the
- *                                          modal or Remove - kept in lockstep with onChange so the chip stays
- *                                          accurate instead of stale.
- * @param {Object}   props.allValues        Every field's current value, keyed by field key - used to resolve a
- *                                          {date}-templated title (see field.titleTemplate) against the meeting date.
- * @param {Object}   [props.attachedField]  Present when field.attachedFieldKey points at an `attached`
- *                                          field (MetaBoxApp resolves the lookup) - `{ field, value, onChange }`
- *                                          for that attached field, rendered via AttachedRepeaterField inside
- *                                          this card's children slot. Only Recording's caption tracks use this
- *                                          today, but nothing here is caption-specific - see
- *                                          attached-repeater-field.js.
+ * @param {Object}   props                   Component props.
+ * @param {Object}   props.field             Field descriptor from MetaBoxFieldRegistry::js_schema().
+ * @param {string}   props.value             Current value (a URL, or '').
+ * @param {Function} props.onChange          Called with the new value.
+ * @param {string}   [props.sourceValue]     The value's `{key}_source` sibling meta - which Add/Replace-modal
+ *                                           source produced the current value ('media_library'/'external_url',
+ *                                           or a plugin-registered id) - see MetaBox::save_field() in the PHP
+ *                                           repo and resolveResourceDisplay() in resource-utils.js. Empty for
+ *                                           legacy data saved before this existed.
+ * @param {Function} [props.onSourceChange]  Called with the new sourceValue whenever value changes via the
+ *                                           modal or Remove - kept in lockstep with onChange so the chip stays
+ *                                           accurate instead of stale.
+ * @param {string}   [props.editUrlValue]    The value's `{key}_edit_url` sibling meta - the wp-admin edit
+ *                                           screen for the value's underlying post, when its source has one
+ *                                           (e.g. Pro's linked-document source) - empty for a plain Media
+ *                                           Library file or external link, in which case no "Edit" action is
+ *                                           shown ("Replace" already covers changing a plain URL/file).
+ * @param {Function} [props.onEditUrlChange] Called with the new editUrlValue whenever value changes via the
+ *                                           modal or Remove - kept in lockstep with onChange the same way
+ *                                           onSourceChange is.
+ * @param {Object}   props.allValues         Every field's current value, keyed by field key - used to resolve a
+ *                                           {date}-templated title (see field.titleTemplate) against the meeting date.
+ * @param {Object}   [props.attachedField]   Present when field.attachedFieldKey points at an `attached`
+ *                                           field (MetaBoxApp resolves the lookup) - `{ field, value, onChange }`
+ *                                           for that attached field, rendered via AttachedRepeaterField inside
+ *                                           this card's children slot. Only Recording's caption tracks use this
+ *                                           today, but nothing here is caption-specific - see
+ *                                           attached-repeater-field.js.
  * @return {JSX.Element} The field.
  */
-export function ResourceField( { field, value, onChange, sourceValue, onSourceChange, allValues, attachedField } ) {
+export function ResourceField( { field, value, onChange, sourceValue, onSourceChange, editUrlValue, onEditUrlChange, allValues, attachedField } ) {
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
 	const hasValue = !! value;
 	const sources = field.sources && field.sources.length ? field.sources : [ 'media_library', 'external_url' ];
@@ -48,6 +56,9 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 		if ( onSourceChange ) {
 			onSourceChange( ( extra && extra.source ) || '' );
 		}
+		if ( onEditUrlChange ) {
+			onEditUrlChange( ( extra && extra.editUrl ) || '' );
+		}
 		setIsModalOpen( false );
 	};
 
@@ -55,6 +66,9 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 		onChange( '' );
 		if ( onSourceChange ) {
 			onSourceChange( '' );
+		}
+		if ( onEditUrlChange ) {
+			onEditUrlChange( '' );
 		}
 		// The attached field's own rows (e.g. Recording's caption tracks)
 		// belong to *this* resource, not to whatever gets added next -
@@ -70,6 +84,21 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 	const { chips, meta } = resolveResourceDisplay( value, sourceValue );
 	const title = resolveResourceTitle( field, allValues && allValues.edbs_meeting_date );
 
+	const actions = [
+		{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'View %s', 'boardscribe' ), field.label ), href: value },
+	];
+	if ( editUrlValue ) {
+		actions.push( {
+			label: __( 'Edit', 'boardscribe' ),
+			ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'Edit %s', 'boardscribe' ), field.label ),
+			href: editUrlValue,
+		} );
+	}
+	actions.push(
+		{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'Replace %s', 'boardscribe' ), field.label ), onClick: () => setIsModalOpen( true ) },
+		{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'Remove %s', 'boardscribe' ), field.label ), danger: true, onClick: handleRemove },
+	);
+
 	return (
 		<BaseControl id={ field.key } label={ field.label } help={ field.description || undefined } __nextHasNoMarginBottom>
 			{ hasValue ? (
@@ -77,11 +106,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 					title={ title }
 					chips={ chips }
 					meta={ meta }
-					actions={ [
-						{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'View %s', 'boardscribe' ), field.label ), href: value },
-						{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'Replace %s', 'boardscribe' ), field.label ), onClick: () => setIsModalOpen( true ) },
-						{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'Remove %s', 'boardscribe' ), field.label ), danger: true, onClick: handleRemove },
-					] }
+					actions={ actions }
 				>
 					{ attachedField && (
 						<AttachedRepeaterField
@@ -101,6 +126,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 
 			<input type="hidden" name={ field.key } value={ value || '' } readOnly />
 			<input type="hidden" name={ `${ field.key }_source` } value={ sourceValue || '' } readOnly />
+			<input type="hidden" name={ `${ field.key }_edit_url` } value={ editUrlValue || '' } readOnly />
 
 			{ isModalOpen && (
 				<ResourceModal

@@ -41,22 +41,25 @@ function openMediaLibrary( title, onSelect ) {
  * plugin-registered custom control - see src/js/metabox/index.js), falling
  * back to a plain text input if nothing is registered for it.
  *
- * @param {Object}   props                  Component props.
- * @param {Object}   props.field            Field descriptor from MetaBoxFieldRegistry::js_schema().
- * @param {*}        props.value            Current value.
- * @param {Function} props.onChange         Called with the new value.
- * @param {string}   [props.sourceValue]    Only the 'resource' type reads it - the value's `{key}_source`
- *                                          sibling (see MetaBoxApp and resource-field.js).
- * @param {Function} [props.onSourceChange] Only the 'resource' type reads it - pairs with sourceValue.
- * @param {Object}   [props.allValues]      Every field's current value, keyed by field key - only the
- *                                          'resource' type reads it (for a {date}-templated card title).
- * @param {Object}   [props.attachedField]  Only the 'resource' type reads it - present when this field's
- *                                          `attachedFieldKey` points at an `attached` field, as
- *                                          `{ field, value, onChange }` for that attached field
- *                                          (MetaBoxApp resolves the lookup - see its own docblock).
+ * @param {Object}   props                   Component props.
+ * @param {Object}   props.field             Field descriptor from MetaBoxFieldRegistry::js_schema().
+ * @param {*}        props.value             Current value.
+ * @param {Function} props.onChange          Called with the new value.
+ * @param {string}   [props.sourceValue]     Only the 'resource' type reads it - the value's `{key}_source`
+ *                                           sibling (see MetaBoxApp and resource-field.js).
+ * @param {Function} [props.onSourceChange]  Only the 'resource' type reads it - pairs with sourceValue.
+ * @param {string}   [props.editUrlValue]    Only the 'resource' type reads it - the value's `{key}_edit_url`
+ *                                           sibling (see MetaBoxApp and resource-field.js).
+ * @param {Function} [props.onEditUrlChange] Only the 'resource' type reads it - pairs with editUrlValue.
+ * @param {Object}   [props.allValues]       Every field's current value, keyed by field key - only the
+ *                                           'resource' type reads it (for a {date}-templated card title).
+ * @param {Object}   [props.attachedField]   Only the 'resource' type reads it - present when this field's
+ *                                           `attachedFieldKey` points at an `attached` field, as
+ *                                           `{ field, value, onChange }` for that attached field
+ *                                           (MetaBoxApp resolves the lookup - see its own docblock).
  * @return {JSX.Element} The field's row content.
  */
-export function MetaField( { field, value, onChange, sourceValue, onSourceChange, allValues, attachedField } ) {
+export function MetaField( { field, value, onChange, sourceValue, onSourceChange, editUrlValue, onEditUrlChange, allValues, attachedField } ) {
 	const id = field.key;
 
 	if ( 'resource' === field.type ) {
@@ -67,6 +70,8 @@ export function MetaField( { field, value, onChange, sourceValue, onSourceChange
 				onChange={ onChange }
 				sourceValue={ sourceValue }
 				onSourceChange={ onSourceChange }
+				editUrlValue={ editUrlValue }
+				onEditUrlChange={ onEditUrlChange }
 				allValues={ allValues }
 				attachedField={ attachedField }
 			/>
