@@ -329,7 +329,7 @@ class MetaBox {
 	 * skipped entirely — the plugin that owns it saves it itself (see the
 	 * edbs_meeting_meta_fields filter's docblock in MetaBoxFieldRegistry).
 	 *
-	 * @since 1.2.0
+	 * @since 1.6.0
 	 *
 	 * @param int                  $post_id The post ID being saved.
 	 * @param array<string, mixed> $field   Field descriptor from MetaBoxFieldRegistry.

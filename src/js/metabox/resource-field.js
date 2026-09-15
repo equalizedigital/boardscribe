@@ -56,6 +56,15 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 		if ( onSourceChange ) {
 			onSourceChange( '' );
 		}
+		// The attached field's own rows (e.g. Recording's caption tracks)
+		// belong to *this* resource, not to whatever gets added next -
+		// MetaBoxApp keeps its value around independently of this card's
+		// own hasValue/hidden state, so without this, adding a new
+		// resource before saving would silently resurrect and submit the
+		// removed resource's old attached rows.
+		if ( attachedField ) {
+			attachedField.onChange( [] );
+		}
 	};
 
 	const { chips, meta } = resolveResourceDisplay( value, sourceValue );
@@ -69,9 +78,9 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 					chips={ chips }
 					meta={ meta }
 					actions={ [
-						{ label: __( 'View', 'boardscribe' ), href: value },
-						{ label: __( 'Replace', 'boardscribe' ), onClick: () => setIsModalOpen( true ) },
-						{ label: __( 'Remove', 'boardscribe' ), danger: true, onClick: handleRemove },
+						{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'View %s', 'boardscribe' ), field.label ), href: value },
+						{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'Replace %s', 'boardscribe' ), field.label ), onClick: () => setIsModalOpen( true ) },
+						{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( 'Remove %s', 'boardscribe' ), field.label ), danger: true, onClick: handleRemove },
 					] }
 				>
 					{ attachedField && (

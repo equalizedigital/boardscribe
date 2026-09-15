@@ -3,26 +3,32 @@ import { Button } from '@wordpress/components';
 /**
  * One resource-card action link/button (View, Edit, Replace, Remove...).
  *
- * @param {Object}   props           Component props.
- * @param {string}   props.label     Action label.
- * @param {Function} [props.onClick] Click handler - omit for a plain link (props.href).
- * @param {string}   [props.href]    Link target for a plain View-style link.
- * @param {boolean}  [props.danger]  True for a destructive action (Remove).
+ * @param {Object}   props             Component props.
+ * @param {string}   props.label       Action label.
+ * @param {string}   [props.ariaLabel] Accessible name, overriding `label` - a resource-shaped
+ *                                     field's page often has several cards whose actions all read
+ *                                     "View"/"Replace"/"Remove" identically, which a screen
+ *                                     reader's controls list can't tell apart; callers pass
+ *                                     something like "Replace Agenda" here instead. Falls back to
+ *                                     `label` when omitted.
+ * @param {Function} [props.onClick]   Click handler - omit for a plain link (props.href).
+ * @param {string}   [props.href]      Link target for a plain View-style link.
+ * @param {boolean}  [props.danger]    True for a destructive action (Remove).
  * @return {JSX.Element} The action.
  */
-function CardAction( { label, onClick, href, danger } ) {
+function CardAction( { label, ariaLabel, onClick, href, danger } ) {
 	const className = danger ? 'edbs-resource-card__action edbs-resource-card__action--danger' : 'edbs-resource-card__action';
 
 	if ( href ) {
 		return (
-			<a className={ className } href={ href } target="_blank" rel="noopener noreferrer">
+			<a className={ className } href={ href } target="_blank" rel="noopener noreferrer" aria-label={ ariaLabel || undefined }>
 				{ label }
 			</a>
 		);
 	}
 
 	return (
-		<Button className={ className } variant="link" onClick={ onClick }>
+		<Button className={ className } variant="link" onClick={ onClick } aria-label={ ariaLabel || undefined }>
 			{ label }
 		</Button>
 	);
@@ -35,13 +41,13 @@ function CardAction( { label, onClick, href, danger } ) {
  * Livestream, Recording, CC Transcript, Supporting Documents rows) so they
  * all read as one visual system rather than one-off field markup.
  *
- * @param {Object}                                                                      props              Component props.
- * @param {string}                                                                      props.title        The resource's display title.
- * @param {Array<string>}                                                               props.chips        Small status/source badges, e.g. ["External URL"].
- * @param {string}                                                                      [props.meta]       Secondary line under the chips (filename, URL, address).
- * @param {import('react').ReactNode}                                                   [props.children]   Extra content under the meta line.
- * @param {Array<{label: string, onClick?: Function, href?: string, danger?: boolean}>} props.actions      Action row.
- * @param {import('react').ReactNode}                                                   [props.dragHandle] Optional drag handle rendered at the card's edge (repeater rows).
+ * @param {Object}                                                                                          props              Component props.
+ * @param {string}                                                                                          props.title        The resource's display title.
+ * @param {Array<string>}                                                                                   props.chips        Small status/source badges, e.g. ["External URL"].
+ * @param {string}                                                                                          [props.meta]       Secondary line under the chips (filename, URL, address).
+ * @param {import('react').ReactNode}                                                                       [props.children]   Extra content under the meta line.
+ * @param {Array<{label: string, ariaLabel?: string, onClick?: Function, href?: string, danger?: boolean}>} props.actions      Action row - see CardAction's `ariaLabel` doc for why callers should pass it.
+ * @param {import('react').ReactNode}                                                                       [props.dragHandle] Optional drag handle rendered at the card's edge (repeater rows).
  * @return {JSX.Element} The card.
  */
 export function ResourceCard( { title, chips, meta, children, actions, dragHandle } ) {

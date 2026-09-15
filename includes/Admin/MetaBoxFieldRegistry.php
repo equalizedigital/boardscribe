@@ -25,7 +25,7 @@ class MetaBoxFieldRegistry {
 	 * Returns the merged, ordered field list (core fields + anything a
 	 * plugin adds via edbs_meeting_meta_fields).
 	 *
-	 * @since 1.2.0
+	 * @since 1.6.0
 	 *
 	 * @return array<int, array<string, mixed>>
 	 */
@@ -172,7 +172,7 @@ class MetaBoxFieldRegistry {
 		 * built-ins (url/textarea/text) or, for its existing AJAX-backed
 		 * picker widgets, 'html' fields pairing $render_callback with $init_fn.
 		 *
-		 * @since 1.2.0
+		 * @since 1.6.0
 		 *
 		 * @param array<int, array<string, mixed>> $fields Field descriptors.
 		 */
@@ -187,7 +187,7 @@ class MetaBoxFieldRegistry {
 	 * serializable; both are only used server-side, by MetaBox::save_meta()
 	 * and MetaBox::render_meta_box() respectively).
 	 *
-	 * @since 1.2.0
+	 * @since 1.6.0
 	 *
 	 * @return array<int, array<string, mixed>>
 	 */
@@ -223,7 +223,7 @@ class MetaBoxFieldRegistry {
 	/**
 	 * The four fields the free plugin ships.
 	 *
-	 * @since 1.2.0
+	 * @since 1.6.0
 	 *
 	 * @return array<int, array<string, mixed>>
 	 */
@@ -266,7 +266,7 @@ class MetaBoxFieldRegistry {
 	 * target key isn't found — a plugin ordering error shouldn't drop the
 	 * field entirely).
 	 *
-	 * @since 1.2.0
+	 * @since 1.6.0
 	 *
 	 * @param array<int, array<string, mixed>> $fields Unordered field descriptors.
 	 * @return array<int, array<string, mixed>>

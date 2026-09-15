@@ -1,6 +1,6 @@
 # Handoff: Meeting Details meta box → React rewrite (free + Pro)
 
-Status as of this handoff: **the free plugin (`boardscribe`) has been split into 8 commits on `develop`** (see below). **The Pro plugin (`boardscribe-pro`) is still one large uncommitted working-tree diff** — the same commit-splitting treatment hasn't been done there yet; that's the next piece of work. Nothing has been pushed or opened as a PR in either repo.
+**Update, after this doc was first written:** both repos are now fully committed, pushed, and have open PRs, linked to Linear issue PRO-1336 - free's [PR #121](https://github.com/equalizedigital/boardscribe/pull/121), Pro's [PR #58](https://github.com/equalizedigital/boardscribe-pro/pull/58). CI (lint/PHPCS/PHPUnit) is green on both. CodeRabbit's review findings have been triaged - the real bugs it caught (attached-repeater state not cleared on Remove, `EditableTitle`'s stale `draft` state across reordered rows, an invalid/deleted Location ID not resetting to 0, a composed address not clearing when its structured fields are emptied, missing accessible names on repeated card actions) are fixed in follow-up commits on each branch; a handful of findings on code this session didn't touch (pre-existing PRO-1328 work bundled into the same Pro branch) were left for separate follow-up - see each PR's CodeRabbit thread for specifics. The rest of this doc is left as originally written, below, as a record of the rewrite's design and the commit-splitting process - it's no longer fully current on commit counts/status, but the architecture description still holds.
 
 ## Repos and branches
 
@@ -44,7 +44,7 @@ This was a long, incremental session covering (roughly in order):
 
 See both repos' `AGENTS.md` — they were kept current throughout this session and are the best next read after this doc.
 
-## The resource-source-tracking fix (most recent change, still uncommitted)
+## The resource-source-tracking fix (committed as commit 6 above; Pro's counterpart is its own separate commit in Pro's PR)
 
 **Problem:** `resource-utils.js`'s `classifyResourceUrl()` inferred a resource card's chip ("Media Library" vs "External URL") purely from whether the URL's origin matched the site's own. Wrong in two ways: an offloaded/CDN'd Media Library attachment isn't same-origin (mislabeled "External URL"), and Pro's "linked document" source's permalink *is* same-origin (mislabeled "Media Library" — a real, live, shipping bug).
 

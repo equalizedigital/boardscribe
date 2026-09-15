@@ -1,5 +1,5 @@
 import { BaseControl, Button, TextControl } from '@wordpress/components';
-import { useRef, useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
@@ -73,6 +73,16 @@ function ReorderControls( { itemLabel, isFirst, isLast, onMoveUp, onMoveDown } )
 export function EditableTitle( { label, onChange, emptyLabel, fieldLabel } ) {
 	const [ isEditing, setIsEditing ] = useState( false );
 	const [ draft, setDraft ] = useState( label );
+
+	// Rows are keyed by array index (see ResourceListField/AttachedRepeaterField),
+	// so a reorder or removal can hand this exact component instance a
+	// different row's `label` without unmounting it. Resyncing here keeps
+	// `draft` from going stale and, if a save happens while still
+	// (now different-row) "editing", overwriting the new row's label with
+	// leftover text from the row that used to be at this index.
+	useEffect( () => {
+		setDraft( label );
+	}, [ label ] );
 
 	if ( ! isEditing ) {
 		return (
@@ -214,9 +224,9 @@ export function ResourceListField( { field, value, onChange } ) {
 							chips={ item.url ? chips : [] }
 							meta={ item.url ? meta : '' }
 							actions={ [
-								{ label: __( 'View', 'boardscribe' ), href: item.url || undefined },
-								{ label: __( 'Replace', 'boardscribe' ), onClick: () => setModalIndex( index ) },
-								{ label: __( 'Remove', 'boardscribe' ), danger: true, onClick: () => removeItem( index ) },
+								{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
+								{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
+								{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
 							] }
 						>
 							<input type="hidden" name={ `${ field.key }[${ index }][label]` } value={ item.label || '' } readOnly />
