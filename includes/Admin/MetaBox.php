@@ -14,8 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers post meta and provides a native admin meta box UI
- * for the four BoardScribe meeting meta fields.
+ * Registers post meta and provides a native admin meta box UI, rendered by
+ * a React app (src/js/metabox/) reading MetaBoxFieldRegistry::js_schema(),
+ * for the BoardScribe meeting meta fields.
  */
 class MetaBox {
 
@@ -34,7 +35,7 @@ class MetaBox {
 	}
 
 	/**
-	 * Enqueues the media library and the meta box picker script.
+	 * Enqueues the media library and the Meeting Details React app.
 	 *
 	 * @since 1.0.0
 	 *
@@ -51,50 +52,41 @@ class MetaBox {
 			return;
 		}
 
+		if ( ! self::is_native_meta_box_enabled() ) {
+			return;
+		}
+
+		// wp.media() backs the per-field "Media Library" button the React
+		// app renders for fields with media_picker => true.
 		wp_enqueue_media();
 
-		wp_register_script( 'edbs-meta-box', false, [ 'media-upload' ], EDBS_VERSION, true );
-		wp_enqueue_script( 'edbs-meta-box' );
-		wp_add_inline_script( 'edbs-meta-box', $this->get_media_picker_script() );
-	}
+		// Built by `npm run build` (assets/build/ is gitignored); the
+		// generated *.asset.php carries the bundle's wp-* dependencies
+		// and a content-hash version.
+		$asset_file = EDBS_DIR . 'assets/build/metabox/index.asset.php';
+		$asset      = file_exists( $asset_file )
+			? require $asset_file
+			: [
+				'dependencies' => [],
+				'version'      => EDBS_VERSION,
+			];
 
-	/**
-	 * Returns the inline JavaScript for the media library URL picker.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	private function get_media_picker_script(): string {
-		return <<<'JS'
-document.addEventListener( 'DOMContentLoaded', function () {
-	document.querySelectorAll( '.edbs-media-button' ).forEach( function ( button ) {
-		button.addEventListener( 'click', function ( e ) {
-			e.preventDefault();
-
-			var targetId = this.dataset.target;
-			var title    = this.dataset.title;
-			var insert   = this.dataset.insert;
-
-			var frame = wp.media( {
-				title:    title,
-				button:   { text: insert },
-				multiple: false,
-			} );
-
-			frame.on( 'select', function () {
-				var attachment = frame.state().get( 'selection' ).first().toJSON();
-				var field = document.getElementById( targetId );
-				if ( field ) {
-					field.value = attachment.url;
-				}
-			} );
-
-			frame.open();
-		} );
-	} );
-} );
-JS;
+		wp_enqueue_script(
+			'edbs-meta-box',
+			EDBS_URL . 'assets/build/metabox/index.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+		wp_enqueue_style( 'wp-components' );
+		wp_enqueue_style(
+			'edbs-meta-box',
+			EDBS_URL . 'assets/css/metabox.css',
+			[ 'wp-components' ],
+			EDBS_VERSION
+		);
+		wp_set_script_translations( 'edbs-meta-box', 'boardscribe' );
+		wp_localize_script( 'edbs-meta-box', 'edbsMetaBoxFieldRegistry', MetaBoxFieldRegistry::js_schema() );
 	}
 
 	/**
@@ -170,13 +162,15 @@ JS;
 	}
 
 	/**
-	 * Registers the Meeting Details meta box on the edit screen.
+	 * Whether the native meta box UI (and its enqueued script/style) should
+	 * be shown - checked once from both add_meta_box() and enqueue_scripts()
+	 * so a Pro replacement UI suppresses both consistently.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function add_meta_box(): void {
+	private static function is_native_meta_box_enabled(): bool {
 		/**
 		 * Filters whether to show the native meta box UI. Return false to replace
 		 * it with a custom UI.
@@ -185,7 +179,18 @@ JS;
 		 *
 		 * @param bool $show Whether to show the native meta box.
 		 */
-		if ( ! apply_filters( 'edbs_use_native_meta_boxes', true ) ) {
+		return (bool) apply_filters( 'edbs_use_native_meta_boxes', true );
+	}
+
+	/**
+	 * Registers the Meeting Details meta box on the edit screen.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function add_meta_box(): void {
+		if ( ! self::is_native_meta_box_enabled() ) {
 			return;
 		}
 
@@ -208,16 +213,13 @@ JS;
 	 * @return void
 	 */
 	public function render_meta_box( \WP_Post $post ): void {
-		$meeting_date     = get_post_meta( $post->ID, 'edbs_meeting_date', true );
-		$agenda_url       = get_post_meta( $post->ID, 'edbs_agenda_url', true );
-		$minutes_url      = get_post_meta( $post->ID, 'edbs_minutes_url', true );
-		$meeting_not_held = get_post_meta( $post->ID, 'edbs_meeting_not_held', true );
-
 		wp_nonce_field( 'edbs_save_meeting_meta', 'edbs_meeting_meta_nonce' );
 
 		/**
-		 * Fires before the default meta box fields are rendered. Pro plugin can
-		 * use this to prepend additional fields.
+		 * Fires before the Meeting Details React app's mount point. Pro plugin
+		 * can use this to render PHP content above the fields (the field rows
+		 * themselves are React-rendered from MetaBoxFieldRegistry — add a
+		 * field there instead of trying to inject a row here).
 		 *
 		 * @since 1.0.0
 		 *
@@ -225,7 +227,19 @@ JS;
 		 */
 		do_action( 'edbs_before_meta_box_fields', $post );
 
-		require EDBS_DIR . 'partials/meta-box.php';
+		$values = [];
+		foreach ( MetaBoxFieldRegistry::all() as $field ) {
+			if ( ! empty( $field['render_callback'] ) && is_callable( $field['render_callback'] ) ) {
+				$values[ $field['key'] ] = call_user_func( $field['render_callback'], $post );
+			} else {
+				$values[ $field['key'] ] = get_post_meta( $post->ID, $field['key'], true );
+			}
+		}
+		?>
+		<div id="edbs-meeting-meta-box-root" data-values="<?php echo esc_attr( wp_json_encode( $values, JSON_UNESCAPED_SLASHES ) ); ?>">
+			<noscript><?php esc_html_e( 'The Meeting Details fields require JavaScript.', 'boardscribe' ); ?></noscript>
+		</div>
+		<?php
 	}
 
 	/**
@@ -253,28 +267,9 @@ JS;
 			return;
 		}
 
-		// Meeting date — validate it is a real date in Y-m-d format.
-		if ( isset( $_POST['edbs_meeting_date'] ) ) {
-			$raw_date = sanitize_text_field( wp_unslash( $_POST['edbs_meeting_date'] ) );
-			$date_obj = \DateTime::createFromFormat( 'Y-m-d', $raw_date );
-			if ( $date_obj && $date_obj->format( 'Y-m-d' ) === $raw_date ) {
-				update_post_meta( $post_id, 'edbs_meeting_date', $raw_date );
-			}
+		foreach ( MetaBoxFieldRegistry::all() as $field ) {
+			$this->save_field( $post_id, $field );
 		}
-
-		// Agenda URL.
-		if ( isset( $_POST['edbs_agenda_url'] ) ) {
-			update_post_meta( $post_id, 'edbs_agenda_url', esc_url_raw( wp_unslash( $_POST['edbs_agenda_url'] ) ) );
-		}
-
-		// Minutes URL.
-		if ( isset( $_POST['edbs_minutes_url'] ) ) {
-			update_post_meta( $post_id, 'edbs_minutes_url', esc_url_raw( wp_unslash( $_POST['edbs_minutes_url'] ) ) );
-		}
-
-		// Not held — checkbox is absent when unchecked.
-		$not_held = isset( $_POST['edbs_meeting_not_held'] ) ? '1' : '';
-		update_post_meta( $post_id, 'edbs_meeting_not_held', $not_held );
 
 		/**
 		 * Fires after the default meta fields are saved. Pro plugin can hook here
@@ -288,6 +283,66 @@ JS;
 
 		// Fall back to a generated title when the editor left it blank.
 		$this->maybe_set_default_title( $post_id );
+	}
+
+	/**
+	 * Sanitizes and saves one MetaBoxFieldRegistry field from $_POST. A
+	 * field's own sanitize_callback takes priority; otherwise the field's
+	 * type gets a sensible default sanitizer. An invalid date is left
+	 * unsaved (old value kept) rather than overwritten with a blank one —
+	 * matches the pre-React behavior. A field marked saved_externally is
+	 * skipped entirely — the plugin that owns it saves it itself (see the
+	 * edbs_meeting_meta_fields filter's docblock in MetaBoxFieldRegistry).
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param int                  $post_id The post ID being saved.
+	 * @param array<string, mixed> $field   Field descriptor from MetaBoxFieldRegistry.
+	 * @return void
+	 */
+	private function save_field( int $post_id, array $field ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called for every field.
+		if ( ! empty( $field['saved_externally'] ) ) {
+			return;
+		}
+
+		$key  = $field['key'];
+		$type = $field['type'] ?? 'text';
+
+		if ( 'checkbox' === $type ) {
+			update_post_meta( $post_id, $key, isset( $_POST[ $key ] ) ? '1' : '' );
+			return;
+		}
+
+		if ( ! isset( $_POST[ $key ] ) ) {
+			return;
+		}
+
+		if ( ! empty( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
+			update_post_meta(
+				$post_id,
+				$key,
+				call_user_func( $field['sanitize_callback'], sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) )
+			);
+			return;
+		}
+
+		if ( 'date' === $type ) {
+			$raw_date = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			$date_obj = \DateTime::createFromFormat( 'Y-m-d', $raw_date );
+			if ( $date_obj && $date_obj->format( 'Y-m-d' ) === $raw_date ) {
+				update_post_meta( $post_id, $key, $raw_date );
+			}
+			return;
+		}
+
+		if ( 'url' === $type || 'resource' === $type ) {
+			update_post_meta( $post_id, $key, esc_url_raw( wp_unslash( $_POST[ $key ] ) ) );
+			return;
+		}
+
+		update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 	/**
