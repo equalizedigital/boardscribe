@@ -2,20 +2,15 @@ import { __ } from '@wordpress/i18n';
 
 /**
  * Opens the wp.media() library modal and reports the selected attachment
- * back to the caller - the shared frame-open/select-handling logic
- * field-control.js's inline "Media Library" button (a plain url field) and
- * resource-modal.js's MediaLibrarySource (the 'resource' Add/Replace
- * modal's media_library source) each used to implement independently.
+ * back to the caller. Shared by field-control.js's url-field button and
+ * resource-modal.js's media_library source.
  *
  * @param {Object}   config            Config.
  * @param {string}   [config.title]    wp.media() modal title.
- * @param {Function} config.onSelect   Called with the selected attachment's URL, and a
- *                                     second `{ title }` argument (the attachment's own
- *                                     title, falling back to its filename) - a caller that
- *                                     doesn't need it can simply ignore the extra argument.
- * @param {Function} [config.onCancel] Called if the frame closes with no selection made,
- *                                     or if wp.media isn't available at all. Optional - a
- *                                     caller with nothing to do on cancel can omit it.
+ * @param {Function} config.onSelect   Called with the selected attachment's URL and a
+ *                                     `{ title }` argument (title falls back to filename).
+ * @param {Function} [config.onCancel] Called if the frame closes with no selection, or
+ *                                     wp.media isn't available. Optional.
  */
 export function openMediaLibrary( { title, onSelect, onCancel } ) {
 	if ( ! window.wp || ! window.wp.media ) {
