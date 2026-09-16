@@ -1,10 +1,10 @@
 import { BaseControl } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { AttachedRepeaterField } from './attached-repeater-field';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
-import { HiddenFields, resolveFieldSources, resolveResourceDisplay, resolveResourceTitle } from './resource-utils';
+import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay, resolveResourceTitle } from './resource-utils';
 
 /**
  * A "resource" field: a card (or, empty, a dashed add-prompt) fed by a
@@ -48,6 +48,7 @@ import { HiddenFields, resolveFieldSources, resolveResourceDisplay, resolveResou
  */
 export function ResourceField( { field, value, onChange, sourceValue, onSourceChange, editUrlValue, onEditUrlChange, allValues, attachedField } ) {
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
+	const containerRef = useRef( null );
 	const hasValue = !! value;
 	const sources = resolveFieldSources( field, [ 'media_library', 'external_url' ] );
 
@@ -60,6 +61,12 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 			onEditUrlChange( ( extra && extra.editUrl ) || '' );
 		}
 		setIsModalOpen( false );
+		// Add/Replace swaps the empty prompt's "Add" button for the
+		// card's own action row (or vice versa) - the button that was
+		// just clicked no longer exists, so nothing carries focus
+		// forward on its own. Move it to whatever's now first in the
+		// card once that re-render lands.
+		focusFirstActionable( containerRef );
 	};
 
 	const handleRemove = () => {
@@ -79,6 +86,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 		if ( attachedField ) {
 			attachedField.onChange( [] );
 		}
+		focusFirstActionable( containerRef );
 	};
 
 	const { chips, meta } = resolveResourceDisplay( value, sourceValue );
@@ -101,28 +109,30 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 
 	return (
 		<BaseControl id={ field.key } label={ field.label } help={ field.description || undefined } __nextHasNoMarginBottom>
-			{ hasValue ? (
-				<ResourceCard
-					title={ title }
-					chips={ chips }
-					meta={ meta }
-					actions={ actions }
-				>
-					{ attachedField && (
-						<AttachedRepeaterField
-							field={ attachedField.field }
-							value={ attachedField.value }
-							onChange={ attachedField.onChange }
-						/>
-					) }
-				</ResourceCard>
-			) : (
-				<ResourceCardEmpty
-					message={ sprintf( /* translators: %s: field label, e.g. "minutes". */ __( 'No %s attached.', 'boardscribe' ), field.label.toLowerCase() ) }
-					actionLabel={ sprintf( /* translators: %s: field label, e.g. "Minutes". */ __( 'Add %s', 'boardscribe' ), field.label ) }
-					onAdd={ () => setIsModalOpen( true ) }
-				/>
-			) }
+			<div ref={ containerRef }>
+				{ hasValue ? (
+					<ResourceCard
+						title={ title }
+						chips={ chips }
+						meta={ meta }
+						actions={ actions }
+					>
+						{ attachedField && (
+							<AttachedRepeaterField
+								field={ attachedField.field }
+								value={ attachedField.value }
+								onChange={ attachedField.onChange }
+							/>
+						) }
+					</ResourceCard>
+				) : (
+					<ResourceCardEmpty
+						message={ sprintf( /* translators: %s: field label, e.g. "minutes". */ __( 'No %s attached.', 'boardscribe' ), field.label.toLowerCase() ) }
+						actionLabel={ sprintf( /* translators: %s: field label, e.g. "Minutes". */ __( 'Add %s', 'boardscribe' ), field.label ) }
+						onAdd={ () => setIsModalOpen( true ) }
+					/>
+				) }
+			</div>
 
 			<HiddenFields fields={ [
 				{ name: field.key, value },

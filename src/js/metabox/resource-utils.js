@@ -17,6 +17,30 @@ export function resolveFieldSources( field, defaultSources ) {
 }
 
 /**
+ * Restores keyboard focus into a card after an Add/Replace/Remove action
+ * re-renders it (e.g. the empty state's "Add" button is swapped for the
+ * card's own action row, or vice versa) - the element that was just
+ * clicked no longer exists once that happens, so nothing carries focus
+ * forward on its own and it silently falls through to the document body.
+ * Deferred via setTimeout so it runs after the state update that
+ * triggered the re-render has actually committed.
+ *
+ * @param {import('react').RefObject<HTMLElement>} containerRef Ref to the field's card container.
+ */
+export function focusFirstActionable( containerRef ) {
+	window.setTimeout( () => {
+		// :not([disabled]) matters here - a repeater row's own reorder
+		// controls (ReorderControls) can render a disabled "Move up"/"Move
+		// down" button first in DOM order (the only/first/last row), and
+		// .focus() on a disabled element silently no-ops.
+		const focusable = containerRef.current && containerRef.current.querySelector( 'button:not([disabled]), a[href]' );
+		if ( focusable ) {
+			focusable.focus();
+		}
+	} );
+}
+
+/**
  * A set of hidden `<input>`s writing a resource value's fields to the post
  * form. Takes a name/value list rather than a fixed shape since callers
  * (resource-field.js's single triplet vs. the per-row triplets in
