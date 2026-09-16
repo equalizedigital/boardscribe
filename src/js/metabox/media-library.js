@@ -21,6 +21,7 @@ export function openMediaLibrary( { title, onSelect, onCancel } ) {
 	}
 
 	let picked = false;
+
 	const frame = window.wp.media( {
 		title: title || __( 'Select a File', 'boardscribe' ),
 		button: { text: __( 'Use this file', 'boardscribe' ) },
@@ -31,15 +32,17 @@ export function openMediaLibrary( { title, onSelect, onCancel } ) {
 		picked = true;
 		const attachment = frame.state().get( 'selection' ).first().toJSON();
 		onSelect( attachment.url, { title: attachment.title || attachment.filename || '' } );
+		// wp.media doesn't auto-close after a plain select() - close it
+		// ourselves so the frame doesn't linger open behind the field's
+		// own updated card.
+		frame.close();
 	} );
 
-	if ( onCancel ) {
-		frame.on( 'close', () => {
-			if ( ! picked ) {
-				onCancel();
-			}
-		} );
-	}
+	frame.on( 'close', () => {
+		if ( ! picked && onCancel ) {
+			onCancel();
+		}
+	} );
 
 	frame.open();
 }

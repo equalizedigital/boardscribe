@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
-import { HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
+import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * One row's reorder controls: a drag handle for mouse/touch users (plain
@@ -153,6 +153,7 @@ export function ResourceListField( { field, value, onChange } ) {
 	const items = Array.isArray( value ) ? value : [];
 	const [ modalIndex, setModalIndex ] = useState( null );
 	const dragIndex = useRef( null );
+	const containerRef = useRef( null );
 
 	const updateItem = ( index, patch ) => {
 		onChange( items.map( ( item, i ) => ( i === index ? { ...item, ...patch } : item ) ) );
@@ -160,6 +161,10 @@ export function ResourceListField( { field, value, onChange } ) {
 
 	const removeItem = ( index ) => {
 		onChange( items.filter( ( _, i ) => i !== index ) );
+		// Removing the last row swaps it (plus the "+ Add" button) for the
+		// empty state's own "Add" button - focus it, same reasoning as
+		// resource-field.js's focusFirstActionable() calls.
+		focusFirstActionable( containerRef );
 	};
 
 	// 'new' opens the modal for a brand-new row (appended on save, with its
@@ -183,67 +188,69 @@ export function ResourceListField( { field, value, onChange } ) {
 
 	return (
 		<BaseControl id={ field.key } label={ field.label } help={ field.description || undefined } __nextHasNoMarginBottom>
-			{ 0 === items.length && (
-				<ResourceCardEmpty
-					message={ sprintf( /* translators: %s: item noun, e.g. "documents". */ __( 'No %s added.', 'boardscribe' ), itemNoun.toLowerCase() + 's' ) }
-					actionLabel={ sprintf( /* translators: %s: item noun, e.g. "Document". */ __( 'Add %s', 'boardscribe' ), itemNoun ) }
-					onAdd={ addItem }
-				/>
-			) }
+			<div ref={ containerRef }>
+				{ 0 === items.length && (
+					<ResourceCardEmpty
+						message={ sprintf( /* translators: %s: item noun, e.g. "documents". */ __( 'No %s added.', 'boardscribe' ), itemNoun.toLowerCase() + 's' ) }
+						actionLabel={ sprintf( /* translators: %s: item noun, e.g. "Document". */ __( 'Add %s', 'boardscribe' ), itemNoun ) }
+						onAdd={ addItem }
+					/>
+				) }
 
-			{ items.map( ( item, index ) => {
-				const { chips, meta } = resolveResourceDisplay( item.url, item.source );
-				return (
-					<div
-						className="edbs-resource-list__row"
-						key={ index }
-						draggable
-						onDragStart={ () => {
-							dragIndex.current = index;
-						} }
-						onDragOver={ ( event ) => event.preventDefault() }
-						onDrop={ ( event ) => {
-							event.preventDefault();
-							if ( null !== dragIndex.current ) {
-								reorder( dragIndex.current, index );
-								dragIndex.current = null;
-							}
-						} }
-					>
-						<ResourceCard
-							dragHandle={
-								<ReorderControls
-									itemLabel={ item.label || itemNoun }
-									isFirst={ 0 === index }
-									isLast={ index === items.length - 1 }
-									onMoveUp={ () => reorder( index, index - 1 ) }
-									onMoveDown={ () => reorder( index, index + 1 ) }
-								/>
-							}
-							title={ <EditableTitle label={ item.label } onChange={ ( label ) => updateItem( index, { label } ) } /> }
-							chips={ item.url ? chips : [] }
-							meta={ item.url ? meta : '' }
-							actions={ [
-								{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
-								{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
-								{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
-							] }
+				{ items.map( ( item, index ) => {
+					const { chips, meta } = resolveResourceDisplay( item.url, item.source );
+					return (
+						<div
+							className="edbs-resource-list__row"
+							key={ index }
+							draggable
+							onDragStart={ () => {
+								dragIndex.current = index;
+							} }
+							onDragOver={ ( event ) => event.preventDefault() }
+							onDrop={ ( event ) => {
+								event.preventDefault();
+								if ( null !== dragIndex.current ) {
+									reorder( dragIndex.current, index );
+									dragIndex.current = null;
+								}
+							} }
 						>
-							<HiddenFields fields={ [
-								{ name: `${ field.key }[${ index }][label]`, value: item.label },
-								{ name: `${ field.key }[${ index }][url]`, value: item.url },
-								{ name: `${ field.key }[${ index }][source]`, value: item.source },
-							] } />
-						</ResourceCard>
-					</div>
-				);
-			} ) }
+							<ResourceCard
+								dragHandle={
+									<ReorderControls
+										itemLabel={ item.label || itemNoun }
+										isFirst={ 0 === index }
+										isLast={ index === items.length - 1 }
+										onMoveUp={ () => reorder( index, index - 1 ) }
+										onMoveDown={ () => reorder( index, index + 1 ) }
+									/>
+								}
+								title={ <EditableTitle label={ item.label } onChange={ ( label ) => updateItem( index, { label } ) } /> }
+								chips={ item.url ? chips : [] }
+								meta={ item.url ? meta : '' }
+								actions={ [
+									{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
+									{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
+									{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
+								] }
+							>
+								<HiddenFields fields={ [
+									{ name: `${ field.key }[${ index }][label]`, value: item.label },
+									{ name: `${ field.key }[${ index }][url]`, value: item.url },
+									{ name: `${ field.key }[${ index }][source]`, value: item.source },
+								] } />
+							</ResourceCard>
+						</div>
+					);
+				} ) }
 
-			{ items.length > 0 && (
-				<Button variant="secondary" onClick={ addItem }>
-					{ sprintf( /* translators: %s: item noun, e.g. "Document". */ __( '+ Add %s', 'boardscribe' ), itemNoun ) }
-				</Button>
-			) }
+				{ items.length > 0 && (
+					<Button variant="secondary" onClick={ addItem }>
+						{ sprintf( /* translators: %s: item noun, e.g. "Document". */ __( '+ Add %s', 'boardscribe' ), itemNoun ) }
+					</Button>
+				) }
+			</div>
 
 			{ null !== modalIndex && (
 				<ResourceModal
@@ -260,6 +267,18 @@ export function ResourceListField( { field, value, onChange } ) {
 							updateItem( modalIndex, { url, source } );
 						}
 						setModalIndex( null );
+						if ( isAdding ) {
+							// A first row (0 -> 1) swaps the empty state's
+							// own "Add" button for this row's card - same
+							// reasoning as resource-field.js's
+							// focusFirstActionable() calls. Replacing an
+							// existing row doesn't unmount anything, so the
+							// Modal's own focus-return to that row's
+							// "Replace" button already works correctly -
+							// calling this here too would override it and
+							// jump focus to the list's first item instead.
+							focusFirstActionable( containerRef );
+						}
 					} }
 					onClose={ () => setModalIndex( null ) }
 				/>
