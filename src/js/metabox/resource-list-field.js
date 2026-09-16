@@ -264,7 +264,19 @@ export function ResourceListField( { field, value, onChange } ) {
 						if ( isAdding ) {
 							onChange( [ ...items, { label: ( extra && extra.title ) || '', url, source } ] );
 						} else {
-							updateItem( modalIndex, { url, source } );
+							// A source that hands back a title (Media Library's
+							// attachment title) means a real file was just
+							// swapped in - the row's label should follow it,
+							// even overwriting a name someone set by hand
+							// earlier, rather than silently keeping a title
+							// that no longer describes what's actually linked.
+							// A source with no title (External URL) leaves the
+							// existing label alone, same as before.
+							const patch = { url, source };
+							if ( extra && extra.title ) {
+								patch.label = extra.title;
+							}
+							updateItem( modalIndex, patch );
 						}
 						setModalIndex( null );
 						if ( isAdding ) {
