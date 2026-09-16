@@ -267,10 +267,18 @@ export function ResourceListField( { field, value, onChange } ) {
 							updateItem( modalIndex, { url, source } );
 						}
 						setModalIndex( null );
-						// A first row (0 -> 1) swaps the empty state's own
-						// "Add" button for this row's card - same reasoning
-						// as resource-field.js's focusFirstActionable() calls.
-						focusFirstActionable( containerRef );
+						if ( isAdding ) {
+							// A first row (0 -> 1) swaps the empty state's
+							// own "Add" button for this row's card - same
+							// reasoning as resource-field.js's
+							// focusFirstActionable() calls. Replacing an
+							// existing row doesn't unmount anything, so the
+							// Modal's own focus-return to that row's
+							// "Replace" button already works correctly -
+							// calling this here too would override it and
+							// jump focus to the list's first item instead.
+							focusFirstActionable( containerRef );
+						}
 					} }
 					onClose={ () => setModalIndex( null ) }
 				/>
