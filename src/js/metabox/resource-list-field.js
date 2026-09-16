@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
-import { resolveResourceDisplay } from './resource-utils';
+import { HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * One row's reorder controls: a drag handle for mouse/touch users (plain
@@ -229,9 +229,11 @@ export function ResourceListField( { field, value, onChange } ) {
 								{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
 							] }
 						>
-							<input type="hidden" name={ `${ field.key }[${ index }][label]` } value={ item.label || '' } readOnly />
-							<input type="hidden" name={ `${ field.key }[${ index }][url]` } value={ item.url || '' } readOnly />
-							<input type="hidden" name={ `${ field.key }[${ index }][source]` } value={ item.source || '' } readOnly />
+							<HiddenFields fields={ [
+								{ name: `${ field.key }[${ index }][label]`, value: item.label },
+								{ name: `${ field.key }[${ index }][url]`, value: item.url },
+								{ name: `${ field.key }[${ index }][source]`, value: item.source },
+							] } />
 						</ResourceCard>
 					</div>
 				);
@@ -246,7 +248,7 @@ export function ResourceListField( { field, value, onChange } ) {
 			{ null !== modalIndex && (
 				<ResourceModal
 					title={ resourceModalTitle( itemNoun, ! isAdding ) }
-					sources={ field.sources && field.sources.length ? field.sources : [ 'media_library', 'external_url' ] }
+					sources={ resolveFieldSources( field, [ 'media_library', 'external_url' ] ) }
 					mediaTitle={ field.mediaTitle }
 					fieldLabel={ itemNoun }
 					currentValue={ isAdding ? '' : items[ modalIndex ].url }

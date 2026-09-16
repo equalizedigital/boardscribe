@@ -1,6 +1,7 @@
 import { BaseControl, Button, CheckboxControl, TextareaControl, TextControl } from '@wordpress/components';
 import { RawHTML } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { openMediaLibrary } from './media-library';
 import { ResourceField } from './resource-field';
 import { ResourceListField } from './resource-list-field';
 
@@ -8,32 +9,6 @@ const CONTROL_PROPS = {
 	__next40pxDefaultSize: true,
 	__nextHasNoMarginBottom: true,
 };
-
-/**
- * Opens the wp.media() library modal and reports the selected
- * attachment's URL back to the field.
- *
- * @param {string}   title    Modal title.
- * @param {Function} onSelect Called with the selected attachment's URL.
- */
-function openMediaLibrary( title, onSelect ) {
-	if ( ! window.wp || ! window.wp.media ) {
-		return;
-	}
-
-	const frame = window.wp.media( {
-		title,
-		button: { text: __( 'Use this file', 'boardscribe' ) },
-		multiple: false,
-	} );
-
-	frame.on( 'select', () => {
-		const attachment = frame.state().get( 'selection' ).first().toJSON();
-		onSelect( attachment.url );
-	} );
-
-	frame.open();
-}
 
 /**
  * Renders one Meeting Details field. Built-in types are text/url/date/
@@ -148,7 +123,7 @@ export function MetaField( { field, value, onChange, sourceValue, onSourceChange
 					{ field.mediaPicker && (
 						<Button
 							variant="secondary"
-							onClick={ () => openMediaLibrary( field.mediaTitle, onChange ) }
+							onClick={ () => openMediaLibrary( { title: field.mediaTitle, onSelect: onChange } ) }
 						>
 							{ __( 'Media Library', 'boardscribe' ) }
 						</Button>

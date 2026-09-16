@@ -3,7 +3,7 @@ import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { EditableTitle } from './resource-list-field';
 import { ResourceModal } from './resource-modal';
-import { resolveResourceDisplay } from './resource-utils';
+import { HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * An `attached` field's inline repeater - a 'resource' field's own card
@@ -63,7 +63,7 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
 	const itemNoun = field.itemNoun || __( 'Item', 'boardscribe' );
 	const emptyItemLabel = field.emptyItemLabel || sprintf( /* translators: %s: item noun, e.g. "Caption Track". */ __( 'Untitled %s', 'boardscribe' ), itemNoun.toLowerCase() );
-	const sources = field.sources && field.sources.length ? field.sources : [ 'media_library' ];
+	const sources = resolveFieldSources( field, [ 'media_library' ] );
 
 	const updateRow = ( index, patch ) => {
 		onChange( rows.map( ( row, i ) => ( i === index ? { ...row, ...patch } : row ) ) );
@@ -102,9 +102,11 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 						>
 							{ __( 'Remove', 'boardscribe' ) }
 						</Button>
-						<input type="hidden" name={ `${ field.key }[${ index }][label]` } value={ row.label || '' } readOnly />
-						<input type="hidden" name={ `${ field.key }[${ index }][url]` } value={ row.url || '' } readOnly />
-						<input type="hidden" name={ `${ field.key }[${ index }][source]` } value={ row.source || '' } readOnly />
+						<HiddenFields fields={ [
+							{ name: `${ field.key }[${ index }][label]`, value: row.label },
+							{ name: `${ field.key }[${ index }][url]`, value: row.url },
+							{ name: `${ field.key }[${ index }][source]`, value: row.source },
+						] } />
 					</div>
 				);
 			} ) }

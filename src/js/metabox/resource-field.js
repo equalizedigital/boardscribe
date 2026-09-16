@@ -4,7 +4,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { AttachedRepeaterField } from './attached-repeater-field';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
-import { resolveResourceDisplay, resolveResourceTitle } from './resource-utils';
+import { HiddenFields, resolveFieldSources, resolveResourceDisplay, resolveResourceTitle } from './resource-utils';
 
 /**
  * A "resource" field: a card (or, empty, a dashed add-prompt) fed by a
@@ -49,7 +49,7 @@ import { resolveResourceDisplay, resolveResourceTitle } from './resource-utils';
 export function ResourceField( { field, value, onChange, sourceValue, onSourceChange, editUrlValue, onEditUrlChange, allValues, attachedField } ) {
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
 	const hasValue = !! value;
-	const sources = field.sources && field.sources.length ? field.sources : [ 'media_library', 'external_url' ];
+	const sources = resolveFieldSources( field, [ 'media_library', 'external_url' ] );
 
 	const handleSave = ( nextValue, extra ) => {
 		onChange( nextValue );
@@ -124,9 +124,11 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 				/>
 			) }
 
-			<input type="hidden" name={ field.key } value={ value || '' } readOnly />
-			<input type="hidden" name={ `${ field.key }_source` } value={ sourceValue || '' } readOnly />
-			<input type="hidden" name={ `${ field.key }_edit_url` } value={ editUrlValue || '' } readOnly />
+			<HiddenFields fields={ [
+				{ name: field.key, value },
+				{ name: `${ field.key }_source`, value: sourceValue },
+				{ name: `${ field.key }_edit_url`, value: editUrlValue },
+			] } />
 
 			{ isModalOpen && (
 				<ResourceModal

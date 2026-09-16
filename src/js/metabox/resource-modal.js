@@ -1,6 +1,7 @@
 import { Button, Modal, TextControl } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { openMediaLibrary } from './media-library';
 
 /**
  * Opens the wp.media() library modal, calling onSave(url, meta) on
@@ -20,31 +21,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
 	useState( () => {
-		if ( ! window.wp || ! window.wp.media ) {
-			onCancel();
-			return null;
-		}
-
-		let picked = false;
-		const frame = window.wp.media( {
-			title: mediaTitle || __( 'Select a File', 'boardscribe' ),
-			button: { text: __( 'Use this file', 'boardscribe' ) },
-			multiple: false,
-		} );
-
-		frame.on( 'select', () => {
-			picked = true;
-			const attachment = frame.state().get( 'selection' ).first().toJSON();
-			onSave( attachment.url, { title: attachment.title || attachment.filename || '' } );
-		} );
-
-		frame.on( 'close', () => {
-			if ( ! picked ) {
-				onCancel();
-			}
-		} );
-
-		frame.open();
+		openMediaLibrary( { title: mediaTitle, onSelect: onSave, onCancel } );
 		return null;
 	} );
 
