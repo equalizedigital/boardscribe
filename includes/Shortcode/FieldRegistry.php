@@ -272,6 +272,15 @@ class FieldRegistry {
 					'rest_arg' => true,
 				],
 				[
+					'key'         => 'open_links_new_window',
+					'type'        => self::TYPE_CHECKBOX,
+					'group'       => 'link_labels',
+					'label'       => __( 'Open Agenda/Minutes Links in a New Window', 'boardscribe' ),
+					'default'     => false,
+					'description' => __( 'Adds a screen-reader hint to each link when enabled, per WCAG 3.2.2.', 'boardscribe' ),
+					'rest_arg'    => true,
+				],
+				[
 					'key'     => 'hide_title',
 					'type'    => self::TYPE_CHECKBOX,
 					'group'   => 'hide_columns',
