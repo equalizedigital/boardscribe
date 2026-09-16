@@ -3,6 +3,54 @@ import { __ } from '@wordpress/i18n';
 const VIDEO_EXTENSIONS = [ 'mp4', 'mov', 'webm', 'm4v', 'avi' ];
 
 /**
+ * A field's Add/Replace-modal source list: its own `field.sources` when
+ * set, else a caller-supplied default. Each of the three current callers
+ * (resource-field.js, resource-list-field.js, attached-repeater-field.js)
+ * hand-wrote this same `field.sources && field.sources.length ? ... : ...`
+ * check independently - only the *shape* of the check is shared, not the
+ * default itself: a top-level resource field defaults to both built-ins
+ * (`['media_library', 'external_url']`), while an attached field defaults
+ * to Media Library only (an attached row is virtually always an upload,
+ * not an external link) - see attached-repeater-field.js's own docblock.
+ * Not to be confused with resource-modal.js's own `registry` object,
+ * which maps a source id to its `{ label, description }` metadata rather
+ * than deciding which ids a field allows - a different concern, kept
+ * separate.
+ *
+ * @param {Object}        field          Field descriptor.
+ * @param {Array<string>} defaultSources The source ids to use when `field.sources` is unset/empty.
+ * @return {Array<string>} The resolved source ids.
+ */
+export function resolveFieldSources( field, defaultSources ) {
+	return field.sources && field.sources.length ? field.sources : defaultSources;
+}
+
+/**
+ * A set of hidden `<input>`s writing a resource value's fields to the
+ * post form - the pattern resource-field.js's single-value `{key}`/
+ * `{key}_source`/`{key}_edit_url` triplet and attached-repeater-field.js/
+ * resource-list-field.js's per-row `{key}[i][label]`/`[url]`/`[source]`
+ * triplet both hand-wrote independently. Deliberately name/value-list
+ * shaped rather than a fixed `{ label, url, source }` signature, since
+ * the two call shapes above don't actually share field names or a
+ * fields count - only the "one hidden input per field, empty string for
+ * an unset value" boilerplate.
+ *
+ * @param {Object}                               props        Component props.
+ * @param {Array<{name: string, value: string}>} props.fields Each hidden input's `name`/`value` pair.
+ * @return {JSX.Element} The hidden inputs.
+ */
+export function HiddenFields( { fields } ) {
+	return (
+		<>
+			{ fields.map( ( { name, value } ) => (
+				<input key={ name } type="hidden" name={ name } value={ value || '' } readOnly />
+			) ) }
+		</>
+	);
+}
+
+/**
  * Extracts a resource URL's filename for display - the last path segment,
  * decoded, or the raw url when it isn't a well-formed absolute URL (a
  * relative path, or malformed data). Shared by the Media Library display
