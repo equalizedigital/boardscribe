@@ -261,9 +261,23 @@
 	padding: 0;
 }
 
+/*
+ * !important on both: a "Remove" action is a `@wordpress/components`
+ * Button variant="link" (resource-card.js's CardAction), whose own
+ * Emotion (CSS-in-JS) color style is injected as a <style> tag after
+ * this stylesheet - at equal specificity (single class either way) that
+ * wins on source order without this. Pro's plain-<button> Location card
+ * reuses this same class from its own stylesheet
+ * (admin-combobox-picker.css), which also needs its own base
+ * `button.edbs-resource-card__action` color rule to visually match the
+ * other (React-rendered) cards - that rule's element+class specificity
+ * would otherwise beat this one outright, !important or not. Same class
+ * of bug as the Back button/SelectControl label Emotion overrides
+ * documented elsewhere in this codebase.
+ */
 .edbs-resource-card__action--danger,
 .edbs-resource-card__action--danger:hover {
-	color: #b32d2e;
+	color: #b32d2e !important;
 }
 
 .edbs-resource-card--empty {
