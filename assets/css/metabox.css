@@ -230,7 +230,19 @@
 	color: #585858;
 }
 
+/*
+ * A block on its own line below the chips, not a flex child alongside
+ * them - previously shared .edbs-resource-card__chips' flex-wrap
+ * container, so a short meta value (e.g. a saved location's address)
+ * would sit on the same line as the chips whenever there was room, and
+ * only wrap below them once it ran out of width. That's incidental
+ * wrapping, not the intended one-line-of-chips/one-line-of-meta layout
+ * (most visible on a long Agenda/Minutes filename or URL, which is
+ * usually long enough to force-wrap either way).
+ */
 .edbs-resource-card__meta {
+	display: block;
+	margin-top: 4px;
 	font-size: 13px;
 	color: #585858;
 	word-break: break-all;

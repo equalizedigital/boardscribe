@@ -63,9 +63,9 @@ export function ResourceCard( { title, chips, meta, children, actions, dragHandl
 								{ chip }
 							</span>
 						) ) }
-						{ meta && <span className="edbs-resource-card__meta">{ meta }</span> }
 					</div>
 				) }
+				{ meta && <div className="edbs-resource-card__meta">{ meta }</div> }
 				{ children }
 				<div className="edbs-resource-card__actions">
 					{ actions.map( ( action ) => (
