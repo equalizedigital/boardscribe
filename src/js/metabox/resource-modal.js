@@ -32,6 +32,13 @@ function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
  * A plain URL text field + confirm button - the "Enter an external URL"
  * source.
  *
+ * Wrapped in a real <form> rather than a plain onClick handler so the
+ * "required" + type="url" attributes below get real browser constraint
+ * validation before onSave ever runs - the disabled prop alone only
+ * blocks a literally-empty value, so an unedited "https://" default (or
+ * any other non-empty string that isn't actually a valid absolute URL)
+ * would otherwise sail through and get persisted as-is.
+ *
  * @param {Object}   props              Component props.
  * @param {string}   props.label        Field label, e.g. "Livestream URL".
  * @param {string}   props.initialValue The field's current value, if any.
@@ -41,21 +48,27 @@ function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
 function ExternalUrlSource( { label, initialValue, onSave } ) {
 	const [ url, setUrl ] = useState( initialValue || 'https://' );
 
+	const handleSubmit = ( event ) => {
+		event.preventDefault();
+		onSave( url );
+	};
+
 	return (
-		<div className="edbs-resource-modal__url-source">
+		<form className="edbs-resource-modal__url-source" onSubmit={ handleSubmit }>
 			<TextControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 				label={ label }
 				type="url"
+				required
 				value={ url }
 				onChange={ setUrl }
 				help={ __( 'The current resource stays unchanged until you confirm.', 'boardscribe' ) }
 			/>
-			<Button variant="primary" onClick={ () => onSave( url ) } disabled={ '' === url.trim() }>
+			<Button type="submit" variant="primary" disabled={ '' === url.trim() }>
 				{ __( 'Save URL', 'boardscribe' ) }
 			</Button>
-		</div>
+		</form>
 	);
 }
 
