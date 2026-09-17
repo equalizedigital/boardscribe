@@ -171,7 +171,8 @@ export function classifyResourceUrl( url ) {
  * guessing from the URL's shape; falls back to classifyResourceUrl() only
  * when no source is known (legacy data, or CSV-imported values). `source`
  * is a built-in ('media_library'/'external_url') or a plugin-registered
- * id on window.edbsResourceSources, whose own `label` is used for the chip.
+ * id on window.edbsResourceSources, whose own `chipLabel` (falling back
+ * to `label`) is used for the chip.
  *
  * @param {string} url    The field's raw value.
  * @param {string} source The value's tracked source - empty/unset falls
@@ -196,7 +197,14 @@ export function resolveResourceDisplay( url, source ) {
 	}
 
 	const registered = window.edbsResourceSources && window.edbsResourceSources[ source ];
-	const chip = registered ? registered.label : source;
+	// chipLabel is optional - a source's `label` reads well as a modal
+	// chooser row's own heading ("Choose a BoardScribe document") but is
+	// often too verbose/imperative for a small persistent card chip once
+	// something's actually been picked; chipLabel lets a source register
+	// a shorter noun-phrase for that spot instead ("BoardScribe
+	// document"). Falls back to `label` for a source that only registers
+	// that one string.
+	const chip = registered ? ( registered.chipLabel || registered.label ) : source;
 	return { chips: [ chip ], meta: hostPathMeta( url ) };
 }
 
