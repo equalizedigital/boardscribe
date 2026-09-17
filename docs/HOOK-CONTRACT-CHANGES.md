@@ -196,6 +196,8 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 
 **Contract impact:** any callback still hooked to `edbs_after_agenda_url_field`, `edbs_after_minutes_url_field`, or `edbs_meta_fields` stops running (a silent no-op, per WordPress's usual behavior for an unregistered hook — it won't error). A Pro field with a bespoke UI (e.g. a Document picker backed by a CPT relationship, not a plain scalar `<input>`) needs a matching entry in `window.edbsMetaBoxControls` (keyed by that field's `type`, a React component `( { field, value, onChange, id } ) => JSX.Element` — see `src/js/metabox/index.js`) and, if its saved value isn't a plain string, its own save-time handling via the `edbs_save_meeting_meta` action (unchanged) rather than relying on the registry's generic type-based sanitizers.
 
+**A field whose `$_POST` value isn't a plain scalar must set `saved_externally => true`.** This includes every `resource_list` field (Supporting Documents-shaped repeaters) and every `attached` field (regardless of its own `type`) — both are documented as always saved by the owning plugin itself, not `MetaBox::save_meta()`'s generic loop. Handling the value on `edbs_save_meeting_meta` is not by itself enough: without `saved_externally`, the generic loop still runs first and hits the value before your own handler does. `MetaBox::save_field()` now backstops a field that forgets this flag with a `_doing_it_wrong()` notice rather than silently mangling the repeater array through `sanitize_text_field()`, but the flag is still required for the value to actually persist as intended.
+
 ```php
 // Before:
 add_action( 'edbs_after_agenda_url_field', function ( \WP_Post $post ) {
