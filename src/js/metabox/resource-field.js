@@ -61,12 +61,19 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 			onEditUrlChange( ( extra && extra.editUrl ) || '' );
 		}
 		setIsModalOpen( false );
-		// Add/Replace swaps the empty prompt's "Add" button for the
-		// card's own action row (or vice versa) - the button that was
-		// just clicked no longer exists, so nothing carries focus
-		// forward on its own. Move it to whatever's now first in the
-		// card once that re-render lands.
-		focusFirstActionable( containerRef );
+		if ( ! hasValue ) {
+			// Add swaps the empty prompt's own "Add" button for the card's
+			// action row - the button that was just clicked no longer
+			// exists, so nothing carries focus forward on its own. Move it
+			// to whatever's now first in the card once that re-render
+			// lands. Replace doesn't need this: its own "Replace" button
+			// stays mounted, so WordPress's Modal already restores focus
+			// there when it unmounts - calling this unconditionally would
+			// hijack that focus away to the card's first action (View)
+			// instead. Same reasoning as resource-list-field.js's isAdding
+			// guard around its own focusFirstActionable() call.
+			focusFirstActionable( containerRef );
+		}
 	};
 
 	const handleRemove = () => {
