@@ -248,4 +248,80 @@ class MetaBoxSaveMetaTest extends TestCase {
 
 		$this->assertFalse( $fired );
 	}
+
+	/**
+	 * A 'resource' field's `{key}_source` sibling meta is saved verbatim
+	 * (through sanitize_key(), not the field's own esc_url_raw() path) so
+	 * a plugin-registered source id round-trips - see
+	 * MetaBox::save_resource_source()'s docblock.
+	 */
+	public function test_resource_field_source_is_saved(): void {
+		$_POST['edbs_agenda_url']        = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_source'] = 'media_library';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( 'media_library', get_post_meta( $this->post_id, 'edbs_agenda_url_source', true ) );
+	}
+
+	/**
+	 * The `{key}_source` sibling meta is sanitized with sanitize_key()
+	 * rather than left as raw input.
+	 */
+	public function test_resource_field_source_is_sanitized(): void {
+		$_POST['edbs_agenda_url']        = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_source'] = 'Media Library<script>!';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame(
+			sanitize_key( 'Media Library<script>!' ),
+			get_post_meta( $this->post_id, 'edbs_agenda_url_source', true )
+		);
+	}
+
+	/**
+	 * When `{key}_source` isn't present in $_POST at all (e.g. a legacy
+	 * client that doesn't send it), no sibling meta is written.
+	 */
+	public function test_resource_field_source_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_source.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_source', true ) );
+	}
+
+	/**
+	 * A 'resource' field's `{key}_edit_url` sibling meta is run through
+	 * esc_url_raw() before saving, same as the field's own url value -
+	 * see MetaBox::save_resource_edit_url()'s docblock.
+	 */
+	public function test_resource_field_edit_url_is_sanitized(): void {
+		$input                             = 'https://example.com/wp-admin/post.php?post=42&action=edit"><script>alert(1)</script>';
+		$_POST['edbs_agenda_url']          = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_edit_url'] = $input;
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame(
+			esc_url_raw( $input ),
+			get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true )
+		);
+	}
+
+	/**
+	 * When `{key}_edit_url` isn't present in $_POST (the field's source
+	 * has no underlying editable post, e.g. Media Library/External URL),
+	 * no sibling meta is written.
+	 */
+	public function test_resource_field_edit_url_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_edit_url.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true ) );
+	}
 }
