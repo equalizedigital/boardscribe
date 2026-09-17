@@ -136,64 +136,12 @@ class MetaBox {
 
 		register_post_meta(
 			'edbs_meeting',
-			'edbs_agenda_url_source',
-			array_merge(
-				$common,
-				[
-					'type'              => 'string',
-					'description'       => __( 'Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced edbs_agenda_url\'s current value.', 'boardscribe' ),
-					'sanitize_callback' => 'sanitize_key',
-				]
-			)
-		);
-
-		register_post_meta(
-			'edbs_meeting',
-			'edbs_agenda_url_edit_url',
-			array_merge(
-				$common,
-				[
-					'type'              => 'string',
-					'description'       => __( 'The wp-admin edit screen for edbs_agenda_url\'s underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link.', 'boardscribe' ),
-					'sanitize_callback' => 'esc_url_raw',
-				]
-			)
-		);
-
-		register_post_meta(
-			'edbs_meeting',
 			'edbs_minutes_url',
 			array_merge(
 				$common,
 				[
 					'type'              => 'string',
 					'description'       => __( 'URL to the published minutes document for this meeting.', 'boardscribe' ),
-					'sanitize_callback' => 'esc_url_raw',
-				]
-			)
-		);
-
-		register_post_meta(
-			'edbs_meeting',
-			'edbs_minutes_url_source',
-			array_merge(
-				$common,
-				[
-					'type'              => 'string',
-					'description'       => __( 'Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced edbs_minutes_url\'s current value.', 'boardscribe' ),
-					'sanitize_callback' => 'sanitize_key',
-				]
-			)
-		);
-
-		register_post_meta(
-			'edbs_meeting',
-			'edbs_minutes_url_edit_url',
-			array_merge(
-				$common,
-				[
-					'type'              => 'string',
-					'description'       => __( 'The wp-admin edit screen for edbs_minutes_url\'s underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link.', 'boardscribe' ),
 					'sanitize_callback' => 'esc_url_raw',
 				]
 			)
@@ -211,6 +159,48 @@ class MetaBox {
 				]
 			)
 		);
+
+		// Every 'resource'-type field (built-in Agenda/Minutes, or a
+		// plugin's own) automatically gets a `{key}_source`/`{key}_edit_url`
+		// sibling meta - see MetaBoxFieldRegistry::all()'s own docblock,
+		// which promises this happens "regardless of who added it". Loop
+		// over the resolved registry instead of hardcoding just the two
+		// core keys, so a plugin's resource field's siblings are also
+		// present in the REST meta schema without that plugin needing to
+		// register them itself.
+		foreach ( MetaBoxFieldRegistry::all() as $field ) {
+			if ( 'resource' !== ( $field['type'] ?? '' ) ) {
+				continue;
+			}
+
+			register_post_meta(
+				'edbs_meeting',
+				$field['key'] . '_source',
+				array_merge(
+					$common,
+					[
+						'type'              => 'string',
+						/* translators: %s: the resource field's meta key, e.g. edbs_agenda_url. */
+						'description'       => sprintf( __( 'Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s\'s current value.', 'boardscribe' ), $field['key'] ),
+						'sanitize_callback' => 'sanitize_key',
+					]
+				)
+			);
+
+			register_post_meta(
+				'edbs_meeting',
+				$field['key'] . '_edit_url',
+				array_merge(
+					$common,
+					[
+						'type'              => 'string',
+						/* translators: %s: the resource field's meta key, e.g. edbs_agenda_url. */
+						'description'       => sprintf( __( 'The wp-admin edit screen for %s\'s underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link.', 'boardscribe' ), $field['key'] ),
+						'sanitize_callback' => 'esc_url_raw',
+					]
+				)
+			);
+		}
 	}
 
 	/**
