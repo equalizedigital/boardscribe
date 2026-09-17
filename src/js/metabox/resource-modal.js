@@ -1,7 +1,8 @@
 import { Button, Modal, TextControl } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { openMediaLibrary } from './media-library';
+import { isValidExternalUrl } from './resource-utils';
 
 /**
  * Opens the wp.media() library modal, calling onSave(url, meta) on
@@ -30,14 +31,18 @@ function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
 
 /**
  * A plain URL text field + confirm button - the "Enter an external URL"
- * source.
+ * source, shared by every resource-shaped field (Agenda, Minutes,
+ * Supporting Documents, and Pro's Livestream/Recording/Transcript), so
+ * this one component is the only place a fix needs to land.
  *
- * Wrapped in a real <form> rather than a plain onClick handler so the
- * "required" + type="url" attributes below get real browser constraint
- * validation before onSave ever runs - the disabled prop alone only
- * blocks a literally-empty value, so an unedited "https://" default (or
- * any other non-empty string that isn't actually a valid absolute URL)
- * would otherwise sail through and get persisted as-is.
+ * Save validates the value itself (isValidExternalUrl()) rather than
+ * relying on the browser's native type="url" constraint validation -
+ * that alone isn't a reliable enforcement point (it depends on the
+ * button actually being a real submit control inside a form, which the
+ * WordPress components package's Button doesn't guarantee), and native
+ * validation's own error UI isn't reliably announced to assistive
+ * technology either. An invalid value keeps the modal open, moves focus
+ * back to the field, and shows a role="alert" message instead.
  *
  * @param {Object}   props              Component props.
  * @param {string}   props.label        Field label, e.g. "Livestream URL".
@@ -47,28 +52,48 @@ function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
  */
 function ExternalUrlSource( { label, initialValue, onSave } ) {
 	const [ url, setUrl ] = useState( initialValue || 'https://' );
+	const [ error, setError ] = useState( '' );
+	const containerRef = useRef( null );
 
-	const handleSubmit = ( event ) => {
-		event.preventDefault();
+	const handleChange = ( value ) => {
+		setUrl( value );
+		if ( error ) {
+			setError( '' );
+		}
+	};
+
+	const handleSave = () => {
+		if ( ! isValidExternalUrl( url ) ) {
+			setError( __( 'Enter a complete URL, starting with http:// or https://.', 'boardscribe' ) );
+			const input = containerRef.current && containerRef.current.querySelector( 'input' );
+			if ( input ) {
+				input.focus();
+			}
+			return;
+		}
 		onSave( url );
 	};
 
 	return (
-		<form className="edbs-resource-modal__url-source" onSubmit={ handleSubmit }>
+		<div className="edbs-resource-modal__url-source" ref={ containerRef }>
 			<TextControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 				label={ label }
 				type="url"
-				required
 				value={ url }
-				onChange={ setUrl }
+				onChange={ handleChange }
 				help={ __( 'The current resource stays unchanged until you confirm.', 'boardscribe' ) }
 			/>
-			<Button type="submit" variant="primary" disabled={ '' === url.trim() }>
+			{ error && (
+				<p className="edbs-resource-modal__url-source-error" role="alert">
+					{ error }
+				</p>
+			) }
+			<Button variant="primary" onClick={ handleSave } disabled={ '' === url.trim() }>
 				{ __( 'Save URL', 'boardscribe' ) }
 			</Button>
-		</form>
+		</div>
 	);
 }
 

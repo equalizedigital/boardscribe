@@ -17,6 +17,25 @@ export function resolveFieldSources( field, defaultSources ) {
 }
 
 /**
+ * Whether a string is a complete, absolute http(s) URL - "not a url" and
+ * an unedited/incomplete "https://" (no host) both fail this, unlike a
+ * bare non-empty check. Used by resource-modal.js's ExternalUrlSource to
+ * validate before calling onSave, rather than relying only on the
+ * browser's native type="url" constraint validation.
+ *
+ * @param {string} value The value to check.
+ * @return {boolean} Whether it's a valid external URL.
+ */
+export function isValidExternalUrl( value ) {
+	try {
+		const parsed = new URL( value.trim() );
+		return ( 'http:' === parsed.protocol || 'https:' === parsed.protocol ) && '' !== parsed.hostname;
+	} catch ( error ) {
+		return false;
+	}
+}
+
+/**
  * Restores keyboard focus into a card after an Add/Replace/Remove action
  * re-renders it (e.g. the empty state's "Add" button is swapped for the
  * card's own action row, or vice versa) - the element that was just

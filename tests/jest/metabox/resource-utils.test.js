@@ -1,4 +1,4 @@
-import { classifyResourceUrl, resolveResourceTitle } from '../../../src/js/metabox/resource-utils';
+import { classifyResourceUrl, isValidExternalUrl, resolveResourceTitle } from '../../../src/js/metabox/resource-utils';
 
 describe( 'classifyResourceUrl', () => {
 	it( 'returns no chips/meta for an empty value', () => {
@@ -64,5 +64,40 @@ describe( 'resolveResourceTitle', () => {
 		const field = { label: 'Agenda' };
 
 		expect( resolveResourceTitle( field, '2025-05-13' ) ).toBe( 'Agenda' );
+	} );
+} );
+
+describe( 'isValidExternalUrl', () => {
+	it( 'rejects plain non-URL text', () => {
+		expect( isValidExternalUrl( 'not a url' ) ).toBe( false );
+	} );
+
+	it( 'rejects an incomplete "https://" with no host - the unedited default value', () => {
+		expect( isValidExternalUrl( 'https://' ) ).toBe( false );
+	} );
+
+	it( 'rejects an incomplete "http://" with no host', () => {
+		expect( isValidExternalUrl( 'http://' ) ).toBe( false );
+	} );
+
+	it( 'rejects an empty value', () => {
+		expect( isValidExternalUrl( '' ) ).toBe( false );
+	} );
+
+	it( 'rejects a non-http(s) scheme', () => {
+		expect( isValidExternalUrl( 'javascript:alert(1)' ) ).toBe( false );
+		expect( isValidExternalUrl( 'ftp://example.com/file.pdf' ) ).toBe( false );
+	} );
+
+	it( 'accepts a complete https URL', () => {
+		expect( isValidExternalUrl( 'https://example.com/agenda.pdf' ) ).toBe( true );
+	} );
+
+	it( 'accepts a complete http URL', () => {
+		expect( isValidExternalUrl( 'http://example.com/agenda.pdf' ) ).toBe( true );
+	} );
+
+	it( 'trims surrounding whitespace before validating', () => {
+		expect( isValidExternalUrl( '  https://example.com  ' ) ).toBe( true );
 	} );
 } );

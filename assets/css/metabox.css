@@ -400,6 +400,12 @@
 	gap: 12px;
 }
 
+.edbs-resource-modal__url-source-error {
+	margin: -8px 0 0;
+	color: #b32d2e;
+	font-size: 13px;
+}
+
 /* ── Resource list repeater (src/js/metabox/resource-list-field.js) ───── */
 
 .edbs-resource-list__row {
