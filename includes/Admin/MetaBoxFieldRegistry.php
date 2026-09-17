@@ -263,8 +263,19 @@ class MetaBoxFieldRegistry {
 	 * Resolves insert_after into final row order: fields without it keep
 	 * their filtered array order, then each field with insert_after is
 	 * spliced in directly after its target (appended at the end if the
-	 * target key isn't found — a plugin ordering error shouldn't drop the
-	 * field entirely).
+	 * target key is never found — a plugin ordering error shouldn't drop
+	 * the field entirely).
+	 *
+	 * Resolves in repeated passes rather than a single one, so a field
+	 * chaining off another *deferred* field (insert_after => B, where B
+	 * itself has its own insert_after — the docblock above's "extracting
+	 * an already-registered core field and re-adding it later" pattern)
+	 * still lands in the right spot once B itself gets placed. A single
+	 * pass only succeeds if B happens to appear earlier than this field in
+	 * $fields' own order — which depends on which order plugin filter
+	 * callbacks ran in, not on the actual dependency chain — so a field
+	 * processed before its deferred target would otherwise silently fall
+	 * through to "append at the end" instead of resolving correctly.
 	 *
 	 * @since 1.6.0
 	 *
@@ -283,21 +294,37 @@ class MetaBoxFieldRegistry {
 			}
 		}
 
-		foreach ( $deferred as $field ) {
-			$index = null;
-			foreach ( $ordered as $i => $existing ) {
-				if ( $existing['key'] === $field['insert_after'] ) {
-					$index = $i;
-					break;
+		$made_progress = true;
+		while ( $deferred && $made_progress ) {
+			$made_progress  = false;
+			$still_deferred = [];
+
+			foreach ( $deferred as $field ) {
+				$index = null;
+				foreach ( $ordered as $i => $existing ) {
+					if ( $existing['key'] === $field['insert_after'] ) {
+						$index = $i;
+						break;
+					}
 				}
+
+				if ( null === $index ) {
+					$still_deferred[] = $field;
+					continue;
+				}
+
+				array_splice( $ordered, $index + 1, 0, [ $field ] );
+				$made_progress = true;
 			}
 
-			if ( null === $index ) {
-				$ordered[] = $field;
-				continue;
-			}
+			$deferred = $still_deferred;
+		}
 
-			array_splice( $ordered, $index + 1, 0, [ $field ] );
+		// Anything left has an insert_after target that was never found in
+		// any pass (a plugin ordering error, or a target key that's simply
+		// wrong) - append at the end rather than dropping it.
+		foreach ( $deferred as $field ) {
+			$ordered[] = $field;
 		}
 
 		return $ordered;

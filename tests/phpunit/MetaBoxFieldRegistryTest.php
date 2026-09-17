@@ -82,6 +82,46 @@ class MetaBoxFieldRegistryTest extends TestCase {
 	}
 
 	/**
+	 * A field chaining off another *deferred* field (C targets B, and B
+	 * itself has its own insert_after targeting a core field) still lands
+	 * directly after B once B is placed - even when C appears *before* B
+	 * in the filtered array, which a single-pass resolution would get
+	 * wrong (B isn't in $ordered yet when C is processed, so C would
+	 * silently fall through to "append at the end" instead of landing
+	 * next to B). This is exactly the pattern the $group docblock above
+	 * recommends (extracting an already-registered core field and
+	 * re-adding it later with a new insert_after).
+	 */
+	public function test_field_chained_off_a_deferred_field_still_lands_correctly_regardless_of_registration_order(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				// C is appended before B, deliberately reversed from the
+				// order a single-pass resolution would require.
+				$fields[] = [
+					'key'          => 'pro_field_c',
+					'type'         => 'text',
+					'label'        => 'C',
+					'insert_after' => 'pro_field_b',
+				];
+				$fields[] = [
+					'key'          => 'pro_field_b',
+					'type'         => 'text',
+					'label'        => 'B',
+					'insert_after' => 'edbs_agenda_url',
+				];
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$agenda_index = array_search( 'edbs_agenda_url', $keys, true );
+		$this->assertSame( 'pro_field_b', $keys[ $agenda_index + 1 ] );
+		$this->assertSame( 'pro_field_c', $keys[ $agenda_index + 2 ] );
+	}
+
+	/**
 	 * A field targeting a key that doesn't exist in the registry is
 	 * appended rather than silently dropped.
 	 */
