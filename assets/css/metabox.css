@@ -352,8 +352,19 @@
 
 /* ── Resource Add/Replace modal (src/js/metabox/resource-modal.js) ────── */
 
+/*
+ * A fixed width/min-height rather than max-width/height alone - the
+ * chooser step (media_library/external_url/a plugin source), the
+ * external-URL form, and a plugin-registered source's own content
+ * (e.g. Pro's document combobox) are all very different sizes, and
+ * without this the modal visibly jumps dimensions on every Back/
+ * forward step and even between "Add Agenda" vs "Add Minutes" if one
+ * field's sources differ from another's.
+ */
 .edbs-resource-modal .components-modal__content {
-	max-width: 480px;
+	width: 480px;
+	max-width: calc(100vw - 32px);
+	min-height: 260px;
 }
 
 .edbs-resource-modal__chooser {
