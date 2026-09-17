@@ -207,7 +207,7 @@ export function ResourceModal( { title, sources, mediaTitle, fieldLabel, current
 					{ sources.length > 1 && (
 						<Button
 							className="edbs-resource-modal__back"
-							variant="tertiary"
+							variant="link"
 							onClick={ () => setActiveSource( null ) }
 						>
 							{ __( '← Back', 'boardscribe' ) }

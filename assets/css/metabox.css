@@ -401,8 +401,16 @@
 	font-size: 13px;
 }
 
+/*
+ * !important: the `link` variant Button's own Emotion (CSS-in-JS) styles
+ * set margin: 0, inserted as a <style> tag after this stylesheet, so it
+ * wins on source order at equal specificity without this - same issue as
+ * the SelectControl label override in the Pro repo's
+ * admin-combobox-picker.css.
+ */
 .edbs-resource-modal__back {
-	margin-bottom: 8px;
+	display: inline-block;
+	margin-bottom: 16px !important;
 }
 
 .edbs-resource-modal__url-source {
