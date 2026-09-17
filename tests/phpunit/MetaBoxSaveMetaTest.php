@@ -324,4 +324,68 @@ class MetaBoxSaveMetaTest extends TestCase {
 
 		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true ) );
 	}
+
+	/**
+	 * A 'resource_list' field that a plugin forgot to mark
+	 * saved_externally is not saved by the generic loop (its $_POST value
+	 * is a repeater array, not a plain scalar) - it triggers a
+	 * _doing_it_wrong() notice rather than falling through to
+	 * sanitize_text_field() on an array.
+	 */
+	public function test_misconfigured_resource_list_field_is_not_auto_saved(): void {
+		$this->setExpectedIncorrectUsage( 'EqualizeDigital\BoardScribe\Admin\MetaBox::save_field' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'   => 'pro_documents',
+				'type'  => 'resource_list',
+				'label' => 'Pro Documents',
+				// Deliberately missing saved_externally => true.
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_documents'] = [
+			[
+				'label' => 'Budget',
+				'url'   => 'https://example.com/budget.pdf',
+			],
+		];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_documents', true ) );
+	}
+
+	/**
+	 * An 'attached' field that a plugin forgot to mark saved_externally
+	 * is not auto-saved either, regardless of its own $type - the
+	 * attached mechanism itself is always externally saved.
+	 */
+	public function test_misconfigured_attached_field_is_not_auto_saved(): void {
+		$this->setExpectedIncorrectUsage( 'EqualizeDigital\BoardScribe\Admin\MetaBox::save_field' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'      => 'pro_captions',
+				'type'     => 'text',
+				'label'    => 'Pro Captions',
+				'attached' => true,
+				// Deliberately missing saved_externally => true.
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_captions'] = [ [ 'label' => 'English', 'url' => 'https://example.com/en.vtt' ] ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_captions', true ) );
+	}
 }

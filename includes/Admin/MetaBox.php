@@ -373,6 +373,29 @@ class MetaBox {
 		$key  = $field['key'];
 		$type = $field['type'] ?? 'text';
 
+		// A 'resource_list' field's $_POST shape is a repeater array, not a
+		// plain scalar - it's documented as always saved_externally (the
+		// owning plugin persists it itself), and so is any 'attached'
+		// field, regardless of its own $type. There's no cross-repo
+		// compiler to enforce a plugin actually set that flag when
+		// registering one, so this is a defensive backstop: without it, a
+		// misconfigured field falls through to sanitize_text_field() on an
+		// array below, which is fatal under this repo's own PHPUnit config
+		// (convertWarningsToExceptions) and silently mangles the value in
+		// production.
+		if ( 'resource_list' === $type || ! empty( $field['attached'] ) ) {
+			_doing_it_wrong(
+				__METHOD__,
+				sprintf(
+					/* translators: %s: the misconfigured field's meta key. */
+					esc_html__( 'The "%s" field is a resource_list or attached field and must set saved_externally => true.', 'boardscribe' ),
+					esc_html( $key )
+				),
+				'1.6.0'
+			);
+			return;
+		}
+
 		if ( 'checkbox' === $type ) {
 			update_post_meta( $post_id, $key, isset( $_POST[ $key ] ) ? '1' : '' );
 			return;
