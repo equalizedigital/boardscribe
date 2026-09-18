@@ -60,19 +60,31 @@ function ReorderControls( { itemLabel, isFirst, isLast, onMoveUp, onMoveDown } )
  * data, see field.itemNoun and ProMetaFields::render_documents_html()'s
  * pre-registry equivalent).
  *
- * @param {Object}   props              Component props.
- * @param {string}   props.label        Current label.
- * @param {Function} props.onChange     Called with the new label on save.
- * @param {string}   [props.emptyLabel] Shown in place of an empty label - defaults to "Untitled
- *                                      document"; attached-repeater-field.js passes its own
- *                                      per-field default instead (see that file's docblock).
- * @param {string}   [props.fieldLabel] The hidden accessible label for the edit-mode text field
- *                                      (visually hidden either way) - defaults to "Document name".
+ * @param {Object}   props                   Component props.
+ * @param {string}   props.label             Current label.
+ * @param {Function} props.onChange          Called with the new label on save.
+ * @param {string}   [props.emptyLabel]      Shown in place of an empty label - defaults to "Untitled
+ *                                           document"; attached-repeater-field.js passes its own
+ *                                           per-field default instead (see that file's docblock).
+ * @param {string}   [props.fieldLabel]      The hidden accessible label for the edit-mode text
+ *                                           field (visually hidden either way) - defaults to
+ *                                           "Document name".
+ * @param {boolean}  [props.hideEditButton]  Suppresses the own built-in trigger button - for a
+ *                                           caller (ResourceListField) that puts its own trigger
+ *                                           in the card's action row instead and drives `isEditing`.
+ * @param {boolean}  [props.isEditing]       Controls editing state externally when provided,
+ *                                           instead of the internal default.
+ * @param {Function} [props.onEditingChange] Called with the next isEditing value (true from the
+ *                                           own trigger button, false on save) when controlled.
  * @return {JSX.Element} The title cell.
  */
-export function EditableTitle( { label, onChange, emptyLabel, fieldLabel } ) {
-	const [ isEditing, setIsEditing ] = useState( false );
+export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEditButton, isEditing: isEditingProp, onEditingChange } ) {
+	const [ internalIsEditing, setInternalIsEditing ] = useState( false );
+	const isControlled = undefined !== isEditingProp;
+	const isEditing = isControlled ? isEditingProp : internalIsEditing;
+	const setIsEditing = isControlled ? onEditingChange : setInternalIsEditing;
 	const [ draft, setDraft ] = useState( label );
+	const inputRef = useRef( null );
 
 	// Rows are keyed by array index (see ResourceListField/AttachedRepeaterField),
 	// so a reorder or removal can hand this exact component instance a
@@ -84,13 +96,21 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel } ) {
 		setDraft( label );
 	}, [ label ] );
 
+	useEffect( () => {
+		if ( isEditing && inputRef.current ) {
+			inputRef.current.focus();
+		}
+	}, [ isEditing ] );
+
 	if ( ! isEditing ) {
 		return (
 			<>
 				{ label || emptyLabel || __( 'Untitled document', 'boardscribe' ) }
-				<Button variant="link" className="edbs-resource-card__edit-title" onClick={ () => setIsEditing( true ) }>
-					{ __( 'Edit title', 'boardscribe' ) }
-				</Button>
+				{ ! hideEditButton && (
+					<Button variant="link" className="edbs-resource-card__edit-title" onClick={ () => setIsEditing( true ) }>
+						{ __( 'Edit title', 'boardscribe' ) }
+					</Button>
+				) }
 			</>
 		);
 	}
@@ -103,6 +123,7 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel } ) {
 	return (
 		<div className="edbs-resource-card__title-edit">
 			<TextControl
+				ref={ inputRef }
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 				label={ fieldLabel || __( 'Document name', 'boardscribe' ) }
@@ -152,6 +173,7 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel } ) {
 export function ResourceListField( { field, value, onChange } ) {
 	const items = Array.isArray( value ) ? value : [];
 	const [ modalIndex, setModalIndex ] = useState( null );
+	const [ editingIndex, setEditingIndex ] = useState( null );
 	const dragIndex = useRef( null );
 	const containerRef = useRef( null );
 
@@ -185,6 +207,20 @@ export function ResourceListField( { field, value, onChange } ) {
 
 	const itemNoun = field.itemNoun || __( 'Document', 'boardscribe' );
 	const isAdding = 'new' === modalIndex;
+	const editTitleButtonId = ( index ) => `${ field.key }-${ index }-edit-title`;
+
+	// EditableTitle only closes editing via Save (there's no Cancel), so
+	// this always means "just saved" - move focus to the action row's own
+	// "Edit title" button, since it's now the only visible trigger.
+	const finishEditingTitle = ( index ) => {
+		setEditingIndex( null );
+		window.setTimeout( () => {
+			const button = document.getElementById( editTitleButtonId( index ) );
+			if ( button ) {
+				button.focus();
+			}
+		} );
+	};
 
 	return (
 		<BaseControl id={ field.key } label={ field.label } help={ field.description || undefined } __nextHasNoMarginBottom>
@@ -226,11 +262,20 @@ export function ResourceListField( { field, value, onChange } ) {
 										onMoveDown={ () => reorder( index, index + 1 ) }
 									/>
 								}
-								title={ <EditableTitle label={ item.label } onChange={ ( label ) => updateItem( index, { label } ) } /> }
+								title={
+									<EditableTitle
+										label={ item.label }
+										onChange={ ( label ) => updateItem( index, { label } ) }
+										hideEditButton
+										isEditing={ editingIndex === index }
+										onEditingChange={ ( next ) => ( next ? setEditingIndex( index ) : finishEditingTitle( index ) ) }
+									/>
+								}
 								chips={ item.url ? chips : [] }
 								meta={ item.url ? meta : '' }
 								actions={ [
 									{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
+									{ id: editTitleButtonId( index ), label: __( 'Edit title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Edit title of %s', 'boardscribe' ), item.label || itemNoun ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
 									{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
 									{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
 								] }

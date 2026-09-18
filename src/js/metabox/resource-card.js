@@ -14,21 +14,23 @@ import { Button } from '@wordpress/components';
  * @param {Function} [props.onClick]   Click handler - omit for a plain link (props.href).
  * @param {string}   [props.href]      Link target for a plain View-style link.
  * @param {boolean}  [props.danger]    True for a destructive action (Remove).
+ * @param {boolean}  [props.disabled]  Disables an onClick-style action (ignored for an href one).
+ * @param {string}   [props.id]        DOM id, e.g. so a caller can move focus back to this action.
  * @return {JSX.Element} The action.
  */
-function CardAction( { label, ariaLabel, onClick, href, danger } ) {
+function CardAction( { label, ariaLabel, onClick, href, danger, disabled, id } ) {
 	const className = danger ? 'edbs-resource-card__action edbs-resource-card__action--danger' : 'edbs-resource-card__action';
 
 	if ( href ) {
 		return (
-			<a className={ className } href={ href } target="_blank" rel="noopener noreferrer" aria-label={ ariaLabel || undefined }>
+			<a id={ id } className={ className } href={ href } target="_blank" rel="noopener noreferrer" aria-label={ ariaLabel || undefined }>
 				{ label }
 			</a>
 		);
 	}
 
 	return (
-		<Button className={ className } variant="link" onClick={ onClick } aria-label={ ariaLabel || undefined }>
+		<Button id={ id } className={ className } variant="link" onClick={ onClick } disabled={ disabled } aria-label={ ariaLabel || undefined }>
 			{ label }
 		</Button>
 	);
@@ -41,13 +43,13 @@ function CardAction( { label, ariaLabel, onClick, href, danger } ) {
  * Livestream, Recording, CC Transcript, Supporting Documents rows) so they
  * all read as one visual system rather than one-off field markup.
  *
- * @param {Object}                                                                                          props              Component props.
- * @param {string}                                                                                          props.title        The resource's display title.
- * @param {Array<string>}                                                                                   props.chips        Small status/source badges, e.g. ["External URL"].
- * @param {string}                                                                                          [props.meta]       Secondary line under the chips (filename, URL, address).
- * @param {import('react').ReactNode}                                                                       [props.children]   Extra content under the meta line.
- * @param {Array<{label: string, ariaLabel?: string, onClick?: Function, href?: string, danger?: boolean}>} props.actions      Action row - see CardAction's `ariaLabel` doc for why callers should pass it.
- * @param {import('react').ReactNode}                                                                       [props.dragHandle] Optional drag handle rendered at the card's edge (repeater rows).
+ * @param {Object}                                                                                                                           props              Component props.
+ * @param {string}                                                                                                                           props.title        The resource's display title.
+ * @param {Array<string>}                                                                                                                    props.chips        Small status/source badges, e.g. ["External URL"].
+ * @param {string}                                                                                                                           [props.meta]       Secondary line under the chips (filename, URL, address).
+ * @param {import('react').ReactNode}                                                                                                        [props.children]   Extra content under the meta line.
+ * @param {Array<{label: string, ariaLabel?: string, onClick?: Function, href?: string, danger?: boolean, disabled?: boolean, id?: string}>} props.actions      Action row - see CardAction's `ariaLabel` doc for why callers should pass it.
+ * @param {import('react').ReactNode}                                                                                                        [props.dragHandle] Optional drag handle rendered at the card's edge (repeater rows).
  * @return {JSX.Element} The card.
  */
 export function ResourceCard( { title, chips, meta, children, actions, dragHandle } ) {
