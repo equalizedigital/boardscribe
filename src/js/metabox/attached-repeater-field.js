@@ -41,9 +41,10 @@ import { HiddenFields, resolveFieldSources, resolveResourceDisplay } from './res
  *                                  - `description` is optional help text below the Add button.
  *                                  - `itemNoun` feeds the "+ Add {noun}" button and Add modal
  *                                  title, default "Item".
- *                                  - `defaultItemLabel` seeds a newly added row's label (e.g.
- *                                  "English" for captions) - defaults to '' (shows as
- *                                  `emptyItemLabel` until edited) when unset.
+ *                                  - `defaultItemLabel` seeds a newly added row's label -
+ *                                  defaults to '' (shows as `emptyItemLabel` until edited,
+ *                                  Pro's caption tracks leave this unset rather than guessing
+ *                                  a language) when unset.
  *                                  - `emptyItemLabel` is shown in place of an unlabeled row's
  *                                  label - defaults to "Untitled {noun}".
  *                                  - `itemFieldLabel` is the inline edit field's own hidden

@@ -108,7 +108,7 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 				{ label || emptyLabel || __( 'Untitled document', 'boardscribe' ) }
 				{ ! hideEditButton && (
 					<Button variant="link" className="edbs-resource-card__edit-title" onClick={ () => setIsEditing( true ) }>
-						{ __( 'Edit title', 'boardscribe' ) }
+						{ label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ) }
 					</Button>
 				) }
 			</>
@@ -312,7 +312,7 @@ export function ResourceListField( { field, value, onChange } ) {
 									meta={ item.url ? meta : '' }
 									actions={ [
 										{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
-										{ id: editTitleButtonId( index ), label: __( 'Edit title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Edit title of %s', 'boardscribe' ), item.label || itemNoun ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
+										{ id: editTitleButtonId( index ), label: item.label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ item.label ? __( 'Edit title of %s', 'boardscribe' ) : __( 'Add title of %s', 'boardscribe' ), item.label || itemNoun ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
 										{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
 										{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
 									] }

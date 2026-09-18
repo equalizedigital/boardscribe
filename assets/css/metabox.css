@@ -493,7 +493,9 @@
 }
 
 .edbs-resource-card__edit-title {
-	margin-left: 8px;
+	/* !important: Button's own Emotion style sets margin: 0, same
+	 * specificity fight as the color/underline overrides above. */
+	margin-left: 8px !important;
 	font-weight: 400;
 	font-size: 13px;
 	height: auto;
