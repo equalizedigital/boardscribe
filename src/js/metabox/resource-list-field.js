@@ -76,9 +76,13 @@ function ReorderControls( { itemLabel, isFirst, isLast, onMoveUp, onMoveDown } )
  *                                           instead of the internal default.
  * @param {Function} [props.onEditingChange] Called with the next isEditing value (true from the
  *                                           own trigger button, false on save) when controlled.
+ * @param {string}   [props.ariaLabel]       Accessible name for the built-in trigger button,
+ *                                           overriding its visible "Edit title"/"Add title" text -
+ *                                           a repeater with several rows needs this to tell a
+ *                                           screen reader which row's title each button edits.
  * @return {JSX.Element} The title cell.
  */
-export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEditButton, isEditing: isEditingProp, onEditingChange } ) {
+export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEditButton, isEditing: isEditingProp, onEditingChange, ariaLabel } ) {
 	const [ internalIsEditing, setInternalIsEditing ] = useState( false );
 	const isControlled = undefined !== isEditingProp;
 	const isEditing = isControlled ? isEditingProp : internalIsEditing;
@@ -107,7 +111,7 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 			<>
 				{ label || emptyLabel || __( 'Untitled document', 'boardscribe' ) }
 				{ ! hideEditButton && (
-					<Button variant="link" className="edbs-resource-card__edit-title" onClick={ () => setIsEditing( true ) }>
+					<Button variant="link" className="edbs-resource-card__edit-title" aria-label={ ariaLabel || undefined } onClick={ () => setIsEditing( true ) }>
 						{ label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ) }
 					</Button>
 				) }
@@ -258,6 +262,13 @@ export function ResourceListField( { field, value, onChange } ) {
 					const showIndicator = ( position ) =>
 						null !== draggingIndex && dropTarget && dropTarget.index === index && dropTarget.position === position;
 
+					// item.label alone isn't reliably unique across rows (two
+					// documents can share a title, or both be untitled) - fold
+					// in the filename too, same reasoning as
+					// attached-repeater-field.js's rowDescription.
+					const itemNounOrLabel = item.label || itemNoun;
+					const itemDescription = meta ? sprintf( /* translators: 1: row title or item noun, 2: filename. */ __( '%1$s, %2$s', 'boardscribe' ), itemNounOrLabel, meta ) : itemNounOrLabel;
+
 					return (
 						<Fragment key={ index }>
 							{ showIndicator( 'before' ) && <div className="edbs-resource-list__drop-indicator" /> }
@@ -292,7 +303,7 @@ export function ResourceListField( { field, value, onChange } ) {
 								<ResourceCard
 									dragHandle={
 										<ReorderControls
-											itemLabel={ item.label || itemNoun }
+											itemLabel={ itemDescription }
 											isFirst={ 0 === index }
 											isLast={ index === items.length - 1 }
 											onMoveUp={ () => reorder( index, index - 1 ) }
@@ -311,10 +322,10 @@ export function ResourceListField( { field, value, onChange } ) {
 									chips={ item.url ? chips : [] }
 									meta={ item.url ? meta : '' }
 									actions={ [
-										{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
-										{ id: editTitleButtonId( index ), label: item.label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ item.label ? __( 'Edit title of %s', 'boardscribe' ) : __( 'Add title of %s', 'boardscribe' ), item.label || itemNoun ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
-										{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
-										{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
+										{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ __( 'View %s', 'boardscribe' ), itemDescription ), href: item.url || undefined },
+										{ id: editTitleButtonId( index ), label: item.label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ item.label ? __( 'Edit title of %s', 'boardscribe' ) : __( 'Add title of %s', 'boardscribe' ), itemDescription ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
+										{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ __( 'Replace %s', 'boardscribe' ), itemDescription ), onClick: () => setModalIndex( index ) },
+										{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ __( 'Remove %s', 'boardscribe' ), itemDescription ), danger: true, onClick: () => removeItem( index ) },
 									] }
 								>
 									<HiddenFields fields={ [

@@ -80,6 +80,15 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 
 			{ rows.map( ( row, index ) => {
 				const { meta } = resolveResourceDisplay( row.url, row.source );
+				// Every row's own actions read identically ("Remove", "Edit/Add
+				// title") to a screen reader unless given a row-specific
+				// accessible name. row.label alone isn't reliably unique -
+				// several rows can share a title (e.g. two "English" caption
+				// tracks) - so this also folds in the filename (meta), which
+				// is what actually tells those rows apart, same as the
+				// visible "{label} · {filename}" line does.
+				const rowNoun = row.label || itemNoun;
+				const rowDescription = meta ? sprintf( /* translators: 1: row title or item noun, 2: filename. */ __( '%1$s, %2$s', 'boardscribe' ), rowNoun, meta ) : rowNoun;
 				return (
 					<div className="edbs-attached-repeater__row" key={ index }>
 						<span className="edbs-attached-repeater__label">
@@ -88,6 +97,10 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 								emptyLabel={ emptyItemLabel }
 								fieldLabel={ field.itemFieldLabel || itemNoun }
 								onChange={ ( label ) => updateRow( index, { label } ) }
+								ariaLabel={ row.label
+									? sprintf( /* translators: %s: the row's title + filename, e.g. "English, en.srt". */ __( 'Edit title of %s', 'boardscribe' ), rowDescription )
+									: sprintf( /* translators: %s: the item noun + filename, e.g. "Caption Track, en.srt". */ __( 'Add title for %s', 'boardscribe' ), rowDescription )
+								}
 							/>
 						</span>
 						{ meta && (
@@ -99,6 +112,7 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 						<Button
 							variant="link"
 							className="edbs-resource-card__action edbs-resource-card__action--danger edbs-attached-repeater__remove"
+							aria-label={ sprintf( /* translators: %s: the row's title + filename, e.g. "English, en.srt". */ __( 'Remove %s', 'boardscribe' ), rowDescription ) }
 							onClick={ () => removeRow( index ) }
 						>
 							{ __( 'Remove', 'boardscribe' ) }
