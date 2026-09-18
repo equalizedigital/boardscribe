@@ -14,8 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers post meta and provides a native admin meta box UI
- * for the four BoardScribe meeting meta fields.
+ * Registers post meta and provides a native admin meta box UI, rendered by
+ * a React app (src/js/metabox/) reading MetaBoxFieldRegistry::js_schema(),
+ * for the BoardScribe meeting meta fields.
  */
 class MetaBox {
 
@@ -34,7 +35,7 @@ class MetaBox {
 	}
 
 	/**
-	 * Enqueues the media library and the meta box picker script.
+	 * Enqueues the media library and the Meeting Details React app.
 	 *
 	 * @since 1.0.0
 	 *
@@ -51,50 +52,41 @@ class MetaBox {
 			return;
 		}
 
+		if ( ! self::is_native_meta_box_enabled() ) {
+			return;
+		}
+
+		// wp.media() backs the per-field "Media Library" button the React
+		// app renders for fields with media_picker => true.
 		wp_enqueue_media();
 
-		wp_register_script( 'edbs-meta-box', false, [ 'media-upload' ], EDBS_VERSION, true );
-		wp_enqueue_script( 'edbs-meta-box' );
-		wp_add_inline_script( 'edbs-meta-box', $this->get_media_picker_script() );
-	}
+		// Built by `npm run build` (assets/build/ is gitignored); the
+		// generated *.asset.php carries the bundle's wp-* dependencies
+		// and a content-hash version.
+		$asset_file = EDBS_DIR . 'assets/build/metabox/index.asset.php';
+		$asset      = file_exists( $asset_file )
+			? require $asset_file
+			: [
+				'dependencies' => [],
+				'version'      => EDBS_VERSION,
+			];
 
-	/**
-	 * Returns the inline JavaScript for the media library URL picker.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	private function get_media_picker_script(): string {
-		return <<<'JS'
-document.addEventListener( 'DOMContentLoaded', function () {
-	document.querySelectorAll( '.edbs-media-button' ).forEach( function ( button ) {
-		button.addEventListener( 'click', function ( e ) {
-			e.preventDefault();
-
-			var targetId = this.dataset.target;
-			var title    = this.dataset.title;
-			var insert   = this.dataset.insert;
-
-			var frame = wp.media( {
-				title:    title,
-				button:   { text: insert },
-				multiple: false,
-			} );
-
-			frame.on( 'select', function () {
-				var attachment = frame.state().get( 'selection' ).first().toJSON();
-				var field = document.getElementById( targetId );
-				if ( field ) {
-					field.value = attachment.url;
-				}
-			} );
-
-			frame.open();
-		} );
-	} );
-} );
-JS;
+		wp_enqueue_script(
+			'edbs-meta-box',
+			EDBS_URL . 'assets/build/metabox/index.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+		wp_enqueue_style( 'wp-components' );
+		wp_enqueue_style(
+			'edbs-meta-box',
+			EDBS_URL . 'assets/css/metabox.css',
+			[ 'wp-components' ],
+			EDBS_VERSION
+		);
+		wp_set_script_translations( 'edbs-meta-box', 'boardscribe' );
+		wp_localize_script( 'edbs-meta-box', 'edbsMetaBoxFieldRegistry', MetaBoxFieldRegistry::js_schema() );
 	}
 
 	/**
@@ -167,6 +159,69 @@ JS;
 				]
 			)
 		);
+
+		// Every 'resource'-type field (built-in Agenda/Minutes, or a
+		// plugin's own) automatically gets a `{key}_source`/`{key}_edit_url`
+		// sibling meta - see MetaBoxFieldRegistry::all()'s own docblock,
+		// which promises this happens "regardless of who added it". Loop
+		// over the resolved registry instead of hardcoding just the two
+		// core keys, so a plugin's resource field's siblings are also
+		// present in the REST meta schema without that plugin needing to
+		// register them itself.
+		foreach ( MetaBoxFieldRegistry::all() as $field ) {
+			if ( 'resource' !== ( $field['type'] ?? '' ) ) {
+				continue;
+			}
+
+			register_post_meta(
+				'edbs_meeting',
+				$field['key'] . '_source',
+				array_merge(
+					$common,
+					[
+						'type'              => 'string',
+						/* translators: %s: the resource field's meta key, e.g. edbs_agenda_url. */
+						'description'       => sprintf( __( 'Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s\'s current value.', 'boardscribe' ), $field['key'] ),
+						'sanitize_callback' => 'sanitize_key',
+					]
+				)
+			);
+
+			register_post_meta(
+				'edbs_meeting',
+				$field['key'] . '_edit_url',
+				array_merge(
+					$common,
+					[
+						'type'              => 'string',
+						/* translators: %s: the resource field's meta key, e.g. edbs_agenda_url. */
+						'description'       => sprintf( __( 'The wp-admin edit screen for %s\'s underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link.', 'boardscribe' ), $field['key'] ),
+						'sanitize_callback' => 'esc_url_raw',
+					]
+				)
+			);
+		}
+	}
+
+	/**
+	 * Whether the native meta box UI (and its enqueued script/style) should
+	 * be shown - checked once from both add_meta_box() and enqueue_scripts()
+	 * so a Pro replacement UI suppresses both consistently.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private static function is_native_meta_box_enabled(): bool {
+		/**
+		 * Filters whether to show the native meta box UI. Return false to replace
+		 * it with a custom UI.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param bool $show Whether to show the native meta box.
+		 */
+		return (bool) apply_filters( 'edbs_use_native_meta_boxes', true );
 	}
 
 	/**
@@ -177,15 +232,7 @@ JS;
 	 * @return void
 	 */
 	public function add_meta_box(): void {
-		/**
-		 * Filters whether to show the native meta box UI. Return false to replace
-		 * it with a custom UI.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param bool $show Whether to show the native meta box.
-		 */
-		if ( ! apply_filters( 'edbs_use_native_meta_boxes', true ) ) {
+		if ( ! self::is_native_meta_box_enabled() ) {
 			return;
 		}
 
@@ -208,16 +255,13 @@ JS;
 	 * @return void
 	 */
 	public function render_meta_box( \WP_Post $post ): void {
-		$meeting_date     = get_post_meta( $post->ID, 'edbs_meeting_date', true );
-		$agenda_url       = get_post_meta( $post->ID, 'edbs_agenda_url', true );
-		$minutes_url      = get_post_meta( $post->ID, 'edbs_minutes_url', true );
-		$meeting_not_held = get_post_meta( $post->ID, 'edbs_meeting_not_held', true );
-
 		wp_nonce_field( 'edbs_save_meeting_meta', 'edbs_meeting_meta_nonce' );
 
 		/**
-		 * Fires before the default meta box fields are rendered. Pro plugin can
-		 * use this to prepend additional fields.
+		 * Fires before the Meeting Details React app's mount point. Pro plugin
+		 * can use this to render PHP content above the fields (the field rows
+		 * themselves are React-rendered from MetaBoxFieldRegistry — add a
+		 * field there instead of trying to inject a row here).
 		 *
 		 * @since 1.0.0
 		 *
@@ -225,7 +269,31 @@ JS;
 		 */
 		do_action( 'edbs_before_meta_box_fields', $post );
 
-		require EDBS_DIR . 'partials/meta-box.php';
+		$values = [];
+		foreach ( MetaBoxFieldRegistry::all() as $field ) {
+			if ( ! empty( $field['render_callback'] ) && is_callable( $field['render_callback'] ) ) {
+				$values[ $field['key'] ] = call_user_func( $field['render_callback'], $post );
+			} else {
+				$values[ $field['key'] ] = get_post_meta( $post->ID, $field['key'], true );
+			}
+
+			// A 'resource' field's card chip is driven by which Add/Replace-
+			// modal source produced its value (see resource-utils.js's
+			// resolveResourceDisplay()), and its optional "Edit" action by
+			// the underlying post's wp-admin edit URL, if its source has one
+			// (e.g. a linked document) - both tracked in these sibling metas
+			// rather than the field's own schema entry, since neither is a
+			// field the registry renders its own row for.
+			if ( 'resource' === ( $field['type'] ?? '' ) ) {
+				$values[ $field['key'] . '_source' ]   = get_post_meta( $post->ID, $field['key'] . '_source', true );
+				$values[ $field['key'] . '_edit_url' ] = get_post_meta( $post->ID, $field['key'] . '_edit_url', true );
+			}
+		}
+		?>
+		<div id="edbs-meeting-meta-box-root" data-values="<?php echo esc_attr( wp_json_encode( $values, JSON_UNESCAPED_SLASHES ) ); ?>">
+			<noscript><?php esc_html_e( 'The Meeting Details fields require JavaScript.', 'boardscribe' ); ?></noscript>
+		</div>
+		<?php
 	}
 
 	/**
@@ -253,28 +321,9 @@ JS;
 			return;
 		}
 
-		// Meeting date — validate it is a real date in Y-m-d format.
-		if ( isset( $_POST['edbs_meeting_date'] ) ) {
-			$raw_date = sanitize_text_field( wp_unslash( $_POST['edbs_meeting_date'] ) );
-			$date_obj = \DateTime::createFromFormat( 'Y-m-d', $raw_date );
-			if ( $date_obj && $date_obj->format( 'Y-m-d' ) === $raw_date ) {
-				update_post_meta( $post_id, 'edbs_meeting_date', $raw_date );
-			}
+		foreach ( MetaBoxFieldRegistry::all() as $field ) {
+			$this->save_field( $post_id, $field );
 		}
-
-		// Agenda URL.
-		if ( isset( $_POST['edbs_agenda_url'] ) ) {
-			update_post_meta( $post_id, 'edbs_agenda_url', esc_url_raw( wp_unslash( $_POST['edbs_agenda_url'] ) ) );
-		}
-
-		// Minutes URL.
-		if ( isset( $_POST['edbs_minutes_url'] ) ) {
-			update_post_meta( $post_id, 'edbs_minutes_url', esc_url_raw( wp_unslash( $_POST['edbs_minutes_url'] ) ) );
-		}
-
-		// Not held — checkbox is absent when unchecked.
-		$not_held = isset( $_POST['edbs_meeting_not_held'] ) ? '1' : '';
-		update_post_meta( $post_id, 'edbs_meeting_not_held', $not_held );
 
 		/**
 		 * Fires after the default meta fields are saved. Pro plugin can hook here
@@ -288,6 +337,156 @@ JS;
 
 		// Fall back to a generated title when the editor left it blank.
 		$this->maybe_set_default_title( $post_id );
+	}
+
+	/**
+	 * Sanitizes and saves one MetaBoxFieldRegistry field from $_POST. A
+	 * field's own sanitize_callback takes priority; otherwise the field's
+	 * type gets a sensible default sanitizer. An invalid date is left
+	 * unsaved (old value kept) rather than overwritten with a blank one —
+	 * matches the pre-React behavior. A field marked saved_externally is
+	 * skipped entirely — the plugin that owns it saves it itself (see the
+	 * edbs_meeting_meta_fields filter's docblock in MetaBoxFieldRegistry).
+	 *
+	 * @since 1.6.0
+	 *
+	 * @param int                  $post_id The post ID being saved.
+	 * @param array<string, mixed> $field   Field descriptor from MetaBoxFieldRegistry.
+	 * @return void
+	 */
+	private function save_field( int $post_id, array $field ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called for every field.
+		if ( ! empty( $field['saved_externally'] ) ) {
+			return;
+		}
+
+		$key  = $field['key'];
+		$type = $field['type'] ?? 'text';
+
+		// A 'resource_list' field's $_POST shape is a repeater array, not a
+		// plain scalar - it's documented as always saved_externally (the
+		// owning plugin persists it itself), and so is any 'attached'
+		// field, regardless of its own $type. There's no cross-repo
+		// compiler to enforce a plugin actually set that flag when
+		// registering one, so this is a defensive backstop: without it, a
+		// misconfigured field falls through to sanitize_text_field() on an
+		// array below, which is fatal under this repo's own PHPUnit config
+		// (convertWarningsToExceptions) and silently mangles the value in
+		// production.
+		if ( 'resource_list' === $type || ! empty( $field['attached'] ) ) {
+			_doing_it_wrong(
+				__METHOD__,
+				sprintf(
+					/* translators: %s: the misconfigured field's meta key. */
+					esc_html__( 'The "%s" field is a resource_list or attached field and must set saved_externally => true.', 'boardscribe' ),
+					esc_html( $key )
+				),
+				'1.6.0'
+			);
+			return;
+		}
+
+		if ( 'checkbox' === $type ) {
+			update_post_meta( $post_id, $key, isset( $_POST[ $key ] ) ? '1' : '' );
+			return;
+		}
+
+		if ( ! isset( $_POST[ $key ] ) ) {
+			return;
+		}
+
+		// Saved unconditionally, ahead of every branch below (including a
+		// field's own sanitize_callback, which only handles the primary
+		// value) - see save_resource_source()/save_resource_edit_url()'s
+		// docblocks.
+		if ( 'resource' === $type ) {
+			$this->save_resource_source( $post_id, $key );
+			$this->save_resource_edit_url( $post_id, $key );
+		}
+
+		if ( ! empty( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
+			update_post_meta(
+				$post_id,
+				$key,
+				call_user_func( $field['sanitize_callback'], sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) )
+			);
+			return;
+		}
+
+		if ( 'date' === $type ) {
+			$raw_date = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			$date_obj = \DateTime::createFromFormat( 'Y-m-d', $raw_date );
+			if ( $date_obj && $date_obj->format( 'Y-m-d' ) === $raw_date ) {
+				update_post_meta( $post_id, $key, $raw_date );
+			}
+			return;
+		}
+
+		if ( 'url' === $type || 'resource' === $type ) {
+			update_post_meta( $post_id, $key, esc_url_raw( wp_unslash( $_POST[ $key ] ) ) );
+			return;
+		}
+
+		update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Saves a 'resource' field's `{key}_source` sibling meta - which
+	 * Add/Replace-modal source (media_library, external_url, or a
+	 * plugin-registered id on window.edbsResourceSources) produced the
+	 * field's current value, stamped on by resource-modal.js and carried
+	 * as a hidden `{key}_source` input alongside the field's own (see
+	 * resource-field.js/resource-list-field.js/attached-repeater-field.js).
+	 * Read here unconditionally rather than as another MetaBoxFieldRegistry
+	 * entry, since it isn't a field the registry renders its own row for -
+	 * every 'resource'-type field gets one automatically, free's own
+	 * (Agenda/Minutes) and any a plugin adds alike. Sanitized with
+	 * sanitize_key() rather than a hard enum so a plugin-registered source
+	 * id round-trips without free needing to know it exists.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @param int    $post_id The post ID being saved.
+	 * @param string $key     The 'resource' field's own meta key.
+	 * @return void
+	 */
+	private function save_resource_source( int $post_id, string $key ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called for every field.
+		$source_key = $key . '_source';
+		if ( ! isset( $_POST[ $source_key ] ) ) {
+			return;
+		}
+
+		update_post_meta( $post_id, $source_key, sanitize_key( wp_unslash( $_POST[ $source_key ] ) ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Saves a 'resource' field's `{key}_edit_url` sibling meta - the
+	 * wp-admin edit screen for the value's underlying post, when its
+	 * source has one (e.g. Pro's linked-document source), carried as a
+	 * hidden `{key}_edit_url` input alongside the field's own (see
+	 * resource-field.js). Empty for a source with no underlying editable
+	 * post (Media Library, external URL) - resource-field.js only renders
+	 * an "Edit" action when this is non-empty. Same generic-mechanism
+	 * shape as save_resource_source() - see that method's docblock.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param int    $post_id The post ID being saved.
+	 * @param string $key     The 'resource' field's own meta key.
+	 * @return void
+	 */
+	private function save_resource_edit_url( int $post_id, string $key ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called for every field.
+		$edit_url_key = $key . '_edit_url';
+		if ( ! isset( $_POST[ $edit_url_key ] ) ) {
+			return;
+		}
+
+		update_post_meta( $post_id, $edit_url_key, esc_url_raw( wp_unslash( $_POST[ $edit_url_key ] ) ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 	/**

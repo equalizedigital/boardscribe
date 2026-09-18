@@ -1,0 +1,520 @@
+/**
+ * Meeting Details meta box layout (src/js/metabox/).
+ */
+
+.edbs-metabox-app {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	max-width: 700px;
+}
+
+/*
+ * Section heading for a field's `group` (MetaBoxFieldRegistry's `group`
+ * descriptor property - see app.js). Sits inside the flex column above
+ * alongside `.edbs-metabox-app__field` rows, so its own margin (rather
+ * than the column's `gap`) carries the extra separation from the
+ * previous section - `gap` alone would space it identically from both
+ * neighbors, losing the visual grouping it exists to create.
+ */
+.edbs-metabox-app__group-heading {
+	margin: 8px 0 -4px;
+	padding-top: 16px;
+	border-top: 1px solid #dcdcde;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1e1e1e;
+}
+
+.edbs-metabox-app__group-heading:first-child {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: none;
+}
+
+/*
+ * Label-left, field-right row layout. @wordpress/components' BaseControl
+ * renders <div class="components-base-control"><div class="…__field">
+ * {label}{children}</div>{help}</div> - the label and the field's own
+ * content are siblings inside __field, and help is a sibling of __field
+ * one level up. Making __field `display: contents` promotes the label and
+ * content to be direct children of the outer grid, so all three (label,
+ * content, help) can be placed on the same two-column grid without
+ * restructuring every control's own markup.
+ *
+ * Every selector below uses `>` (direct child) all the way down from
+ * `.edbs-metabox-app__field`, not a plain descendant combinator - a field
+ * whose control is itself a small form (Supporting Documents' repeater,
+ * via EditableTitle's inline TextControl) renders its OWN nested
+ * `.components-base-control` several levels deep inside the row markup.
+ * A descendant selector would match that nested one too, turning its
+ * (deliberately visually-hidden) label into a real 160px grid column and
+ * shoving its input to the right by that much - direct-child chains only
+ * ever reach the field's own top-level control, which is always a direct
+ * child of `.edbs-metabox-app__field` (MetaField's root element - see
+ * field-control.js), never the deeper nested one.
+ */
+.edbs-metabox-app__field > .components-base-control {
+	display: grid;
+	grid-template-columns: 160px 1fr;
+	/* Row 1's max is capped to a fixed length (40px, comfortably above a
+	 * one-line label's own ~26px), not left as an intrinsic/auto max - a
+	 * content-keyword max (including min-content alone) still grows to
+	 * help satisfy a row-1/span-2 item's height (CSS Grid distributes a
+	 * spanning item's extra space across every *content-sized* track it
+	 * spans; only a track with a fixed-length max is excluded from that
+	 * step), which for a tall multi-row control (Supporting Documents'
+	 * repeater) pushed row 1 to ~half the control's total height and left
+	 * the label's own description floating around the repeater's second
+	 * row instead of sitting under the label. */
+	grid-template-rows: minmax( min-content, 40px ) auto;
+	column-gap: 20px;
+	align-items: start;
+}
+
+.edbs-metabox-app__field > .components-base-control > .components-base-control__field {
+	display: contents;
+	margin-bottom: 0;
+}
+
+/*
+ * !important: text-transform specifically - not the other properties here,
+ * which all win normally - comes from an Emotion-injected (CSS-in-JS) rule
+ * on newer @wordpress/components BaseControl labels, not a plain
+ * stylesheet class. Its specificity ties ours, but Emotion's <style> tag
+ * is inserted at runtime after this stylesheet, so it wins on source
+ * order without !important (same issue as boardscribe-pro's
+ * admin-combobox-picker.css SelectControl label override).
+ */
+.edbs-metabox-app__field > .components-base-control > .components-base-control__field > .components-base-control__label {
+	grid-column: 1;
+	grid-row: 1;
+	padding-top: 8px;
+	font-weight: 600;
+	font-size: 13px;
+	color: #1e1e1e;
+	text-transform: none !important;
+}
+
+.edbs-metabox-app__field > .components-base-control > .components-base-control__field > *:not(.components-base-control__label) {
+	grid-column: 2;
+	min-width: 0;
+}
+
+/*
+ * The primary control - specifically the FIRST non-label child, not
+ * every non-label child - spans both rows (not just row 1) so its
+ * height doesn't inflate row 1 alone; see the __help rule below for why
+ * that distinction matters. Scoped this narrowly because a repeater
+ * field (Supporting Documents' resource_list type) renders several
+ * non-label siblings in the same .components-base-control__field (one
+ * per row, plus the "+ Add" button) - spanning rows 1-2 on all of them,
+ * rather than only the first, would stack them on top of each other
+ * instead of flowing downward one per row as CSS grid's auto-placement
+ * naturally does for anything left without an explicit grid-row.
+ */
+.edbs-metabox-app__field > .components-base-control > .components-base-control__field > .components-base-control__label + * {
+	grid-row: 1 / span 2;
+}
+
+/*
+ * Description sits directly under the label, left column, by default -
+ * matching the shared UX mockup, where only Meeting Date (see the
+ * exception two rules down) keeps it under the field instead. `help` has
+ * no explicit grid-row here; CSS grid auto-placement puts it in the next
+ * free row of column 1, i.e. row 2, directly under the label in row 1.
+ *
+ * The field control above is spanned across rows 1 AND 2 (rather than
+ * confined to row 1) specifically so row 1's own height is driven by the
+ * label's short single-line content, not the field's often-taller
+ * control - row 1 being exactly label-height is what keeps the
+ * description hugging the label instead of dropping to the bottom of a
+ * row 1 that's as tall as, say, a resource card. A grid item spanning
+ * multiple rows only grows those rows if its own content doesn't already
+ * fit them combined, so this doesn't add any extra height when the field
+ * IS taller than label+help stacked (the common case) - it just stops
+ * that height from being attributed to row 1 alone.
+ */
+.edbs-metabox-app__field > .components-base-control > .components-base-control__help {
+	grid-column: 1;
+	margin-top: 4px;
+	margin-bottom: 0;
+	color: #585858;
+}
+
+/*
+ * Exception: Meeting Date's description stays under the field, right
+ * column, per the mockup - a plain HTML date input doesn't carry the same
+ * "what is this for" ambiguity a label-only row can have for other
+ * fields, so its help reads more naturally as a field-level hint than a
+ * label-level explanation. Its field control also goes back to a plain
+ * row 1 (not spanning row 2) since help now lives in row 2's OTHER
+ * column, not stacked underneath it in the same column.
+ */
+.edbs-metabox-app__field--date > .components-base-control > .components-base-control__field > .components-base-control__label + * {
+	grid-row: 1;
+}
+
+.edbs-metabox-app__field--date > .components-base-control > .components-base-control__help {
+	grid-column: 2;
+}
+
+/*
+ * Meeting Date is a plain <input type="date"> (see field-control.js) - WP
+ * admin's core stylesheet sizes date/text-like inputs to their content by
+ * default, not their container, so without this it renders much narrower
+ * than every other field's control despite sharing the same grid column.
+ */
+.edbs-metabox-app__field input[type="date"] {
+	width: 100%;
+}
+
+.edbs-metabox-app__url-row {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.edbs-metabox-app__url-row input[type="url"] {
+	flex: 1 1 260px;
+}
+
+/*
+ * ── Resource cards (src/js/metabox/resource-card.js) ────────────────────
+ * The label stays plain, left column, outside any card (see the grid
+ * rules above) - this bordered box is only around the field's own value,
+ * on the right. Most settings are this shape: label left, one card on the
+ * right holding everything about that value (chips/meta/actions). Plain
+ * scalar fields (date, text, textarea, checkbox) don't get this card -
+ * their native input is enough of a boundary on its own.
+ */
+
+.edbs-resource-card {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+	border: 1px solid #dcdcde;
+	border-left: 3px solid #2271b1;
+	background: #f8f9fa;
+	padding: 12px 14px;
+}
+
+/*
+ * `.edbs-resource-card { display: flex }` above is an author rule, so it
+ * beats the browser's UA-stylesheet `[hidden] { display: none }` at equal
+ * specificity - without this, toggling the `hidden` attribute/property (as
+ * Pro's LocationPicker::render_html() does, swapping its plain
+ * PHP-rendered `.edbs-resource-card`/`--empty` summary markup between
+ * filled and empty via vanilla JS in locationPicker.js - it isn't a React
+ * component; the free React app's own resource cards instead conditionally
+ * render, never hitting this) does nothing visually.
+ */
+.edbs-resource-card[hidden] {
+	display: none;
+}
+
+.edbs-resource-card__body {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.edbs-resource-card__title {
+	font-weight: 600;
+}
+
+.edbs-resource-card__chips {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 4px;
+}
+
+.edbs-resource-card__chip {
+	display: inline-block;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 999px;
+	padding: 1px 10px;
+	font-size: 12px;
+	color: #585858;
+}
+
+/*
+ * A block on its own line below the chips, not a flex child alongside
+ * them - previously shared .edbs-resource-card__chips' flex-wrap
+ * container, so a short meta value (e.g. a saved location's address)
+ * would sit on the same line as the chips whenever there was room, and
+ * only wrap below them once it ran out of width. That's incidental
+ * wrapping, not the intended one-line-of-chips/one-line-of-meta layout
+ * (most visible on a long Agenda/Minutes filename or URL, which is
+ * usually long enough to force-wrap either way).
+ */
+.edbs-resource-card__meta {
+	display: block;
+	margin-top: 4px;
+	font-size: 13px;
+	color: #585858;
+	word-break: break-all;
+}
+
+.edbs-resource-card__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+	margin-top: 8px;
+}
+
+.edbs-resource-card__action {
+	font-size: 13px;
+	height: auto;
+	padding: 0;
+	/* A View/Edit action is a plain <a> (browser default underline: auto
+	 * thickness/offset); Replace/Remove/Edit title are a Button
+	 * variant="link" whose own Emotion style sets thickness: from-font
+	 * and a ~2.6px offset - fixed pixel values here make every action in
+	 * a card's row underline identically regardless of which it is.
+	 * !important beats that Emotion style - see the color rule below for
+	 * the same fight. */
+	text-decoration-thickness: 1px !important;
+	text-underline-offset: 2px !important;
+}
+
+/*
+ * !important on both: a "Remove" action is a `@wordpress/components`
+ * Button variant="link" (resource-card.js's CardAction), whose own
+ * Emotion (CSS-in-JS) color style is injected as a <style> tag after
+ * this stylesheet - at equal specificity (single class either way) that
+ * wins on source order without this. Pro's plain-<button> Location card
+ * reuses this same class from its own stylesheet
+ * (admin-combobox-picker.css), which also needs its own base
+ * `button.edbs-resource-card__action` color rule to visually match the
+ * other (React-rendered) cards - that rule's element+class specificity
+ * would otherwise beat this one outright, !important or not. Same class
+ * of bug as the Back button/SelectControl label Emotion overrides
+ * documented elsewhere in this codebase.
+ */
+.edbs-resource-card__action--danger,
+.edbs-resource-card__action--danger:hover {
+	color: #b32d2e !important;
+}
+
+.edbs-resource-card--empty {
+	align-items: center;
+	justify-content: space-between;
+	border-style: dashed;
+	border-color: #c3c4c7;
+	border-left-width: 1px;
+}
+
+.edbs-resource-card__empty-message {
+	color: #585858;
+}
+
+/*
+ * A repeater row's reorder controls (see ReorderControls in
+ * resource-list-field.js): the drag handle plus Move up/down buttons,
+ * stacked in a narrow column at the card's edge.
+ */
+.edbs-resource-card__reorder {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	align-self: center;
+}
+
+/* Drag handle rendered by a repeater (e.g. Supporting Documents rows).
+ * Fixed to the same 20x20 box as the Move up/down buttons below it so
+ * the glyph centers with them, not just its own tight-fitting text box. */
+.edbs-resource-card__drag-handle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	cursor: grab;
+	/* #a7aaad measured ~2.3:1 against white - below the 3:1 WCAG 1.4.11
+	 * floor for a graphical/UI-component icon; #6c7075 clears 4.5:1. */
+	color: #6c7075;
+	touch-action: none;
+	line-height: 1;
+}
+
+.edbs-resource-card__reorder-button.components-button {
+	min-width: 20px;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	/* Button's own default is justify-content: normal (i.e. flex-start),
+	 * which leaves the ▲/▼ glyph sitting left of center in this fixed-
+	 * width box - center it to match the drag handle above it. */
+	justify-content: center;
+	color: #6c7075;
+}
+
+.edbs-resource-card__reorder-button.components-button:not(:disabled):hover {
+	color: #1e1e1e;
+}
+
+.edbs-resource-card__reorder-button.components-button:disabled {
+	color: #dcdcde;
+}
+
+/*
+ * ── Attached repeater (src/js/metabox/attached-repeater-field.js) ──────
+ * An `attached` field's inline repeater, rendered inside a 'resource'
+ * field's ResourceCard `children` slot (Recording's caption tracks is the
+ * only current example - see MetaBoxFieldRegistry's `$attached_field_key`
+ * docblock). Lighter weight than the Supporting Documents repeater above -
+ * one line per row, no card border/chips/drag handle of its own.
+ */
+
+.edbs-attached-repeater {
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid #dcdcde;
+}
+
+.edbs-attached-repeater__heading {
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.edbs-attached-repeater__row {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-bottom: 8px;
+}
+
+.edbs-attached-repeater__separator {
+	color: #a7aaad;
+}
+
+.edbs-attached-repeater__filename {
+	color: #585858;
+	word-break: break-all;
+}
+
+.edbs-attached-repeater__remove {
+	margin-left: auto;
+}
+
+.edbs-attached-repeater__help {
+	margin: 8px 0 0;
+	color: #585858;
+	font-size: 13px;
+}
+
+/* ── Resource Add/Replace modal (src/js/metabox/resource-modal.js) ────── */
+
+/*
+ * A fixed width/min-height rather than max-width/height alone - the
+ * chooser step (media_library/external_url/a plugin source), the
+ * external-URL form, and a plugin-registered source's own content
+ * (e.g. Pro's document combobox) are all very different sizes, and
+ * without this the modal visibly jumps dimensions on every Back/
+ * forward step and even between "Add Agenda" vs "Add Minutes" if one
+ * field's sources differ from another's.
+ */
+.edbs-resource-modal .components-modal__content {
+	width: 480px;
+	max-width: calc(100vw - 32px);
+	min-height: 260px;
+}
+
+.edbs-resource-modal__chooser {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.edbs-resource-modal__source-row {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 2px;
+	height: auto;
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid #dcdcde;
+	border-radius: 2px;
+	text-align: left;
+	white-space: normal;
+}
+
+.edbs-resource-modal__source-row:hover {
+	border-color: #2271b1;
+	background: #f6f7f7;
+}
+
+.edbs-resource-modal__source-label {
+	font-weight: 600;
+}
+
+.edbs-resource-modal__source-description {
+	color: #585858;
+	font-size: 13px;
+}
+
+/*
+ * !important: the `link` variant Button's own Emotion (CSS-in-JS) styles
+ * set margin: 0, inserted as a <style> tag after this stylesheet, so it
+ * wins on source order at equal specificity without this - same issue as
+ * the SelectControl label override in the Pro repo's
+ * admin-combobox-picker.css.
+ */
+.edbs-resource-modal__back {
+	display: inline-block;
+	margin-bottom: 16px !important;
+}
+
+.edbs-resource-modal__url-source {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.edbs-resource-modal__url-source-error {
+	margin: -8px 0 0;
+	color: #b32d2e;
+	font-size: 13px;
+}
+
+/* ── Resource list repeater (src/js/metabox/resource-list-field.js) ───── */
+
+.edbs-resource-list__row {
+	margin-bottom: 8px;
+}
+
+.edbs-resource-list__row--dragging {
+	opacity: 0.4;
+}
+
+/* Insertion-point placeholder shown before/after the row currently under
+ * the dragged item (see ResourceListField's dropTarget state). */
+.edbs-resource-list__drop-indicator {
+	height: 3px;
+	margin: 0 0 8px;
+	border-radius: 2px;
+	background: var( --wp-admin-theme-color, #2271b1 );
+}
+
+.edbs-resource-card__edit-title {
+	/* !important: Button's own Emotion style sets margin: 0, same
+	 * specificity fight as the color/underline overrides above. */
+	margin-left: 8px !important;
+	font-weight: 400;
+	font-size: 13px;
+	height: auto;
+}
+
+.edbs-resource-card__title-edit {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	max-width: 320px;
+}

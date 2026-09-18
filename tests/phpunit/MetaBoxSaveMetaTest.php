@@ -186,6 +186,32 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * A field marked saved_externally is skipped by save_field() entirely —
+	 * the plugin owning it is expected to save it itself, typically on the
+	 * edbs_save_meeting_meta action that fires right after.
+	 */
+	public function test_saved_externally_field_is_not_auto_saved(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'              => 'pro_repeater',
+				'type'             => 'html',
+				'label'            => 'Pro Repeater',
+				'saved_externally' => true,
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_repeater'] = 'should-not-be-saved-by-the-generic-loop';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_repeater', true ) );
+	}
+
+	/**
 	 * The edbs_save_meeting_meta action fires after a successful save,
 	 * so Pro plugin can save its own additional meta in the same request.
 	 */
@@ -221,5 +247,145 @@ class MetaBoxSaveMetaTest extends TestCase {
 		remove_action( 'edbs_save_meeting_meta', $callback );
 
 		$this->assertFalse( $fired );
+	}
+
+	/**
+	 * A 'resource' field's `{key}_source` sibling meta is saved verbatim
+	 * (through sanitize_key(), not the field's own esc_url_raw() path) so
+	 * a plugin-registered source id round-trips - see
+	 * MetaBox::save_resource_source()'s docblock.
+	 */
+	public function test_resource_field_source_is_saved(): void {
+		$_POST['edbs_agenda_url']        = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_source'] = 'media_library';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( 'media_library', get_post_meta( $this->post_id, 'edbs_agenda_url_source', true ) );
+	}
+
+	/**
+	 * The `{key}_source` sibling meta is sanitized with sanitize_key()
+	 * rather than left as raw input.
+	 */
+	public function test_resource_field_source_is_sanitized(): void {
+		$_POST['edbs_agenda_url']        = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_source'] = 'Media Library<script>!';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame(
+			sanitize_key( 'Media Library<script>!' ),
+			get_post_meta( $this->post_id, 'edbs_agenda_url_source', true )
+		);
+	}
+
+	/**
+	 * When `{key}_source` isn't present in $_POST at all (e.g. a legacy
+	 * client that doesn't send it), no sibling meta is written.
+	 */
+	public function test_resource_field_source_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_source.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_source', true ) );
+	}
+
+	/**
+	 * A 'resource' field's `{key}_edit_url` sibling meta is run through
+	 * esc_url_raw() before saving, same as the field's own url value -
+	 * see MetaBox::save_resource_edit_url()'s docblock.
+	 */
+	public function test_resource_field_edit_url_is_sanitized(): void {
+		$input                             = 'https://example.com/wp-admin/post.php?post=42&action=edit"><script>alert(1)</script>';
+		$_POST['edbs_agenda_url']          = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_edit_url'] = $input;
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame(
+			esc_url_raw( $input ),
+			get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true )
+		);
+	}
+
+	/**
+	 * When `{key}_edit_url` isn't present in $_POST (the field's source
+	 * has no underlying editable post, e.g. Media Library/External URL),
+	 * no sibling meta is written.
+	 */
+	public function test_resource_field_edit_url_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_edit_url.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true ) );
+	}
+
+	/**
+	 * A 'resource_list' field that a plugin forgot to mark
+	 * saved_externally is not saved by the generic loop (its $_POST value
+	 * is a repeater array, not a plain scalar) - it triggers a
+	 * _doing_it_wrong() notice rather than falling through to
+	 * sanitize_text_field() on an array.
+	 */
+	public function test_misconfigured_resource_list_field_is_not_auto_saved(): void {
+		$this->setExpectedIncorrectUsage( 'EqualizeDigital\BoardScribe\Admin\MetaBox::save_field' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'   => 'pro_documents',
+				'type'  => 'resource_list',
+				'label' => 'Pro Documents',
+				// Deliberately missing saved_externally => true.
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_documents'] = [
+			[
+				'label' => 'Budget',
+				'url'   => 'https://example.com/budget.pdf',
+			],
+		];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_documents', true ) );
+	}
+
+	/**
+	 * An 'attached' field that a plugin forgot to mark saved_externally
+	 * is not auto-saved either, regardless of its own $type - the
+	 * attached mechanism itself is always externally saved.
+	 */
+	public function test_misconfigured_attached_field_is_not_auto_saved(): void {
+		$this->setExpectedIncorrectUsage( 'EqualizeDigital\BoardScribe\Admin\MetaBox::save_field' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'      => 'pro_attached_list',
+				'type'     => 'text',
+				'label'    => 'Pro Attached List',
+				'attached' => true,
+				// Deliberately missing saved_externally => true.
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_attached_list'] = [ [ 'label' => 'English', 'url' => 'https://example.com/en.vtt' ] ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_attached_list', true ) );
 	}
 }

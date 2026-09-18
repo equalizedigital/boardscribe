@@ -53,6 +53,49 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	}
 
 	/**
+	 * Every core 'resource' field's {key}_source/{key}_edit_url sibling
+	 * metas are also registered for REST - not just the field's own key.
+	 */
+	public function test_resource_field_siblings_are_registered(): void {
+		global $wp_meta_keys;
+		$keys = array_keys( $wp_meta_keys['post']['edbs_meeting'] );
+
+		foreach ( [ 'edbs_agenda_url', 'edbs_minutes_url' ] as $resource_key ) {
+			$this->assertContains( $resource_key . '_source', $keys );
+			$this->assertContains( $resource_key . '_edit_url', $keys );
+		}
+	}
+
+	/**
+	 * A plugin-added 'resource' field also gets its {key}_source/
+	 * {key}_edit_url siblings registered for REST automatically -
+	 * MetaBoxFieldRegistry::all()'s own docblock promises this happens
+	 * "regardless of who added it", so register_post_meta() can't just
+	 * hardcode the two core keys.
+	 */
+	public function test_plugin_resource_field_siblings_are_registered(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'   => 'pro_livestream_url',
+				'type'  => 'resource',
+				'label' => 'Livestream',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		( new MetaBox() )->register_post_meta();
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		global $wp_meta_keys;
+		$keys = array_keys( $wp_meta_keys['post']['edbs_meeting'] );
+
+		$this->assertContains( 'pro_livestream_url_source', $keys );
+		$this->assertContains( 'pro_livestream_url_edit_url', $keys );
+	}
+
+	/**
 	 * Text-type fields use sanitize_text_field.
 	 */
 	public function test_text_fields_use_sanitize_text_field(): void {
