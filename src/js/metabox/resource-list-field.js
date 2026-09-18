@@ -1,5 +1,5 @@
 import { BaseControl, Button, TextControl } from '@wordpress/components';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
@@ -174,7 +174,12 @@ export function ResourceListField( { field, value, onChange } ) {
 	const items = Array.isArray( value ) ? value : [];
 	const [ modalIndex, setModalIndex ] = useState( null );
 	const [ editingIndex, setEditingIndex ] = useState( null );
-	const dragIndex = useRef( null );
+	const [ draggingIndex, setDraggingIndex ] = useState( null );
+	// `{ index, position }` for the row currently under the dragged item -
+	// `position` ('before'/'after') is which side of that row the drop
+	// indicator (and the eventual insertion point) sits on, based on
+	// which half of the row the pointer is over.
+	const [ dropTarget, setDropTarget ] = useState( null );
 	const containerRef = useRef( null );
 
 	const updateItem = ( index, patch ) => {
@@ -203,6 +208,20 @@ export function ResourceListField( { field, value, onChange } ) {
 		const [ moved ] = next.splice( fromIndex, 1 );
 		next.splice( toIndex, 0, moved );
 		onChange( next );
+	};
+
+	/**
+	 * Resolves a `{ index, position }` drop target (see dropTarget's own
+	 * comment) to the plain toIndex reorder() expects, accounting for the
+	 * dragged row's own removal shifting every later index down by one.
+	 *
+	 * @param {number} fromIndex The dragged row's original index.
+	 * @param {Object} target    `{ index, position }`.
+	 * @return {number} The index to pass to reorder().
+	 */
+	const resolveDropIndex = ( fromIndex, target ) => {
+		const rawTarget = 'after' === target.position ? target.index + 1 : target.index;
+		return fromIndex < rawTarget ? rawTarget - 1 : rawTarget;
 	};
 
 	const itemNoun = field.itemNoun || __( 'Document', 'boardscribe' );
@@ -235,58 +254,78 @@ export function ResourceListField( { field, value, onChange } ) {
 
 				{ items.map( ( item, index ) => {
 					const { chips, meta } = resolveResourceDisplay( item.url, item.source );
+					const isDragging = draggingIndex === index;
+					const showIndicator = ( position ) =>
+						null !== draggingIndex && dropTarget && dropTarget.index === index && dropTarget.position === position;
+
 					return (
-						<div
-							className="edbs-resource-list__row"
-							key={ index }
-							draggable
-							onDragStart={ () => {
-								dragIndex.current = index;
-							} }
-							onDragOver={ ( event ) => event.preventDefault() }
-							onDrop={ ( event ) => {
-								event.preventDefault();
-								if ( null !== dragIndex.current ) {
-									reorder( dragIndex.current, index );
-									dragIndex.current = null;
-								}
-							} }
-						>
-							<ResourceCard
-								dragHandle={
-									<ReorderControls
-										itemLabel={ item.label || itemNoun }
-										isFirst={ 0 === index }
-										isLast={ index === items.length - 1 }
-										onMoveUp={ () => reorder( index, index - 1 ) }
-										onMoveDown={ () => reorder( index, index + 1 ) }
-									/>
-								}
-								title={
-									<EditableTitle
-										label={ item.label }
-										onChange={ ( label ) => updateItem( index, { label } ) }
-										hideEditButton
-										isEditing={ editingIndex === index }
-										onEditingChange={ ( next ) => ( next ? setEditingIndex( index ) : finishEditingTitle( index ) ) }
-									/>
-								}
-								chips={ item.url ? chips : [] }
-								meta={ item.url ? meta : '' }
-								actions={ [
-									{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
-									{ id: editTitleButtonId( index ), label: __( 'Edit title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Edit title of %s', 'boardscribe' ), item.label || itemNoun ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
-									{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
-									{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
-								] }
+						<Fragment key={ index }>
+							{ showIndicator( 'before' ) && <div className="edbs-resource-list__drop-indicator" /> }
+							<div
+								className={ `edbs-resource-list__row${ isDragging ? ' edbs-resource-list__row--dragging' : '' }` }
+								draggable
+								onDragStart={ () => setDraggingIndex( index ) }
+								onDragEnd={ () => {
+									setDraggingIndex( null );
+									setDropTarget( null );
+								} }
+								onDragOver={ ( event ) => {
+									event.preventDefault();
+									if ( null === draggingIndex || draggingIndex === index ) {
+										return;
+									}
+									const rect = event.currentTarget.getBoundingClientRect();
+									const position = event.clientY < rect.top + ( rect.height / 2 ) ? 'before' : 'after';
+									if ( ! dropTarget || dropTarget.index !== index || dropTarget.position !== position ) {
+										setDropTarget( { index, position } );
+									}
+								} }
+								onDrop={ ( event ) => {
+									event.preventDefault();
+									if ( null !== draggingIndex && dropTarget ) {
+										reorder( draggingIndex, resolveDropIndex( draggingIndex, dropTarget ) );
+									}
+									setDraggingIndex( null );
+									setDropTarget( null );
+								} }
 							>
-								<HiddenFields fields={ [
-									{ name: `${ field.key }[${ index }][label]`, value: item.label },
-									{ name: `${ field.key }[${ index }][url]`, value: item.url },
-									{ name: `${ field.key }[${ index }][source]`, value: item.source },
-								] } />
-							</ResourceCard>
-						</div>
+								<ResourceCard
+									dragHandle={
+										<ReorderControls
+											itemLabel={ item.label || itemNoun }
+											isFirst={ 0 === index }
+											isLast={ index === items.length - 1 }
+											onMoveUp={ () => reorder( index, index - 1 ) }
+											onMoveDown={ () => reorder( index, index + 1 ) }
+										/>
+									}
+									title={
+										<EditableTitle
+											label={ item.label }
+											onChange={ ( label ) => updateItem( index, { label } ) }
+											hideEditButton
+											isEditing={ editingIndex === index }
+											onEditingChange={ ( next ) => ( next ? setEditingIndex( index ) : finishEditingTitle( index ) ) }
+										/>
+									}
+									chips={ item.url ? chips : [] }
+									meta={ item.url ? meta : '' }
+									actions={ [
+										{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'View %s', 'boardscribe' ), item.label || itemNoun ), href: item.url || undefined },
+										{ id: editTitleButtonId( index ), label: __( 'Edit title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Edit title of %s', 'boardscribe' ), item.label || itemNoun ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
+										{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Replace %s', 'boardscribe' ), item.label || itemNoun ), onClick: () => setModalIndex( index ) },
+										{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Remove %s', 'boardscribe' ), item.label || itemNoun ), danger: true, onClick: () => removeItem( index ) },
+									] }
+								>
+									<HiddenFields fields={ [
+										{ name: `${ field.key }[${ index }][label]`, value: item.label },
+										{ name: `${ field.key }[${ index }][url]`, value: item.url },
+										{ name: `${ field.key }[${ index }][source]`, value: item.source },
+									] } />
+								</ResourceCard>
+							</div>
+							{ showIndicator( 'after' ) && <div className="edbs-resource-list__drop-indicator" /> }
+						</Fragment>
 					);
 				} ) }
 

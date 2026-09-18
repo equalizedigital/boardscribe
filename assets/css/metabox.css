@@ -479,6 +479,19 @@
 	margin-bottom: 8px;
 }
 
+.edbs-resource-list__row--dragging {
+	opacity: 0.4;
+}
+
+/* Insertion-point placeholder shown before/after the row currently under
+ * the dragged item (see ResourceListField's dropTarget state). */
+.edbs-resource-list__drop-indicator {
+	height: 3px;
+	margin: 0 0 8px;
+	border-radius: 2px;
+	background: var( --wp-admin-theme-color, #2271b1 );
+}
+
 .edbs-resource-card__edit-title {
 	margin-left: 8px;
 	font-weight: 400;
