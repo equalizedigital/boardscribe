@@ -305,8 +305,15 @@
 	align-self: center;
 }
 
-/* Drag handle rendered by a repeater (e.g. Supporting Documents rows). */
+/* Drag handle rendered by a repeater (e.g. Supporting Documents rows).
+ * Fixed to the same 20x20 box as the Move up/down buttons below it so
+ * the glyph centers with them, not just its own tight-fitting text box. */
 .edbs-resource-card__drag-handle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
 	cursor: grab;
 	color: #a7aaad;
 	touch-action: none;
