@@ -259,6 +259,15 @@
 	font-size: 13px;
 	height: auto;
 	padding: 0;
+	/* A View/Edit action is a plain <a> (browser default underline: auto
+	 * thickness/offset); Replace/Remove/Edit title are a Button
+	 * variant="link" whose own Emotion style sets thickness: from-font
+	 * and a ~2.6px offset - fixed pixel values here make every action in
+	 * a card's row underline identically regardless of which it is.
+	 * !important beats that Emotion style - see the color rule below for
+	 * the same fight. */
+	text-decoration-thickness: 1px !important;
+	text-underline-offset: 2px !important;
 }
 
 /*
@@ -315,7 +324,9 @@
 	width: 20px;
 	height: 20px;
 	cursor: grab;
-	color: #a7aaad;
+	/* #a7aaad measured ~2.3:1 against white - below the 3:1 WCAG 1.4.11
+	 * floor for a graphical/UI-component icon; #6c7075 clears 4.5:1. */
+	color: #6c7075;
 	touch-action: none;
 	line-height: 1;
 }
@@ -325,7 +336,11 @@
 	width: 20px;
 	height: 20px;
 	padding: 0;
-	color: #a7aaad;
+	/* Button's own default is justify-content: normal (i.e. flex-start),
+	 * which leaves the ▲/▼ glyph sitting left of center in this fixed-
+	 * width box - center it to match the drag handle above it. */
+	justify-content: center;
+	color: #6c7075;
 }
 
 .edbs-resource-card__reorder-button.components-button:not(:disabled):hover {
