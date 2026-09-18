@@ -171,7 +171,12 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
  *
  * @param {Object}   props          Component props.
  * @param {Object}   props.field    Field descriptor from MetaBoxFieldRegistry::js_schema().
- * @param {Array}    props.value    Current items, `[{ label, url, source }]`.
+ * @param {Array}    props.value    Current items, `[{ label, url, source, documentId, editUrl }]` -
+ *                                  documentId/editUrl are only ever present for a row a plugin-registered
+ *                                  source stamped (e.g. Pro's 'document' source - see resource-modal.js's
+ *                                  handleSourceSave); editUrl is display-only (not submitted, see the
+ *                                  HiddenFields below) and documentId is submitted so a source can persist
+ *                                  the linked post's ID alongside the URL.
  * @param {Function} props.onChange Called with the new items array.
  * @return {JSX.Element} The field.
  */
@@ -329,6 +334,7 @@ export function ResourceListField( { field, value, onChange } ) {
 									meta={ item.url ? meta : '' }
 									actions={ [
 										{ label: __( 'View', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ __( 'View %s', 'boardscribe' ), itemDescription ), href: item.url || undefined },
+										...( item.editUrl ? [ { label: __( 'Edit', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ __( 'Edit %s', 'boardscribe' ), itemDescription ), href: item.editUrl } ] : [] ),
 										{ id: editTitleButtonId( index ), label: item.label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ item.label ? __( 'Edit title of %s', 'boardscribe' ) : __( 'Add title of %s', 'boardscribe' ), itemDescription ), disabled: editingIndex === index, onClick: () => setEditingIndex( index ) },
 										{ label: __( 'Replace', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ __( 'Replace %s', 'boardscribe' ), itemDescription ), onClick: () => setModalIndex( index ) },
 										{ label: __( 'Remove', 'boardscribe' ), ariaLabel: sprintf( /* translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf". */ __( 'Remove %s', 'boardscribe' ), itemDescription ), danger: true, onClick: () => removeItem( index ) },
@@ -338,6 +344,7 @@ export function ResourceListField( { field, value, onChange } ) {
 										{ name: `${ field.key }[${ index }][label]`, value: item.label },
 										{ name: `${ field.key }[${ index }][url]`, value: item.url },
 										{ name: `${ field.key }[${ index }][source]`, value: item.source },
+										{ name: `${ field.key }[${ index }][document_id]`, value: item.documentId },
 									] } />
 								</ResourceCard>
 							</div>
@@ -362,8 +369,10 @@ export function ResourceListField( { field, value, onChange } ) {
 					currentValue={ isAdding ? '' : items[ modalIndex ].url }
 					onSave={ ( url, extra ) => {
 						const source = ( extra && extra.source ) || '';
+						const documentId = ( extra && extra.documentId ) || '';
+						const editUrl = ( extra && extra.editUrl ) || '';
 						if ( isAdding ) {
-							onChange( [ ...items, { label: ( extra && extra.title ) || '', url, source } ] );
+							onChange( [ ...items, { label: ( extra && extra.title ) || '', url, source, documentId, editUrl } ] );
 						} else {
 							// A source that hands back a title (Media Library's
 							// attachment title) means a real file was just
@@ -372,8 +381,11 @@ export function ResourceListField( { field, value, onChange } ) {
 							// earlier, rather than silently keeping a title
 							// that no longer describes what's actually linked.
 							// A source with no title (External URL) leaves the
-							// existing label alone, same as before.
-							const patch = { url, source };
+							// existing label alone, same as before. documentId/
+							// editUrl are always overwritten (not merged) so
+							// replacing a linked document with a plain URL/file
+							// doesn't leave a stale link behind.
+							const patch = { url, source, documentId, editUrl };
 							if ( extra && extra.title ) {
 								patch.label = extra.title;
 							}
