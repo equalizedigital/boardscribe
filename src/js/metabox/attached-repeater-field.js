@@ -1,9 +1,10 @@
 import { Button } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { speak } from '@wordpress/a11y';
+import { useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { EditableTitle } from './resource-list-field';
 import { ResourceModal } from './resource-modal';
-import { HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
+import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * An `attached` field's inline repeater - a 'resource' field's own card
@@ -65,6 +66,7 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 	const itemNoun = field.itemNoun || __( 'Item', 'boardscribe' );
 	const emptyItemLabel = field.emptyItemLabel || sprintf( /* translators: %s: item noun, e.g. "Caption Track". */ __( 'Untitled %s', 'boardscribe' ), itemNoun.toLowerCase() );
 	const sources = resolveFieldSources( field, [ 'media_library' ] );
+	const containerRef = useRef( null );
 
 	const updateRow = ( index, patch ) => {
 		onChange( rows.map( ( row, i ) => ( i === index ? { ...row, ...patch } : row ) ) );
@@ -72,10 +74,15 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 
 	const removeRow = ( index ) => {
 		onChange( rows.filter( ( _, i ) => i !== index ) );
+		// The just-clicked Remove button no longer exists once its row is
+		// gone - move focus to whatever's now first, same as every sibling
+		// repeater (resource-field.js/resource-list-field.js).
+		focusFirstActionable( containerRef );
+		speak( sprintf( /* translators: %s: item noun, e.g. "Caption Track". */ __( '%s removed.', 'boardscribe' ), itemNoun ) );
 	};
 
 	return (
-		<div className="edbs-attached-repeater">
+		<div className="edbs-attached-repeater" ref={ containerRef }>
 			<div className="edbs-attached-repeater__heading">{ field.label }</div>
 
 			{ rows.map( ( row, index ) => {
@@ -142,6 +149,7 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 					onSave={ ( url, extra ) => {
 						onChange( [ ...rows, { label: field.defaultItemLabel || '', url, source: ( extra && extra.source ) || '' } ] );
 						setIsModalOpen( false );
+						speak( sprintf( /* translators: %s: item noun, e.g. "Caption Track". */ __( '%s added.', 'boardscribe' ), itemNoun ) );
 					} }
 					onClose={ () => setIsModalOpen( false ) }
 				/>

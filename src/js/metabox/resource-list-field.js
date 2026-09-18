@@ -1,4 +1,5 @@
 import { BaseControl, Button, TextControl } from '@wordpress/components';
+import { speak } from '@wordpress/a11y';
 import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
@@ -196,6 +197,7 @@ export function ResourceListField( { field, value, onChange } ) {
 		// empty state's own "Add" button - focus it, same reasoning as
 		// resource-field.js's focusFirstActionable() calls.
 		focusFirstActionable( containerRef );
+		speak( sprintf( /* translators: %s: item noun, e.g. "Document". */ __( '%s removed.', 'boardscribe' ), itemNoun ) );
 	};
 
 	// 'new' opens the modal for a brand-new row (appended on save, with its
@@ -204,6 +206,9 @@ export function ResourceListField( { field, value, onChange } ) {
 	// leaving its title untouched. null means closed.
 	const addItem = () => setModalIndex( 'new' );
 
+	// Shared by the Move up/down buttons and a completed drag-and-drop -
+	// speak() here covers both, since a keyboard user reordering via the
+	// buttons otherwise gets no confirmation the move actually happened.
 	const reorder = ( fromIndex, toIndex ) => {
 		if ( fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || toIndex >= items.length ) {
 			return;
@@ -212,6 +217,7 @@ export function ResourceListField( { field, value, onChange } ) {
 		const [ moved ] = next.splice( fromIndex, 1 );
 		next.splice( toIndex, 0, moved );
 		onChange( next );
+		speak( sprintf( /* translators: 1: row title or item noun, 2: new 1-based position, 3: total row count. */ __( '%1$s moved to position %2$d of %3$d.', 'boardscribe' ), moved.label || itemNoun, toIndex + 1, next.length ) );
 	};
 
 	/**
@@ -385,6 +391,7 @@ export function ResourceListField( { field, value, onChange } ) {
 							// calling this here too would override it and
 							// jump focus to the list's first item instead.
 							focusFirstActionable( containerRef );
+							speak( sprintf( /* translators: %s: item noun, e.g. "Document". */ __( '%s added.', 'boardscribe' ), itemNoun ) );
 						}
 					} }
 					onClose={ () => setModalIndex( null ) }

@@ -1,4 +1,5 @@
 import { BaseControl } from '@wordpress/components';
+import { speak } from '@wordpress/a11y';
 import { useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { AttachedRepeaterField } from './attached-repeater-field';
@@ -74,6 +75,10 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 			// guard around its own focusFirstActionable() call.
 			focusFirstActionable( containerRef );
 		}
+		speak( hasValue
+			? sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( '%s replaced.', 'boardscribe' ), field.label )
+			: sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( '%s added.', 'boardscribe' ), field.label ),
+		);
 	};
 
 	const handleRemove = () => {
@@ -94,6 +99,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 			attachedField.onChange( [] );
 		}
 		focusFirstActionable( containerRef );
+		speak( sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( '%s removed.', 'boardscribe' ), field.label ) );
 	};
 
 	const { chips, meta } = resolveResourceDisplay( value, sourceValue );
