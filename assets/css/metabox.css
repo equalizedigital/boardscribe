@@ -57,6 +57,17 @@
 .edbs-metabox-app__field > .components-base-control {
 	display: grid;
 	grid-template-columns: 160px 1fr;
+	/* Row 1's max is capped to a fixed length (40px, comfortably above a
+	 * one-line label's own ~26px), not left as an intrinsic/auto max - a
+	 * content-keyword max (including min-content alone) still grows to
+	 * help satisfy a row-1/span-2 item's height (CSS Grid distributes a
+	 * spanning item's extra space across every *content-sized* track it
+	 * spans; only a track with a fixed-length max is excluded from that
+	 * step), which for a tall multi-row control (Supporting Documents'
+	 * repeater) pushed row 1 to ~half the control's total height and left
+	 * the label's own description floating around the repeater's second
+	 * row instead of sitting under the label. */
+	grid-template-rows: minmax( min-content, 40px ) auto;
 	column-gap: 20px;
 	align-items: start;
 }
