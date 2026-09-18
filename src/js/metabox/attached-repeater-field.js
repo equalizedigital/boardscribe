@@ -10,9 +10,10 @@ import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourc
  * An `attached` field's inline repeater - a 'resource' field's own card
  * surfaces this via its `attachedFieldKey` (see resource-field.js and
  * MetaBoxFieldRegistry's `$attached`/`$attached_field_key` docblock for how
- * a field opts into the relationship). Pro's Recording field is the first
- * (and, so far, only) consumer, for its VTT/SRT caption tracks - but
- * nothing here is caption-specific: every string a plugin might want to
+ * a field opts into the relationship). No current consumer (Pro's Recording
+ * caption tracks used this until PRO-1349 removed that unreleased feature) -
+ * kept as a generic, reusable primitive for whatever attaches next. Every
+ * string a plugin might want to
  * change (this section's heading, the item noun, a new row's default
  * label, the empty-label fallback, the inline edit field's hidden
  * accessible label, the Add modal's title/sources) comes from the
