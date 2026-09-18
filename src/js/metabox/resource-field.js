@@ -42,9 +42,8 @@ import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourc
  * @param {Object}   [props.attachedField]   Present when field.attachedFieldKey points at an `attached`
  *                                           field (MetaBoxApp resolves the lookup) - `{ field, value, onChange }`
  *                                           for that attached field, rendered via AttachedRepeaterField inside
- *                                           this card's children slot. Only Recording's caption tracks use this
- *                                           today, but nothing here is caption-specific - see
- *                                           attached-repeater-field.js.
+ *                                           this card's children slot - see attached-repeater-field.js (no
+ *                                           current consumer as of PRO-1349, kept generic for a future one).
  * @return {JSX.Element} The field.
  */
 export function ResourceField( { field, value, onChange, sourceValue, onSourceChange, editUrlValue, onEditUrlChange, allValues, attachedField } ) {

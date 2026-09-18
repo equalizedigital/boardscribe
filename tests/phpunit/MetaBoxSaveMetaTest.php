@@ -370,9 +370,9 @@ class MetaBoxSaveMetaTest extends TestCase {
 
 		$callback = static function ( array $fields ): array {
 			$fields[] = [
-				'key'      => 'pro_captions',
+				'key'      => 'pro_attached_list',
 				'type'     => 'text',
-				'label'    => 'Pro Captions',
+				'label'    => 'Pro Attached List',
 				'attached' => true,
 				// Deliberately missing saved_externally => true.
 			];
@@ -380,12 +380,12 @@ class MetaBoxSaveMetaTest extends TestCase {
 		};
 		add_filter( 'edbs_meeting_meta_fields', $callback );
 
-		$_POST['pro_captions'] = [ [ 'label' => 'English', 'url' => 'https://example.com/en.vtt' ] ];
+		$_POST['pro_attached_list'] = [ [ 'label' => 'English', 'url' => 'https://example.com/en.vtt' ] ];
 
 		$this->meta_box->save_meta( $this->post_id );
 
 		remove_filter( 'edbs_meeting_meta_fields', $callback );
 
-		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_captions', true ) );
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_attached_list', true ) );
 	}
 }
