@@ -15,6 +15,7 @@ module.exports = {
 	...baseConfig,
 	moduleNameMapper: {
 		...baseConfig.moduleNameMapper,
+		'^@wordpress/a11y$': '<rootDir>/tests/jest/test-utils/wp-mocks/a11y.js',
 		'^@wordpress/blocks$': '<rootDir>/tests/jest/test-utils/wp-mocks/blocks.js',
 		'^@wordpress/block-editor$': '<rootDir>/tests/jest/test-utils/wp-mocks/block-editor.js',
 		'^@wordpress/components$': '<rootDir>/tests/jest/test-utils/wp-mocks/components.js',
