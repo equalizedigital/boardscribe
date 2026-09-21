@@ -379,7 +379,14 @@ class CsvImporter {
 				'no_file'      => __( 'No file was uploaded. Please choose a CSV file and try again.', 'boardscribe' ),
 				'invalid_type' => __( 'Invalid file type. Please upload a .csv file.', 'boardscribe' ),
 			];
-			$code     = sanitize_key( $_GET['edbs_import_error'] );
+			// sanitize_key() calls strtolower() internally, which is a
+			// TypeError in PHP 8+ if $_GET['edbs_import_error'] is an array
+			// (e.g. a URL crafted/edited to ?edbs_import_error[]=x) - only
+			// pass it a string, falling back to an empty (non-matching) code
+			// otherwise so the generic "unknown error" message below still
+			// applies rather than fataling the page.
+			$raw_code = $_GET['edbs_import_error']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- sanitized (or discarded entirely) immediately below; only kept as its own variable so the is_string() guard can run before sanitize_key() ever sees it.
+			$code     = is_string( $raw_code ) ? sanitize_key( wp_unslash( $raw_code ) ) : '';
 
 			return [
 				'type'    => 'error',
@@ -412,6 +419,16 @@ class CsvImporter {
 	 * that element were also a live region. speak() into a separate,
 	 * dedicated region avoids that entirely.
 	 *
+	 * The speak() call itself is wrapped in wp.domReady() - wp-a11y's own
+	 * live-region container elements (#a11y-speak-polite/-assertive,
+	 * speak() writes into whichever it finds by that id) are created by its
+	 * setup() function, which wp-a11y registers via its own internal
+	 * domReady() call rather than running eagerly on script execution.
+	 * Without this wrapper, an inline script placed right after the wp-a11y
+	 * handle can run before that setup has fired - speak() finds no
+	 * container element yet and silently no-ops, losing the announcement
+	 * with no error to indicate why.
+	 *
 	 * @since x.x.x
 	 *
 	 * @param string $message The plain-text message to announce.
@@ -427,7 +444,7 @@ class CsvImporter {
 		wp_add_inline_script(
 			'wp-a11y',
 			sprintf(
-				'wp.a11y.speak( %s, %s );',
+				'wp.domReady( function() { wp.a11y.speak( %s, %s ); } );',
 				wp_json_encode( $message ),
 				wp_json_encode( 'error' === $type ? 'assertive' : 'polite' )
 			)

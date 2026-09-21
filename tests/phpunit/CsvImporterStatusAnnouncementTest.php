@@ -106,13 +106,17 @@ class CsvImporterStatusAnnouncementTest extends TestCase {
 
 	/**
 	 * A success announcement is queued as a polite wp.a11y.speak() call on
-	 * the wp-a11y handle, carrying the exact message text.
+	 * the wp-a11y handle, carrying the exact message text - wrapped in
+	 * wp.domReady() so it runs after wp-a11y's own setup() has created the
+	 * live-region container elements speak() writes into (setup() is
+	 * itself registered via domReady, not run eagerly on script load).
 	 */
 	public function test_announce_success_is_polite(): void {
 		$this->announce( 'Import complete. 3 rows imported, 0 skipped.', 'success' );
 
 		$inline = implode( ' ', wp_scripts()->get_data( 'wp-a11y', 'after' ) );
 
+		$this->assertStringContainsString( 'wp.domReady(', $inline );
 		$this->assertStringContainsString( 'wp.a11y.speak(', $inline );
 		$this->assertStringContainsString( '"Import complete. 3 rows imported, 0 skipped."', $inline );
 		$this->assertStringContainsString( '"polite"', $inline );
@@ -129,8 +133,24 @@ class CsvImporterStatusAnnouncementTest extends TestCase {
 
 		$inline = implode( ' ', wp_scripts()->get_data( 'wp-a11y', 'after' ) );
 
+		$this->assertStringContainsString( 'wp.domReady(', $inline );
 		$this->assertStringContainsString( 'wp.a11y.speak(', $inline );
 		$this->assertStringContainsString( '"assertive"', $inline );
 		$this->assertStringNotContainsString( '"polite"', $inline );
+	}
+
+	/**
+	 * A crafted array value for edbs_import_error (e.g. a URL edited to
+	 * ?edbs_import_error[]=x) falls back to the generic "unknown error"
+	 * message instead of fataling - sanitize_key() calls strtolower()
+	 * internally, which is a TypeError in PHP 8+ given an array.
+	 */
+	public function test_resolve_falls_back_when_error_code_is_an_array(): void {
+		$_GET['edbs_import_error'] = [ 'no_file' ];
+
+		$result = $this->resolve();
+
+		$this->assertSame( 'error', $result['type'] );
+		$this->assertSame( 'An unknown error occurred.', $result['message'] );
 	}
 }
