@@ -423,7 +423,14 @@ class MetaBox {
 		}
 
 		if ( 'url' === $type || 'resource' === $type ) {
-			update_post_meta( $post_id, $key, esc_url_raw( wp_unslash( $_POST[ $key ] ) ) );
+			// esc_url_raw() calls ltrim() internally, which is a TypeError
+			// in PHP 8+ given an array (e.g. a URL field name submitted as
+			// "{$key}[]") - only sanitize a genuine string, silently
+			// dropping anything else rather than fataling the whole save.
+			$raw_value = $_POST[ $key ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- sanitized (or discarded entirely) immediately below; only kept as its own variable so the is_string() guard can run before esc_url_raw() ever sees it.
+			if ( is_string( $raw_value ) ) {
+				update_post_meta( $post_id, $key, esc_url_raw( wp_unslash( $raw_value ) ) );
+			}
 			return;
 		}
 
@@ -485,7 +492,12 @@ class MetaBox {
 			return;
 		}
 
-		update_post_meta( $post_id, $edit_url_key, esc_url_raw( wp_unslash( $_POST[ $edit_url_key ] ) ) );
+		// esc_url_raw() calls ltrim() internally, which is a TypeError in
+		// PHP 8+ given an array - only sanitize a genuine string.
+		$raw_value = $_POST[ $edit_url_key ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- sanitized (or discarded entirely) immediately below; only kept as its own variable so the is_string() guard can run before esc_url_raw() ever sees it.
+		if ( is_string( $raw_value ) ) {
+			update_post_meta( $post_id, $edit_url_key, esc_url_raw( wp_unslash( $raw_value ) ) );
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 

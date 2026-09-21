@@ -326,6 +326,33 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * A 'url'/'resource' field submitted as an array (a URL field name
+	 * edited to "{$key}[]") is silently skipped rather than fataling -
+	 * esc_url_raw() calls ltrim() internally, which is a TypeError in
+	 * PHP 8+ given an array.
+	 */
+	public function test_url_field_submitted_as_array_does_not_fatal(): void {
+		$_POST['edbs_agenda_url'] = [ 'https://example.com/agenda.pdf' ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url', true ) );
+	}
+
+	/**
+	 * The `{key}_edit_url` sibling meta gets the same array-input guard as
+	 * the field's own url value.
+	 */
+	public function test_resource_field_edit_url_submitted_as_array_does_not_fatal(): void {
+		$_POST['edbs_agenda_url']          = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_edit_url'] = [ 'https://example.com/wp-admin/post.php?post=42&action=edit' ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true ) );
+	}
+
+	/**
 	 * A 'resource_list' field that a plugin forgot to mark
 	 * saved_externally is not saved by the generic loop (its $_POST value
 	 * is a repeater array, not a plain scalar) - it triggers a
