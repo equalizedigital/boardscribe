@@ -237,7 +237,6 @@ add_filter( 'edbs_meeting_meta_fields', function ( array $fields ) {
 **After:** that logic is extracted into `resolveColumns( instanceCfg )` (`src/js/templates/table.js`), which `buildTableHtml()` now consumes, and it is exposed as **`window.edbsResolveColumns( instanceCfg )`**. It returns the visible columns in render order as `{ key, label, labelHtml, isRowHeader, render( meeting ) }` entries — see the contract docs in `src/js/registries.js`. This is what a template whose output is *not* a table (Pro's stacked `list`, cards, a calendar) needs in order to honour the same column configuration without re-implementing it in the other repo.
 
 **Contract impact:** purely additive on the free side — `buildTableHtml()`'s emitted markup is unchanged (guarded by `tests/jest/templates/table.test.js`, which passes untouched across the refactor), and no existing global changed shape. The compatibility direction that matters is the other one: **Pro's `list` template hard-depends on `window.edbsResolveColumns`, so new Pro requires this free release or later.** Pro guards for it the way `yearTimelineTemplate.js` guards for `edbsBuildTable` — `typeof window.edbsResolveColumns !== 'function'` renders an "update the free BoardScribe plugin" message rather than an empty list. Old Pro + new free is unaffected.
-
 ---
 
 ## PRO-1331 — three block editor preview hooks removed, `render_editor_preview()`/`render_preview_table()` deleted
