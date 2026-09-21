@@ -58,19 +58,27 @@ export function SelectControl( { label, value, options, onChange, help } ) {
 	);
 }
 
-export const TextControl = forwardRef( function TextControl( { label, value, onChange, placeholder, help }, ref ) {
+export const TextControl = forwardRef( function TextControl( { label, value, onChange, placeholder, help, type }, ref ) {
 	return createElement(
 		'label',
 		{ 'data-control': 'text', 'data-label': label, 'data-help': help || '' },
 		createElement( 'input', {
 			ref,
-			type: 'text',
+			type: type || 'text',
 			value: value || '',
 			placeholder: placeholder || '',
 			onChange: ( event ) => onChange( event.target.value ),
 		} ),
 	);
 } );
+
+export function Modal( { title, className, children } ) {
+	return createElement(
+		'div',
+		{ 'data-control': 'modal', className, role: 'dialog', 'aria-label': title },
+		children,
+	);
+}
 
 export function TextareaControl( { label, value, onChange, help } ) {
 	return createElement(

@@ -436,24 +436,26 @@ export function ResourceListField( { field, value, onChange } ) {
 						const documentId = ( extra && extra.documentId ) || '';
 						const editUrl = ( extra && extra.editUrl ) || '';
 						if ( isAdding ) {
+							// A source's title (Media Library's attachment title,
+							// Pro's document source's post title) only ever seeds a
+							// *new* row's initial label - there's no existing display
+							// title yet to preserve or clobber.
 							onChange( [ ...items, { label: ( extra && extra.title ) || '', url, source, document_id: documentId, edit_url: editUrl } ] );
 						} else {
-							// A source that hands back a title (Media Library's
-							// attachment title) means a real file was just
-							// swapped in - the row's label should follow it,
-							// even overwriting a name someone set by hand
-							// earlier, rather than silently keeping a title
-							// that no longer describes what's actually linked.
-							// A source with no title (External URL) leaves the
-							// existing label alone, same as before. document_id/
-							// edit_url are always overwritten (not merged) so
-							// replacing a linked document with a plain URL/file
-							// doesn't leave a stale link behind.
-							const patch = { url, source, document_id: documentId, edit_url: editUrl };
-							if ( extra && extra.title ) {
-								patch.label = extra.title;
-							}
-							updateItem( modalIndex, patch );
+							// Replace never touches the row's own label, regardless of
+							// whether the new source hands back a title. This is a
+							// meeting-specific display title (see PRO-1344), independent
+							// of whatever the underlying resource happens to be titled -
+							// letting a source's title clobber it here made Replace's
+							// behavior depend on which source you replaced *with*
+							// (Media Library/document sources overwrote a custom title,
+							// External URL silently kept it, and swapping a linked
+							// document out for a plain URL left its now-stale title
+							// behind either way). document_id/edit_url are still always
+							// overwritten (not merged) so replacing a linked document
+							// with a plain URL/file doesn't leave a stale link behind -
+							// only the label is exempt.
+							updateItem( modalIndex, { url, source, document_id: documentId, edit_url: editUrl } );
 						}
 						setModalIndex( null );
 						if ( isAdding ) {
