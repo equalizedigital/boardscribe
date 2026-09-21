@@ -340,7 +340,98 @@ class CsvImporter {
 			return;
 		}
 
+		$edbs_status_message = $this->resolve_status_message();
+		if ( $edbs_status_message ) {
+			$this->announce_status_message( $edbs_status_message['message'], $edbs_status_message['type'] );
+		}
+
 		require EDBS_DIR . 'partials/csv-import-page.php';
+	}
+
+	/**
+	 * Resolves this request's import status message (success or error) from
+	 * the redirect's own query args - the single source of truth for both
+	 * the visible notice markup (partials/csv-import-page.php) and the
+	 * screen-reader announcement (announce_status_message()), so the two
+	 * texts can never drift apart.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return array{message: string, type: 'success'|'error'}|null Null when
+	 *         the request carries neither query arg.
+	 */
+	private function resolve_status_message(): ?array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data.
+		if ( isset( $_GET['edbs_import_success'] ) ) {
+			return [
+				'type'    => 'success',
+				'message' => sprintf(
+					/* translators: 1: number imported, 2: number skipped */
+					__( 'Import complete. %1$d rows imported, %2$d skipped.', 'boardscribe' ),
+					absint( $_GET['edbs_import_success'] ),
+					absint( $_GET['edbs_import_skipped'] ?? 0 )
+				),
+			];
+		}
+
+		if ( isset( $_GET['edbs_import_error'] ) ) {
+			$messages = [
+				'no_file'      => __( 'No file was uploaded. Please choose a CSV file and try again.', 'boardscribe' ),
+				'invalid_type' => __( 'Invalid file type. Please upload a .csv file.', 'boardscribe' ),
+			];
+			$code     = sanitize_key( $_GET['edbs_import_error'] );
+
+			return [
+				'type'    => 'error',
+				'message' => $messages[ $code ] ?? __( 'An unknown error occurred.', 'boardscribe' ),
+			];
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		return null;
+	}
+
+	/**
+	 * Announces the import status message to screen readers via
+	 * wp.a11y.speak(), which pushes text into WP core's own pre-existing
+	 * (initially empty) footer live region after the page has already
+	 * loaded (PRO-1325 / WCAG 4.1.3).
+	 *
+	 * The visible notice markup alone isn't reliably announced: it's
+	 * rendered as part of the initial full-page-reload response (this
+	 * import flow is a classic POST -> redirect -> GET, not an AJAX
+	 * update), and most screen readers only announce live-region content
+	 * that *changes* after the page has already loaded - content already
+	 * present at the first render isn't treated as a change. Deliberately
+	 * does NOT also mark that notice `<div>` itself as a live region
+	 * (e.g. role="status") as a "belt and suspenders" fix: WP core's own
+	 * dismissible-notice JS (common.js) injects a "Dismiss this notice"
+	 * button into any `.is-dismissible` notice shortly after page load -
+	 * a real DOM mutation inside the element - which risks a second,
+	 * unrelated announcement on some screen reader/browser combinations if
+	 * that element were also a live region. speak() into a separate,
+	 * dedicated region avoids that entirely.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $message The plain-text message to announce.
+	 * @param string $type    'success' or 'error' - an error is announced
+	 *                        assertively (interrupts, per its higher
+	 *                        urgency), success politely (waits its turn),
+	 *                        matching wp.a11y.speak()'s own two politeness
+	 *                        levels.
+	 * @return void
+	 */
+	private function announce_status_message( string $message, string $type ): void {
+		wp_enqueue_script( 'wp-a11y' );
+		wp_add_inline_script(
+			'wp-a11y',
+			sprintf(
+				'wp.a11y.speak( %s, %s );',
+				wp_json_encode( $message ),
+				wp_json_encode( 'error' === $type ? 'assertive' : 'polite' )
+			)
+		);
 	}
 
 	/**
