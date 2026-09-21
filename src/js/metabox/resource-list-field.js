@@ -92,11 +92,13 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 	const inputRef = useRef( null );
 
 	// Rows are keyed by array index (see ResourceListField/AttachedRepeaterField),
-	// so a reorder or removal can hand this exact component instance a
-	// different row's `label` without unmounting it. Resyncing here keeps
-	// `draft` from going stale and, if a save happens while still
-	// (now different-row) "editing", overwriting the new row's label with
-	// leftover text from the row that used to be at this index.
+	// so removing an earlier row can hand this exact component instance a
+	// different row's `label` without unmounting it (ResourceListField's
+	// reorder() keeps its own editingIndex pointed at the right row across a
+	// move, but removeItem() has no equivalent row to reassign it to).
+	// Resyncing here keeps `draft` from going stale and, if a save happens
+	// while still (now different-row) "editing", overwriting the new row's
+	// label with leftover text from the row that used to be at this index.
 	useEffect( () => {
 		setDraft( label );
 	}, [ label ] );
@@ -197,6 +199,27 @@ export function ResourceListField( { field, value, onChange } ) {
 	const [ dropTarget, setDropTarget ] = useState( null );
 	const containerRef = useRef( null );
 
+	// A stable React `key` per row, independent of its position in `items` -
+	// keying by array index (as this list used to) makes React reuse each
+	// row's EditableTitle instance by *position* across a reorder, so an
+	// in-progress title draft (that component's own internal state) stays
+	// behind at the old position instead of following the row it belongs to,
+	// even though editingIndex (below) now correctly retargets *which*
+	// position is "being edited". updateItem/reorder/removeItem never
+	// replace an *untouched* item's object reference (only the item actually
+	// patched gets a new one), so a WeakMap from item object identity to a
+	// generated key stays valid across reorders and only regenerates for a
+	// row whose own data just changed (already mid-save at that point, so
+	// losing in-progress-draft identity there is harmless).
+	const rowKeysRef = useRef( new WeakMap() );
+	const nextRowKeyRef = useRef( 0 );
+	const getRowKey = ( item ) => {
+		if ( ! rowKeysRef.current.has( item ) ) {
+			rowKeysRef.current.set( item, `row-${ nextRowKeyRef.current++ }` );
+		}
+		return rowKeysRef.current.get( item );
+	};
+
 	const updateItem = ( index, patch ) => {
 		onChange( items.map( ( item, i ) => ( i === index ? { ...item, ...patch } : item ) ) );
 	};
@@ -216,9 +239,39 @@ export function ResourceListField( { field, value, onChange } ) {
 	// leaving its title untouched. null means closed.
 	const addItem = () => setModalIndex( 'new' );
 
+	/**
+	 * Re-targets a tracked row index (e.g. editingIndex) through a reorder()
+	 * move, so it keeps pointing at the same row instead of whatever row
+	 * ends up at its old numeric position - see reorder()'s own docblock
+	 * for why this matters.
+	 *
+	 * @param {number} index     The tracked index.
+	 * @param {number} fromIndex The moved row's original index.
+	 * @param {number} toIndex   The moved row's new index.
+	 * @return {number} The tracked index's new position.
+	 */
+	const reindexAfterMove = ( index, fromIndex, toIndex ) => {
+		if ( index === fromIndex ) {
+			return toIndex;
+		}
+		if ( fromIndex < toIndex && index > fromIndex && index <= toIndex ) {
+			return index - 1;
+		}
+		if ( fromIndex > toIndex && index >= toIndex && index < fromIndex ) {
+			return index + 1;
+		}
+		return index;
+	};
+
 	// Shared by the Move up/down buttons and a completed drag-and-drop -
 	// speak() here covers both, since a keyboard user reordering via the
 	// buttons otherwise gets no confirmation the move actually happened.
+	// Rows are keyed by array index (see the map() below), so a move has to
+	// retarget any index-based state pointing at a row - otherwise an open
+	// title editor (editingIndex) would silently follow the old position to
+	// whichever row lands there instead of staying with the row it was
+	// actually editing, discarding the draft and, if saved, applying it to
+	// the wrong document (see EditableTitle's own docblock).
 	const reorder = ( fromIndex, toIndex ) => {
 		if ( fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || toIndex >= items.length ) {
 			return;
@@ -227,6 +280,7 @@ export function ResourceListField( { field, value, onChange } ) {
 		const [ moved ] = next.splice( fromIndex, 1 );
 		next.splice( toIndex, 0, moved );
 		onChange( next );
+		setEditingIndex( ( current ) => ( null === current ? current : reindexAfterMove( current, fromIndex, toIndex ) ) );
 		speak( sprintf( /* translators: 1: row title or item noun, 2: new 1-based position, 3: total row count. */ __( '%1$s moved to position %2$d of %3$d.', 'boardscribe' ), moved.label || itemNoun, toIndex + 1, next.length ) );
 	};
 
@@ -286,7 +340,7 @@ export function ResourceListField( { field, value, onChange } ) {
 					const itemDescription = meta ? sprintf( /* translators: 1: row title or item noun, 2: filename. */ __( '%1$s, %2$s', 'boardscribe' ), itemNounOrLabel, meta ) : itemNounOrLabel;
 
 					return (
-						<Fragment key={ index }>
+						<Fragment key={ getRowKey( item ) }>
 							{ showIndicator( 'before' ) && <div className="edbs-resource-list__drop-indicator" /> }
 							<div
 								className={ `edbs-resource-list__row${ isDragging ? ' edbs-resource-list__row--dragging' : '' }` }
