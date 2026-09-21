@@ -9,10 +9,9 @@
  * codebase; this test pins that down so a real future regression fails
  * loudly instead of needing another manual comparison.
  *
- * The block-editor `@wordpress` packages (blocks, block-editor, components,
- * server-side-render) are mocked (see jest.config.js) - they're build-time
- * externals (wp.* globals) in the real bundle, not installed packages
- * Jest can resolve.
+ * The block-editor `@wordpress` packages (blocks, block-editor, components)
+ * are mocked (see jest.config.js) - they're build-time externals (wp.*
+ * globals) in the real bundle, not installed packages Jest can resolve.
  */
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
@@ -243,5 +242,106 @@ describe( 'BoardScribe block edit()', () => {
 		// must not render at all (renderGenericFields() gates on group.length).
 		expect( panelTitles ).not.toContain( 'Link Labels' );
 		expect( panelTitles ).not.toContain( 'Show Columns' );
+	} );
+} );
+
+/**
+ * PRO-1331 regression coverage: the block's live preview renders the same
+ * wrapper markup the shortcode emits and drives it through the real
+ * frontend pipeline (window.edbsInitInstance), rather than a server-side
+ * lookalike - see buildInstanceConfig()'s own docblock in block/index.js.
+ */
+describe( 'BoardScribe block edit() live preview', () => {
+	let container;
+
+	beforeEach( () => {
+		jest.useFakeTimers();
+		window.edbsInitInstance = jest.fn();
+	} );
+
+	afterEach( () => {
+		if ( container ) {
+			act( () => {
+				roots.get( container )?.unmount();
+			} );
+			container.remove();
+			container = null;
+		}
+		delete window.edbsInitInstance;
+		jest.useRealTimers();
+	} );
+
+	function rerender( setAttributes, attributes ) {
+		act( () => {
+			roots.get( container ).render(
+				createElement( registerBlockType.mock.settings.edit, { attributes, setAttributes } ),
+			);
+		} );
+	}
+
+	it( 'renders the shortcode\'s wrapper markup and hands it to window.edbsInitInstance', () => {
+		container = renderEdit( defaultAttributes() );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		const wrap = container.querySelector( '.edbs-boardscribe-wrap' );
+		expect( wrap ).not.toBeNull();
+		expect( wrap.querySelector( '.edbs-table-container' ) ).not.toBeNull();
+		expect( wrap.querySelector( '.edbs-pagination-container' ) ).not.toBeNull();
+		expect( window.edbsInitInstance ).toHaveBeenCalledWith( wrap );
+	} );
+
+	it( 'encodes the block\'s attributes into data-config keyed by each field\'s configKey', () => {
+		container = renderEdit( { ...defaultAttributes(), includedYears: '2024,2025' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		const config = JSON.parse( container.querySelector( '.edbs-boardscribe-wrap' ).dataset.config );
+		expect( config.includedYears ).toBe( '2024,2025' );
+		// See instance.js - keeps preview pagination out of the editor's own URL.
+		expect( config.urlState ).toBe( false );
+		expect( config.instanceId ).toEqual( expect.stringMatching( /^edbs_block_preview_/ ) );
+	} );
+
+	it( 'debounces rapid attribute changes into a single re-init', () => {
+		const setAttributes = jest.fn();
+		container = renderEdit( defaultAttributes(), setAttributes );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+		window.edbsInitInstance.mockClear();
+
+		rerender( setAttributes, { ...defaultAttributes(), includedYears: '2024' } );
+		act( () => {
+			jest.advanceTimersByTime( 100 );
+		} );
+		rerender( setAttributes, { ...defaultAttributes(), includedYears: '2024,2025' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		expect( window.edbsInitInstance ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'shows an error notice on edbs:fetch-error, and clears it on the next re-init', () => {
+		container = renderEdit( defaultAttributes() );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		act( () => {
+			container.querySelector( '.edbs-boardscribe-wrap' ).dispatchEvent(
+				new CustomEvent( 'edbs:fetch-error', { bubbles: true, detail: {} } ),
+			);
+		} );
+		expect( container.querySelector( '[data-control="notice"][data-status="error"]' ) ).not.toBeNull();
+
+		rerender( jest.fn(), { ...defaultAttributes(), includedYears: '2024' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+		expect( container.querySelector( '[data-control="notice"][data-status="error"]' ) ).toBeNull();
 	} );
 } );
