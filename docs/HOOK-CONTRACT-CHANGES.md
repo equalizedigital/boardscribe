@@ -230,6 +230,16 @@ add_filter( 'edbs_meeting_meta_fields', function ( array $fields ) {
 
 ---
 
+## PRO-1292 — `window.edbsResolveColumns()` added; Pro's `list` template requires it
+
+**Before:** the only column-building helper exposed to add-on templates was `window.edbsBuildTable( meetings, instanceCfg )`, which returns a finished `<table>` HTML string. The column set behind it — render order, the instance-override → `edbsConfig.i18n` → `__()` label fallback, the `hide*` toggles, `window.edbsExtraColumns` resolution, and which column is the row header — was resolved inline inside `buildTableHtml()` with no way to get at it.
+
+**After:** that logic is extracted into `resolveColumns( instanceCfg )` (`src/js/templates/table.js`), which `buildTableHtml()` now consumes, and it is exposed as **`window.edbsResolveColumns( instanceCfg )`**. It returns the visible columns in render order as `{ key, label, labelHtml, isRowHeader, render( meeting ) }` entries — see the contract docs in `src/js/registries.js`. This is what a template whose output is *not* a table (Pro's stacked `list`, cards, a calendar) needs in order to honour the same column configuration without re-implementing it in the other repo.
+
+**Contract impact:** purely additive on the free side — `buildTableHtml()`'s emitted markup is unchanged (guarded by `tests/jest/templates/table.test.js`, which passes untouched across the refactor), and no existing global changed shape. The compatibility direction that matters is the other one: **Pro's `list` template hard-depends on `window.edbsResolveColumns`, so new Pro requires this free release or later.** Pro guards for it the way `yearTimelineTemplate.js` guards for `edbsBuildTable` — `typeof window.edbsResolveColumns !== 'function'` renders an "update the free BoardScribe plugin" message rather than an empty list. Old Pro + new free is unaffected.
+
+---
+
 ## PRO-1331 — three block editor preview hooks removed, `render_editor_preview()`/`render_preview_table()` deleted
 
 **Before:** the block's editor preview rendered server-side via `ServerSideRender` → `BoardScribeBlock::render_block()`'s `REST_REQUEST` branch → `render_editor_preview()`, which ran its own `WP_Query` and built lookalike markup, filterable via `edbs_block_preview_columns` (column list), `edbs_block_editor_preview` (template-specific short-circuit), and `edbs_block_preview_max_rows` (row cap). The public `BoardScribeBlock::render_preview_table()` rendered one such table. Pro's `BlockExtensions.php` used all three to reimplement its year-timeline/list templates a second time, in PHP, for the editor only.
