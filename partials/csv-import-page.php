@@ -4,7 +4,8 @@
  *
  * @package EqualizeDigital\BoardScribe
  *
- * @var \EqualizeDigital\BoardScribe\Import\CsvImporter $this Importer instance.
+ * @var \EqualizeDigital\BoardScribe\Import\CsvImporter    $this                 Importer instance.
+ * @var array{message: string, type: 'success'|'error'}|null $edbs_status_message This request's import result, resolved (and already announced to screen readers) by render_page() - null when this isn't a post-import page load.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,37 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 <div class="edbs-import">
-	<?php // phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data. ?>
-	<?php if ( isset( $_GET['edbs_import_success'] ) ) : ?>
-		<div class="notice notice-success is-dismissible">
-			<p>
-				<?php
-				printf(
-					/* translators: 1: number imported, 2: number skipped */
-					esc_html__( 'Import complete. %1$d rows imported, %2$d skipped.', 'boardscribe' ),
-					absint( $_GET['edbs_import_success'] ),
-					absint( $_GET['edbs_import_skipped'] ?? 0 )
-				);
-				?>
-			</p>
+	<?php if ( $edbs_status_message ) : ?>
+		<div class="notice notice-<?php echo esc_attr( $edbs_status_message['type'] ); ?><?php echo 'success' === $edbs_status_message['type'] ? ' is-dismissible' : ''; ?>">
+			<p><?php echo esc_html( $edbs_status_message['message'] ); ?></p>
 		</div>
 	<?php endif; ?>
-
-	<?php if ( isset( $_GET['edbs_import_error'] ) ) : ?>
-		<div class="notice notice-error">
-			<p>
-				<?php
-				$edbs_error_messages = [
-					'no_file'      => __( 'No file was uploaded. Please choose a CSV file and try again.', 'boardscribe' ),
-					'invalid_type' => __( 'Invalid file type. Please upload a .csv file.', 'boardscribe' ),
-				];
-				$edbs_error_code     = sanitize_key( $_GET['edbs_import_error'] );
-				echo esc_html( $edbs_error_messages[ $edbs_error_code ] ?? __( 'An unknown error occurred.', 'boardscribe' ) );
-				?>
-			</p>
-		</div>
-	<?php endif; ?>
-	<?php // phpcs:enable WordPress.Security.NonceVerification.Recommended ?>
 
 	<p><?php esc_html_e( 'Upload a CSV file to bulk-import meetings.', 'boardscribe' ); ?></p>
 
