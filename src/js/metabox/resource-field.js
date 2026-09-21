@@ -61,6 +61,13 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 			onEditUrlChange( ( extra && extra.editUrl ) || '' );
 		}
 		setIsModalOpen( false );
+		if ( hasValue && attachedField ) {
+			// Replacing an existing resource - its attached rows (e.g.
+			// Recording's caption tracks) belong to the resource being
+			// replaced, not the new one. Same reasoning as handleRemove's
+			// own attachedField clear below.
+			attachedField.onChange( [] );
+		}
 		if ( ! hasValue ) {
 			// Add swaps the empty prompt's own "Add" button for the card's
 			// action row - the button that was just clicked no longer
