@@ -21,8 +21,12 @@
 				"src/js/block/**/*.jsx",
 				"src/js/builder/**/*.js",
 				"src/js/builder/**/*.jsx",
+				"src/js/metabox/**/*.js",
+				"src/js/metabox/**/*.jsx",
 				"src/js/shared/**/*.js",
-				"src/js/shared/**/*.jsx"
+				"src/js/shared/**/*.jsx",
+				"tests/jest/**/*.js",
+				"tests/jest/**/*.jsx"
 			],
 			"plugins": [ "react" ],
 			"parserOptions": {
