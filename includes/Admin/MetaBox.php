@@ -479,7 +479,7 @@ class MetaBox {
 	 * an "Edit" action when this is non-empty. Same generic-mechanism
 	 * shape as save_resource_source() - see that method's docblock.
 	 *
-	 * @since 1.7.0
+	 * @since 1.1.0-alpha.1
 	 *
 	 * @param int    $post_id The post ID being saved.
 	 * @param string $key     The 'resource' field's own meta key.
