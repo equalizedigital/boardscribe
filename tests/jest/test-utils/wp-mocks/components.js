@@ -80,6 +80,14 @@ export function Modal( { title, className, children } ) {
 	);
 }
 
+export function Notice( { status, children } ) {
+	return createElement(
+		'div',
+		{ 'data-control': 'notice', 'data-status': status, role: 'alert' },
+		children,
+	);
+}
+
 export function TextareaControl( { label, value, onChange, help } ) {
 	return createElement(
 		'label',

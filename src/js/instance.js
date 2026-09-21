@@ -22,9 +22,17 @@ export function initInstance( container ) {
 	}
 	const id = instanceCfg.instanceId;
 
-	const tableEl = document.getElementById( 'edbs-table-' + id );
-	const paginationEl = document.getElementById( 'edbs-pagination-' + id );
-	const infoEl = document.getElementById( 'edbs-info-' + id );
+	// Scoped off container's own document, not the bare global - container
+	// can live inside a different document than this script's own realm
+	// (the block editor canvas is iframed by default since WP ~6.3, so
+	// window.edbsInitInstance's caller and the elements it needs to find
+	// are on opposite sides of that boundary there). Every other consumer
+	// (front end, Shortcode Builder) happens to run same-document today,
+	// so this is a no-op change for them.
+	const ownerDocument = container.ownerDocument || document;
+	const tableEl = ownerDocument.getElementById( 'edbs-table-' + id );
+	const paginationEl = ownerDocument.getElementById( 'edbs-pagination-' + id );
+	const infoEl = ownerDocument.getElementById( 'edbs-info-' + id );
 
 	if ( ! tableEl || ! paginationEl ) {
 		return;
