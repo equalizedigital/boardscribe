@@ -10,9 +10,9 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Covers the Board Meetings admin list table columns: column
- * registration/ordering, per-column cell rendering (including the
- * pre-escaped-output contract shared with edbs_block_preview_columns),
- * the edbs_admin_columns extension point, and Meeting Date sortability.
+ * registration/ordering, per-column cell rendering (pre-escaped-output
+ * contract, same as window.edbsExtraColumns' renderCell()), the
+ * edbs_admin_columns extension point, and Meeting Date sortability.
  */
 class AdminColumnsTest extends TestCase {
 
