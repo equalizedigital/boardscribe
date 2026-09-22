@@ -19,7 +19,9 @@ use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
  *
  * The block is registered from block.json so the editor script is declared
  * there. The render_callback here generates the front-end output by mapping
- * block attributes to shortcode attributes and calling do_shortcode().
+ * block attributes to a shortcode atts array and calling
+ * BoardScribeShortcode::render() directly (see render_block()'s own
+ * docblock for why not do_shortcode()).
  *
  * The block's attribute schema, the editor sidebar controls, and the
  * shortcode attributes all derive from the same shared field registry
@@ -206,14 +208,24 @@ class BoardScribeBlock {
 
 	/**
 	 * Renders the block by mapping its attributes to shortcode attributes
-	 * and calling do_shortcode() - the same output on the front end and
-	 * in the block editor. The editor's own live preview (edit(), via
-	 * window.edbsInitInstance) renders independently client-side against
-	 * the block's *current, unsaved* attributes; this render_callback only
-	 * ever runs against the block's *saved* attributes (the front end, or
-	 * the editor's read-only "preview" mode when content hasn't changed),
-	 * so the two were never the same render pass to begin with - see
-	 * PRO-1331.
+	 * and calling BoardScribeShortcode::render() directly with an atts
+	 * array - the same output on the front end and in the block editor.
+	 * The editor's own live preview (edit(), via window.edbsInitInstance)
+	 * renders independently client-side against the block's *current,
+	 * unsaved* attributes; this render_callback only ever runs against the
+	 * block's *saved* attributes (the front end, or the editor's read-only
+	 * "preview" mode when content hasn't changed), so the two were never
+	 * the same render pass to begin with - see PRO-1331.
+	 *
+	 * Calls render() directly rather than building a '[edbs_boardscribe
+	 * ...]' string and running it through do_shortcode(): WP's shortcode
+	 * regex finds an attribute value's closing quote by scanning for the
+	 * next `]`, not by tracking quote state, so a value containing a
+	 * literal `]` (e.g. a custom label like "Meetings [Board]") would
+	 * truncate the generated shortcode string there - esc_attr() alone
+	 * doesn't escape `]`. Skipping the text round-trip avoids that
+	 * (and any other shortcode-attribute-parsing quirk) entirely, since
+	 * render() already accepts a plain atts array. See PRO-1368.
 	 *
 	 * @since 1.0.0
 	 *
@@ -222,19 +234,22 @@ class BoardScribeBlock {
 	 * @return string The rendered HTML.
 	 */
 	public function render_block( array $attributes, string $content ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- required by block render_callback signature.
-		return do_shortcode( '[edbs_boardscribe' . $this->build_shortcode_atts( $attributes ) . ']' );
+		return ( new BoardScribeShortcode() )->render( $this->build_shortcode_atts( $attributes ) );
 	}
 
 	/**
-	 * Builds a shortcode attribute string from block attributes.
+	 * Maps block attributes to a shortcode atts array (key/value pairs,
+	 * the same shape BoardScribeShortcode::render() accepts directly - no
+	 * markup/string building here, see render_block()'s own docblock for
+	 * why).
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param array $attributes Block attributes.
-	 * @return string Shortcode attribute string (leading space included if non-empty).
+	 * @return array<string, string> Shortcode attributes, keyed by shortcode attribute name.
 	 */
-	private function build_shortcode_atts( array $attributes ): string {
-		$atts = '';
+	private function build_shortcode_atts( array $attributes ): array {
+		$atts = [];
 
 		foreach ( FieldRegistry::all() as $field ) {
 			$block_key = FieldRegistry::block_attribute_key( $field );
@@ -245,13 +260,13 @@ class BoardScribeBlock {
 				// could arrive from hand-edited block markup) is non-empty
 				// in PHP and would otherwise be treated as checked.
 				if ( filter_var( $value, FILTER_VALIDATE_BOOLEAN ) ) {
-					$atts .= ' ' . $field['key'] . '="true"';
+					$atts[ $field['key'] ] = 'true';
 				}
 				continue;
 			}
 
 			if ( '' !== $value ) {
-				$atts .= ' ' . $field['key'] . '="' . esc_attr( (string) $value ) . '"';
+				$atts[ $field['key'] ] = (string) $value;
 			}
 		}
 
