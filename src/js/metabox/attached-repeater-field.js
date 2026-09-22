@@ -4,7 +4,7 @@ import { useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { EditableTitle } from './resource-list-field';
 import { ResourceModal } from './resource-modal';
-import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
+import { createRowKeyer, focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * An `attached` field's inline repeater - a 'resource' field's own card
@@ -69,6 +69,15 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 	const sources = resolveFieldSources( field, [ 'media_library' ] );
 	const containerRef = useRef( null );
 
+	// A stable React `key` per row, independent of its position in `rows` -
+	// same fix, same reasoning, as ResourceListField's own getRowKey (see
+	// createRowKeyer()'s docblock) - this list used to key by array index,
+	// so removing an earlier row while a later row's title editor was open
+	// silently reassigned that editor's instance (and its open/focused
+	// state) to different data instead of closing or following it. See
+	// PRO-1365.
+	const getRowKey = useRef( createRowKeyer() ).current;
+
 	const updateRow = ( index, patch ) => {
 		onChange( rows.map( ( row, i ) => ( i === index ? { ...row, ...patch } : row ) ) );
 	};
@@ -98,7 +107,7 @@ export function AttachedRepeaterField( { field, value, onChange } ) {
 				const rowNoun = row.label || itemNoun;
 				const rowDescription = meta ? sprintf( /* translators: 1: row title or item noun, 2: filename. */ __( '%1$s, %2$s', 'boardscribe' ), rowNoun, meta ) : rowNoun;
 				return (
-					<div className="edbs-attached-repeater__row" key={ index }>
+					<div className="edbs-attached-repeater__row" key={ getRowKey( row ) }>
 						<span className="edbs-attached-repeater__label">
 							<EditableTitle
 								label={ row.label }
