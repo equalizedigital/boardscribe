@@ -1,5 +1,20 @@
 import { createRoot } from '@wordpress/element';
 import { MetaBoxApp } from './app';
+import { ResourceCard, ResourceCardEmpty } from './resource-card';
+import { focusFirstActionable } from './resource-utils';
+
+// Exposed so a plugin's own custom-type control (window.edbsMetaBoxControls,
+// below) can render the exact same card system every built-in resource-
+// shaped field uses (Agenda, Minutes, Livestream, Recording, Transcript,
+// Supporting Documents) instead of hand-copying this markup/CardAction -
+// Pro's Location field control is the first consumer (a custom type, since
+// it needs its own async-fetch/loading-state behavior a plain 'resource'
+// field descriptor can't express). See ResourceCard's own docblock for the
+// props shape, especially `actions[].ariaLabel` - a field with only one
+// card on screen still needs distinguishing accessible names so a screen
+// reader's controls list doesn't read four bare "Edit"/"Replace"/"Remove"
+// entries with nothing tying them to that field.
+window.edbsResourceCard = { ResourceCard, ResourceCardEmpty, focusFirstActionable };
 
 // Localized by MetaBox::enqueue_scripts() from MetaBoxFieldRegistry::js_schema()
 // - the merged core + edbs_meeting_meta_fields field list, already ordered
