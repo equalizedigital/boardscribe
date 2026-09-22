@@ -322,17 +322,51 @@ class BoardScribeEndpoint {
 
 		$open_links_new_window = ! empty( $format_args['open_links_new_window'] );
 
+		/**
+		 * Filters the built agenda link markup. A callback that rebuilds the
+		 * anchor from scratch (the entire point of this filter) previously
+		 * had no way to know $open_links_new_window was enabled, so it
+		 * silently discarded that setting - the extra args are additive and
+		 * don't change behavior for a callback that only reads the first.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $link                  The built `<a>` markup.
+		 * @param string $agenda_url            The raw agenda URL.
+		 * @param string $agenda_link_label     The link's visible text.
+		 * @param bool   $open_links_new_window Whether the link opens in a new window.
+		 * @param int    $post_id               The meeting post ID.
+		 */
 		$agenda_item = $agenda_url
 			? apply_filters(
 				'edbs_agenda_link',
-				self::build_link( $agenda_url, $agenda_link_label, $formatted_date, $open_links_new_window )
+				self::build_link( $agenda_url, $agenda_link_label, $formatted_date, $open_links_new_window ),
+				$agenda_url,
+				$agenda_link_label,
+				$open_links_new_window,
+				$post_id
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'boardscribe' ) . '</span>';
 
+		/**
+		 * Filters the built minutes link markup. See edbs_agenda_link above.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $link                  The built `<a>` markup.
+		 * @param string $minutes_url           The raw minutes URL.
+		 * @param string $minutes_link_label    The link's visible text.
+		 * @param bool   $open_links_new_window Whether the link opens in a new window.
+		 * @param int    $post_id               The meeting post ID.
+		 */
 		$minutes_item = $minutes_url
 			? apply_filters(
 				'edbs_minutes_link',
-				self::build_link( $minutes_url, $minutes_link_label, $formatted_date, $open_links_new_window )
+				self::build_link( $minutes_url, $minutes_link_label, $formatted_date, $open_links_new_window ),
+				$minutes_url,
+				$minutes_link_label,
+				$open_links_new_window,
+				$post_id
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'boardscribe' ) . '</span>';
 

@@ -187,3 +187,15 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 **Contract impact:** free-plugin admin internals only — Pro has no references to the removed slug/methods (verified). Any external link to `page=edbs-shortcode-builder` should point at `page=edbs-settings&tab=builder` instead.
 
 **New extension points for Pro:** the tab list is now filterable via `edbs_settings_tabs` and non-core tab content renders on `edbs_settings_tab_content_{$tab}`. This is what lets Pro fold its CSV Import page (`page=edbs-import`) into the settings page as an `import` tab instead of a standalone submenu, matching how the builder moved. **Paired Pro change (separate branch):** register the `import` tab via `edbs_settings_tabs`, move `CsvImporter::render_page()` onto `edbs_settings_tab_content_import`, drop `add_menu_page()`/the `edbs-import` submenu, enqueue import assets off the `edbs_meeting_page_edbs-settings` hook + `tab=import`, and update `get_page_url()` to `page=edbs-settings&tab=import`.
+
+---
+
+## `edbs_agenda_link` / `edbs_minutes_link` gain extra arguments (#113) — `BoardScribeEndpoint::build_link()` is now public
+
+**Before:** `apply_filters( 'edbs_agenda_link', $link )` / `apply_filters( 'edbs_minutes_link', $link )` — a callback only ever received the finished `<a>` markup, with no way to tell whether the new "open links in a new window" option was enabled for that request. A callback that rebuilds the anchor from scratch (the documented Accessibility Checker Pro integration use case) had no way to preserve that setting.
+
+**After:** both filters now receive `( $link, $url, $label, $open_links_new_window, $post_id )`. Purely additive — a callback declared with only one parameter is unaffected; one that wants the new context just declares more parameters and raises its `add_filter()` priority arg count.
+
+The single-link building logic (URL escaping, aria-label, `target`/`rel`) was also extracted into a new public `BoardScribeEndpoint::build_link( string $url, string $label, string $formatted_date, bool $new_window ): string`, previously private — a callback rebuilding the anchor can now call this directly instead of reimplementing it.
+
+**Action for Pro before release:** grep Pro for `edbs_agenda_link` / `edbs_minutes_link` and, if a callback rebuilds the anchor rather than just decorating the existing string, update it to read `$open_links_new_window` (4th arg) and consider calling `BoardScribeEndpoint::build_link()` directly instead of duplicating the markup.
