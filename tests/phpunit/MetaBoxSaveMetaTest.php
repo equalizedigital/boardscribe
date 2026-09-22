@@ -353,6 +353,34 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * A 'resource' field's `{key}_document_id` sibling meta is saved
+	 * verbatim (through absint()) - see
+	 * MetaBox::save_resource_document_id()'s docblock.
+	 */
+	public function test_resource_field_document_id_is_saved(): void {
+		$_POST['edbs_agenda_url']             = 'https://example.com/board-documents/agenda-2026-03/';
+		$_POST['edbs_agenda_url_document_id'] = '42';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '42', get_post_meta( $this->post_id, 'edbs_agenda_url_document_id', true ) );
+	}
+
+	/**
+	 * When `{key}_document_id` isn't present in $_POST (the field's
+	 * source has no underlying linked post, e.g. Media Library/External
+	 * URL), no sibling meta is written.
+	 */
+	public function test_resource_field_document_id_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_document_id.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_document_id', true ) );
+	}
+
+	/**
 	 * A 'resource_list' field that a plugin forgot to mark
 	 * saved_externally is not saved by the generic loop (its $_POST value
 	 * is a repeater array, not a plain scalar) - it triggers a

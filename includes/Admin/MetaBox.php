@@ -161,8 +161,8 @@ class MetaBox {
 		);
 
 		// Every 'resource'-type field (built-in Agenda/Minutes, or a
-		// plugin's own) automatically gets a `{key}_source`/`{key}_edit_url`
-		// sibling meta - see MetaBoxFieldRegistry::all()'s own docblock,
+		// plugin's own) automatically gets a `{key}_source`/`{key}_edit_url`/
+		// `{key}_document_id` sibling meta - see MetaBoxFieldRegistry::all()'s own docblock,
 		// which promises this happens "regardless of who added it". Loop
 		// over the resolved registry instead of hardcoding just the two
 		// core keys, so a plugin's resource field's siblings are also
@@ -197,6 +197,20 @@ class MetaBox {
 						/* translators: %s: the resource field's meta key, e.g. edbs_agenda_url. */
 						'description'       => sprintf( __( 'The wp-admin edit screen for %s\'s underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link.', 'boardscribe' ), $field['key'] ),
 						'sanitize_callback' => 'esc_url_raw',
+					]
+				)
+			);
+
+			register_post_meta(
+				'edbs_meeting',
+				$field['key'] . '_document_id',
+				array_merge(
+					$common,
+					[
+						'type'              => 'integer',
+						/* translators: %s: the resource field's meta key, e.g. edbs_agenda_url. */
+						'description'       => sprintf( __( 'The linked post ID underlying %s\'s current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link.', 'boardscribe' ), $field['key'] ),
+						'sanitize_callback' => 'absint',
 					]
 				)
 			);
@@ -285,8 +299,9 @@ class MetaBox {
 			// rather than the field's own schema entry, since neither is a
 			// field the registry renders its own row for.
 			if ( 'resource' === ( $field['type'] ?? '' ) ) {
-				$values[ $field['key'] . '_source' ]   = get_post_meta( $post->ID, $field['key'] . '_source', true );
-				$values[ $field['key'] . '_edit_url' ] = get_post_meta( $post->ID, $field['key'] . '_edit_url', true );
+				$values[ $field['key'] . '_source' ]      = get_post_meta( $post->ID, $field['key'] . '_source', true );
+				$values[ $field['key'] . '_edit_url' ]    = get_post_meta( $post->ID, $field['key'] . '_edit_url', true );
+				$values[ $field['key'] . '_document_id' ] = get_post_meta( $post->ID, $field['key'] . '_document_id', true );
 			}
 		}
 		?>
@@ -402,6 +417,7 @@ class MetaBox {
 		if ( 'resource' === $type ) {
 			$this->save_resource_source( $post_id, $key );
 			$this->save_resource_edit_url( $post_id, $key );
+			$this->save_resource_document_id( $post_id, $key );
 		}
 
 		if ( ! empty( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
@@ -498,6 +514,36 @@ class MetaBox {
 		if ( is_string( $raw_value ) ) {
 			update_post_meta( $post_id, $edit_url_key, esc_url_raw( wp_unslash( $raw_value ) ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Saves a 'resource' field's `{key}_document_id` sibling meta - the
+	 * underlying linked post's ID, when the value's source has one (e.g. a
+	 * plugin's linked-document source), carried as a hidden
+	 * `{key}_document_id` input alongside the field's own (see
+	 * resource-field.js). 0 for a source with no underlying post (Media
+	 * Library, external URL). Not read anywhere by this field's own
+	 * rendering - persisted purely so a reverse lookup elsewhere (e.g. a
+	 * "used by" panel on the linked post's own edit screen) has something
+	 * reliable to read instead of only a plain URL. Same generic-mechanism
+	 * shape as save_resource_source()/save_resource_edit_url() - see those
+	 * methods' docblocks.
+	 *
+	 * @since 1.1.0-alpha.1
+	 *
+	 * @param int    $post_id The post ID being saved.
+	 * @param string $key     The 'resource' field's own meta key.
+	 * @return void
+	 */
+	private function save_resource_document_id( int $post_id, string $key ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called for every field.
+		$document_id_key = $key . '_document_id';
+		if ( ! isset( $_POST[ $document_id_key ] ) ) {
+			return;
+		}
+
+		update_post_meta( $post_id, $document_id_key, absint( wp_unslash( $_POST[ $document_id_key ] ) ) );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
