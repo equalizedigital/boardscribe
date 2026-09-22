@@ -163,19 +163,15 @@ class CsvImporter {
 			wp_die( esc_html__( 'Insufficient permissions.', 'boardscribe' ) );
 		}
 
-		if ( empty( $_FILES['edbs_csv']['tmp_name'] ) ) {
-			wp_safe_redirect( add_query_arg( 'edbs_import_error', 'no_file', $this->get_page_url() ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce already verified above; the whole array is handed to validate_upload() to check/sanitize, not read raw here.
+		$raw_file = isset( $_FILES['edbs_csv'] ) && is_array( $_FILES['edbs_csv'] ) ? $_FILES['edbs_csv'] : [];
+		$error    = $this->validate_upload( $raw_file );
+		if ( null !== $error ) {
+			wp_safe_redirect( add_query_arg( 'edbs_import_error', $error, $this->get_page_url() ) );
 			exit;
 		}
 
-		$file = $_FILES['edbs_csv']['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- value is a server-generated tmp path, validated by mime_content_type() below.
-
-		// Validate MIME type.
-		$mime = mime_content_type( $file );
-		if ( ! in_array( $mime, [ 'text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel' ], true ) ) {
-			wp_safe_redirect( add_query_arg( 'edbs_import_error', 'invalid_type', $this->get_page_url() ) );
-			exit;
-		}
+		$file = $raw_file['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- value is a server-generated tmp path, validated by validate_upload() above.
 
 		$result = $this->process_csv( $file );
 
@@ -189,6 +185,68 @@ class CsvImporter {
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Validates a $_FILES['edbs_csv']-shaped array before it's handed to
+	 * process_csv(). Split out from handle_upload() (which calls exit()
+	 * on every path, making it awkward to unit test directly) so this
+	 * logic is directly testable.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array{tmp_name?: mixed, error?: mixed, name?: mixed} $file The $_FILES['edbs_csv'] entry, or [] if absent.
+	 * @return string|null The edbs_import_error code to redirect with, or null when the upload is good to process.
+	 */
+	private function validate_upload( array $file ): ?string {
+		if ( empty( $file['tmp_name'] ) ) {
+			return 'no_file';
+		}
+
+		// A non-empty tmp_name only means PHP wrote *something* there - a
+		// partial/interrupted upload (UPLOAD_ERR_PARTIAL et al.) still
+		// leaves a tmp file behind, and process_csv() would otherwise
+		// silently import whatever truncated rows made it through.
+		$upload_error = isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
+		if ( UPLOAD_ERR_OK !== $upload_error ) {
+			return 'upload_failed';
+		}
+
+		// is_uploaded_file() confirms tmp_name actually came from this
+		// request's multipart upload (not, say, a stale/attacker-guessed
+		// tmp path) before anything else touches it.
+		if ( ! is_uploaded_file( (string) $file['tmp_name'] ) ) {
+			return 'invalid_type';
+		}
+
+		$mime      = mime_content_type( (string) $file['tmp_name'] );
+		$extension = isset( $file['name'] ) ? strtolower( (string) pathinfo( sanitize_file_name( wp_unslash( (string) $file['name'] ) ), PATHINFO_EXTENSION ) ) : '';
+		if ( ! $this->is_allowed_csv_upload( false === $mime ? '' : $mime, $extension ) ) {
+			return 'invalid_type';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Whether a detected MIME type + filename extension pair is acceptable
+	 * for a CSV upload. Pure and side-effect free (no filesystem access),
+	 * kept separate from validate_upload() so it's directly unit-testable.
+	 *
+	 * `text/plain` stays on the MIME allow-list - many simple CSV exports
+	 * are indistinguishable from plain text to mime_content_type() - but
+	 * is now paired with an extension check, so a renamed-but-otherwise-
+	 * plain-text non-CSV file can't ride through on text/plain alone.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $mime      The detected MIME type (mime_content_type()'s return value, or '' if detection failed).
+	 * @param string $extension The lowercased filename extension, without the leading dot.
+	 * @return bool
+	 */
+	private function is_allowed_csv_upload( string $mime, string $extension ): bool {
+		return 'csv' === $extension
+			&& in_array( $mime, [ 'text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel' ], true );
 	}
 
 	/**
@@ -376,8 +434,9 @@ class CsvImporter {
 
 		if ( isset( $_GET['edbs_import_error'] ) ) {
 			$messages = [
-				'no_file'      => __( 'No file was uploaded. Please choose a CSV file and try again.', 'boardscribe' ),
-				'invalid_type' => __( 'Invalid file type. Please upload a .csv file.', 'boardscribe' ),
+				'no_file'       => __( 'No file was uploaded. Please choose a CSV file and try again.', 'boardscribe' ),
+				'invalid_type'  => __( 'Invalid file type. Please upload a .csv file.', 'boardscribe' ),
+				'upload_failed' => __( 'The file failed to upload completely. Please try again.', 'boardscribe' ),
 			];
 			// sanitize_key() calls strtolower() internally, which is a
 			// TypeError in PHP 8+ if $_GET['edbs_import_error'] is an array
