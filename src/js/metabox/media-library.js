@@ -11,13 +11,17 @@ import { __ } from '@wordpress/i18n';
  *                                     `{ title }` argument (title falls back to filename).
  * @param {Function} [config.onCancel] Called if the frame closes with no selection, or
  *                                     wp.media isn't available. Optional.
+ * @return {Object|undefined} The wp.media frame, so a caller (e.g.
+ *                             resource-modal.js's MediaLibrarySource) can close it itself
+ *                             if it unmounts while the frame is still open - undefined
+ *                             when wp.media isn't available and nothing was opened.
  */
 export function openMediaLibrary( { title, onSelect, onCancel } ) {
 	if ( ! window.wp || ! window.wp.media ) {
 		if ( onCancel ) {
 			onCancel();
 		}
-		return;
+		return undefined;
 	}
 
 	let picked = false;
@@ -45,4 +49,6 @@ export function openMediaLibrary( { title, onSelect, onCancel } ) {
 	} );
 
 	frame.open();
+
+	return frame;
 }

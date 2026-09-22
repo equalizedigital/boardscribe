@@ -1,5 +1,5 @@
 import { Button, Modal, TextControl } from '@wordpress/components';
-import { useRef, useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { openMediaLibrary } from './media-library';
 import { isValidExternalUrl } from './resource-utils';
@@ -21,10 +21,23 @@ import { isValidExternalUrl } from './resource-utils';
  * @return {null} Renders nothing - it's a side-effecting launcher, not UI.
  */
 function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
-	useState( () => {
-		openMediaLibrary( { title: mediaTitle, onSelect: onSave, onCancel } );
-		return null;
-	} );
+	// A lazy useState initializer (the previous approach) runs its
+	// callback during render, which is a React anti-pattern for a side
+	// effect like opening wp.media() - flagged as a CodeRabbit nitpick on
+	// PR #121, never applied until now. useEffect's cleanup here also
+	// closes the wp.media frame if this component unmounts while it's
+	// still open (e.g. ResourceModal's caller closes the whole flow some
+	// other way), instead of leaving it open behind.
+	useEffect( () => {
+		const frame = openMediaLibrary( { title: mediaTitle, onSelect: onSave, onCancel } );
+		return () => {
+			if ( frame ) {
+				frame.close();
+			}
+		};
+		// Deliberately empty deps - open once on mount; identity changes in
+		// the callback props shouldn't reopen the frame.
+	}, [] );
 
 	return null;
 }
@@ -145,6 +158,30 @@ export function ResourceModal( { title, sources, mediaTitle, fieldLabel, current
 	// produced the value - see resource-utils.js's resolveResourceDisplay().
 	const handleSourceSave = ( url, extra ) => onSave( url, { ...( extra || {} ), source: activeSource } );
 
+	// wp.media() opens its own frame appended to document.body, entirely
+	// separate from this component's own <Modal>. But <Modal> sets
+	// aria-modal="true" and hides everything outside itself from
+	// assistive tech - nesting MediaLibrarySource inside it made the
+	// just-opened media frame unreachable to screen reader users in
+	// browse mode, and a click inside the media frame registered as
+	// "outside" the <Modal>, so onRequestClose could fire and yank focus
+	// back while the media frame was still visually open. Rendering just
+	// MediaLibrarySource here, with no <Modal> wrapper, means wp.media's
+	// own frame is the only dialog on screen for this step - see
+	// PRO-1363. (This only matters once activeSource is actually
+	// 'media_library' - the chooser step below, and the external_url/
+	// custom-source steps, are real in-page content, not another native
+	// dialog, so they're fine nested in <Modal>.)
+	if ( 'media_library' === activeSource ) {
+		return (
+			<MediaLibrarySource
+				mediaTitle={ mediaTitle }
+				onSave={ handleSourceSave }
+				onCancel={ 1 === sources.length ? onClose : () => setActiveSource( null ) }
+			/>
+		);
+	}
+
 	const registry = {
 		media_library: {
 			label: __( 'Select from Media Library', 'boardscribe' ),
@@ -158,16 +195,6 @@ export function ResourceModal( { title, sources, mediaTitle, fieldLabel, current
 	};
 
 	const renderSourceStep = () => {
-		if ( 'media_library' === activeSource ) {
-			return (
-				<MediaLibrarySource
-					mediaTitle={ mediaTitle }
-					onSave={ handleSourceSave }
-					onCancel={ 1 === sources.length ? onClose : () => setActiveSource( null ) }
-				/>
-			);
-		}
-
 		if ( 'external_url' === activeSource ) {
 			return <ExternalUrlSource label={ fieldLabel } initialValue={ currentValue } onSave={ handleSourceSave } />;
 		}
