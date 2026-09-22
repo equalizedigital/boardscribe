@@ -277,7 +277,7 @@ class FieldRegistry {
 					'group'       => 'link_labels',
 					'label'       => __( 'Open Agenda/Minutes Links in a New Window', 'boardscribe' ),
 					'default'     => false,
-					'description' => __( 'Adds a screen-reader hint to each link when enabled, per WCAG 3.2.2.', 'boardscribe' ),
+					'description' => __( 'Agenda and minutes links open in a new browser tab. A screen-reader hint and rel="noopener noreferrer" are added automatically.', 'boardscribe' ),
 					'rest_arg'    => true,
 				],
 				[

@@ -30,7 +30,7 @@ const FIELD_REGISTRY = window.edbsBlockFieldRegistry || [];
 const GROUPS = [
 	{ key: 'general', title: __( 'Display Settings', 'boardscribe' ), initialOpen: true },
 	{ key: 'column_labels', title: __( 'Column Labels', 'boardscribe' ), initialOpen: false },
-	{ key: 'link_labels', title: __( 'Link Labels', 'boardscribe' ), initialOpen: false },
+	{ key: 'link_labels', title: __( 'Links', 'boardscribe' ), initialOpen: false },
 	{ key: 'hide_columns', title: __( 'Hide Columns', 'boardscribe' ), initialOpen: false },
 	{ key: 'show_columns', title: __( 'Show Columns', 'boardscribe' ), initialOpen: false },
 ];
