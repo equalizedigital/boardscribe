@@ -9,129 +9,85 @@ use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
- * Covers the edbs_after_agenda_url_field / edbs_after_minutes_url_field
- * hooks added to partials/meta-box.php so a plugin can render a field
- * directly under the Agenda URL / Minutes URL row it's tightly coupled
- * to, instead of only at the end of the box via edbs_meta_fields.
+ * Covers the React app's mount point (fields themselves are rendered
+ * client-side from MetaBoxFieldRegistry::js_schema(), not by this method)
+ * and the edbs_before_meta_box_fields hook, the one PHP-rendered extension
+ * point left above the app.
  */
 class MetaBoxRenderMetaBoxTest extends TestCase {
 
 	/**
-	 * Both new hooks fire, each receiving the post being edited.
+	 * The mount point div is present, keyed with the current post's saved
+	 * meta values so the React app can hydrate without a round-trip.
 	 */
-	public function test_both_field_anchor_hooks_fire_with_the_post(): void {
+	public function test_mount_point_carries_post_meta_as_data_values(): void {
 		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
-		$post    = get_post( $post_id );
-
-		$agenda_hook_post  = null;
-		$minutes_hook_post = null;
-
-		add_action(
-			'edbs_after_agenda_url_field',
-			function ( \WP_Post $hook_post ) use ( &$agenda_hook_post ) {
-				$agenda_hook_post = $hook_post;
-			}
-		);
-		add_action(
-			'edbs_after_minutes_url_field',
-			function ( \WP_Post $hook_post ) use ( &$minutes_hook_post ) {
-				$minutes_hook_post = $hook_post;
-			}
-		);
-
-		ob_start();
-		( new MetaBox() )->render_meta_box( $post );
-		ob_end_clean();
-
-		$this->assertSame( $post_id, $agenda_hook_post->ID ?? null );
-		$this->assertSame( $post_id, $minutes_hook_post->ID ?? null );
-	}
-
-	/**
-	 * The hooks fire in field order (agenda row, then minutes row) - a
-	 * plugin anchoring content to one field can rely on this to reason
-	 * about output order without inspecting raw HTML.
-	 */
-	public function test_field_anchor_hooks_fire_in_row_order(): void {
-		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
-		$post    = get_post( $post_id );
-
-		$order = [];
-
-		add_action(
-			'edbs_after_agenda_url_field',
-			function () use ( &$order ) {
-				$order[] = 'agenda';
-			}
-		);
-		add_action(
-			'edbs_after_minutes_url_field',
-			function () use ( &$order ) {
-				$order[] = 'minutes';
-			}
-		);
-
-		ob_start();
-		( new MetaBox() )->render_meta_box( $post );
-		ob_end_clean();
-
-		$this->assertSame( [ 'agenda', 'minutes' ], $order );
-	}
-
-	/**
-	 * Output added on edbs_after_agenda_url_field actually lands in the
-	 * rendered HTML between the two field rows, not merely fired.
-	 */
-	public function test_agenda_hook_output_lands_between_the_two_url_fields(): void {
-		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
-		$post    = get_post( $post_id );
-
-		$marker   = 'test-agenda-anchor-marker';
-		$callback = static function () use ( $marker ) {
-			echo esc_html( $marker );
-		};
-		add_action( 'edbs_after_agenda_url_field', $callback );
-
-		ob_start();
-		( new MetaBox() )->render_meta_box( $post );
-		$html = ob_get_clean();
-
-		remove_action( 'edbs_after_agenda_url_field', $callback );
-
-		$agenda_pos  = strpos( $html, 'edbs_agenda_url' );
-		$marker_pos  = strpos( $html, $marker );
-		$minutes_pos = strpos( $html, 'edbs_minutes_url' );
-
-		$this->assertNotFalse( $marker_pos );
-		$this->assertGreaterThan( $agenda_pos, $marker_pos );
-		$this->assertLessThan( $minutes_pos, $marker_pos );
-	}
-
-	/**
-	 * Mirrors test_agenda_hook_output_lands_between_the_two_url_fields()
-	 * for the minutes hook - only covering the agenda side would let a
-	 * regression that moved edbs_after_minutes_url_field down past the
-	 * "Meeting Not Held" row pass unnoticed.
-	 */
-	public function test_minutes_hook_output_lands_after_minutes_url_field(): void {
-		$post_id  = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
-		$marker   = 'test-minutes-anchor-marker';
-		$callback = static function () use ( $marker ) {
-			echo esc_html( $marker );
-		};
-		add_action( 'edbs_after_minutes_url_field', $callback );
+		update_post_meta( $post_id, 'edbs_meeting_date', '2024-03-15' );
+		update_post_meta( $post_id, 'edbs_agenda_url', 'https://example.com/agenda.pdf' );
 
 		ob_start();
 		( new MetaBox() )->render_meta_box( get_post( $post_id ) );
 		$html = ob_get_clean();
-		remove_action( 'edbs_after_minutes_url_field', $callback );
 
-		$minutes_pos   = strpos( $html, 'edbs_minutes_url' );
-		$marker_pos    = strpos( $html, $marker );
-		$not_held_pos  = strpos( $html, 'edbs_meeting_not_held' );
+		$this->assertStringContainsString( 'id="edbs-meeting-meta-box-root"', $html );
+		$this->assertStringContainsString( '2024-03-15', $html );
+		$this->assertStringContainsString( 'https://example.com/agenda.pdf', $html );
+	}
 
-		$this->assertNotFalse( $marker_pos );
-		$this->assertGreaterThan( $minutes_pos, $marker_pos );
-		$this->assertLessThan( $not_held_pos, $marker_pos );
+	/**
+	 * edbs_before_meta_box_fields fires with the post being edited, before
+	 * the mount point in the rendered HTML.
+	 */
+	public function test_before_fields_hook_fires_with_the_post_before_the_mount_point(): void {
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		$post    = get_post( $post_id );
+
+		$marker           = 'test-before-fields-marker';
+		$hook_post        = null;
+		$callback         = static function ( \WP_Post $hp ) use ( &$hook_post, $marker ): void {
+			$hook_post = $hp;
+			echo esc_html( $marker );
+		};
+		add_action( 'edbs_before_meta_box_fields', $callback );
+
+		ob_start();
+		( new MetaBox() )->render_meta_box( $post );
+		$html = ob_get_clean();
+
+		remove_action( 'edbs_before_meta_box_fields', $callback );
+
+		$this->assertSame( $post_id, $hook_post->ID ?? null );
+		$this->assertLessThan( strpos( $html, 'edbs-meeting-meta-box-root' ), strpos( $html, $marker ) );
+	}
+
+	/**
+	 * A field with a render_callback gets its data-values entry from that
+	 * callback (called with the post being edited) instead of a plain
+	 * get_post_meta() lookup on the field's own key — used for a field
+	 * whose value is server-rendered markup, not a stored meta value.
+	 */
+	public function test_render_callback_overrides_the_default_meta_lookup(): void {
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $post_id, 'pro_widget', 'raw-meta-value-should-not-appear' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'             => 'pro_widget',
+				'type'            => 'html',
+				'label'           => 'Pro Widget',
+				'render_callback' => static fn( \WP_Post $post ): string => '<p>widget for post ' . $post->ID . '</p>',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		ob_start();
+		( new MetaBox() )->render_meta_box( get_post( $post_id ) );
+		$html = ob_get_clean();
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertStringContainsString( 'widget for post ' . $post_id, $html );
+		$this->assertStringNotContainsString( 'raw-meta-value-should-not-appear', $html );
 	}
 }

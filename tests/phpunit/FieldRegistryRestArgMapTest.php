@@ -10,10 +10,11 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Proves the {key, configKey} map that drives the front-end request
- * builder (src/js/defaults/request.js) and the block editor preview's
- * fake REST request (BoardScribeBlock::render_editor_preview()) only
- * carries rest_arg fields, with their derived configKey resolved so
- * neither JS consumer has to know the snake_case-to-camelCase rule.
+ * builder (src/js/defaults/request.js) - also consumed by the block
+ * editor's own live preview since PRO-1331, via the same client-side
+ * pipeline - only carries rest_arg fields, with their derived configKey
+ * resolved so neither JS consumer has to know the snake_case-to-camelCase
+ * rule.
  */
 class FieldRegistryRestArgMapTest extends TestCase {
 

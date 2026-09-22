@@ -163,19 +163,15 @@ class CsvImporter {
 			wp_die( esc_html__( 'Insufficient permissions.', 'boardscribe' ) );
 		}
 
-		if ( empty( $_FILES['edbs_csv']['tmp_name'] ) ) {
-			wp_safe_redirect( add_query_arg( 'edbs_import_error', 'no_file', $this->get_page_url() ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce already verified above; the whole array is handed to validate_upload() to check/sanitize, not read raw here.
+		$raw_file = isset( $_FILES['edbs_csv'] ) && is_array( $_FILES['edbs_csv'] ) ? $_FILES['edbs_csv'] : [];
+		$error    = $this->validate_upload( $raw_file );
+		if ( null !== $error ) {
+			wp_safe_redirect( add_query_arg( 'edbs_import_error', $error, $this->get_page_url() ) );
 			exit;
 		}
 
-		$file = $_FILES['edbs_csv']['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- value is a server-generated tmp path, validated by mime_content_type() below.
-
-		// Validate MIME type.
-		$mime = mime_content_type( $file );
-		if ( ! in_array( $mime, [ 'text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel' ], true ) ) {
-			wp_safe_redirect( add_query_arg( 'edbs_import_error', 'invalid_type', $this->get_page_url() ) );
-			exit;
-		}
+		$file = $raw_file['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- value is a server-generated tmp path, validated by validate_upload() above.
 
 		$result = $this->process_csv( $file );
 
@@ -189,6 +185,77 @@ class CsvImporter {
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Validates a $_FILES['edbs_csv']-shaped array before it's handed to
+	 * process_csv(). Split out from handle_upload() (which calls exit()
+	 * on every path, making it awkward to unit test directly) so this
+	 * logic is directly testable.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array{tmp_name?: mixed, error?: mixed, name?: mixed} $file The $_FILES['edbs_csv'] entry, or [] if absent.
+	 * @return string|null The edbs_import_error code to redirect with, or null when the upload is good to process.
+	 */
+	private function validate_upload( array $file ): ?string {
+		// Checked before tmp_name: PHP leaves tmp_name empty for several
+		// upload errors (e.g. UPLOAD_ERR_INI_SIZE, an over-large file), not
+		// just "no file chosen" (UPLOAD_ERR_NO_FILE) - checking tmp_name
+		// first would report every one of those as the generic "no file"
+		// message instead of the more accurate "upload failed", and skip
+		// the upload_failed branch below entirely.
+		$upload_error = isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
+		if ( UPLOAD_ERR_NO_FILE === $upload_error ) {
+			return 'no_file';
+		}
+		if ( UPLOAD_ERR_OK !== $upload_error ) {
+			return 'upload_failed';
+		}
+
+		// A UPLOAD_ERR_OK error code should always come with a non-empty
+		// tmp_name, but don't assume it - fall back to the same "no file"
+		// message rather than passing an empty path to is_uploaded_file()/
+		// mime_content_type() below.
+		if ( empty( $file['tmp_name'] ) ) {
+			return 'no_file';
+		}
+
+		// is_uploaded_file() confirms tmp_name actually came from this
+		// request's multipart upload (not, say, a stale/attacker-guessed
+		// tmp path) before anything else touches it.
+		if ( ! is_uploaded_file( (string) $file['tmp_name'] ) ) {
+			return 'invalid_type';
+		}
+
+		$mime      = mime_content_type( (string) $file['tmp_name'] );
+		$extension = isset( $file['name'] ) ? strtolower( (string) pathinfo( sanitize_file_name( wp_unslash( (string) $file['name'] ) ), PATHINFO_EXTENSION ) ) : '';
+		if ( ! $this->is_allowed_csv_upload( false === $mime ? '' : $mime, $extension ) ) {
+			return 'invalid_type';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Whether a detected MIME type + filename extension pair is acceptable
+	 * for a CSV upload. Pure and side-effect free (no filesystem access),
+	 * kept separate from validate_upload() so it's directly unit-testable.
+	 *
+	 * `text/plain` stays on the MIME allow-list - many simple CSV exports
+	 * are indistinguishable from plain text to mime_content_type() - but
+	 * is now paired with an extension check, so a renamed-but-otherwise-
+	 * plain-text non-CSV file can't ride through on text/plain alone.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $mime      The detected MIME type (mime_content_type()'s return value, or '' if detection failed).
+	 * @param string $extension The lowercased filename extension, without the leading dot.
+	 * @return bool
+	 */
+	private function is_allowed_csv_upload( string $mime, string $extension ): bool {
+		return 'csv' === $extension
+			&& in_array( $mime, [ 'text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel' ], true );
 	}
 
 	/**
@@ -340,7 +407,116 @@ class CsvImporter {
 			return;
 		}
 
+		$edbs_status_message = $this->resolve_status_message();
+		if ( $edbs_status_message ) {
+			$this->announce_status_message( $edbs_status_message['message'], $edbs_status_message['type'] );
+		}
+
 		require EDBS_DIR . 'partials/csv-import-page.php';
+	}
+
+	/**
+	 * Resolves this request's import status message (success or error) from
+	 * the redirect's own query args - the single source of truth for both
+	 * the visible notice markup (partials/csv-import-page.php) and the
+	 * screen-reader announcement (announce_status_message()), so the two
+	 * texts can never drift apart.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return array{message: string, type: 'success'|'error'}|null Null when
+	 *         the request carries neither query arg.
+	 */
+	private function resolve_status_message(): ?array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data.
+		if ( isset( $_GET['edbs_import_success'] ) ) {
+			return [
+				'type'    => 'success',
+				'message' => sprintf(
+					/* translators: 1: number imported, 2: number skipped */
+					__( 'Import complete. %1$d rows imported, %2$d skipped.', 'boardscribe' ),
+					absint( $_GET['edbs_import_success'] ),
+					absint( $_GET['edbs_import_skipped'] ?? 0 )
+				),
+			];
+		}
+
+		if ( isset( $_GET['edbs_import_error'] ) ) {
+			$messages = [
+				'no_file'       => __( 'No file was uploaded. Please choose a CSV file and try again.', 'boardscribe' ),
+				'invalid_type'  => __( 'Invalid file type. Please upload a .csv file.', 'boardscribe' ),
+				'upload_failed' => __( 'The file failed to upload completely. Please try again.', 'boardscribe' ),
+			];
+			// sanitize_key() calls strtolower() internally, which is a
+			// TypeError in PHP 8+ if $_GET['edbs_import_error'] is an array
+			// (e.g. a URL crafted/edited to ?edbs_import_error[]=x) - only
+			// pass it a string, falling back to an empty (non-matching) code
+			// otherwise so the generic "unknown error" message below still
+			// applies rather than fataling the page.
+			$raw_code = $_GET['edbs_import_error']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- sanitized (or discarded entirely) immediately below; only kept as its own variable so the is_string() guard can run before sanitize_key() ever sees it.
+			$code     = is_string( $raw_code ) ? sanitize_key( wp_unslash( $raw_code ) ) : '';
+
+			return [
+				'type'    => 'error',
+				'message' => $messages[ $code ] ?? __( 'An unknown error occurred.', 'boardscribe' ),
+			];
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		return null;
+	}
+
+	/**
+	 * Announces the import status message to screen readers via
+	 * wp.a11y.speak(), which pushes text into WP core's own pre-existing
+	 * (initially empty) footer live region after the page has already
+	 * loaded (PRO-1325 / WCAG 4.1.3).
+	 *
+	 * The visible notice markup alone isn't reliably announced: it's
+	 * rendered as part of the initial full-page-reload response (this
+	 * import flow is a classic POST -> redirect -> GET, not an AJAX
+	 * update), and most screen readers only announce live-region content
+	 * that *changes* after the page has already loaded - content already
+	 * present at the first render isn't treated as a change. Deliberately
+	 * does NOT also mark that notice `<div>` itself as a live region
+	 * (e.g. role="status") as a "belt and suspenders" fix: WP core's own
+	 * dismissible-notice JS (common.js) injects a "Dismiss this notice"
+	 * button into any `.is-dismissible` notice shortly after page load -
+	 * a real DOM mutation inside the element - which risks a second,
+	 * unrelated announcement on some screen reader/browser combinations if
+	 * that element were also a live region. speak() into a separate,
+	 * dedicated region avoids that entirely.
+	 *
+	 * The speak() call itself is wrapped in wp.domReady() - wp-a11y's own
+	 * live-region container elements (#a11y-speak-polite/-assertive,
+	 * speak() writes into whichever it finds by that id) are created by its
+	 * setup() function, which wp-a11y registers via its own internal
+	 * domReady() call rather than running eagerly on script execution.
+	 * Without this wrapper, an inline script placed right after the wp-a11y
+	 * handle can run before that setup has fired - speak() finds no
+	 * container element yet and silently no-ops, losing the announcement
+	 * with no error to indicate why.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $message The plain-text message to announce.
+	 * @param string $type    'success' or 'error' - an error is announced
+	 *                        assertively (interrupts, per its higher
+	 *                        urgency), success politely (waits its turn),
+	 *                        matching wp.a11y.speak()'s own two politeness
+	 *                        levels.
+	 * @return void
+	 */
+	private function announce_status_message( string $message, string $type ): void {
+		wp_enqueue_script( 'wp-a11y' );
+		wp_add_inline_script(
+			'wp-a11y',
+			sprintf(
+				'wp.domReady( function() { wp.a11y.speak( %s, %s ); } );',
+				wp_json_encode( $message ),
+				wp_json_encode( 'error' === $type ? 'assertive' : 'polite' )
+			)
+		);
 	}
 
 	/**

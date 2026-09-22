@@ -186,7 +186,70 @@ add_filter( 'edbs_shortcode_field_registry', function ( array $fields ) {
 
 **Contract impact:** free-plugin admin internals only — Pro has no references to the removed slug/methods (verified). Any external link to `page=edbs-shortcode-builder` should point at `page=edbs-settings&tab=builder` instead.
 
+---
+
+## Meeting Details meta box converted to a React app — three hooks removed, replaced by `edbs_meeting_meta_fields`
+
+**Before:** the meta box's four fields were a hand-written `<table>` in `partials/meta-box.php`, with three PHP action hooks giving Pro row-position control: `edbs_after_agenda_url_field` and `edbs_after_minutes_url_field` (fire immediately after those two `<tr>`s, for a field tightly coupled to the URL above it — e.g. a Document picker) and `edbs_meta_fields` (fires once, after every default field, for anything else). `MetaBox::save_meta()` hardcoded sanitization for the four known `$_POST` keys.
+
+**After:** `partials/meta-box.php` is deleted. The table is rendered client-side by a React app (`src/js/metabox/`) from `MetaBoxFieldRegistry::js_schema()` — **no deprecation shim, this is a breaking change.** A field is now a data descriptor (`key`, `type`, `label`, `description`, `required`, `placeholder`, `media_picker`, `media_title`, `insert_after`, `sanitize_callback`) added via the new `edbs_meeting_meta_fields` filter instead of a `do_action()` callback that echoes HTML. Row position is the `insert_after` key (another field's `key`; omitted = appended at the end) rather than which of the three old hooks a callback happened to use. `MetaBox::save_meta()` now loops `MetaBoxFieldRegistry::all()` and sanitizes generically by `type` (or the field's own `sanitize_callback`) instead of reading four hardcoded `$_POST` keys.
+
+**Contract impact:** any callback still hooked to `edbs_after_agenda_url_field`, `edbs_after_minutes_url_field`, or `edbs_meta_fields` stops running (a silent no-op, per WordPress's usual behavior for an unregistered hook — it won't error). A Pro field with a bespoke UI (e.g. a Document picker backed by a CPT relationship, not a plain scalar `<input>`) needs a matching entry in `window.edbsMetaBoxControls` (keyed by that field's `type`, a React component `( { field, value, onChange, id } ) => JSX.Element` — see `src/js/metabox/index.js`) and, if its saved value isn't a plain string, its own save-time handling via the `edbs_save_meeting_meta` action (unchanged) rather than relying on the registry's generic type-based sanitizers.
+
+**A field whose `$_POST` value isn't a plain scalar must set `saved_externally => true`.** This includes every `resource_list` field (Supporting Documents-shaped repeaters) and every `attached` field (regardless of its own `type`) — both are documented as always saved by the owning plugin itself, not `MetaBox::save_meta()`'s generic loop. Handling the value on `edbs_save_meeting_meta` is not by itself enough: without `saved_externally`, the generic loop still runs first and hits the value before your own handler does. `MetaBox::save_field()` now backstops a field that forgets this flag with a `_doing_it_wrong()` notice rather than silently mangling the repeater array through `sanitize_text_field()`, but the flag is still required for the value to actually persist as intended.
+
+```php
+// Before:
+add_action( 'edbs_after_agenda_url_field', function ( \WP_Post $post ) {
+	$doc_id = get_post_meta( $post->ID, '_edbs_pro_agenda_document_id', true );
+	// ... echo a <tr> with a document-picker button ...
+} );
+add_action( 'edbs_save_meeting_meta', function ( int $post_id ) {
+	if ( isset( $_POST['edbs_pro_agenda_document_id'] ) ) {
+		update_post_meta( $post_id, '_edbs_pro_agenda_document_id', absint( $_POST['edbs_pro_agenda_document_id'] ) );
+	}
+} );
+
+// Now:
+add_filter( 'edbs_meeting_meta_fields', function ( array $fields ) {
+	$fields[] = [
+		'key'          => 'edbs_pro_agenda_document_id',
+		'type'         => 'document_picker', // matching window.edbsMetaBoxControls entry required
+		'label'        => __( 'Agenda Document', 'boardscribe-pro' ),
+		'insert_after' => 'edbs_agenda_url',
+	];
+	return $fields;
+} );
+// JS (enqueued alongside/after edbs-meta-box):
+// window.edbsMetaBoxControls.document_picker = ( { field, value, onChange, id } ) => ( ... );
+```
+
+**Action for Pro before release:** grep Pro for `edbs_after_agenda_url_field`, `edbs_after_minutes_url_field`, and `edbs_meta_fields`; port each to an `edbs_meeting_meta_fields` descriptor plus (for non-trivial UI) a `window.edbsMetaBoxControls` entry.
+
 **New extension points for Pro:** the tab list is now filterable via `edbs_settings_tabs` and non-core tab content renders on `edbs_settings_tab_content_{$tab}`. This is what lets Pro fold its CSV Import page (`page=edbs-import`) into the settings page as an `import` tab instead of a standalone submenu, matching how the builder moved. **Paired Pro change (separate branch):** register the `import` tab via `edbs_settings_tabs`, move `CsvImporter::render_page()` onto `edbs_settings_tab_content_import`, drop `add_menu_page()`/the `edbs-import` submenu, enqueue import assets off the `edbs_meeting_page_edbs-settings` hook + `tab=import`, and update `get_page_url()` to `page=edbs-settings&tab=import`.
+
+---
+
+## PRO-1292 — `window.edbsResolveColumns()` added; Pro's `list` template requires it
+
+**Before:** the only column-building helper exposed to add-on templates was `window.edbsBuildTable( meetings, instanceCfg )`, which returns a finished `<table>` HTML string. The column set behind it — render order, the instance-override → `edbsConfig.i18n` → `__()` label fallback, the `hide*` toggles, `window.edbsExtraColumns` resolution, and which column is the row header — was resolved inline inside `buildTableHtml()` with no way to get at it.
+
+**After:** that logic is extracted into `resolveColumns( instanceCfg )` (`src/js/templates/table.js`), which `buildTableHtml()` now consumes, and it is exposed as **`window.edbsResolveColumns( instanceCfg )`**. It returns the visible columns in render order as `{ key, label, labelHtml, isRowHeader, render( meeting ) }` entries — see the contract docs in `src/js/registries.js`. This is what a template whose output is *not* a table (Pro's stacked `list`, cards, a calendar) needs in order to honour the same column configuration without re-implementing it in the other repo.
+
+**Contract impact:** purely additive on the free side — `buildTableHtml()`'s emitted markup is unchanged (guarded by `tests/jest/templates/table.test.js`, which passes untouched across the refactor), and no existing global changed shape. The compatibility direction that matters is the other one: **Pro's `list` template hard-depends on `window.edbsResolveColumns`, so new Pro requires this free release or later.** Pro guards for it the way `yearTimelineTemplate.js` guards for `edbsBuildTable` — `typeof window.edbsResolveColumns !== 'function'` renders an "update the free BoardScribe plugin" message rather than an empty list. Old Pro + new free is unaffected.
+---
+
+## PRO-1331 — three block editor preview hooks removed, `render_editor_preview()`/`render_preview_table()` deleted
+
+**Before:** the block's editor preview rendered server-side via `ServerSideRender` → `BoardScribeBlock::render_block()`'s `REST_REQUEST` branch → `render_editor_preview()`, which ran its own `WP_Query` and built lookalike markup, filterable via `edbs_block_preview_columns` (column list), `edbs_block_editor_preview` (template-specific short-circuit), and `edbs_block_preview_max_rows` (row cap). The public `BoardScribeBlock::render_preview_table()` rendered one such table. Pro's `BlockExtensions.php` used all three to reimplement its year-timeline/list templates a second time, in PHP, for the editor only.
+
+**After:** the editor preview is the real thing. `edit()` renders the same `.edbs-boardscribe-wrap` markup `BoardScribeShortcode::render()` emits and drives it through `window.edbsInitInstance()` — the same client-side pipeline the front end and the Shortcode Builder's live preview already use (see `src/js/block/index.js`'s `buildInstanceConfig()`). `render_block()` is now a plain `do_shortcode()` call with no editor-context branch. All three filters and `render_preview_table()` are gone — **no deprecation shim, this is a breaking change** (same treatment as PR #19 above: `apply_filters()`/`do_action()` on a removed hook name is a silent no-op, not an error, so a Pro callback still hooked to one of these just quietly stops taking effect). `BoardScribeBlock::register()` now also hooks `enqueue_block_editor_assets` to call `BoardScribeShortcode::enqueue_assets()`, so the real frontend bundle (and, via its `edbs_enqueue_assets` action, anything Pro/third-party hangs off it) loads in the editor — something nothing previously did.
+
+**Also in this change:** `src/js/instance.js`'s `initInstance()` now resolves its table/pagination/info elements off `container.ownerDocument` instead of the bare global `document`, so it works correctly when `container` is mounted inside the block editor's iframed canvas (WP ~6.3+) — a prerequisite for the live preview working at all, not itself a contract change (every existing caller runs same-document and is unaffected). There is no more row cap — the preview paginates like the real front end. A REST fetch failure now surfaces as a visible `Notice` in the block instead of `ServerSideRender`'s own generic failure state.
+
+**Contract impact:** any Pro/third-party callback on `edbs_block_preview_columns`, `edbs_block_editor_preview`, or `edbs_block_preview_max_rows` stops running silently. Any code calling `BoardScribeBlock::render_preview_table()` directly hits a fatal `Error: Call to undefined method`.
+
+**Action for Pro before release:** delete `BlockExtensions::add_preview_columns()`, `raise_preview_max_rows()`, `render_year_timeline_preview()`, `render_list_preview()`, `group_rows_by_year()`, and their hook registrations — the front-end templates (`year-timeline`, `list`) they duplicated already render correctly through the live editor preview with no Pro-side change needed. Confirm `pro-list-template.css` is enqueued in the editor context too (it should be, automatically, once `enqueue_block_editor_assets` fires free's `enqueue_assets()` → `edbs_enqueue_assets` → Pro's own enqueue callback) rather than assuming it.
 
 ---
 

@@ -39,7 +39,7 @@ class AdminColumns {
 	 *
 	 * Filterable so Pro plugin can add its own columns (e.g. location,
 	 * category, linked documents) using the same shape - the admin-list-table
-	 * analog of edbs_block_preview_columns.
+	 * analog of window.edbsExtraColumns.
 	 *
 	 * @since 1.1.0
 	 *
@@ -71,7 +71,7 @@ class AdminColumns {
 		 * Each entry is keyed by column key with `label` (string) and
 		 * `render_cell` (callable `fn( int $post_id, \WP_Post $post ): string`,
 		 * returning pre-escaped cell HTML - same trust contract as
-		 * edbs_block_preview_columns' render_cell). Pro plugin uses this to
+		 * window.edbsExtraColumns' renderCell()). Pro plugin uses this to
 		 * add its own columns (location, category, linked documents).
 		 *
 		 * @since 1.1.0

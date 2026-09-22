@@ -19,6 +19,19 @@
     cursor: not-allowed;
 }
 
+/*
+ * Wide tables (many visible columns, or long unbreakable cell content)
+ * scroll horizontally within their own container rather than overflowing
+ * it - matters most in the block editor's own preview (PRO-1202,
+ * previously handled by a PHP-only inline style on the editor's static
+ * server-rendered preview table; PRO-1331 replaced that with a live
+ * render of this same markup, so the protection has to live here now,
+ * shared by both contexts), but is a reasonable front-end default too.
+ */
+.edbs-table-container {
+    overflow-x: auto;
+}
+
 .edbs-boardscribe-table {
     width: 100%;
     border-collapse: collapse;

@@ -294,3 +294,65 @@ body.edbs_meeting_page_edbs-settings {
 	margin: 0 0 12px;
 	break-inside: avoid;
 }
+
+/* Import tab: CSV upload form, sized to match the CSV format table above it. */
+.edbs-import__format-table,
+.edbs-import__upload {
+	max-width: 600px;
+}
+
+.edbs-import__format-table {
+	margin-bottom: 24px;
+}
+
+.edbs-import__upload {
+	margin-top: 24px;
+}
+
+.edbs-import__upload-header {
+	margin-bottom: 16px;
+}
+
+.edbs-import__upload-title {
+	margin: 0 0 6px;
+	color: var(--edbs-gray-darkest);
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.edbs-import__upload-description {
+	margin: 0;
+	color: var(--edbs-dark-gray);
+	font-size: 0.875rem;
+}
+
+.edbs-import__file-upload {
+	margin-bottom: 20px;
+}
+
+.edbs-import__file-label {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--edbs-gray-darkest);
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.edbs-import__file-upload input[type="file"] {
+	display: block;
+	width: 100%;
+	/* Capped so the dashed field doesn't dwarf the small native control. */
+	max-width: 440px;
+	padding: 10px 12px;
+	background: var(--edbs-misty);
+	border: 1px dashed var(--edbs-gray-light);
+	border-radius: 4px;
+	font-size: 0.875rem;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.edbs-import__file-upload input[type="file"]:focus {
+	outline: 2px solid var(--edbs-blue);
+	outline-offset: 2px;
+}
