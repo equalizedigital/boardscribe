@@ -289,3 +289,34 @@ describe( 'ResourceListField title editor across a removal (PRO-1364)', () => {
 		expect( container.querySelector( '.edbs-resource-card__title-edit input' ) ).toBeNull();
 	} );
 } );
+
+/**
+ * PRO-1368 regression coverage: the drag-and-drop reorder handle never
+ * called dataTransfer.setData() on dragstart - Firefox refuses to start a
+ * drag at all without it (Chrome/Safari are more lenient, which is why
+ * this went unnoticed), so drag-and-drop reordering was likely
+ * non-functional there.
+ */
+describe( 'ResourceListField drag-and-drop dataTransfer.setData() (PRO-1368)', () => {
+	it( 'calls dataTransfer.setData() on dragstart', () => {
+		act( () => {
+			root.render(
+				<Harness
+					initialItems={ [
+						{ label: '', url: 'https://example.com/doc-one.pdf', source: 'external_url' },
+						{ label: '', url: 'https://example.com/doc-two.pdf', source: 'external_url' },
+					] }
+					onItemsChange={ () => {} }
+				/>,
+			);
+		} );
+
+		const setData = jest.fn();
+		act( () => {
+			Simulate.dragStart( rows()[ 0 ], { dataTransfer: { setData } } );
+		} );
+
+		expect( setData ).toHaveBeenCalledTimes( 1 );
+		expect( setData ).toHaveBeenCalledWith( 'text/plain', expect.any( String ) );
+	} );
+} );

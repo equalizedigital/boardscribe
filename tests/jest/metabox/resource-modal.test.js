@@ -179,3 +179,59 @@ describe( 'ResourceModal and the wp.media step (PRO-1363)', () => {
 		expect( saved.extra ).toEqual( { title: 'Picked File', source: 'media_library' } );
 	} );
 } );
+
+/**
+ * PRO-1368 regression coverage: ExternalUrlSource's invalid-URL error was
+ * only announced once via role="alert" - a screen reader user who
+ * navigated away from the field and back later had no indication anything
+ * was still wrong. The input is now persistently linked to the error via
+ * aria-invalid/aria-describedby, matched only while an error is showing.
+ */
+describe( 'ExternalUrlSource error association (PRO-1368)', () => {
+	it( 'has no aria-invalid/aria-describedby before a save is attempted', () => {
+		act( () => {
+			root.render(
+				<ResourceModal
+					title="Add Document"
+					sources={ [ 'external_url' ] }
+					fieldLabel="Document"
+					onSave={ () => {} }
+					onClose={ () => {} }
+				/>,
+			);
+		} );
+
+		const input = container.querySelector( 'input[type="url"]' );
+		expect( input.getAttribute( 'aria-invalid' ) ).toBe( 'false' );
+		expect( input.hasAttribute( 'aria-describedby' ) ).toBe( false );
+	} );
+
+	it( 'links the input to the error message once Save is clicked with an invalid URL', () => {
+		act( () => {
+			root.render(
+				<ResourceModal
+					title="Add Document"
+					sources={ [ 'external_url' ] }
+					fieldLabel="Document"
+					onSave={ () => {} }
+					onClose={ () => {} }
+				/>,
+			);
+		} );
+
+		act( () => {
+			Simulate.change( container.querySelector( 'input[type="url"]' ), { target: { value: 'not-a-url' } } );
+		} );
+		act( () => {
+			Simulate.click( Array.from( container.querySelectorAll( 'button' ) ).find( ( button ) => 'Save URL' === button.textContent ) );
+		} );
+
+		const input = container.querySelector( 'input[type="url"]' );
+		const errorNode = container.querySelector( '.edbs-resource-modal__url-source-error' );
+
+		expect( errorNode ).not.toBeNull();
+		expect( errorNode.id ).toBeTruthy();
+		expect( input.getAttribute( 'aria-invalid' ) ).toBe( 'true' );
+		expect( input.getAttribute( 'aria-describedby' ) ).toBe( errorNode.id );
+	} );
+} );

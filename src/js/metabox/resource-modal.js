@@ -1,5 +1,5 @@
 import { Button, Modal, TextControl } from '@wordpress/components';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useId, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { openMediaLibrary } from './media-library';
 import { isValidExternalUrl } from './resource-utils';
@@ -55,7 +55,11 @@ function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
  * WordPress components package's Button doesn't guarantee), and native
  * validation's own error UI isn't reliably announced to assistive
  * technology either. An invalid value keeps the modal open, moves focus
- * back to the field, and shows a role="alert" message instead.
+ * back to the field, and shows a role="alert" message instead - which
+ * covers the moment the error first appears, but a screen reader user who
+ * navigates away and back to the field later gets no indication anything
+ * is wrong unless the error is also persistently associated with the
+ * input itself (aria-invalid + aria-describedby), not just announced once.
  *
  * @param {Object}   props              Component props.
  * @param {string}   props.label        Field label, e.g. "Livestream URL".
@@ -67,6 +71,7 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
 	const [ url, setUrl ] = useState( initialValue || 'https://' );
 	const [ error, setError ] = useState( '' );
 	const containerRef = useRef( null );
+	const errorId = useId();
 
 	const handleChange = ( value ) => {
 		setUrl( value );
@@ -97,9 +102,11 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
 				value={ url }
 				onChange={ handleChange }
 				help={ __( 'The current resource stays unchanged until you confirm.', 'boardscribe' ) }
+				aria-invalid={ !! error }
+				aria-describedby={ error ? errorId : undefined }
 			/>
 			{ error && (
-				<p className="edbs-resource-modal__url-source-error" role="alert">
+				<p id={ errorId } className="edbs-resource-modal__url-source-error" role="alert">
 					{ error }
 				</p>
 			) }

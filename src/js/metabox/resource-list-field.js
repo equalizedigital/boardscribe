@@ -396,7 +396,17 @@ export function ResourceListField( { field, value, onChange } ) {
 							<div
 								className={ `edbs-resource-list__row${ isDragging ? ' edbs-resource-list__row--dragging' : '' }` }
 								draggable
-								onDragStart={ () => setDraggingIndex( index ) }
+								onDragStart={ ( event ) => {
+									// Firefox refuses to start a drag at all unless
+									// dataTransfer.setData() is called during
+									// dragstart - the value itself is never read
+									// (onDrop drives the actual reorder off
+									// draggingIndex/dropTarget state, not this
+									// payload), so it's just the row's index as a
+									// harmless, browser-required placeholder.
+									event.dataTransfer.setData( 'text/plain', String( index ) );
+									setDraggingIndex( index );
+								} }
 								onDragEnd={ () => {
 									setDraggingIndex( null );
 									setDropTarget( null );

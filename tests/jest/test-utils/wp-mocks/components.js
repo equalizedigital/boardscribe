@@ -58,7 +58,7 @@ export function SelectControl( { label, value, options, onChange, help } ) {
 	);
 }
 
-export const TextControl = forwardRef( function TextControl( { label, value, onChange, placeholder, help, type }, ref ) {
+export const TextControl = forwardRef( function TextControl( { label, value, onChange, placeholder, help, type, 'aria-invalid': ariaInvalid, 'aria-describedby': ariaDescribedBy }, ref ) {
 	return createElement(
 		'label',
 		{ 'data-control': 'text', 'data-label': label, 'data-help': help || '' },
@@ -68,6 +68,8 @@ export const TextControl = forwardRef( function TextControl( { label, value, onC
 			value: value || '',
 			placeholder: placeholder || '',
 			onChange: ( event ) => onChange( event.target.value ),
+			'aria-invalid': ariaInvalid,
+			'aria-describedby': ariaDescribedBy,
 		} ),
 	);
 } );
