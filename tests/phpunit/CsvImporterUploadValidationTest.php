@@ -62,6 +62,25 @@ class CsvImporterUploadValidationTest extends TestCase {
 	}
 
 	/**
+	 * An empty tmp_name caused by an over-large upload (UPLOAD_ERR_INI_SIZE)
+	 * is reported as 'upload_failed', not the generic 'no_file' - PHP
+	 * leaves tmp_name empty for several upload errors, not just "no file
+	 * chosen", so the error code has to be checked before tmp_name or every
+	 * one of those gets the wrong, less helpful message.
+	 */
+	public function test_empty_tmp_name_with_a_non_ok_error_code_is_reported_as_upload_failed(): void {
+		$result = $this->validate(
+			[
+				'tmp_name' => '',
+				'error'    => UPLOAD_ERR_INI_SIZE,
+				'name'     => 'meetings.csv',
+			]
+		);
+
+		$this->assertSame( 'upload_failed', $result );
+	}
+
+	/**
 	 * A non-OK $_FILES['error'] code (e.g. a partial/interrupted upload)
 	 * is rejected even though tmp_name is non-empty - the gap the original
 	 * review flagged: process_csv() would otherwise silently import

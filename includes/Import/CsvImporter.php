@@ -199,17 +199,26 @@ class CsvImporter {
 	 * @return string|null The edbs_import_error code to redirect with, or null when the upload is good to process.
 	 */
 	private function validate_upload( array $file ): ?string {
-		if ( empty( $file['tmp_name'] ) ) {
+		// Checked before tmp_name: PHP leaves tmp_name empty for several
+		// upload errors (e.g. UPLOAD_ERR_INI_SIZE, an over-large file), not
+		// just "no file chosen" (UPLOAD_ERR_NO_FILE) - checking tmp_name
+		// first would report every one of those as the generic "no file"
+		// message instead of the more accurate "upload failed", and skip
+		// the upload_failed branch below entirely.
+		$upload_error = isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
+		if ( UPLOAD_ERR_NO_FILE === $upload_error ) {
 			return 'no_file';
 		}
-
-		// A non-empty tmp_name only means PHP wrote *something* there - a
-		// partial/interrupted upload (UPLOAD_ERR_PARTIAL et al.) still
-		// leaves a tmp file behind, and process_csv() would otherwise
-		// silently import whatever truncated rows made it through.
-		$upload_error = isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
 		if ( UPLOAD_ERR_OK !== $upload_error ) {
 			return 'upload_failed';
+		}
+
+		// A UPLOAD_ERR_OK error code should always come with a non-empty
+		// tmp_name, but don't assume it - fall back to the same "no file"
+		// message rather than passing an empty path to is_uploaded_file()/
+		// mime_content_type() below.
+		if ( empty( $file['tmp_name'] ) ) {
+			return 'no_file';
 		}
 
 		// is_uploaded_file() confirms tmp_name actually came from this
