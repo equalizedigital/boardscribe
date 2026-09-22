@@ -211,19 +211,29 @@ class BoardScribeEndpointBuildRowTest extends TestCase {
 
 	/**
 	 * With open_links_new_window unset (default), agenda/minutes links
-	 * have no target attribute.
+	 * have no target attribute, no rel attribute, and no new-window
+	 * screen-reader hint - a bug that emitted the hint text without the
+	 * target="_blank" attribute (or vice versa) would still have passed
+	 * with only the target="_blank" assertion this test used to have.
 	 */
 	public function test_links_do_not_open_new_window_by_default(): void {
 		$post_id = $this->create_meeting(
 			[
 				'edbs_meeting_date' => '2024-03-15',
 				'edbs_agenda_url'   => 'https://example.com/agenda.pdf',
+				'edbs_minutes_url'  => 'https://example.com/minutes.pdf',
 			]
 		);
 
 		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
 
 		$this->assertStringNotContainsString( 'target="_blank"', $row['agenda'] );
+		$this->assertStringNotContainsString( 'rel=', $row['agenda'] );
+		$this->assertStringNotContainsString( 'opens in a new window', $row['agenda'] );
+
+		$this->assertStringNotContainsString( 'target="_blank"', $row['minutes'] );
+		$this->assertStringNotContainsString( 'rel=', $row['minutes'] );
+		$this->assertStringNotContainsString( 'opens in a new window', $row['minutes'] );
 	}
 
 	/**
@@ -283,5 +293,64 @@ class BoardScribeEndpointBuildRowTest extends TestCase {
 		remove_filter( 'edbs_meeting_row_data', $callback );
 
 		$this->assertSame( 'custom_value', $row['custom_field'] );
+	}
+
+	/**
+	 * The edbs_agenda_link filter receives $open_links_new_window as its
+	 * 4th argument, not just the finished link string - a callback that
+	 * rebuilds the anchor from scratch (the documented Accessibility
+	 * Checker Pro integration use case) needs this to preserve the
+	 * setting instead of silently discarding it.
+	 */
+	public function test_agenda_link_filter_receives_open_links_new_window_context(): void {
+		$post_id = $this->create_meeting(
+			[
+				'edbs_meeting_date' => '2024-03-15',
+				'edbs_agenda_url'   => 'https://example.com/agenda.pdf',
+			]
+		);
+
+		$captured = null;
+		$callback = static function ( $link, $url, $label, $open_links_new_window ) use ( &$captured ) {
+			$captured = $open_links_new_window;
+			return $link;
+		};
+		add_filter( 'edbs_agenda_link', $callback, 10, 4 );
+
+		$this->endpoint->build_meeting_row(
+			$post_id,
+			array_merge( $this->default_format_args, [ 'open_links_new_window' => true ] )
+		);
+
+		remove_filter( 'edbs_agenda_link', $callback, 10 );
+
+		$this->assertTrue( $captured );
+	}
+
+	/**
+	 * A Pro-style date-display override containing a raw apostrophe
+	 * round-trips through the aria-label as a real apostrophe, not a
+	 * double-escaped HTML entity - see build_link()'s own docblock for
+	 * why esc_html()'s encoding has to be undone before esc_attr() runs.
+	 */
+	public function test_aria_label_does_not_double_escape_a_filtered_date(): void {
+		$post_id = $this->create_meeting(
+			[
+				'edbs_meeting_date' => '2024-03-15',
+				'edbs_agenda_url'   => 'https://example.com/agenda.pdf',
+			]
+		);
+
+		$callback = static function () {
+			return "Mayor's Special";
+		};
+		add_filter( 'edbs_meeting_formatted_date', $callback );
+
+		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
+
+		remove_filter( 'edbs_meeting_formatted_date', $callback );
+
+		$this->assertStringContainsString( 'Mayor&#039;s Special', $row['agenda'] );
+		$this->assertStringNotContainsString( '&amp;#039;', $row['agenda'] );
 	}
 }
