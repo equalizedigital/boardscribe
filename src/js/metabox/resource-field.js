@@ -17,36 +17,46 @@ import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourc
  * card's chip/meta line are derived from the URL plus which source
  * produced it (see resource-utils.js's resolveResourceDisplay()).
  *
- * @param {Object}   props                   Component props.
- * @param {Object}   props.field             Field descriptor from MetaBoxFieldRegistry::js_schema().
- * @param {string}   props.value             Current value (a URL, or '').
- * @param {Function} props.onChange          Called with the new value.
- * @param {string}   [props.sourceValue]     The value's `{key}_source` sibling meta - which Add/Replace-modal
- *                                           source produced the current value ('media_library'/'external_url',
- *                                           or a plugin-registered id) - see MetaBox::save_field() in the PHP
- *                                           repo and resolveResourceDisplay() in resource-utils.js. Empty for
- *                                           legacy data saved before this existed.
- * @param {Function} [props.onSourceChange]  Called with the new sourceValue whenever value changes via the
- *                                           modal or Remove - kept in lockstep with onChange so the chip stays
- *                                           accurate instead of stale.
- * @param {string}   [props.editUrlValue]    The value's `{key}_edit_url` sibling meta - the wp-admin edit
- *                                           screen for the value's underlying post, when its source has one
- *                                           (e.g. Pro's linked-document source) - empty for a plain Media
- *                                           Library file or external link, in which case no "Edit" action is
- *                                           shown ("Replace" already covers changing a plain URL/file).
- * @param {Function} [props.onEditUrlChange] Called with the new editUrlValue whenever value changes via the
- *                                           modal or Remove - kept in lockstep with onChange the same way
- *                                           onSourceChange is.
- * @param {Object}   props.allValues         Every field's current value, keyed by field key - used to resolve a
- *                                           {date}-templated title (see field.titleTemplate) against the meeting date.
- * @param {Object}   [props.attachedField]   Present when field.attachedFieldKey points at an `attached`
- *                                           field (MetaBoxApp resolves the lookup) - `{ field, value, onChange }`
- *                                           for that attached field, rendered via AttachedRepeaterField inside
- *                                           this card's children slot - see attached-repeater-field.js (no
- *                                           current consumer as of PRO-1349, kept generic for a future one).
+ * @param {Object}   props                      Component props.
+ * @param {Object}   props.field                Field descriptor from MetaBoxFieldRegistry::js_schema().
+ * @param {string}   props.value                Current value (a URL, or '').
+ * @param {Function} props.onChange             Called with the new value.
+ * @param {string}   [props.sourceValue]        The value's `{key}_source` sibling meta - which Add/Replace-modal
+ *                                              source produced the current value ('media_library'/'external_url',
+ *                                              or a plugin-registered id) - see MetaBox::save_field() in the PHP
+ *                                              repo and resolveResourceDisplay() in resource-utils.js. Empty for
+ *                                              legacy data saved before this existed.
+ * @param {Function} [props.onSourceChange]     Called with the new sourceValue whenever value changes via the
+ *                                              modal or Remove - kept in lockstep with onChange so the chip stays
+ *                                              accurate instead of stale.
+ * @param {string}   [props.editUrlValue]       The value's `{key}_edit_url` sibling meta - the wp-admin edit
+ *                                              screen for the value's underlying post, when its source has one
+ *                                              (e.g. Pro's linked-document source) - empty for a plain Media
+ *                                              Library file or external link, in which case no "Edit" action is
+ *                                              shown ("Replace" already covers changing a plain URL/file).
+ * @param {Function} [props.onEditUrlChange]    Called with the new editUrlValue whenever value changes via the
+ *                                              modal or Remove - kept in lockstep with onChange the same way
+ *                                              onSourceChange is.
+ * @param {number}   [props.documentIdValue]    The value's `{key}_document_id` sibling meta - the underlying
+ *                                              linked post's ID, when the value's source has one (e.g. Pro's
+ *                                              linked-document source) - 0/empty for a plain Media Library file
+ *                                              or external link. Not shown anywhere in this card itself (nothing
+ *                                              here needs it); persisted purely so a reverse lookup (e.g. Pro's
+ *                                              "used by" panel on the linked post's own edit screen) has
+ *                                              something reliable to read.
+ * @param {Function} [props.onDocumentIdChange] Called with the new documentIdValue whenever value changes via
+ *                                              the modal or Remove - kept in lockstep with onChange the same way
+ *                                              onSourceChange/onEditUrlChange are.
+ * @param {Object}   props.allValues            Every field's current value, keyed by field key - used to resolve a
+ *                                              {date}-templated title (see field.titleTemplate) against the meeting date.
+ * @param {Object}   [props.attachedField]      Present when field.attachedFieldKey points at an `attached`
+ *                                              field (MetaBoxApp resolves the lookup) - `{ field, value, onChange }`
+ *                                              for that attached field, rendered via AttachedRepeaterField inside
+ *                                              this card's children slot - see attached-repeater-field.js (no
+ *                                              current consumer as of PRO-1349, kept generic for a future one).
  * @return {JSX.Element} The field.
  */
-export function ResourceField( { field, value, onChange, sourceValue, onSourceChange, editUrlValue, onEditUrlChange, allValues, attachedField } ) {
+export function ResourceField( { field, value, onChange, sourceValue, onSourceChange, editUrlValue, onEditUrlChange, documentIdValue, onDocumentIdChange, allValues, attachedField } ) {
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
 	const containerRef = useRef( null );
 	const hasValue = !! value;
@@ -59,6 +69,9 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 		}
 		if ( onEditUrlChange ) {
 			onEditUrlChange( ( extra && extra.editUrl ) || '' );
+		}
+		if ( onDocumentIdChange ) {
+			onDocumentIdChange( ( extra && extra.documentId ) || 0 );
 		}
 		setIsModalOpen( false );
 		if ( hasValue && attachedField ) {
@@ -94,6 +107,9 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 		}
 		if ( onEditUrlChange ) {
 			onEditUrlChange( '' );
+		}
+		if ( onDocumentIdChange ) {
+			onDocumentIdChange( 0 );
 		}
 		// The attached field's own rows (e.g. Recording's caption tracks)
 		// belong to *this* resource, not to whatever gets added next -
@@ -157,6 +173,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 				{ name: field.key, value },
 				{ name: `${ field.key }_source`, value: sourceValue },
 				{ name: `${ field.key }_edit_url`, value: editUrlValue },
+				{ name: `${ field.key }_document_id`, value: documentIdValue || '' },
 			] } />
 
 			{ isModalOpen && (

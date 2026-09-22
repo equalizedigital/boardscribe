@@ -44,13 +44,24 @@ class MetaBoxFieldRegistry {
 		 *                                             displayed as a card — filled shows title/chips/meta +
 		 *                                             View/Replace/Remove, empty shows a dashed "Add {label}"
 		 *                                             prompt; Replace/Add opens a modal offering one or more
-		 *                                             $sources. Every 'resource' field automatically gets a
-		 *                                             sibling `{key}_source` meta (registered/saved/rendered
-		 *                                             generically by MetaBox — no registry entry of its own)
-		 *                                             recording which source produced the current value, so
-		 *                                             the card's chip doesn't have to guess from the URL's
-		 *                                             shape (see MetaBox::save_resource_source() and the free
-		 *                                             repo's resource-utils.js resolveResourceDisplay()).
+		 *                                             $sources. Every 'resource' field automatically gets
+		 *                                             sibling `{key}_source`/`{key}_edit_url`/`{key}_document_id`
+		 *                                             meta (registered/saved/rendered generically by MetaBox —
+		 *                                             no registry entry of its own): `{key}_source` records
+		 *                                             which source produced the current value, so the card's
+		 *                                             chip doesn't have to guess from the URL's shape (see
+		 *                                             MetaBox::save_resource_source() and the free repo's
+		 *                                             resource-utils.js resolveResourceDisplay());
+		 *                                             `{key}_edit_url` is the wp-admin edit screen for the
+		 *                                             value's underlying post, when its source has one, driving
+		 *                                             the card's "Edit" action; `{key}_document_id` is that same
+		 *                                             underlying post's ID, not shown anywhere in the card
+		 *                                             itself — persisted purely so something outside this field
+		 *                                             (e.g. a reverse "used by" lookup on the linked post's own
+		 *                                             edit screen) has a reliable ID to read instead of only a
+		 *                                             URL. All three come from a source's `onSave(value, extra)`
+		 *                                             — `extra.source`/`extra.editUrl`/`extra.documentId` — see
+		 *                                             resource-modal.js's CustomSource contract.
 		 *                                             'resource_list' is a reorderable (drag handle) repeater of
 		 *                                             `{ label, url, source }` items, each its own card with an
 		 *                                             editable title — its $_POST shape is `{key}[i][label]`/

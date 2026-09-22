@@ -62,6 +62,7 @@ export function MetaBoxApp( { fields, initialValues } ) {
 			if ( 'resource' === field.type ) {
 				initial[ field.key + '_source' ] = initialValues[ field.key + '_source' ] || '';
 				initial[ field.key + '_edit_url' ] = initialValues[ field.key + '_edit_url' ] || '';
+				initial[ field.key + '_document_id' ] = initialValues[ field.key + '_document_id' ] || '';
 			}
 		} );
 		return initial;
@@ -134,6 +135,7 @@ export function MetaBoxApp( { fields, initialValues } ) {
 								value={ values[ field.key ] }
 								sourceValue={ values[ field.key + '_source' ] }
 								editUrlValue={ values[ field.key + '_edit_url' ] }
+								documentIdValue={ values[ field.key + '_document_id' ] }
 								allValues={ values }
 								attachedField={ attachedField }
 								onChange={ ( nextValue ) =>
@@ -144,6 +146,9 @@ export function MetaBoxApp( { fields, initialValues } ) {
 								}
 								onEditUrlChange={ ( nextEditUrl ) =>
 									setValues( ( current ) => ( { ...current, [ field.key + '_edit_url' ]: nextEditUrl } ) )
+								}
+								onDocumentIdChange={ ( nextDocumentId ) =>
+									setValues( ( current ) => ( { ...current, [ field.key + '_document_id' ]: nextDocumentId } ) )
 								}
 							/>
 						</div>
