@@ -122,6 +122,41 @@ class MetaBoxFieldRegistryTest extends TestCase {
 	}
 
 	/**
+	 * Two fields both targeting the same insert_after anchor land after it
+	 * in registration order, not reversed. Each splice re-searched
+	 * $ordered for the anchor's own index rather than accounting for a
+	 * sibling already spliced in after it earlier in the same pass, so
+	 * registering P then Q (both insert_after => 'edbs_agenda_url') used
+	 * to yield edbs_agenda_url, Q, P.
+	 */
+	public function test_two_fields_sharing_an_insert_after_target_keep_registration_order(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'          => 'pro_field_p',
+					'type'         => 'text',
+					'label'        => 'P',
+					'insert_after' => 'edbs_agenda_url',
+				];
+				$fields[] = [
+					'key'          => 'pro_field_q',
+					'type'         => 'text',
+					'label'        => 'Q',
+					'insert_after' => 'edbs_agenda_url',
+				];
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$agenda_index = array_search( 'edbs_agenda_url', $keys, true );
+		$this->assertSame( 'pro_field_p', $keys[ $agenda_index + 1 ] );
+		$this->assertSame( 'pro_field_q', $keys[ $agenda_index + 2 ] );
+	}
+
+	/**
 	 * A field targeting a key that doesn't exist in the registry is
 	 * appended rather than silently dropped.
 	 */
