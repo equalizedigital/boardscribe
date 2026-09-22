@@ -396,6 +396,12 @@ class BoardScribeEndpoint {
 	 * before they activate it, per WCAG 3.2.2 / Technique H83 — accessibility-checker's
 	 * own link_blank rule flags target="_blank" without this warning.
 	 *
+	 * Public so Pro (or another plugin building its own row output, e.g. a
+	 * CSV/PDF export or iCal feed) can reuse the exact same link markup
+	 * instead of re-implementing this escaping/aria-label logic - see this
+	 * repo's own AGENTS.md note on why extracted per-row formatting logic
+	 * should be public.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param string $url            The agenda/minutes URL.
@@ -404,12 +410,21 @@ class BoardScribeEndpoint {
 	 * @param bool   $new_window     Whether to open the link in a new window/tab.
 	 * @return string
 	 */
-	private static function build_link( string $url, string $label, string $formatted_date, bool $new_window ): string {
+	public static function build_link( string $url, string $label, string $formatted_date, bool $new_window ): string {
+		// $formatted_date arrives esc_html()'d (and possibly wp_kses_post()'d,
+		// via Pro's edbs_meeting_formatted_date override) - decoding entities
+		// back to raw characters before stripping tags avoids double-escaping
+		// once esc_attr() below runs over the assembled aria-label. Otherwise
+		// a raw apostrophe in an overridden date string (e.g. "Mayor's
+		// Special") round-trips as the literal text "&#039;s" once a browser
+		// decodes the attribute value, instead of an apostrophe.
+		$date_for_label = wp_strip_all_tags( html_entity_decode( $formatted_date, ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+
 		$aria_label = $new_window
+			/* translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string. */
+			? sprintf( __( '%1$s for %2$s (opens in a new window)', 'boardscribe' ), $label, $date_for_label )
 			/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-			? sprintf( __( '%1$s for %2$s (opens in a new window)', 'boardscribe' ), $label, wp_strip_all_tags( $formatted_date ) )
-			/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-			: sprintf( __( '%1$s for %2$s', 'boardscribe' ), $label, wp_strip_all_tags( $formatted_date ) );
+			: sprintf( __( '%1$s for %2$s', 'boardscribe' ), $label, $date_for_label );
 
 		return '<a href="' . esc_url( $url ) . '"'
 			. ( $new_window ? ' target="_blank" rel="noopener noreferrer"' : '' )
