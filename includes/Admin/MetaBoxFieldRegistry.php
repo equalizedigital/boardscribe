@@ -309,13 +309,27 @@ class MetaBoxFieldRegistry {
 		while ( $deferred && $made_progress ) {
 			$made_progress  = false;
 			$still_deferred = [];
+			// Remembers, per insert_after target, the index of the last
+			// field this pass already placed after it - so a second field
+			// targeting the same anchor lands after the first one instead
+			// of also splicing in right after the anchor itself (which
+			// would push the first field down and reverse their order).
+			// Only meaningful within a single pass since $ordered's
+			// indices are rebuilt fresh from a search on the next one.
+			$last_index_for_target = [];
 
 			foreach ( $deferred as $field ) {
-				$index = null;
-				foreach ( $ordered as $i => $existing ) {
-					if ( $existing['key'] === $field['insert_after'] ) {
-						$index = $i;
-						break;
+				$target = $field['insert_after'];
+
+				if ( isset( $last_index_for_target[ $target ] ) ) {
+					$index = $last_index_for_target[ $target ];
+				} else {
+					$index = null;
+					foreach ( $ordered as $i => $existing ) {
+						if ( $existing['key'] === $target ) {
+							$index = $i;
+							break;
+						}
 					}
 				}
 
@@ -326,6 +340,18 @@ class MetaBoxFieldRegistry {
 
 				array_splice( $ordered, $index + 1, 0, [ $field ] );
 				$made_progress = true;
+
+				// The splice shifted every index at or after the
+				// insertion point up by one - any other target's
+				// remembered index in that range needs the same shift, or
+				// the next field aimed at it would splice one slot early.
+				foreach ( $last_index_for_target as $other_target => $other_index ) {
+					if ( $other_target !== $target && $other_index > $index ) {
+						$last_index_for_target[ $other_target ] = $other_index + 1;
+					}
+				}
+
+				$last_index_for_target[ $target ] = $index + 1;
 			}
 
 			$deferred = $still_deferred;
