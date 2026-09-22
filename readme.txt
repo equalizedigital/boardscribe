@@ -221,6 +221,8 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 == Changelog ==
 
 = 1.1.0-alpha.1 =
+* Rebuilt the Meeting Details meta box as a React app, matching the updated design mocks - Agenda, Minutes, and Supporting Documents now share one consistent Add/Replace/Remove card UI instead of each field having its own bespoke markup.
+* Breaking change: removed three block editor preview hooks (`edbs_block_preview_columns`, `edbs_block_editor_preview`, `edbs_block_preview_max_rows`) and the `render_preview_table()` method - the block's editor preview now renders through the same client-side pipeline as the front end instead of a separate server-rendered lookalike. See `docs/HOOK-CONTRACT-CHANGES.md` for migration details.
 * A resource field (Agenda, Minutes) now shows an "Edit" action alongside View/Replace/Remove whenever its value is backed by an editable post (currently: Pro's linked-document source) - takes you straight to that post's own wp-admin edit screen.
 * A resource field (Agenda, Minutes, and any Pro adds) now tracks which Add/Replace-modal source actually produced its value, instead of guessing "Media Library" vs "External URL" from the URL alone - fixes an offloaded/CDN'd Media Library file showing as "External URL", and a linked document showing as "Media Library".
 
