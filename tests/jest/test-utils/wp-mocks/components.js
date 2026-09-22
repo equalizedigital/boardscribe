@@ -16,10 +16,10 @@ export function BaseControl( { id, label, help, children } ) {
 	);
 }
 
-export function Button( { id, className, variant, onClick, disabled, children, 'aria-label': ariaLabel } ) {
+export function Button( { id, className, variant, onClick, disabled, children, 'aria-label': ariaLabel, 'aria-disabled': ariaDisabled } ) {
 	return createElement(
 		'button',
-		{ id, className, type: 'button', 'data-variant': variant, disabled: !! disabled, onClick, 'aria-label': ariaLabel },
+		{ id, className, type: 'button', 'data-variant': variant, disabled: !! disabled, onClick, 'aria-label': ariaLabel, 'aria-disabled': ariaDisabled },
 		children,
 	);
 }

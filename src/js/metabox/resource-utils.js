@@ -36,6 +36,34 @@ export function isValidExternalUrl( value ) {
 }
 
 /**
+ * Builds a `getRowKey(item)` function for a repeater's `key={}` prop - a
+ * stable id per row, independent of its position in the array. Keying by
+ * array index (as ResourceListField used to, and AttachedRepeaterField
+ * still does - see PRO-1365) makes React reuse a row's child component
+ * instances by *position* across a reorder/removal, so in-progress state
+ * local to that child (e.g. EditableTitle's own draft) stays behind at the
+ * old position instead of following the row it actually belongs to. A
+ * WeakMap from item object identity to a generated key stays valid across
+ * reorders and only regenerates for a row whose own data just changed -
+ * updateItem/reorder/removeItem-style handlers never replace an
+ * *untouched* item's object reference, only the one actually patched gets
+ * a new one, and that row is already mid-save at that point anyway, so
+ * losing its in-progress-draft identity there is harmless.
+ *
+ * @return {(item: Object) => string} getRowKey, bound to its own WeakMap.
+ */
+export function createRowKeyer() {
+	const keys = new WeakMap();
+	let next = 0;
+	return ( item ) => {
+		if ( ! keys.has( item ) ) {
+			keys.set( item, `row-${ next++ }` );
+		}
+		return keys.get( item );
+	};
+}
+
+/**
  * Restores keyboard focus into a card after an Add/Replace/Remove action
  * re-renders it (e.g. the empty state's "Add" button is swapped for the
  * card's own action row, or vice versa) - the element that was just
@@ -51,8 +79,11 @@ export function focusFirstActionable( containerRef ) {
 		// :not([disabled]) matters here - a repeater row's own reorder
 		// controls (ReorderControls) can render a disabled "Move up"/"Move
 		// down" button first in DOM order (the only/first/last row), and
-		// .focus() on a disabled element silently no-ops.
-		const focusable = containerRef.current && containerRef.current.querySelector( 'button:not([disabled]), a[href]' );
+		// .focus() on a disabled element silently no-ops. :not([aria-disabled="true"])
+		// covers the same buttons' no-op-but-still-focusable state (see
+		// PRO-1362) - they're valid .focus() targets, just not useful ones
+		// to land on right after an Add/Replace/Remove.
+		const focusable = containerRef.current && containerRef.current.querySelector( 'button:not([disabled]):not([aria-disabled="true"]), a[href]' );
 		if ( focusable ) {
 			focusable.focus();
 		}
