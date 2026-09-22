@@ -185,10 +185,15 @@ describe( 'ResourceModal and the wp.media step (PRO-1363)', () => {
  * only announced once via role="alert" - a screen reader user who
  * navigated away from the field and back later had no indication anything
  * was still wrong. The input is now persistently linked to the error via
- * aria-invalid/aria-describedby, matched only while an error is showing.
+ * aria-invalid/aria-describedby, matched only while an error is showing -
+ * combined with (not replacing) the field's own help-text association,
+ * which this component now renders and links itself rather than relying
+ * on TextControl's own `help` prop, since an explicit aria-describedby
+ * would otherwise silently override TextControl's internally-generated
+ * one (flagged on PR #137 by CodeRabbit).
  */
 describe( 'ExternalUrlSource error association (PRO-1368)', () => {
-	it( 'has no aria-invalid/aria-describedby before a save is attempted', () => {
+	it( 'links the input to its help text (and no error) before a save is attempted', () => {
 		act( () => {
 			root.render(
 				<ResourceModal
@@ -202,11 +207,15 @@ describe( 'ExternalUrlSource error association (PRO-1368)', () => {
 		} );
 
 		const input = container.querySelector( 'input[type="url"]' );
+		const helpNode = container.querySelector( '.components-base-control__help' );
+
 		expect( input.getAttribute( 'aria-invalid' ) ).toBe( 'false' );
-		expect( input.hasAttribute( 'aria-describedby' ) ).toBe( false );
+		expect( helpNode ).not.toBeNull();
+		expect( helpNode.id ).toBeTruthy();
+		expect( input.getAttribute( 'aria-describedby' ) ).toBe( helpNode.id );
 	} );
 
-	it( 'links the input to the error message once Save is clicked with an invalid URL', () => {
+	it( 'links the input to both its help text and the error message once Save is clicked with an invalid URL', () => {
 		act( () => {
 			root.render(
 				<ResourceModal
@@ -227,11 +236,14 @@ describe( 'ExternalUrlSource error association (PRO-1368)', () => {
 		} );
 
 		const input = container.querySelector( 'input[type="url"]' );
+		const helpNode = container.querySelector( '.components-base-control__help' );
 		const errorNode = container.querySelector( '.edbs-resource-modal__url-source-error' );
 
 		expect( errorNode ).not.toBeNull();
 		expect( errorNode.id ).toBeTruthy();
 		expect( input.getAttribute( 'aria-invalid' ) ).toBe( 'true' );
-		expect( input.getAttribute( 'aria-describedby' ) ).toBe( errorNode.id );
+		// Both ids present (order: help, then error), not the error id alone
+		// replacing the help association.
+		expect( input.getAttribute( 'aria-describedby' ) ).toBe( `${ helpNode.id } ${ errorNode.id }` );
 	} );
 } );

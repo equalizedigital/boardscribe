@@ -71,6 +71,7 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
 	const [ url, setUrl ] = useState( initialValue || 'https://' );
 	const [ error, setError ] = useState( '' );
 	const containerRef = useRef( null );
+	const helpId = useId();
 	const errorId = useId();
 
 	const handleChange = ( value ) => {
@@ -101,10 +102,25 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
 				type="url"
 				value={ url }
 				onChange={ handleChange }
-				help={ __( 'The current resource stays unchanged until you confirm.', 'boardscribe' ) }
 				aria-invalid={ !! error }
-				aria-describedby={ error ? errorId : undefined }
+				aria-describedby={ error ? `${ helpId } ${ errorId }` : helpId }
 			/>
+			{ /*
+				Rendered manually (rather than via TextControl's own `help`
+				prop) so this component controls the help text's id itself -
+				TextControl computes its own internal id for an auto-rendered
+				help paragraph and appends it to aria-describedby before
+				spreading the rest of this component's props onto the input,
+				so an explicit aria-describedby here would silently replace
+				(not combine with) that internal association. This plugin
+				doesn't pin @wordpress/components' version (it's provided by
+				whatever WP core the site runs), so relying on its internal
+				id-naming convention to reconstruct a matching id would be
+				fragile across versions anyway.
+			*/ }
+			<p id={ helpId } className="components-base-control__help">
+				{ __( 'The current resource stays unchanged until you confirm.', 'boardscribe' ) }
+			</p>
 			{ error && (
 				<p id={ errorId } className="edbs-resource-modal__url-source-error" role="alert">
 					{ error }
