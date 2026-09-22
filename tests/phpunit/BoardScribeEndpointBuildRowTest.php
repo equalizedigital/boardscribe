@@ -328,6 +328,35 @@ class BoardScribeEndpointBuildRowTest extends TestCase {
 	}
 
 	/**
+	 * The edbs_agenda_link filter also receives $formatted_date as its
+	 * 6th argument - the exact string build_link() used for $link - so a
+	 * callback rebuilding the anchor via build_link() itself doesn't have
+	 * to reformat the date (and risk drifting from an
+	 * edbs_meeting_formatted_date override) to reproduce it.
+	 */
+	public function test_agenda_link_filter_receives_the_formatted_date_used_to_build_the_link(): void {
+		$post_id = $this->create_meeting(
+			[
+				'edbs_meeting_date' => '2024-03-15',
+				'edbs_agenda_url'   => 'https://example.com/agenda.pdf',
+			]
+		);
+
+		$captured = null;
+		$callback = static function ( $link, $url, $label, $open_links_new_window, $post_id, $formatted_date ) use ( &$captured ) {
+			$captured = $formatted_date;
+			return $link;
+		};
+		add_filter( 'edbs_agenda_link', $callback, 10, 6 );
+
+		$row = $this->endpoint->build_meeting_row( $post_id, $this->default_format_args );
+
+		remove_filter( 'edbs_agenda_link', $callback, 10 );
+
+		$this->assertSame( $row['date'], $captured );
+	}
+
+	/**
 	 * A Pro-style date-display override containing a raw apostrophe
 	 * round-trips through the aria-label as a real apostrophe, not a
 	 * double-escaped HTML entity - see build_link()'s own docblock for

@@ -328,6 +328,10 @@ class BoardScribeEndpoint {
 		 * had no way to know $open_links_new_window was enabled, so it
 		 * silently discarded that setting - the extra args are additive and
 		 * don't change behavior for a callback that only reads the first.
+		 * $formatted_date is included so such a callback can call
+		 * build_link() itself with the same (possibly filtered, via
+		 * edbs_meeting_formatted_date) date used above, rather than
+		 * reformatting the date itself and risking drift from that filter.
 		 *
 		 * @since 1.0.0
 		 *
@@ -336,6 +340,7 @@ class BoardScribeEndpoint {
 		 * @param string $agenda_link_label     The link's visible text.
 		 * @param bool   $open_links_new_window Whether the link opens in a new window.
 		 * @param int    $post_id               The meeting post ID.
+		 * @param string $formatted_date        The formatted date string used to build $link.
 		 */
 		$agenda_item = $agenda_url
 			? apply_filters(
@@ -344,7 +349,8 @@ class BoardScribeEndpoint {
 				$agenda_url,
 				$agenda_link_label,
 				$open_links_new_window,
-				$post_id
+				$post_id,
+				$formatted_date
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'boardscribe' ) . '</span>';
 
@@ -358,6 +364,7 @@ class BoardScribeEndpoint {
 		 * @param string $minutes_link_label    The link's visible text.
 		 * @param bool   $open_links_new_window Whether the link opens in a new window.
 		 * @param int    $post_id               The meeting post ID.
+		 * @param string $formatted_date        The formatted date string used to build $link.
 		 */
 		$minutes_item = $minutes_url
 			? apply_filters(
@@ -366,7 +373,8 @@ class BoardScribeEndpoint {
 				$minutes_url,
 				$minutes_link_label,
 				$open_links_new_window,
-				$post_id
+				$post_id,
+				$formatted_date
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'boardscribe' ) . '</span>';
 
