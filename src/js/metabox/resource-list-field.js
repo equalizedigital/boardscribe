@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
-import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
+import { createRowKeyer, focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * One row's reorder controls: a drag handle for mouse/touch users (plain
@@ -18,35 +18,56 @@ import { focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourc
  * itself), so this free plugin's webpack build has nothing to
  * externalize that import to.
  *
- * @param {Object}   props            Component props.
- * @param {string}   props.itemLabel  The row's own title, or the field's item noun if
- *                                    untitled - used in the buttons' accessible names so
- *                                    "Move up"/"Move down" identify which row they act on.
- * @param {boolean}  props.isFirst    Disables Move up.
- * @param {boolean}  props.isLast     Disables Move down.
- * @param {Function} props.onMoveUp   Called when Move up is activated.
- * @param {Function} props.onMoveDown Called when Move down is activated.
+ * @param {Object}   props              Component props.
+ * @param {string}   props.itemLabel    The row's own title, or the field's item noun if
+ *                                      untitled - used in the buttons' accessible names so
+ *                                      "Move up"/"Move down" identify which row they act on.
+ * @param {string}   [props.moveUpId]   DOM id for the Move up button - lets a caller
+ *                                      re-find and refocus this exact row's button after
+ *                                      a move re-renders the list (see reorder()'s own
+ *                                      focus-restore effect in ResourceListField).
+ * @param {string}   [props.moveDownId] Same, for Move down.
+ * @param {boolean}  props.isFirst      Move up is a no-op (first row already).
+ * @param {boolean}  props.isLast       Move down is a no-op (last row already).
+ * @param {Function} props.onMoveUp     Called when Move up is activated.
+ * @param {Function} props.onMoveDown   Called when Move down is activated.
  * @return {JSX.Element} The controls.
  */
-function ReorderControls( { itemLabel, isFirst, isLast, onMoveUp, onMoveDown } ) {
+function ReorderControls( { itemLabel, moveUpId, moveDownId, isFirst, isLast, onMoveUp, onMoveDown } ) {
+	// aria-disabled, not the `disabled` prop: a real `disabled` attribute
+	// drops the button from the tab order entirely, so the button a
+	// keyboard user just activated (to reach either end of the list) can
+	// itself vanish from under their focus. Keeping it focusable (but a
+	// no-op) means focus lands somewhere predictable either way - see
+	// PRO-1362.
 	return (
 		<div className="edbs-resource-card__reorder">
 			<span className="edbs-resource-card__drag-handle" aria-hidden="true">
 				⠿
 			</span>
 			<Button
+				id={ moveUpId }
 				className="edbs-resource-card__reorder-button"
 				aria-label={ sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Move %s up', 'boardscribe' ), itemLabel ) }
-				disabled={ isFirst }
-				onClick={ onMoveUp }
+				aria-disabled={ isFirst }
+				onClick={ () => {
+					if ( ! isFirst ) {
+						onMoveUp();
+					}
+				} }
 			>
 				<span aria-hidden="true">▲</span>
 			</Button>
 			<Button
+				id={ moveDownId }
 				className="edbs-resource-card__reorder-button"
 				aria-label={ sprintf( /* translators: %s: the row's title, e.g. "Board packet". */ __( 'Move %s down', 'boardscribe' ), itemLabel ) }
-				disabled={ isLast }
-				onClick={ onMoveDown }
+				aria-disabled={ isLast }
+				onClick={ () => {
+					if ( ! isLast ) {
+						onMoveDown();
+					}
+				} }
 			>
 				<span aria-hidden="true">▼</span>
 			</Button>
@@ -91,14 +112,14 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 	const [ draft, setDraft ] = useState( label );
 	const inputRef = useRef( null );
 
-	// Rows are keyed by array index (see ResourceListField/AttachedRepeaterField),
-	// so removing an earlier row can hand this exact component instance a
-	// different row's `label` without unmounting it (ResourceListField's
-	// reorder() keeps its own editingIndex pointed at the right row across a
-	// move, but removeItem() has no equivalent row to reassign it to).
-	// Resyncing here keeps `draft` from going stale and, if a save happens
-	// while still (now different-row) "editing", overwriting the new row's
-	// label with leftover text from the row that used to be at this index.
+	// Belt-and-suspenders: ResourceListField/AttachedRepeaterField key rows
+	// by stable identity (not array index - see createRowKeyer()) and
+	// retarget their own editingIndex-style tracking through a
+	// move/removal, so this instance should already stay matched to the
+	// right row. Resyncing `draft` from `label` here anyway means a bug in
+	// either of those (or a future caller that doesn't do the same
+	// bookkeeping) fails safe - stale `draft` text, not a save that
+	// silently overwrites a different row's label.
 	useEffect( () => {
 		setDraft( label );
 	}, [ label ] );
@@ -200,32 +221,61 @@ export function ResourceListField( { field, value, onChange } ) {
 	const containerRef = useRef( null );
 
 	// A stable React `key` per row, independent of its position in `items` -
-	// keying by array index (as this list used to) makes React reuse each
-	// row's EditableTitle instance by *position* across a reorder, so an
-	// in-progress title draft (that component's own internal state) stays
-	// behind at the old position instead of following the row it belongs to,
-	// even though editingIndex (below) now correctly retargets *which*
-	// position is "being edited". updateItem/reorder/removeItem never
-	// replace an *untouched* item's object reference (only the item actually
-	// patched gets a new one), so a WeakMap from item object identity to a
-	// generated key stays valid across reorders and only regenerates for a
-	// row whose own data just changed (already mid-save at that point, so
-	// losing in-progress-draft identity there is harmless).
-	const rowKeysRef = useRef( new WeakMap() );
-	const nextRowKeyRef = useRef( 0 );
-	const getRowKey = ( item ) => {
-		if ( ! rowKeysRef.current.has( item ) ) {
-			rowKeysRef.current.set( item, `row-${ nextRowKeyRef.current++ }` );
+	// see createRowKeyer()'s own docblock for why. Kept in a ref so the
+	// same WeakMap (and its generated keys) survives across re-renders.
+	const getRowKey = useRef( createRowKeyer() ).current;
+
+	// Set just before a reorder() triggered by the Move up/down buttons
+	// (not drag-and-drop, which doesn't need keyboard focus restored);
+	// consumed by the effect below once the move's re-render has
+	// committed. Identifies the row by its stable getRowKey() id, not
+	// index, since the row's position is exactly what just changed.
+	const focusAfterMoveRef = useRef( null );
+	const moveButtonId = ( rowKey, direction ) => `${ field.key }-${ rowKey }-move-${ direction }`;
+
+	// reorder() itself can't move focus - it runs synchronously inside the
+	// click handler, before the DOM has re-rendered at the row's new
+	// position, so the button to focus doesn't exist yet under its new id.
+	// This runs after that commit instead. Always the same direction the
+	// user just activated, even when the move lands the row at that end of
+	// the list (making that same button now a no-op) - ReorderControls
+	// keeps a no-op button focusable (aria-disabled, not the `disabled`
+	// attribute) precisely so this stays a valid, predictable target
+	// instead of needing a fallback.
+	useEffect( () => {
+		if ( ! focusAfterMoveRef.current ) {
+			return;
 		}
-		return rowKeysRef.current.get( item );
-	};
+		const { rowKey, direction } = focusAfterMoveRef.current;
+		focusAfterMoveRef.current = null;
+		const button = document.getElementById( moveButtonId( rowKey, direction ) );
+		if ( button ) {
+			button.focus();
+		}
+	}, [ items ] );
 
 	const updateItem = ( index, patch ) => {
 		onChange( items.map( ( item, i ) => ( i === index ? { ...item, ...patch } : item ) ) );
 	};
 
+	// Re-targets editingIndex through a removal, same reasoning as
+	// reindexAfterMove() below but for a row disappearing rather than
+	// moving: a later row shifts down by one, an earlier row is
+	// unaffected, and the removed row's own editor (if open) has nothing
+	// left to point at. Without this, removing row 1 while row 3's editor
+	// is open left editingIndex === 2 pointing at whatever row ended up
+	// there instead - closing row 3's real editor and spuriously opening
+	// the wrong one (see PRO-1364).
+	const reindexAfterRemove = ( index, removedIndex ) => {
+		if ( index === removedIndex ) {
+			return null;
+		}
+		return index > removedIndex ? index - 1 : index;
+	};
+
 	const removeItem = ( index ) => {
 		onChange( items.filter( ( _, i ) => i !== index ) );
+		setEditingIndex( ( current ) => ( null === current ? current : reindexAfterRemove( current, index ) ) );
 		// Removing the last row swaps it (plus the "+ Add" button) for the
 		// empty state's own "Add" button - focus it, same reasoning as
 		// resource-field.js's focusFirstActionable() calls.
@@ -338,9 +388,10 @@ export function ResourceListField( { field, value, onChange } ) {
 					// attached-repeater-field.js's rowDescription.
 					const itemNounOrLabel = item.label || itemNoun;
 					const itemDescription = meta ? sprintf( /* translators: 1: row title or item noun, 2: filename. */ __( '%1$s, %2$s', 'boardscribe' ), itemNounOrLabel, meta ) : itemNounOrLabel;
+					const rowKey = getRowKey( item );
 
 					return (
-						<Fragment key={ getRowKey( item ) }>
+						<Fragment key={ rowKey }>
 							{ showIndicator( 'before' ) && <div className="edbs-resource-list__drop-indicator" /> }
 							<div
 								className={ `edbs-resource-list__row${ isDragging ? ' edbs-resource-list__row--dragging' : '' }` }
@@ -374,10 +425,18 @@ export function ResourceListField( { field, value, onChange } ) {
 									dragHandle={
 										<ReorderControls
 											itemLabel={ itemDescription }
+											moveUpId={ moveButtonId( rowKey, 'up' ) }
+											moveDownId={ moveButtonId( rowKey, 'down' ) }
 											isFirst={ 0 === index }
 											isLast={ index === items.length - 1 }
-											onMoveUp={ () => reorder( index, index - 1 ) }
-											onMoveDown={ () => reorder( index, index + 1 ) }
+											onMoveUp={ () => {
+												focusAfterMoveRef.current = { rowKey, direction: 'up' };
+												reorder( index, index - 1 );
+											} }
+											onMoveDown={ () => {
+												focusAfterMoveRef.current = { rowKey, direction: 'down' };
+												reorder( index, index + 1 );
+											} }
 										/>
 									}
 									title={

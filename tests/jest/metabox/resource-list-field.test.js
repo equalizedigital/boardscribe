@@ -151,3 +151,141 @@ describe( 'ResourceListField title editor across a reorder', () => {
 		expect( latestItems.find( ( item ) => 'https://example.com/doc-one.pdf' === item.url ).label ).toBe( '' );
 	} );
 } );
+
+/**
+ * PRO-1362 regression coverage: a keyboard reorder must land focus back on
+ * the moved row's own Move up/down button in its new position, not
+ * document.body - and a row's reorder buttons stay in the tab order (just
+ * a no-op) at either end of the list instead of vanishing via a real
+ * `disabled` attribute.
+ */
+describe( 'ResourceListField keyboard reorder focus (PRO-1362)', () => {
+	const threeRows = () => [
+		{ label: '', url: 'https://example.com/doc-one.pdf', source: 'external_url' },
+		{ label: '', url: 'https://example.com/doc-two.pdf', source: 'external_url' },
+		{ label: '', url: 'https://example.com/doc-three.pdf', source: 'external_url' },
+	];
+
+	it( 'moves focus to the moved row\'s own Move up button in its new position', () => {
+		act( () => {
+			root.render( <Harness initialItems={ threeRows() } onItemsChange={ () => {} } /> );
+		} );
+
+		// Move the middle row (doc-two) up - it should end up first.
+		act( () => {
+			Simulate.click( moveUpButtonFor( rows()[ 1 ] ) );
+		} );
+
+		const [ firstRow ] = rows();
+		expect( firstRow.textContent ).toContain( 'doc-two.pdf' );
+		expect( document.activeElement ).toBe( moveUpButtonFor( firstRow ) );
+	} );
+
+	it( 'moves focus to the moved row\'s own Move down button in its new position', () => {
+		act( () => {
+			root.render( <Harness initialItems={ threeRows() } onItemsChange={ () => {} } /> );
+		} );
+
+		function moveDownButtonFor( row ) {
+			return row.querySelectorAll( '.edbs-resource-card__reorder-button' )[ 1 ];
+		}
+
+		// Move the first row (doc-one) down - it should end up second.
+		act( () => {
+			Simulate.click( moveDownButtonFor( rows()[ 0 ] ) );
+		} );
+
+		const secondRow = rows()[ 1 ];
+		expect( secondRow.textContent ).toContain( 'doc-one.pdf' );
+		expect( document.activeElement ).toBe( moveDownButtonFor( secondRow ) );
+	} );
+
+	it( 'keeps the first row\'s Move up button in the tab order (aria-disabled, not disabled) and a no-op', () => {
+		act( () => {
+			root.render( <Harness initialItems={ threeRows() } onItemsChange={ () => {} } /> );
+		} );
+
+		const firstMoveUp = moveUpButtonFor( rows()[ 0 ] );
+		expect( firstMoveUp.disabled ).toBe( false );
+		expect( firstMoveUp.getAttribute( 'aria-disabled' ) ).toBe( 'true' );
+
+		act( () => {
+			Simulate.click( firstMoveUp );
+		} );
+
+		// Still doc-one first - clicking the boundary button was a no-op.
+		expect( rows()[ 0 ].textContent ).toContain( 'doc-one.pdf' );
+	} );
+} );
+
+/**
+ * PRO-1364 regression coverage: removing a row must retarget editingIndex
+ * (by the same stable identity reorder() already retargets through a move),
+ * not leave it pointing at whatever row ends up at its old numeric
+ * position.
+ */
+describe( 'ResourceListField title editor across a removal (PRO-1364)', () => {
+	const threeRows = () => [
+		{ label: '', url: 'https://example.com/doc-one.pdf', source: 'external_url' },
+		{ label: '', url: 'https://example.com/doc-two.pdf', source: 'external_url' },
+		{ label: '', url: 'https://example.com/doc-three.pdf', source: 'external_url' },
+	];
+
+	function removeButtonFor( row ) {
+		return Array.from( row.querySelectorAll( 'button' ) ).find( ( button ) => 'Remove' === button.textContent );
+	}
+
+	it( 'keeps an open title editor (and its draft) on the row being edited after an earlier row is removed', () => {
+		act( () => {
+			root.render( <Harness initialItems={ threeRows() } onItemsChange={ () => {} } /> );
+		} );
+
+		// Open the third row's (doc-three) title editor.
+		const addTitleButtons = Array.from( container.querySelectorAll( '.edbs-resource-card__actions button' ) )
+			.filter( ( button ) => 'Add title' === button.textContent );
+		act( () => {
+			Simulate.click( addTitleButtons[ 2 ] );
+		} );
+		act( () => {
+			Simulate.change( rows()[ 2 ].querySelector( '.edbs-resource-card__title-edit input' ), {
+				target: { value: 'Draft for doc three' },
+			} );
+		} );
+
+		// Remove the first row (doc-one) while that editor is still open.
+		act( () => {
+			Simulate.click( removeButtonFor( rows()[ 0 ] ) );
+		} );
+
+		const [ firstRow, secondRow ] = rows();
+		expect( firstRow.textContent ).toContain( 'doc-two.pdf' );
+		expect( secondRow.textContent ).toContain( 'doc-three.pdf' );
+
+		// The editor followed doc-three to its new (now second) position,
+		// draft intact - doc-two's row (now first) has no open editor.
+		expect( firstRow.querySelector( '.edbs-resource-card__title-edit input' ) ).toBeNull();
+		const secondRowInput = secondRow.querySelector( '.edbs-resource-card__title-edit input' );
+		expect( secondRowInput ).not.toBeNull();
+		expect( secondRowInput.value ).toBe( 'Draft for doc three' );
+	} );
+
+	it( 'closes the editor when its own row is the one removed', () => {
+		act( () => {
+			root.render( <Harness initialItems={ threeRows() } onItemsChange={ () => {} } /> );
+		} );
+
+		const addTitleButtons = Array.from( container.querySelectorAll( '.edbs-resource-card__actions button' ) )
+			.filter( ( button ) => 'Add title' === button.textContent );
+		act( () => {
+			Simulate.click( addTitleButtons[ 0 ] );
+		} );
+		expect( rows()[ 0 ].querySelector( '.edbs-resource-card__title-edit input' ) ).not.toBeNull();
+
+		act( () => {
+			Simulate.click( removeButtonFor( rows()[ 0 ] ) );
+		} );
+
+		expect( rows() ).toHaveLength( 2 );
+		expect( container.querySelector( '.edbs-resource-card__title-edit input' ) ).toBeNull();
+	} );
+} );
