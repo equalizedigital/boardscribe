@@ -250,3 +250,15 @@ add_filter( 'edbs_meeting_meta_fields', function ( array $fields ) {
 **Contract impact:** any Pro/third-party callback on `edbs_block_preview_columns`, `edbs_block_editor_preview`, or `edbs_block_preview_max_rows` stops running silently. Any code calling `BoardScribeBlock::render_preview_table()` directly hits a fatal `Error: Call to undefined method`.
 
 **Action for Pro before release:** delete `BlockExtensions::add_preview_columns()`, `raise_preview_max_rows()`, `render_year_timeline_preview()`, `render_list_preview()`, `group_rows_by_year()`, and their hook registrations — the front-end templates (`year-timeline`, `list`) they duplicated already render correctly through the live editor preview with no Pro-side change needed. Confirm `pro-list-template.css` is enqueued in the editor context too (it should be, automatically, once `enqueue_block_editor_assets` fires free's `enqueue_assets()` → `edbs_enqueue_assets` → Pro's own enqueue callback) rather than assuming it.
+
+---
+
+## `edbs_agenda_link` / `edbs_minutes_link` gain extra arguments (#113) — `BoardScribeEndpoint::build_link()` is now public
+
+**Before:** `apply_filters( 'edbs_agenda_link', $link )` / `apply_filters( 'edbs_minutes_link', $link )` — a callback only ever received the finished `<a>` markup, with no way to tell whether the new "open links in a new window" option was enabled for that request. A callback that rebuilds the anchor from scratch (the documented Accessibility Checker Pro integration use case) had no way to preserve that setting.
+
+**After:** both filters now receive `( $link, $url, $label, $open_links_new_window, $post_id, $formatted_date )`. Purely additive — a callback declared with only one parameter is unaffected; one that wants the new context just declares more parameters and raises its `add_filter()` priority arg count.
+
+The single-link building logic (URL escaping, aria-label, `target`/`rel`) was also extracted into a new public `BoardScribeEndpoint::build_link( string $url, string $label, string $formatted_date, bool $new_window ): string`, previously private — a callback rebuilding the anchor can now call this directly instead of reimplementing it. `$formatted_date` (6th filter arg) is exactly what `build_link()` needs for its own 3rd parameter, including any `edbs_meeting_formatted_date` override — without it, a callback rebuilding the anchor via `build_link()` would have no way to reproduce the same date string and would have to reformat the date itself, risking drift from that filter.
+
+**Action for Pro before release:** grep Pro for `edbs_agenda_link` / `edbs_minutes_link` and, if a callback rebuilds the anchor rather than just decorating the existing string, update it to read `$open_links_new_window` (4th arg) and `$formatted_date` (6th arg), and consider calling `BoardScribeEndpoint::build_link()` directly instead of duplicating the markup.

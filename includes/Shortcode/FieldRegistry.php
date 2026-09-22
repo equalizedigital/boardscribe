@@ -272,6 +272,15 @@ class FieldRegistry {
 					'rest_arg' => true,
 				],
 				[
+					'key'         => 'open_links_new_window',
+					'type'        => self::TYPE_CHECKBOX,
+					'group'       => 'link_labels',
+					'label'       => __( 'Open Agenda/Minutes Links in a New Window', 'boardscribe' ),
+					'default'     => false,
+					'description' => __( 'Agenda and minutes links open in a new browser tab. A screen-reader hint and rel="noopener noreferrer" are added automatically.', 'boardscribe' ),
+					'rest_arg'    => true,
+				],
+				[
 					'key'     => 'hide_title',
 					'type'    => self::TYPE_CHECKBOX,
 					'group'   => 'hide_columns',

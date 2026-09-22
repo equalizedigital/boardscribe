@@ -228,6 +228,7 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 
 = 1.1.0 =
 * Added CSV bulk importer for meeting minutes.
+* Added an option to open agenda and minutes links in a new browser tab, with an automatic screen-reader warning.
 
 = 1.0.0 =
 * Initial release.

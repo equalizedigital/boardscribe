@@ -189,4 +189,40 @@ class FieldRegistryTest extends TestCase {
 
 		$this->assertSame( '', $result );
 	}
+
+	/**
+	 * A checkbox-type field's resolve_value() coerces the string values a
+	 * REST query param or hand-edited block attribute actually arrives as
+	 * (not a real PHP bool) - this is the exact path
+	 * `open_links_new_window` (and every other checkbox field) goes
+	 * through on every request via register_route()'s sanitize_callback.
+	 *
+	 * @dataProvider checkbox_value_provider
+	 *
+	 * @param mixed $raw_value The raw value as it would arrive from a query string.
+	 * @param bool  $expected  The expected coerced result.
+	 */
+	public function test_resolve_value_coerces_checkbox_strings( $raw_value, bool $expected ): void {
+		$field = [
+			'key'  => 'edbs_test_checkbox',
+			'type' => \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::TYPE_CHECKBOX,
+		];
+
+		$this->assertSame( $expected, \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::resolve_value( $field, $raw_value ) );
+	}
+
+	/**
+	 * @return array<string, array{0: mixed, 1: bool}>
+	 */
+	public function checkbox_value_provider(): array {
+		return [
+			'string false' => [ 'false', false ],
+			'string 0'     => [ '0', false ],
+			'empty string' => [ '', false ],
+			'string true'  => [ 'true', true ],
+			'string 1'     => [ '1', true ],
+			'real bool true'  => [ true, true ],
+			'real bool false' => [ false, false ],
+		];
+	}
 }
