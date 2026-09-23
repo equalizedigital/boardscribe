@@ -435,7 +435,9 @@ class CsvImporter {
 
 	/**
 	 * Whether a meeting with this exact title and edbs_meeting_date already
-	 * exists (any post status), so re-uploading the same CSV - e.g. after a
+	 * exists (any status except trash/auto-draft, so a meeting you trashed is
+	 * re-created on re-import; the comparison is case-insensitive under the
+	 * usual MySQL collation), so re-uploading the same CSV - e.g. after a
 	 * timed-out import stopped partway through - doesn't duplicate every row
 	 * that already landed. Deliberately not scoped to a "recently imported"
 	 * window or an import-run hash: a plain, human-editable CSV has no
@@ -454,7 +456,10 @@ class CsvImporter {
 			[
 				'post_type'      => 'edbs_meeting',
 				'post_status'    => 'any',
-				'title'          => $title,
+				// The title as wp_insert_post() will have stored it (kses/entity
+				// encoding, unslashing) - a raw "Parks & Rec" wouldn't otherwise
+				// match a stored "Parks &amp; Rec" on sites that filter titles.
+				'title'          => wp_unslash( sanitize_post_field( 'post_title', wp_slash( $title ), 0, 'db' ) ),
 				'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_value'     => $date, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'fields'         => 'ids',
@@ -511,11 +516,10 @@ class CsvImporter {
 				absint( $_GET['edbs_import_skipped'] ?? 0 )
 			);
 
-			// Scheduled/duplicate rows already fall inside "skipped" from
-			// the visitor's point of view (they didn't add a new, live
-			// meeting) but need a different explanation than "invalid
-			// data" - appended only when non-zero so a plain import keeps
-			// its original, shorter message.
+			// Scheduled and duplicate rows have their own counters (they
+			// aren't invalid, so not part of "skipped") and need their own
+			// explanation - appended only when non-zero so a plain import
+			// keeps its original, shorter message.
 			if ( $scheduled > 0 ) {
 				$message .= ' ' . sprintf(
 					/* translators: %d: number of rows scheduled for a future date */
@@ -527,7 +531,7 @@ class CsvImporter {
 			if ( $duplicates > 0 ) {
 				$message .= ' ' . sprintf(
 					/* translators: %d: number of duplicate rows skipped */
-					_n( '%d row matched an existing meeting (same title and date) and was skipped.', '%d rows matched an existing meeting (same title and date) and were skipped.', $duplicates, 'boardscribe' ),
+					_n( '%d row matched an existing meeting, or an earlier row in this file, with the same title and date and was skipped.', '%d rows matched an existing meeting, or an earlier row in this file, with the same title and date and were skipped.', $duplicates, 'boardscribe' ),
 					$duplicates
 				);
 			}

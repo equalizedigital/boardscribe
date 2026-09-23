@@ -172,4 +172,32 @@ class CsvImporterProcessCsvTest extends TestCase {
 		$this->assertSame( 1, $result['imported'] );
 		$this->assertSame( 0, $result['duplicates'] );
 	}
+	/**
+	 * Two identical rows in one file: the second matches the first just
+	 * inserted, so only one meeting is created.
+	 */
+	public function test_identical_rows_within_one_file_are_deduplicated(): void {
+		$result = $this->process(
+			[
+				[ 'title' => 'Special Meeting', 'date' => '2024-03-15' ],
+				[ 'title' => 'Special Meeting', 'date' => '2024-03-15' ],
+			]
+		);
+
+		$this->assertSame( 1, $result['imported'] );
+		$this->assertSame( 1, $result['duplicates'] );
+	}
+
+	/**
+	 * A title containing an ampersand re-imports as a duplicate rather than
+	 * creating a second copy.
+	 */
+	public function test_title_with_special_characters_is_recognised_as_a_duplicate_on_reimport(): void {
+		$first  = $this->process( [ [ 'title' => 'Parks & Rec', 'date' => '2024-03-15' ] ] );
+		$second = $this->process( [ [ 'title' => 'Parks & Rec', 'date' => '2024-03-15' ] ] );
+
+		$this->assertSame( 1, $first['imported'] );
+		$this->assertSame( 0, $second['imported'] );
+		$this->assertSame( 1, $second['duplicates'] );
+	}
 }
