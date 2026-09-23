@@ -82,6 +82,15 @@ export function initInstance( container ) {
 	let currentPage = urlState ? Math.max( 1, parseInt( initParams.get( pageParam ), 10 ) || 1 ) : 1;
 	let maxNumPages = 1;
 
+	// Incremented on every fetchMeetings() call and compared against the
+	// value captured when each request started - two requests in flight at
+	// once (a quick double pagination click, or a popstate firing while a
+	// click's request is still pending) can resolve in either order, and
+	// without this an older, slower response can render after a newer one,
+	// leaving the table showing a different page than the URL/pagination
+	// controls say it's on.
+	let requestSequence = 0;
+
 	/**
 	 * Navigates this instance to the given page: updates the URL and
 	 * refetches. Passed to the template's pagination renderer.
@@ -107,6 +116,25 @@ export function initInstance( container ) {
 		// Tolerate template-defined response shapes that omit
 		// max_num_pages - goToPage() keeps its last known bound.
 		maxNumPages = parseInt( data.max_num_pages, 10 ) || maxNumPages;
+
+		// Recovers from a page number that no longer exists - e.g. a
+		// bookmarked/shared "?edbs_page_3" URL after enough meetings were
+		// removed that the list now fits on one page (no pagination would
+		// render at all, table just looks empty), or a stale page past a
+		// smaller new max_num_pages (Previous/Next would silently no-op
+		// forever). Clamps to the last real page, replaces the stale URL
+		// (no new history entry - this isn't a user-initiated navigation),
+		// and refetches once. Only fires when the clamp actually changes
+		// the page, so it can't loop even when max_num_pages is 0 (no
+		// results at all - lastValidPage floors to 1, and a currentPage of
+		// 1 is never > 1).
+		const lastValidPage = Math.max( 1, maxNumPages );
+		if ( currentPage > lastValidPage ) {
+			currentPage = lastValidPage;
+			replaceUrl( currentPage );
+			fetchMeetings( refocus );
+			return;
+		}
 
 		template.render( data, instanceCfg, tableEl );
 		emit( 'edbs:table-rendered', { data, instanceCfg } );
@@ -142,6 +170,24 @@ export function initInstance( container ) {
 		history.pushState( { [ pageParam ]: page }, '', qs ? '?' + qs : window.location.pathname );
 	}
 
+	// Same URL update as updateUrl(), but via replaceState - used only for
+	// the out-of-range recovery in renderInstance(), which isn't a user
+	// navigation action and shouldn't add a Back-button stop for a page
+	// number that was never actually shown.
+	function replaceUrl( page ) {
+		if ( ! urlState ) {
+			return;
+		}
+		const params = new URLSearchParams( window.location.search );
+		if ( page <= 1 ) {
+			params.delete( pageParam );
+		} else {
+			params.set( pageParam, page );
+		}
+		const qs = params.toString();
+		history.replaceState( { [ pageParam ]: page }, '', qs ? '?' + qs : window.location.pathname );
+	}
+
 	// Sync this instance when the user navigates back/forward.
 	if ( urlState ) {
 		window.addEventListener( 'popstate', function() {
@@ -157,6 +203,11 @@ export function initInstance( container ) {
 	function fetchMeetings( refocus ) {
 		refocus = refocus || false;
 
+		// Captured now, compared once this specific request resolves - see
+		// requestSequence's own declaration for why (two in-flight requests
+		// can resolve out of order).
+		const seq = ++requestSequence;
+
 		// A template can take over the request entirely (request), or
 		// just point the default fetch elsewhere (buildRequestUrl).
 		const request = template.request
@@ -171,6 +222,12 @@ export function initInstance( container ) {
 
 		request
 			.then( function( data ) {
+				// A newer request has started since this one was sent - an
+				// older, slower response must never overwrite what the
+				// newer one already rendered (or is about to).
+				if ( seq !== requestSequence ) {
+					return;
+				}
 				// Caught separately from the request promise below so a
 				// throw from renderInstance() (e.g. a broken template or
 				// edbs:table-rendered listener) isn't misreported to
@@ -184,6 +241,9 @@ export function initInstance( container ) {
 				}
 			} )
 			.catch( function( error ) {
+				if ( seq !== requestSequence ) {
+					return;
+				}
 				// eslint-disable-next-line no-console -- Surface fetch failures for debugging; there is no other error-reporting mechanism here.
 				console.error( 'EDBS: fetch error:', error );
 				emit( 'edbs:fetch-error', { error, instanceCfg } );
