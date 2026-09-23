@@ -266,6 +266,11 @@
 	margin-top: 8px;
 }
 
+.edbs-resource-card__action-icon {
+	margin-inline-start: 3px;
+	vertical-align: -1px;
+}
+
 .edbs-resource-card__action {
 	font-size: 13px;
 	height: auto;
