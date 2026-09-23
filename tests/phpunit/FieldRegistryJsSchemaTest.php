@@ -104,4 +104,60 @@ class FieldRegistryJsSchemaTest extends TestCase {
 		$this->assertNotEmpty( $by_key['template']['choices'], 'The template field must always expose at least the built-in "Table (default)" choice, so the block sidebar picker is never suppressed for lack of choices.' );
 		$this->assertArrayHasKey( '', $by_key['template']['choices'] );
 	}
+
+	/**
+	 * A hidden_from_ui field (e.g. a Pro field left behind once a license
+	 * lapses) is omitted from the default js_schema() call - the settings-
+	 * page builder app's own use, which only ever builds a *new* shortcode
+	 * and so should never offer a picker for it.
+	 */
+	public function test_hidden_field_is_omitted_by_default(): void {
+		$this->callback = static function ( array $fields ) {
+			$fields[] = [
+				'key'            => 'edbs_test_hidden_field',
+				'type'           => 'text',
+				'group'          => 'general',
+				'label'          => 'Hidden Field',
+				'default'        => '',
+				'hidden_from_ui' => true,
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
+
+		$by_key = array_column( FieldRegistry::js_schema(), null, 'key' );
+
+		$this->assertArrayNotHasKey( 'edbs_test_hidden_field', $by_key );
+	}
+
+	/**
+	 * PRO-1397: js_schema( true ) (the block editor's own call) keeps a
+	 * hidden_from_ui field in the array instead of omitting it, flagged via
+	 * hiddenFromUi - so the block's live preview can still map its saved
+	 * value into the instance config the same way a visible field's is,
+	 * while the InspectorControls loop uses the flag to skip rendering its
+	 * picker. A visible field is flagged false, not simply absent, so JS
+	 * can rely on the key always being present.
+	 */
+	public function test_include_hidden_flags_but_keeps_hidden_field(): void {
+		$this->callback = static function ( array $fields ) {
+			$fields[] = [
+				'key'            => 'edbs_test_hidden_field',
+				'type'           => 'text',
+				'group'          => 'general',
+				'label'          => 'Hidden Field',
+				'default'        => 'secret',
+				'hidden_from_ui' => true,
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
+
+		$by_key = array_column( FieldRegistry::js_schema( true ), null, 'key' );
+
+		$this->assertArrayHasKey( 'edbs_test_hidden_field', $by_key );
+		$this->assertTrue( $by_key['edbs_test_hidden_field']['hiddenFromUi'] );
+		$this->assertSame( 'secret', $by_key['edbs_test_hidden_field']['default'] );
+		$this->assertFalse( $by_key['posts_per_page']['hiddenFromUi'] );
+	}
 }

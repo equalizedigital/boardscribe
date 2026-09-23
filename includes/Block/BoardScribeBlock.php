@@ -155,10 +155,16 @@ class BoardScribeBlock {
 		// Exposes the same field registry the InspectorControls are built
 		// from at edit time (src/js/block/index.js reads window.edbsBlockFieldRegistry)
 		// so a field only needs to be added in one place, PHP-side, to
-		// show up in the block editor sidebar.
+		// show up in the block editor sidebar. Passes $include_hidden=true
+		// (PRO-1397): a hidden_from_ui field (e.g. Pro's category filter
+		// once unlicensed) still needs to feed the live preview's
+		// instance-config mapping even though its own picker must stay
+		// hidden - src/js/block/index.js's InspectorControls loop skips
+		// entries flagged hiddenFromUi, while buildInstanceConfig() still
+		// maps every entry.
 		if ( $block_type instanceof \WP_Block_Type ) {
 			foreach ( $block_type->editor_script_handles as $handle ) {
-				wp_localize_script( $handle, 'edbsBlockFieldRegistry', FieldRegistry::js_schema() );
+				wp_localize_script( $handle, 'edbsBlockFieldRegistry', FieldRegistry::js_schema( true ) );
 				wp_set_script_translations( $handle, 'boardscribe' );
 			}
 		}

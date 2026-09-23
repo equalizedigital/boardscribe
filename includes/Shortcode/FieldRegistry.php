@@ -100,10 +100,9 @@ class FieldRegistry {
 	 *     @type bool          $rest_arg            Whether this field also becomes a REST route arg.
 	 *     @type string|null   $config_key          Overrides the camelCase instance-config key derived from $key.
 	 *     @type string|null   $block_attribute_key Overrides the camelCase block-attribute key derived from $key/config_key.
-	 *     @type bool          $hidden_from_ui      Optional, default false. Excludes the field from js_schema() —
-	 *                                              the settings-page builder app and the block's InspectorControls
-	 *                                              both consume js_schema(), so this hides the field's picker
-	 *                                              control from both without affecting all() (shortcode-attribute
+	 *     @type bool          $hidden_from_ui      Optional, default false. Excludes the field from js_schema()'s
+	 *                                              default call (used by the settings-page builder app) — this
+	 *                                              hides the field's picker control without affecting all() (shortcode-attribute
 	 *                                              defaults/parsing, REST arg registration, and the block's
 	 *                                              attribute schema all still come from all(), so a value already
 	 *                                              saved in existing content — e.g. a Pro field on a shortcode
@@ -111,7 +110,10 @@ class FieldRegistry {
 	 *                                              correctly; only the ability to newly pick the field disappears).
 	 *                                              Intended for a licensable plugin gating which fields a NEW
 	 *                                              shortcode/block instance can be configured with, without
-	 *                                              breaking instances that already used it.
+	 *                                              breaking instances that already used it. The block editor's
+	 *                                              live preview needs the opposite: it must still *render* a
+	 *                                              hidden field's already-saved value (PRO-1397) while hiding
+	 *                                              only its picker — see js_schema()'s own $include_hidden param.
 	 * }
 	 *
 	 * @since 1.0.0
@@ -362,15 +364,32 @@ class FieldRegistry {
 	 * key/configKey/default for the builder's shortcode generation and
 	 * preview instance config.
 	 *
+	 * A `hidden_from_ui` field is omitted by default (the settings-page
+	 * builder app's own use - it only ever builds a *new* shortcode, so a
+	 * hidden field's picker should simply not exist there). $include_hidden
+	 * is for the block editor instead (PRO-1397): its live preview renders
+	 * the *saved* block through the same instance-config mapping the
+	 * InspectorControls loop reads field descriptors from
+	 * (buildInstanceConfig() in src/js/block/index.js), so a hidden field
+	 * dropped here entirely would also drop out of that preview - a block
+	 * saved while licensed with a hidden field switched on (e.g. a category
+	 * filter) would render correctly on the front end but silently
+	 * differently in the editor. Passing true instead keeps every field in
+	 * the array with a `hiddenFromUi` flag, so the same one localized array
+	 * both drives the preview mapping and lets the InspectorControls loop
+	 * skip flagged fields when building its own pickers - no second map.
+	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, placeholder: ?string, description: ?string}>
+	 * @param bool $include_hidden Include hidden_from_ui fields (flagged via hiddenFromUi) instead of omitting them.
+	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, placeholder: ?string, description: ?string, hiddenFromUi: bool}>
 	 */
-	public static function js_schema(): array {
+	public static function js_schema( bool $include_hidden = false ): array {
 		$schema = [];
 
 		foreach ( self::all() as $field ) {
-			if ( ! empty( $field['hidden_from_ui'] ) ) {
+			$is_hidden = ! empty( $field['hidden_from_ui'] );
+			if ( $is_hidden && ! $include_hidden ) {
 				continue;
 			}
 
@@ -385,6 +404,7 @@ class FieldRegistry {
 				'choices'      => $field['choices'] ?? null,
 				'placeholder'  => $field['placeholder'] ?? null,
 				'description'  => $field['description'] ?? null,
+				'hiddenFromUi' => $is_hidden,
 			];
 		}
 

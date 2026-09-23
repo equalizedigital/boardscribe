@@ -130,11 +130,21 @@ function Edit( { attributes, setAttributes } ) {
 	// existence conditional on more than one choice existing.
 	const templateField = FIELD_REGISTRY.find( ( field ) => 'template' === field.attributeKey );
 	const templateChoices = ( templateField && templateField.choices ) || {};
-	const showTemplatePicker = Boolean( templateField ) && Object.keys( templateChoices ).length > 0;
+	// hiddenFromUi (PRO-1397) applies to this special-cased picker too, same
+	// as the generic fieldsByGroup loop below - a hidden template field
+	// (e.g. Pro gating which templates a NEW instance can pick once
+	// unlicensed) must still map into buildInstanceConfig() so an
+	// already-saved choice keeps previewing correctly, but its own picker
+	// must not render.
+	const showTemplatePicker = Boolean( templateField ) && ! templateField.hiddenFromUi && Object.keys( templateChoices ).length > 0;
 
 	const fieldsByGroup = {};
 	FIELD_REGISTRY.forEach( ( field ) => {
-		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) ) {
+		// hiddenFromUi fields (PRO-1397) still need to reach
+		// buildInstanceConfig() below, via the same FIELD_REGISTRY array,
+		// so a saved value keeps rendering in the live preview exactly as
+		// it does on the front end - only their picker is skipped here.
+		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) || field.hiddenFromUi ) {
 			return;
 		}
 		const group = field.group || 'general';

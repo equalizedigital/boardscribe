@@ -126,6 +126,23 @@ const FIELD_FIXTURE = [
 		placeholder: null,
 		description: null,
 	},
+	// PRO-1397: simulates a Pro field marked hidden_from_ui once its
+	// license lapses (e.g. the category filter) - still present in the
+	// localized array (FieldRegistry::js_schema( true )) so the live
+	// preview can map its saved value, but flagged so no picker renders.
+	{
+		key: 'category',
+		attributeKey: 'category',
+		configKey: 'category',
+		type: 'text',
+		group: 'general',
+		label: 'Category',
+		default: '',
+		choices: null,
+		placeholder: null,
+		description: null,
+		hiddenFromUi: true,
+	},
 ];
 
 function defaultAttributes() {
@@ -222,10 +239,39 @@ describe( 'BoardScribe block edit()', () => {
 		expect( controlFor( container, 'select', 'Display Template' ) ).not.toBeNull();
 	} );
 
+	/**
+	 * PRO-1397 follow-up (CodeRabbit finding on PR #141): the template
+	 * picker is a special case rendered outside the generic fieldsByGroup
+	 * loop, so its own hiddenFromUi check needed adding separately - the
+	 * generic loop's skip doesn't cover it. Mutates the shared fixture's
+	 * `template` entry in place for the duration of this one test (rather
+	 * than reloading the module with a different registry, which would
+	 * pull in a second React copy and break hooks) since FIELD_REGISTRY is
+	 * the exact same array object window.edbsBlockFieldRegistry pointed to
+	 * when the module was first imported in beforeAll().
+	 */
+	it( 'renders no Display Template control when the template field itself is hiddenFromUi', () => {
+		const templateField = FIELD_FIXTURE.find( ( field ) => 'template' === field.attributeKey );
+		templateField.hiddenFromUi = true;
+
+		try {
+			container = renderEdit( { ...defaultAttributes(), template: 'year_timeline' } );
+			expect( controlFor( container, 'select', 'Display Template' ) ).toBeNull();
+		} finally {
+			delete templateField.hiddenFromUi;
+		}
+	} );
+
 	it( 'renders no control at all for className - it uses the block\'s native Advanced panel field instead', () => {
 		container = renderEdit( defaultAttributes() );
 
 		expect( container.querySelector( '[data-label="Custom CSS Class"]' ) ).toBeNull();
+	} );
+
+	it( 'renders no control for a hiddenFromUi field (PRO-1397)', () => {
+		container = renderEdit( defaultAttributes() );
+
+		expect( controlFor( container, 'text', 'Category' ) ).toBeNull();
 	} );
 
 	it( 'groups fields into panels matching the shortcode builder\'s groups, skipping empty ones', () => {
@@ -305,6 +351,16 @@ describe( 'BoardScribe block edit() live preview', () => {
 		expect( config.instanceId ).toEqual( expect.stringMatching( /^edbs_block_preview_/ ) );
 	} );
 
+	it( 'still maps a hiddenFromUi field\'s saved value into data-config (PRO-1397)', () => {
+		container = renderEdit( { ...defaultAttributes(), category: 'finance' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		const config = JSON.parse( container.querySelector( '.edbs-boardscribe-wrap' ).dataset.config );
+		expect( config.category ).toBe( 'finance' );
+	} );
+
 	it( 'debounces rapid attribute changes into a single re-init', () => {
 		const setAttributes = jest.fn();
 		container = renderEdit( defaultAttributes(), setAttributes );
@@ -345,3 +401,4 @@ describe( 'BoardScribe block edit() live preview', () => {
 		expect( container.querySelector( '[data-control="notice"][data-status="error"]' ) ).toBeNull();
 	} );
 } );
+
