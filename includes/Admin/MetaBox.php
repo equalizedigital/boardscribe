@@ -349,7 +349,16 @@ class MetaBox {
 		// protection), rather than letting a checkbox default to
 		// "unchecked" or a repeater default to empty just because its
 		// own $_POST key never existed (PRO-1394).
-		if ( ! isset( $_POST['edbs_meta_box_rendered'] ) ) {
+		//
+		// Only enforced when the native box is actually the thing meant
+		// to have rendered - is_native_meta_box_enabled() returning false
+		// means add_meta_box() never registered this box at all, so a
+		// full custom replacement UI (edbs_use_native_meta_boxes's
+		// documented purpose) that still submits edbs_meeting_meta_nonce
+		// to reuse this save path was never expected to render this
+		// marker in the first place, and shouldn't be treated as a
+		// failed native render.
+		if ( self::is_native_meta_box_enabled() && ! isset( $_POST['edbs_meta_box_rendered'] ) ) {
 			return;
 		}
 

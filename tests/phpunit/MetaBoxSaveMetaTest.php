@@ -213,6 +213,51 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * The guard also suppresses maybe_set_default_title() - it's called
+	 * after the per-field save loop and the edbs_save_meeting_meta
+	 * action, both skipped by the same early return, but title
+	 * generation is its own code path and worth locking in directly
+	 * rather than relying on that ordering alone.
+	 */
+	public function test_meta_box_not_rendered_does_not_generate_default_title(): void {
+		unset( $_POST['edbs_meta_box_rendered'] );
+
+		$post_id = self::factory()->post->create(
+			[
+				'post_type'  => 'edbs_meeting',
+				'post_title' => '',
+			]
+		);
+
+		$this->meta_box->save_meta( $post_id );
+
+		$this->assertSame( '', get_post_field( 'post_title', $post_id ) );
+	}
+
+	/**
+	 * The render-marker guard does NOT apply when the native meta box UI
+	 * is suppressed entirely (edbs_use_native_meta_boxes => false,
+	 * documented as the extension point for a full custom replacement UI)
+	 * - add_meta_box() never registers this box in that case, so a
+	 * replacement that still reuses this save path (submitting the same
+	 * edbs_meeting_meta_nonce) was never expected to render this marker,
+	 * and shouldn't be treated as a failed native render.
+	 */
+	public function test_meta_box_not_rendered_saves_normally_when_native_ui_is_disabled(): void {
+		$callback = static fn() => false;
+		add_filter( 'edbs_use_native_meta_boxes', $callback );
+
+		unset( $_POST['edbs_meta_box_rendered'] );
+		$_POST['edbs_meeting_date'] = '2024-03-15';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_use_native_meta_boxes', $callback );
+
+		$this->assertSame( '2024-03-15', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
+	}
+
+	/**
 	 * The action does not fire when edbs_meta_box_rendered is missing,
 	 * since the method returns early before reaching it - protects a
 	 * plugin's own save handler for its own React-rendered fields (e.g.
