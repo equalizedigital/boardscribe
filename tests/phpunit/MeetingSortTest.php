@@ -70,6 +70,50 @@ class MeetingSortTest extends TestCase {
 	}
 
 	/**
+	 * PRO-1395 #2: the endpoint's real 'orderby' shape is an array (a
+	 * meta_value sort plus an ID tie-break, both DESC by default - see
+	 * BoardScribeEndpoint::get_meetings()). order=asc must flip every
+	 * direction in that array together, not just a top-level 'order' key
+	 * WP_Query ignores once 'orderby' is an array.
+	 */
+	public function test_applies_asc_order_to_every_direction_in_an_orderby_array(): void {
+		$request = new WP_REST_Request( 'GET', '/edbs/v1/boardscribe/' );
+		$request->set_param( 'order', 'asc' );
+
+		$args = ( new MeetingSort() )->apply_order(
+			[
+				'orderby' => [
+					'meta_value' => 'DESC',
+					'ID'         => 'DESC',
+				],
+			],
+			$request
+		);
+
+		$this->assertSame( 'ASC', $args['orderby']['meta_value'] );
+		$this->assertSame( 'ASC', $args['orderby']['ID'] );
+	}
+
+	/**
+	 * order=desc (or absent) leaves an orderby array's directions
+	 * untouched at their existing DESC default.
+	 */
+	public function test_desc_order_leaves_orderby_array_directions_untouched(): void {
+		$original = [
+			'orderby' => [
+				'meta_value' => 'DESC',
+				'ID'         => 'DESC',
+			],
+		];
+
+		$request = new WP_REST_Request( 'GET', '/edbs/v1/boardscribe/' );
+		$request->set_param( 'order', 'desc' );
+		$args = ( new MeetingSort() )->apply_order( $original, $request );
+
+		$this->assertSame( $original, $args );
+	}
+
+	/**
 	 * A missing or unrecognized order param leaves the args untouched so
 	 * the endpoint keeps its hardcoded newest-first default.
 	 */
