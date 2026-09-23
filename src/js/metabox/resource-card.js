@@ -1,4 +1,5 @@
 import { Button } from '@wordpress/components';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * One resource-card action link/button (View, Edit, Replace, Remove...).
@@ -22,9 +23,29 @@ function CardAction( { label, ariaLabel, onClick, href, danger, disabled, id } )
 	const className = danger ? 'edbs-resource-card__action edbs-resource-card__action--danger' : 'edbs-resource-card__action';
 
 	if ( href ) {
+		// A link that opens a new tab needs both a visual cue and an
+		// accessible one (WCAG 3.2.5 / G201): an icon after the text, and
+		// "(opens in a new tab)" in the accessible name. Baked in here so
+		// every href action - View, Edit, and any consumer's - inherits it.
+		// Whole-phrase strings so a translator can reorder the notice
+		// relative to the label instead of it being concatenated in JS.
+		/* translators: %s: the link's accessible name, e.g. "View Agenda". */
+		const nameWithNotice = ariaLabel ? sprintf( __( '%s (opens in a new tab)', 'boardscribe' ), ariaLabel ) : undefined;
+		const notice = __( '(opens in a new tab)', 'boardscribe' );
 		return (
-			<a id={ id } className={ className } href={ href } target="_blank" rel="noopener noreferrer" aria-label={ ariaLabel || undefined }>
+			<a
+				id={ id }
+				className={ className }
+				href={ href }
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label={ nameWithNotice }
+			>
 				{ label }
+				{ ! ariaLabel && <span className="screen-reader-text">{ ` ${ notice }` }</span> }
+				<svg className="edbs-resource-card__action-icon" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true" focusable="false">
+					<path d="M9 3v2H5v10h10v-4h2v6H3V3h6zm4 0h4v4h-2V6.4l-5.3 5.3-1.4-1.4L13.6 5H13V3z" fill="currentColor" />
+				</svg>
 			</a>
 		);
 	}
