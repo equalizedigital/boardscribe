@@ -48,17 +48,42 @@ foreach ( $edbs_meeting_post_ids as $edbs_meeting_post_id ) {
 	// taxonomies are called.
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time uninstall cleanup, no taxonomy registered to clean these up through the term-relationship API.
 	$edbs_term_taxonomy_ids = $wpdb->get_col( $wpdb->prepare( "SELECT term_taxonomy_id FROM {$wpdb->term_relationships} WHERE object_id = %d", $edbs_meeting_post_id ) );
+	// _update_post_term_count() (core's default update_count_callback,
+	// used whenever a taxonomy doesn't register its own) only counts
+	// 'publish' posts by default - capture status before the post is gone
+	// so the decrement below can match that, rather than assuming every
+	// deleted meeting was ever actually counted in the first place.
+	$edbs_meeting_was_published = 'publish' === get_post_status( $edbs_meeting_post_id );
 
-	wp_delete_post( $edbs_meeting_post_id, true );
+	// wp_delete_post() can return false/null without deleting anything -
+	// e.g. a pre_delete_post filter (registered by some unrelated plugin)
+	// short-circuiting it. Skip the relationship cleanup below in that
+	// case rather than removing relationships for a post that's still
+	// there.
+	if ( ! wp_delete_post( $edbs_meeting_post_id, true ) ) {
+		continue;
+	}
 
 	if ( ! $edbs_term_taxonomy_ids ) {
 		continue;
 	}
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time uninstall cleanup; wp_delete_post() above never touched these rows since no taxonomy was registered for this post type.
-	$wpdb->delete( $wpdb->term_relationships, [ 'object_id' => $edbs_meeting_post_id ] );
+	$edbs_deleted_relationships = $wpdb->delete( $wpdb->term_relationships, [ 'object_id' => $edbs_meeting_post_id ] );
+	// $wpdb->delete() returns false on a genuine DB error (distinct from
+	// 0 rows affected, which just means wp_delete_post() already cleared
+	// them via a taxonomy that WAS registered) - only that's worth
+	// skipping the count decrement below for, since the relationships in
+	// that case are still there.
+	if ( false === $edbs_deleted_relationships ) {
+		continue;
+	}
 
 	foreach ( $edbs_term_taxonomy_ids as $edbs_term_taxonomy_id ) {
+		if ( ! $edbs_meeting_was_published ) {
+			continue;
+		}
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time uninstall cleanup; wp_update_term_count_now() needs the owning taxonomy registered, which it isn't here.
 		$edbs_term_row = $wpdb->get_row( $wpdb->prepare( "SELECT term_id, taxonomy FROM {$wpdb->term_taxonomy} WHERE term_taxonomy_id = %d", $edbs_term_taxonomy_id ) );
 		if ( ! $edbs_term_row ) {

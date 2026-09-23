@@ -183,6 +183,46 @@ class UninstallTest extends TestCase {
 	}
 
 	/**
+	 * Deleting a trashed meeting removes its term relationship but does
+	 * NOT decrement the term's count - core's default term-count callback
+	 * (_update_post_term_count()) only ever counts 'publish' posts, so a
+	 * trashed meeting was never counted in the first place. Decrementing
+	 * anyway would under-count a term whose real count reflects other
+	 * (non-meeting) usage entirely - simulated here with a fixed baseline
+	 * rather than a second published meeting, since uninstall.php deletes
+	 * every edbs_meeting post in one pass and a second meeting using the
+	 * same term would be deleted (and correctly decrement it) in the same
+	 * run, making the two cases indistinguishable.
+	 */
+	public function test_does_not_decrement_term_count_for_a_non_published_meeting(): void {
+		register_taxonomy( 'edbs_test_taxonomy', 'edbs_meeting' );
+		$term = wp_insert_term( 'Test Term', 'edbs_test_taxonomy' );
+
+		update_option( 'edbs_settings', [ 'delete_on_uninstall' => 1 ] );
+		$trashed_id = self::factory()->post->create(
+			[
+				'post_type'   => 'edbs_meeting',
+				'post_status' => 'trash',
+			]
+		);
+		// Creates the relationship row; wp_set_object_terms() also
+		// triggers its own recalculation, which the fixed baseline below
+		// intentionally overrides.
+		wp_set_object_terms( $trashed_id, [ $term['term_id'] ], 'edbs_test_taxonomy' );
+
+		global $wpdb;
+		$wpdb->update( $wpdb->term_taxonomy, [ 'count' => 3 ], [ 'term_taxonomy_id' => $term['term_taxonomy_id'] ] );
+		clean_term_cache( [ $term['term_id'] ], 'edbs_test_taxonomy' );
+		unregister_taxonomy( 'edbs_test_taxonomy' );
+
+		$this->run_uninstall();
+
+		register_taxonomy( 'edbs_test_taxonomy', 'edbs_meeting' );
+		$after = get_term( $term['term_id'], 'edbs_test_taxonomy' );
+		$this->assertSame( 3, $after->count );
+	}
+
+	/**
 	 * Opting in also removes the plugin's own options.
 	 */
 	public function test_deletes_plugin_options_when_opted_in(): void {
