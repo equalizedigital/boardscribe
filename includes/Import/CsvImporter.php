@@ -92,7 +92,7 @@ class CsvImporter {
 				'required' => false,
 				'notes'    => sprintf(
 					/* translators: %s: example date/time formats — these are literal examples, not to be translated. */
-					__( 'Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above.', 'boardscribe' ),
+					__( 'Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then.', 'boardscribe' ),
 					'2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00'
 				),
 			],
@@ -178,8 +178,10 @@ class CsvImporter {
 		wp_safe_redirect(
 			add_query_arg(
 				[
-					'edbs_import_success' => $result['imported'],
-					'edbs_import_skipped' => $result['skipped'],
+					'edbs_import_success'    => $result['imported'],
+					'edbs_import_skipped'    => $result['skipped'],
+					'edbs_import_scheduled'  => $result['scheduled'],
+					'edbs_import_duplicates' => $result['duplicates'],
 				],
 				$this->get_page_url()
 			)
@@ -264,24 +266,42 @@ class CsvImporter {
 	 * @since 1.1.0
 	 *
 	 * @param string $file Path to the temporary uploaded file.
-	 * @return array{ imported: int, skipped: int }
+	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int }
 	 */
 	private function process_csv( string $file ): array {
 		$handle = fopen( $file, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
 		if ( ! $handle ) {
 			return [
-				'imported' => 0,
-				'skipped'  => 0,
+				'imported'   => 0,
+				'skipped'    => 0,
+				'scheduled'  => 0,
+				'duplicates' => 0,
 			];
+		}
+
+		// A large CSV can comfortably outrun the default 30s/128M admin
+		// request before every row is inserted, silently truncating the
+		// import mid-file with no indication anything went wrong - raise
+		// both the same way WordPress's own bulk operations (e.g. media
+		// import) do. wp_raise_memory_limit() already checks WP_MAX_MEMORY_LIMIT
+		// and only raises, never lowers; set_time_limit() is a no-op under
+		// most restricted hosting (safe_mode is gone since PHP 8, but some
+		// hosts disable the function entirely) - suppressed rather than
+		// treated as fatal either way.
+		wp_raise_memory_limit( 'admin' );
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- disabled entirely on some hosts; failure here isn't fatal to the import.
 		}
 
 		$required_columns = array_keys( array_filter( $this->columns(), fn( array $column ): bool => ! empty( $column['required'] ) ) );
 		$meta_box         = new MetaBox();
 
-		$imported = 0;
-		$skipped  = 0;
-		$headers  = null;
+		$imported   = 0;
+		$skipped    = 0;
+		$scheduled  = 0;
+		$duplicates = 0;
+		$headers    = null;
 
 		while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- idiomatic fgetcsv loop pattern.
 			// First row: extract and normalise headers. Strips a leading
@@ -335,6 +355,11 @@ class CsvImporter {
 				$title = $meta_box->generate_default_title( $date );
 			}
 
+			if ( $this->find_existing_meeting( $title, $date ) ) {
+				++$duplicates;
+				continue;
+			}
+
 			$post_args = [
 				'post_title'  => $title,
 				'post_type'   => 'edbs_meeting',
@@ -360,6 +385,19 @@ class CsvImporter {
 
 			update_post_meta( $post_id, 'edbs_meeting_date', $date );
 
+			// wp_insert_post() silently downgrades a 'publish' status to
+			// 'future' when post_date is later than now (normal WP
+			// scheduling semantics) - that's a real, intentional path here
+			// (backdating uses the same publish_date column for the past),
+			// but a scheduled meeting won't appear on the site or in "N
+			// rows imported" until cron publishes it, so it's counted and
+			// reported separately rather than folded into $imported.
+			if ( 'future' === get_post_status( $post_id ) ) {
+				++$scheduled;
+			} else {
+				++$imported;
+			}
+
 			if ( ! empty( $data['agenda_url'] ) ) {
 				update_post_meta( $post_id, 'edbs_agenda_url', esc_url_raw( trim( $data['agenda_url'] ) ) );
 			}
@@ -383,16 +421,49 @@ class CsvImporter {
 			 * @param array $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing.
 			 */
 			do_action( 'edbs_csv_import_row_meta', $post_id, $data );
-
-			++$imported;
 		}
 
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 		return [
-			'imported' => $imported,
-			'skipped'  => $skipped,
+			'imported'   => $imported,
+			'skipped'    => $skipped,
+			'scheduled'  => $scheduled,
+			'duplicates' => $duplicates,
 		];
+	}
+
+	/**
+	 * Whether a meeting with this exact title and edbs_meeting_date already
+	 * exists (any post status), so re-uploading the same CSV - e.g. after a
+	 * timed-out import stopped partway through - doesn't duplicate every row
+	 * that already landed. Deliberately not scoped to a "recently imported"
+	 * window or an import-run hash: a plain, human-editable CSV has no
+	 * stable per-row identity to hash beyond its own visible columns, and
+	 * (title, date) is already the pair a person re-running the same file
+	 * would recognise as "the same meeting".
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $title The row's resolved title (after the blank-title fallback).
+	 * @param string $date  The row's edbs_meeting_date value (Y-m-d).
+	 * @return bool
+	 */
+	private function find_existing_meeting( string $title, string $date ): bool {
+		$existing = get_posts(
+			[
+				'post_type'      => 'edbs_meeting',
+				'post_status'    => 'any',
+				'title'          => $title,
+				'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => $date, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				'fields'         => 'ids',
+				'posts_per_page' => 1,
+				'no_found_rows'  => true,
+			]
+		);
+
+		return ! empty( $existing );
 	}
 
 	/**
@@ -430,14 +501,40 @@ class CsvImporter {
 	private function resolve_status_message(): ?array {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data.
 		if ( isset( $_GET['edbs_import_success'] ) ) {
+			$scheduled  = absint( $_GET['edbs_import_scheduled'] ?? 0 );
+			$duplicates = absint( $_GET['edbs_import_duplicates'] ?? 0 );
+
+			$message = sprintf(
+				/* translators: 1: number imported, 2: number skipped */
+				__( 'Import complete. %1$d rows imported, %2$d skipped.', 'boardscribe' ),
+				absint( $_GET['edbs_import_success'] ),
+				absint( $_GET['edbs_import_skipped'] ?? 0 )
+			);
+
+			// Scheduled/duplicate rows already fall inside "skipped" from
+			// the visitor's point of view (they didn't add a new, live
+			// meeting) but need a different explanation than "invalid
+			// data" - appended only when non-zero so a plain import keeps
+			// its original, shorter message.
+			if ( $scheduled > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of rows scheduled for a future date */
+					_n( '%d row was scheduled for a future date and will not appear until then.', '%d rows were scheduled for a future date and will not appear until then.', $scheduled, 'boardscribe' ),
+					$scheduled
+				);
+			}
+
+			if ( $duplicates > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of duplicate rows skipped */
+					_n( '%d row matched an existing meeting (same title and date) and was skipped.', '%d rows matched an existing meeting (same title and date) and were skipped.', $duplicates, 'boardscribe' ),
+					$duplicates
+				);
+			}
+
 			return [
 				'type'    => 'success',
-				'message' => sprintf(
-					/* translators: 1: number imported, 2: number skipped */
-					__( 'Import complete. %1$d rows imported, %2$d skipped.', 'boardscribe' ),
-					absint( $_GET['edbs_import_success'] ),
-					absint( $_GET['edbs_import_skipped'] ?? 0 )
-				),
+				'message' => $message,
 			];
 		}
 
