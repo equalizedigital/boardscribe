@@ -336,6 +336,23 @@ class MetaBox {
 			return;
 		}
 
+		// MetaBoxApp renders this hidden input itself, alongside every
+		// other field's own input, from inside the same React app - if
+		// the app failed to commit at all (a throwing custom control on
+		// window.edbsMetaBoxControls/edbsResourceSources, a missing or
+		// stale build, or a WP version lacking a component this bundle
+		// needs), this input never reaches $_POST any more than the
+		// fields it's meant to guard did. Bail before saving anything,
+		// and before the edbs_save_meeting_meta action below (so a
+		// plugin's own save handler for its own React-rendered fields -
+		// e.g. Pro's Supporting Documents repeater - gets the same
+		// protection), rather than letting a checkbox default to
+		// "unchecked" or a repeater default to empty just because its
+		// own $_POST key never existed (PRO-1394).
+		if ( ! isset( $_POST['edbs_meta_box_rendered'] ) ) {
+			return;
+		}
+
 		foreach ( MetaBoxFieldRegistry::all() as $field ) {
 			$this->save_field( $post_id, $field );
 		}
@@ -420,17 +437,24 @@ class MetaBox {
 			$this->save_resource_document_id( $post_id, $key );
 		}
 
+		// textarea needs sanitize_textarea_field() (preserves newlines)
+		// rather than sanitize_text_field() (strips them, flattening a
+		// multi-line value to one line) - both as this field's own
+		// default sanitizer below, and as what a field's own
+		// sanitize_callback receives, so a plugin's callback isn't handed
+		// a value that's already lost its line breaks before it ever saw
+		// them (PRO-1394). Every other type's behavior is unchanged.
+		$pre_sanitized = 'textarea' === $type
+			? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) )
+			: sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+
 		if ( ! empty( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
-			update_post_meta(
-				$post_id,
-				$key,
-				call_user_func( $field['sanitize_callback'], sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) )
-			);
+			update_post_meta( $post_id, $key, call_user_func( $field['sanitize_callback'], $pre_sanitized ) );
 			return;
 		}
 
 		if ( 'date' === $type ) {
-			$raw_date = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			$raw_date = $pre_sanitized;
 			$date_obj = \DateTime::createFromFormat( 'Y-m-d', $raw_date );
 			if ( $date_obj && $date_obj->format( 'Y-m-d' ) === $raw_date ) {
 				update_post_meta( $post_id, $key, $raw_date );
@@ -450,7 +474,7 @@ class MetaBox {
 			return;
 		}
 
-		update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+		update_post_meta( $post_id, $key, $pre_sanitized );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 

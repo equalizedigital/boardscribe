@@ -101,6 +101,19 @@ export function MetaBoxApp( { fields, initialValues } ) {
 
 	return (
 		<div className="edbs-metabox-app">
+			{ /*
+			 * Every field row below is React-rendered, with no PHP
+			 * fallback - if the app throws before committing (a bad
+			 * window.edbsMetaBoxControls/edbsResourceSources entry, a
+			 * missing/stale build, or a WP version lacking a component
+			 * this bundle needs), the box renders empty and this input
+			 * never reaches the DOM. MetaBox::save_meta() checks for it
+			 * before saving anything, so that failure can't be
+			 * mistaken for "every field was intentionally left blank"
+			 * and wipe real data (e.g. un-cancel a meeting, empty
+			 * Supporting Documents) on the next save (PRO-1394).
+			 */ }
+			<input type="hidden" name="edbs_meta_box_rendered" value="1" />
 			{ visibleFields.map( ( field ) => {
 				const showGroupHeading = field.group && field.group !== previousGroup;
 				previousGroup = field.group;

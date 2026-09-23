@@ -45,6 +45,12 @@ class MetaBoxSaveMetaTest extends TestCase {
 
 		$_POST = [
 			'edbs_meeting_meta_nonce' => wp_create_nonce( 'edbs_save_meeting_meta' ),
+			// MetaBoxApp renders this itself alongside every field's own
+			// input - present here so every other test in this file
+			// exercises the same baseline a real, successfully-rendered
+			// save would have. See test_meta_box_not_rendered_saves_nothing()
+			// for the guard this covers.
+			'edbs_meta_box_rendered'  => '1',
 		];
 	}
 
@@ -183,6 +189,106 @@ class MetaBoxSaveMetaTest extends TestCase {
 		$this->meta_box->save_meta( $this->post_id );
 
 		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_meeting_not_held', true ) );
+	}
+
+	/**
+	 * A save whose $_POST is missing edbs_meta_box_rendered (the React
+	 * app failed to commit - a throwing custom control, a missing/stale
+	 * build, or a WP version lacking a component the bundle needs) saves
+	 * nothing at all, rather than treating every field as blank. Verified
+	 * against the exact real-world symptom (PRO-1394): a meeting already
+	 * marked "not held" must NOT have that checkbox silently cleared just
+	 * because the box that would have re-submitted it never rendered.
+	 */
+	public function test_meta_box_not_rendered_saves_nothing(): void {
+		update_post_meta( $this->post_id, 'edbs_meeting_not_held', '1' );
+
+		unset( $_POST['edbs_meta_box_rendered'] );
+		// No edbs_meeting_not_held in $_POST either - exactly what an
+		// empty-rendered box would submit.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '1', get_post_meta( $this->post_id, 'edbs_meeting_not_held', true ) );
+	}
+
+	/**
+	 * The action does not fire when edbs_meta_box_rendered is missing,
+	 * since the method returns early before reaching it - protects a
+	 * plugin's own save handler for its own React-rendered fields (e.g.
+	 * Pro's Supporting Documents repeater) the same way.
+	 */
+	public function test_save_meeting_meta_action_does_not_fire_when_meta_box_not_rendered(): void {
+		unset( $_POST['edbs_meta_box_rendered'] );
+
+		$fired    = false;
+		$callback = static function () use ( &$fired ): void {
+			$fired = true;
+		};
+		add_action( 'edbs_save_meeting_meta', $callback );
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_action( 'edbs_save_meeting_meta', $callback );
+
+		$this->assertFalse( $fired );
+	}
+
+	/**
+	 * A 'textarea' field preserves line breaks - sanitize_textarea_field()
+	 * rather than sanitize_text_field(), which would flatten a multi-line
+	 * value to one line (PRO-1394).
+	 */
+	public function test_textarea_field_preserves_line_breaks(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'   => 'test_textarea',
+				'type'  => 'textarea',
+				'label' => 'Test Textarea',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$input                        = "Line one\nLine two\nLine three";
+		$_POST['test_textarea'] = $input;
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( $input, get_post_meta( $this->post_id, 'test_textarea', true ) );
+	}
+
+	/**
+	 * A 'textarea' field's own sanitize_callback receives the
+	 * textarea-sanitized value (line breaks intact), not the already
+	 * text-flattened one (PRO-1394).
+	 */
+	public function test_textarea_field_sanitize_callback_receives_unflattened_value(): void {
+		$received = null;
+		$callback = static function ( array $fields ) use ( &$received ): array {
+			$fields[] = [
+				'key'               => 'test_textarea_callback',
+				'type'              => 'textarea',
+				'label'             => 'Test Textarea Callback',
+				'sanitize_callback' => static function ( $value ) use ( &$received ) {
+					$received = $value;
+					return $value;
+				},
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$input                                   = "Line one\nLine two";
+		$_POST['test_textarea_callback'] = $input;
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( $input, $received );
 	}
 
 	/**
