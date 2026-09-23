@@ -247,3 +247,44 @@ describe( 'ExternalUrlSource error association (PRO-1368)', () => {
 		expect( input.getAttribute( 'aria-describedby' ) ).toBe( `${ helpNode.id } ${ errorNode.id }` );
 	} );
 } );
+
+/**
+ * PRO-1407: replacing a value that came from another source (a BoardScribe
+ * document's resolved permalink, a Media Library file) must not prefill the
+ * External URL step with it - saving that as a plain link would silently
+ * detach the field from its document/attachment.
+ */
+describe( 'ResourceModal External URL prefill (PRO-1407)', () => {
+	function urlInputFor( currentSource ) {
+		act( () => {
+			root.render(
+				<ResourceModal
+					title="Replace"
+					sources={ [ 'external_url' ] }
+					fieldLabel="Agenda"
+					currentValue="https://example.com/board-documents/agenda/"
+					currentSource={ currentSource }
+					onSave={ () => {} }
+					onClose={ () => {} }
+				/>,
+			);
+		} );
+		return container.querySelector( 'input' );
+	}
+
+	it( 'starts blank (https://) when the current value came from a document', () => {
+		expect( urlInputFor( 'document' ).value ).toBe( 'https://' );
+	} );
+
+	it( 'starts blank (https://) when the current value came from the Media Library', () => {
+		expect( urlInputFor( 'media_library' ).value ).toBe( 'https://' );
+	} );
+
+	it( 'still prefills a value that was itself an external URL', () => {
+		expect( urlInputFor( 'external_url' ).value ).toBe( 'https://example.com/board-documents/agenda/' );
+	} );
+
+	it( 'still prefills legacy data with no recorded source', () => {
+		expect( urlInputFor( '' ).value ).toBe( 'https://example.com/board-documents/agenda/' );
+	} );
+} );

@@ -495,6 +495,7 @@ export function ResourceListField( { field, value, onChange } ) {
 					mediaTitle={ field.mediaTitle }
 					fieldLabel={ itemNoun }
 					currentValue={ isAdding ? '' : items[ modalIndex ].url }
+					currentSource={ isAdding ? '' : items[ modalIndex ].source }
 					onSave={ ( url, extra ) => {
 						const source = ( extra && extra.source ) || '';
 						// A source hands these back as camelCase (the same

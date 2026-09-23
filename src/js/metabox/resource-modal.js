@@ -148,28 +148,32 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
  * "BoardScribe document") - see resource-utils.js's resolveResourceDisplay().
  * Falls back to `label` when omitted.
  *
- * @param {Object}        props                Component props.
- * @param {string}        props.title          Modal title, e.g. "Replace Agenda".
- * @param {Array<string>} props.sources        Source ids this field accepts, in display order.
- * @param {string}        [props.mediaTitle]   wp.media() modal title for the media_library source.
- * @param {string}        [props.fieldLabel]   Field label passed to the external_url source's text field.
- * @param {string}        [props.currentValue] The field's current value, for the external_url source's starting text.
- * @param {string}        [props.fieldKey]     The field's meta key (e.g. "edbs_agenda_url") - passed through to a
- *                                             custom source's render() as `fieldKey` so it can tell which field
- *                                             it's serving when the same source id is shared across fields
- *                                             (e.g. Pro's "document" source, offered on both Agenda and Minutes).
- * @param {Function}      props.onSave         Called with the new value, and a second `{ ...extra, source }`
- *                                             argument, once a source completes - `source` is the completed
- *                                             source's own id (stamped on by this component, see
- *                                             handleSourceSave below), always present regardless of whether
- *                                             the source itself passed its own `extra` (e.g. Media Library's
- *                                             `{ title }`). Callers that care persist it alongside the value
- *                                             (see resource-utils.js's resolveResourceDisplay()); callers
- *                                             that don't can ignore the second argument entirely.
- * @param {Function}      props.onClose        Called to dismiss the modal without saving.
+ * @param {Object}        props                 Component props.
+ * @param {string}        props.title           Modal title, e.g. "Replace Agenda".
+ * @param {Array<string>} props.sources         Source ids this field accepts, in display order.
+ * @param {string}        [props.mediaTitle]    wp.media() modal title for the media_library source.
+ * @param {string}        [props.fieldLabel]    Field label passed to the external_url source's text field.
+ * @param {string}        [props.currentValue]  The field's current value, for the external_url source's starting text.
+ * @param {string}        [props.currentSource] Which source produced currentValue ('' for legacy/unknown). The External URL step only
+ *                                              prefills currentValue when it came from a plain URL: a document's resolved permalink or a
+ *                                              Media Library file URL isn't something the user typed, and saving it as an external link
+ *                                              would silently detach it from its document/attachment (PRO-1407).
+ * @param {string}        [props.fieldKey]      The field's meta key (e.g. "edbs_agenda_url") - passed through to a
+ *                                              custom source's render() as `fieldKey` so it can tell which field
+ *                                              it's serving when the same source id is shared across fields
+ *                                              (e.g. Pro's "document" source, offered on both Agenda and Minutes).
+ * @param {Function}      props.onSave          Called with the new value, and a second `{ ...extra, source }`
+ *                                              argument, once a source completes - `source` is the completed
+ *                                              source's own id (stamped on by this component, see
+ *                                              handleSourceSave below), always present regardless of whether
+ *                                              the source itself passed its own `extra` (e.g. Media Library's
+ *                                              `{ title }`). Callers that care persist it alongside the value
+ *                                              (see resource-utils.js's resolveResourceDisplay()); callers
+ *                                              that don't can ignore the second argument entirely.
+ * @param {Function}      props.onClose         Called to dismiss the modal without saving.
  * @return {JSX.Element} The modal.
  */
-export function ResourceModal( { title, sources, mediaTitle, fieldLabel, currentValue, fieldKey, onSave, onClose } ) {
+export function ResourceModal( { title, sources, mediaTitle, fieldLabel, currentValue, currentSource, fieldKey, onSave, onClose } ) {
 	const [ activeSource, setActiveSource ] = useState( 1 === sources.length ? sources[ 0 ] : null );
 
 	// Every source component below just calls onSave(url) or onSave(url,
@@ -219,7 +223,7 @@ export function ResourceModal( { title, sources, mediaTitle, fieldLabel, current
 
 	const renderSourceStep = () => {
 		if ( 'external_url' === activeSource ) {
-			return <ExternalUrlSource label={ fieldLabel } initialValue={ currentValue } onSave={ handleSourceSave } />;
+			return <ExternalUrlSource label={ fieldLabel } initialValue={ currentSource && 'external_url' !== currentSource ? '' : currentValue } onSave={ handleSourceSave } />;
 		}
 
 		const CustomSource = window.edbsResourceSources && window.edbsResourceSources[ activeSource ] && window.edbsResourceSources[ activeSource ].render;

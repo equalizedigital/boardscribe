@@ -183,6 +183,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 					mediaTitle={ field.mediaTitle }
 					fieldLabel={ field.label }
 					currentValue={ value }
+					currentSource={ sourceValue }
 					fieldKey={ field.key }
 					onSave={ handleSave }
 					onClose={ () => setIsModalOpen( false ) }
