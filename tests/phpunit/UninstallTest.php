@@ -5,6 +5,7 @@
  * @package EqualizeDigital\BoardScribe
  */
 
+use EqualizeDigital\BoardScribe\PostType\BoardScribeCPT;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -71,6 +72,27 @@ class UninstallTest extends TestCase {
 	}
 
 	/**
+	 * Opting in still deletes a meeting even when edbs_meeting isn't a
+	 * registered post type at uninstall time - the real-world case this
+	 * plugin's own bootstrap never runs during WP_UNINSTALL_PLUGIN, so a
+	 * get_posts()/WP_Query-based approach (which silently returns nothing
+	 * for an unregistered post type) would leave every meeting behind.
+	 */
+	public function test_deletes_a_meeting_when_post_type_is_unregistered(): void {
+		update_option( 'edbs_settings', [ 'delete_on_uninstall' => 1 ] );
+		$meeting_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+
+		try {
+			$this->assertTrue( unregister_post_type( 'edbs_meeting' ) );
+			$this->run_uninstall();
+		} finally {
+			( new BoardScribeCPT() )->register_post_type();
+		}
+
+		$this->assertNull( get_post( $meeting_id ) );
+	}
+
+	/**
 	 * Opting in also deletes a trashed meeting - excluded by the old
 	 * post_status => 'any' query, since core marks 'trash'
 	 * exclude_from_search.
@@ -117,6 +139,47 @@ class UninstallTest extends TestCase {
 		$this->run_uninstall();
 
 		$this->assertInstanceOf( \WP_Post::class, get_post( $page_id ) );
+	}
+
+	/**
+	 * Opting in also removes a deleted meeting's term relationships and
+	 * decrements the term's count, even for a taxonomy that isn't
+	 * registered at uninstall time (the real-world case for any
+	 * Pro-registered taxonomy, e.g. meeting category/type - Pro only
+	 * registers those via this plugin's own edbs_after_register_cpt
+	 * action, which never fires during WP_UNINSTALL_PLUGIN).
+	 * wp_delete_post() alone would leave both behind, since
+	 * get_object_taxonomies() returns nothing for an unregistered
+	 * taxonomy.
+	 */
+	public function test_cleans_up_term_relationships_for_an_unregistered_taxonomy(): void {
+		register_taxonomy( 'edbs_test_taxonomy', 'edbs_meeting' );
+		$term = wp_insert_term( 'Test Term', 'edbs_test_taxonomy' );
+
+		update_option( 'edbs_settings', [ 'delete_on_uninstall' => 1 ] );
+		$meeting_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		wp_set_object_terms( $meeting_id, [ $term['term_id'] ], 'edbs_test_taxonomy' );
+
+		// Bump the term's count to a known value above 1, then unregister
+		// the taxonomy entirely - matching the real scenario, where the
+		// taxonomy never gets registered at all during uninstall, not
+		// just where wp_set_object_terms() happened to skip updating it.
+		wp_update_term_count_now( [ $term['term_taxonomy_id'] ], 'edbs_test_taxonomy' );
+		$before = get_term( $term['term_id'], 'edbs_test_taxonomy' );
+		$this->assertSame( 1, $before->count );
+		unregister_taxonomy( 'edbs_test_taxonomy' );
+
+		global $wpdb;
+		$this->run_uninstall();
+
+		$relationship_count = $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->term_relationships} WHERE object_id = %d", $meeting_id )
+		);
+		$this->assertSame( '0', $relationship_count );
+
+		register_taxonomy( 'edbs_test_taxonomy', 'edbs_meeting' );
+		$after = get_term( $term['term_id'], 'edbs_test_taxonomy' );
+		$this->assertSame( 0, $after->count );
 	}
 
 	/**
