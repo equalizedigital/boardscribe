@@ -258,11 +258,14 @@ class BoardScribeEndpoint {
 			'current_page'  => $page,
 			'total_entries' => $query->found_posts,
 			// The effective per-page count actually applied to the query -
-			// distinct from the request's own raw posts_per_page, which may
-			// be -1 ("show all") or exceed the edbs_rest_max_per_page cap.
-			// The client needs this real value to compute "Showing X to Y
-			// of N" correctly (see src/js/defaults/renderInfo.js).
-			'per_page'      => $posts_per_page,
+			// read back off the query itself (reflects any edbs_rest_query_args
+			// or pre_get_posts change to posts_per_page, not just this
+			// method's own $posts_per_page local) and distinct from the
+			// request's raw posts_per_page param, which may be -1 ("show
+			// all") or exceed the edbs_rest_max_per_page cap. The client
+			// needs this real value to compute "Showing X to Y of N"
+			// correctly (see src/js/defaults/renderInfo.js).
+			'per_page'      => (int) $query->get( 'posts_per_page' ),
 		];
 
 		/**

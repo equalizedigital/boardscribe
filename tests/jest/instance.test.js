@@ -135,6 +135,35 @@ describe( 'initInstance', () => {
 	} );
 
 	/**
+	 * CodeRabbit finding on PR #142: an explicit max_num_pages of 0 (a
+	 * genuinely empty result set) is a real, supplied bound, not a missing
+	 * one - `parseInt('0', 10) || previousValue` would otherwise treat 0
+	 * as falsy and keep whatever bound an earlier response left behind,
+	 * silently skipping the clamp a truly-empty list needs.
+	 */
+	it( 'clamps to page 1 when the response explicitly reports max_num_pages: 0 (no results)', async () => {
+		window.history.replaceState( null, '', '?edbs_page_zero=3' );
+		window.fetch = jest.fn().mockResolvedValue( {
+			ok: true,
+			json: () => Promise.resolve( { meetings: [], max_num_pages: 0, current_page: 3 } ),
+		} );
+
+		const { initInstance } = require( '../../src/js/instance' );
+		const wrap = buildWrap( document, 'edbs_zero' );
+		document.body.appendChild( wrap );
+
+		initInstance( wrap );
+		await flushPromises();
+		await flushPromises();
+
+		expect( window.fetch ).toHaveBeenCalledTimes( 2 );
+		expect( window.location.search ).not.toContain( 'edbs_page_zero=3' );
+
+		wrap.remove();
+		window.history.replaceState( null, '', window.location.pathname );
+	} );
+
+	/**
 	 * PRO-1395 #4: two requests in flight at once (here, the initial load
 	 * still pending when a popstate fires a second fetch) must not let the
 	 * older, slower one overwrite what the newer one already rendered -

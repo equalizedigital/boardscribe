@@ -80,13 +80,16 @@ class BoardScribeEndpointRestTest extends TestCase {
 				'post_password' => 'secret',
 			]
 		);
-		$this->create_meeting( [ 'edbs_meeting_date' => '2024-06-01' ] );
+		$public_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-06-01' ] );
 
 		$request  = new \WP_REST_Request( 'GET', self::ROUTE );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
 		$this->assertSame( 1, $data['total_entries'] );
+		// Confirms it's specifically the public meeting that came back, not
+		// just that the count happens to be right.
+		$this->assertSame( get_the_title( $public_id ), $data['meetings'][0]['title'] );
 	}
 
 	/**

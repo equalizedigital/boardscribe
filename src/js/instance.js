@@ -114,8 +114,17 @@ export function initInstance( container ) {
 		}
 		refocus = refocus || false;
 		// Tolerate template-defined response shapes that omit
-		// max_num_pages - goToPage() keeps its last known bound.
-		maxNumPages = parseInt( data.max_num_pages, 10 ) || maxNumPages;
+		// max_num_pages - goToPage() (and the out-of-range recovery below)
+		// keep the last known bound in that case. parseInt()'s NaN (not a
+		// falsy-but-valid 0, which a genuinely empty result set reports)
+		// is what actually means "missing" here - `|| maxNumPages` would
+		// otherwise also discard a real 0 and keep whatever bound an
+		// earlier, non-empty response left behind.
+		const parsedMaxNumPages = parseInt( data.max_num_pages, 10 );
+		const hasMaxNumPages = ! isNaN( parsedMaxNumPages );
+		if ( hasMaxNumPages ) {
+			maxNumPages = parsedMaxNumPages;
+		}
 
 		// Recovers from a page number that no longer exists - e.g. a
 		// bookmarked/shared "?edbs_page_3" URL after enough meetings were
@@ -127,9 +136,11 @@ export function initInstance( container ) {
 		// and refetches once. Only fires when the clamp actually changes
 		// the page, so it can't loop even when max_num_pages is 0 (no
 		// results at all - lastValidPage floors to 1, and a currentPage of
-		// 1 is never > 1).
+		// 1 is never > 1). Gated on hasMaxNumPages: without a bound this
+		// response actually supplied, there's nothing to validate
+		// currentPage against yet.
 		const lastValidPage = Math.max( 1, maxNumPages );
-		if ( currentPage > lastValidPage ) {
+		if ( hasMaxNumPages && currentPage > lastValidPage ) {
 			currentPage = lastValidPage;
 			replaceUrl( currentPage );
 			fetchMeetings( refocus );
