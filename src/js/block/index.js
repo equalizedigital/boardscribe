@@ -134,7 +134,11 @@ function Edit( { attributes, setAttributes } ) {
 
 	const fieldsByGroup = {};
 	FIELD_REGISTRY.forEach( ( field ) => {
-		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) ) {
+		// hiddenFromUi fields (PRO-1397) still need to reach
+		// buildInstanceConfig() below, via the same FIELD_REGISTRY array,
+		// so a saved value keeps rendering in the live preview exactly as
+		// it does on the front end - only their picker is skipped here.
+		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) || field.hiddenFromUi ) {
 			return;
 		}
 		const group = field.group || 'general';

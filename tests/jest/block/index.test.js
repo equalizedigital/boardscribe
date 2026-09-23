@@ -126,6 +126,23 @@ const FIELD_FIXTURE = [
 		placeholder: null,
 		description: null,
 	},
+	// PRO-1397: simulates a Pro field marked hidden_from_ui once its
+	// license lapses (e.g. the category filter) - still present in the
+	// localized array (FieldRegistry::js_schema( true )) so the live
+	// preview can map its saved value, but flagged so no picker renders.
+	{
+		key: 'category',
+		attributeKey: 'category',
+		configKey: 'category',
+		type: 'text',
+		group: 'general',
+		label: 'Category',
+		default: '',
+		choices: null,
+		placeholder: null,
+		description: null,
+		hiddenFromUi: true,
+	},
 ];
 
 function defaultAttributes() {
@@ -228,6 +245,12 @@ describe( 'BoardScribe block edit()', () => {
 		expect( container.querySelector( '[data-label="Custom CSS Class"]' ) ).toBeNull();
 	} );
 
+	it( 'renders no control for a hiddenFromUi field (PRO-1397)', () => {
+		container = renderEdit( defaultAttributes() );
+
+		expect( controlFor( container, 'text', 'Category' ) ).toBeNull();
+	} );
+
 	it( 'groups fields into panels matching the shortcode builder\'s groups, skipping empty ones', () => {
 		container = renderEdit( defaultAttributes() );
 
@@ -303,6 +326,16 @@ describe( 'BoardScribe block edit() live preview', () => {
 		// See instance.js - keeps preview pagination out of the editor's own URL.
 		expect( config.urlState ).toBe( false );
 		expect( config.instanceId ).toEqual( expect.stringMatching( /^edbs_block_preview_/ ) );
+	} );
+
+	it( 'still maps a hiddenFromUi field\'s saved value into data-config (PRO-1397)', () => {
+		container = renderEdit( { ...defaultAttributes(), category: 'finance' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		const config = JSON.parse( container.querySelector( '.edbs-boardscribe-wrap' ).dataset.config );
+		expect( config.category ).toBe( 'finance' );
 	} );
 
 	it( 'debounces rapid attribute changes into a single re-init', () => {
