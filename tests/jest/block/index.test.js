@@ -239,6 +239,29 @@ describe( 'BoardScribe block edit()', () => {
 		expect( controlFor( container, 'select', 'Display Template' ) ).not.toBeNull();
 	} );
 
+	/**
+	 * PRO-1397 follow-up (CodeRabbit finding on PR #141): the template
+	 * picker is a special case rendered outside the generic fieldsByGroup
+	 * loop, so its own hiddenFromUi check needed adding separately - the
+	 * generic loop's skip doesn't cover it. Mutates the shared fixture's
+	 * `template` entry in place for the duration of this one test (rather
+	 * than reloading the module with a different registry, which would
+	 * pull in a second React copy and break hooks) since FIELD_REGISTRY is
+	 * the exact same array object window.edbsBlockFieldRegistry pointed to
+	 * when the module was first imported in beforeAll().
+	 */
+	it( 'renders no Display Template control when the template field itself is hiddenFromUi', () => {
+		const templateField = FIELD_FIXTURE.find( ( field ) => 'template' === field.attributeKey );
+		templateField.hiddenFromUi = true;
+
+		try {
+			container = renderEdit( { ...defaultAttributes(), template: 'year_timeline' } );
+			expect( controlFor( container, 'select', 'Display Template' ) ).toBeNull();
+		} finally {
+			delete templateField.hiddenFromUi;
+		}
+	} );
+
 	it( 'renders no control at all for className - it uses the block\'s native Advanced panel field instead', () => {
 		container = renderEdit( defaultAttributes() );
 
@@ -378,3 +401,4 @@ describe( 'BoardScribe block edit() live preview', () => {
 		expect( container.querySelector( '[data-control="notice"][data-status="error"]' ) ).toBeNull();
 	} );
 } );
+
