@@ -84,10 +84,15 @@ class MeetingSort {
 	/**
 	 * Applies the requested sort order to the endpoint's WP_Query args.
 	 *
-	 * The endpoint builds its args with order DESC hardcoded; this flips
-	 * to ASC when the request carries order=asc. Anything other than a bare
-	 * 'asc'/'desc' (including an absent param) is ignored, so the endpoint
-	 * keeps its newest-first default for anonymous callers.
+	 * The endpoint builds its 'orderby' as an array (meta_value plus an ID
+	 * tie-break, both DESC by default - see BoardScribeEndpoint::get_meetings())
+	 * rather than the single 'order' key this used to flip. Every direction
+	 * in that array is rewritten together when order=asc, so the tie-break
+	 * still runs the same direction as the primary sort - WP_Query ignores
+	 * a bare top-level 'order' once 'orderby' is an array, which otherwise
+	 * left ASC requests silently reverting to newest-first. Anything other
+	 * than a bare 'asc'/'desc' (including an absent param) is ignored, so
+	 * the endpoint keeps its newest-first default for anonymous callers.
 	 *
 	 * @since x.x.x
 	 *
@@ -98,8 +103,18 @@ class MeetingSort {
 	public function apply_order( array $args, \WP_REST_Request $request ): array {
 		$order = strtolower( (string) $request->get_param( self::FIELD_KEY ) );
 
-		if ( 'asc' === $order || 'desc' === $order ) {
-			$args['order'] = strtoupper( $order );
+		if ( 'asc' !== $order && 'desc' !== $order ) {
+			return $args;
+		}
+
+		$direction = strtoupper( $order );
+
+		if ( is_array( $args['orderby'] ?? null ) ) {
+			foreach ( $args['orderby'] as $key => $existing_direction ) {
+				$args['orderby'][ $key ] = $direction;
+			}
+		} else {
+			$args['order'] = $direction;
 		}
 
 		return $args;

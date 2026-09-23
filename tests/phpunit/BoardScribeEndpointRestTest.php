@@ -62,7 +62,72 @@ class BoardScribeEndpointRestTest extends TestCase {
 		$this->assertArrayHasKey( 'max_num_pages', $data );
 		$this->assertArrayHasKey( 'current_page', $data );
 		$this->assertArrayHasKey( 'total_entries', $data );
+		$this->assertArrayHasKey( 'per_page', $data );
 		$this->assertCount( 1, $data['meetings'] );
+	}
+
+	/**
+	 * PRO-1395 #1: a password-protected meeting has no real public page for
+	 * this endpoint to link to (meetings have no content of their own to
+	 * gate), so the option protects nothing here - it's excluded from
+	 * every list rather than appearing with live agenda/minutes links.
+	 */
+	public function test_password_protected_meetings_are_excluded(): void {
+		$protected_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
+		wp_update_post(
+			[
+				'ID'            => $protected_id,
+				'post_password' => 'secret',
+			]
+		);
+		$public_id = $this->create_meeting( [ 'edbs_meeting_date' => '2024-06-01' ] );
+
+		$request  = new \WP_REST_Request( 'GET', self::ROUTE );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 1, $data['total_entries'] );
+		// Confirms it's specifically the public meeting that came back, not
+		// just that the count happens to be right.
+		$this->assertSame( get_the_title( $public_id ), $data['meetings'][0]['title'] );
+	}
+
+	/**
+	 * PRO-1395 #3: per_page in the response is the effective count actually
+	 * applied to the query - distinct from the raw posts_per_page param,
+	 * which the endpoint caps (edbs_rest_max_per_page, default 100).
+	 */
+	public function test_per_page_reflects_the_capped_posts_per_page(): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'posts_per_page', 5000 );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 100, $data['per_page'] );
+	}
+
+	/**
+	 * PRO-1395 #2: meetings sharing the same edbs_meeting_date must still
+	 * sort deterministically (newest ID first, as a tie-break) rather than
+	 * in whatever order MySQL happens to return ties under LIMIT/OFFSET -
+	 * otherwise one could appear on two pages and another on none.
+	 */
+	public function test_meetings_sharing_a_date_are_ordered_deterministically_by_id(): void {
+		$first  = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
+		$second = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
+		$third  = $this->create_meeting( [ 'edbs_meeting_date' => '2024-03-15' ] );
+
+		$request  = new \WP_REST_Request( 'GET', self::ROUTE );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 3, $data['total_entries'] );
+		$titles = wp_list_pluck( $data['meetings'], 'title' );
+		$this->assertSame(
+			[ get_the_title( $third ), get_the_title( $second ), get_the_title( $first ) ],
+			$titles
+		);
 	}
 
 	/**

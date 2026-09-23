@@ -146,11 +146,25 @@ class BoardScribeEndpoint {
 		$args = [
 			'post_type'      => 'edbs_meeting',
 			'post_status'    => 'publish',
+			// A "Password protected" meeting has no real public page for this
+			// endpoint to link to (meetings have no content of their own to
+			// gate) - the option protects nothing here, so such a meeting is
+			// excluded from every list rather than appearing with live
+			// agenda/minutes links as if it weren't protected at all.
+			'has_password'   => false,
 			'posts_per_page' => $posts_per_page,
 			'paged'          => $page,
 			'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
-			'orderby'        => 'meta_value',
-			'order'          => 'DESC',
+			// ID is a tie-break, not a second sort criterion: two meetings
+			// sharing the same edbs_meeting_date otherwise have no
+			// guaranteed relative order between pages (MySQL doesn't
+			// stably order ties under LIMIT/OFFSET), so one could appear on
+			// two pages and another on none. MeetingSort::apply_order()
+			// rewrites both directions together when order=asc.
+			'orderby'        => [
+				'meta_value' => 'DESC', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- required to order results by meeting date.
+				'ID'         => 'DESC',
+			],
 			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
 				'relation' => 'AND',
 				[
@@ -243,6 +257,15 @@ class BoardScribeEndpoint {
 			'max_num_pages' => $query->max_num_pages,
 			'current_page'  => $page,
 			'total_entries' => $query->found_posts,
+			// The effective per-page count actually applied to the query -
+			// read back off the query itself (reflects any edbs_rest_query_args
+			// or pre_get_posts change to posts_per_page, not just this
+			// method's own $posts_per_page local) and distinct from the
+			// request's raw posts_per_page param, which may be -1 ("show
+			// all") or exceed the edbs_rest_max_per_page cap. The client
+			// needs this real value to compute "Showing X to Y of N"
+			// correctly (see src/js/defaults/renderInfo.js).
+			'per_page'      => (int) $query->get( 'posts_per_page' ),
 		];
 
 		/**
