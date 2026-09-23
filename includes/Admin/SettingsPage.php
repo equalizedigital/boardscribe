@@ -287,12 +287,24 @@ class SettingsPage {
 	/**
 	 * Sanitizes settings before saving.
 	 *
+	 * The checkbox is this settings group's only field, so unchecking it
+	 * (the only way to submit a "falsy" value at all - a browser omits an
+	 * unchecked checkbox from the form entirely) leaves `edbs_settings`
+	 * absent from $_POST altogether. `options.php` passes that through as
+	 * `null` to this sanitize_callback, not an empty array - a plain
+	 * `array $input` type hint fatals on that with a TypeError, which
+	 * leaves the option's old value in place and makes the setting
+	 * impossible to ever turn off.
+	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $input Raw input from the settings form.
+	 * @param mixed $input Raw input from the settings form - null when
+	 *                      every field in the group was left unchecked.
 	 * @return array Sanitized settings.
 	 */
-	public function sanitize_settings( array $input ): array {
+	public function sanitize_settings( $input ): array {
+		$input = is_array( $input ) ? $input : [];
+
 		return [
 			'delete_on_uninstall' => isset( $input['delete_on_uninstall'] ) ? 1 : 0,
 		];
