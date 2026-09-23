@@ -19,18 +19,20 @@ if ( empty( $edbs_settings['delete_on_uninstall'] ) ) {
 	return;
 }
 
-// Delete all BoardScribe meeting posts and their associated meta.
-$edbs_meeting_post_ids = get_posts(
-	[
-		'post_type'      => 'edbs_meeting',
-		'post_status'    => 'any',
-		'posts_per_page' => -1,
-		'fields'         => 'ids',
-	]
-);
+// Delete every BoardScribe meeting post and its associated meta, regardless
+// of status. get_posts()'s post_status => 'any' deliberately excludes
+// statuses core marks exclude_from_search (trash, auto-draft) - the wrong
+// choice here, since a user opting into full data deletion wants trashed
+// and never-finished-autosave meetings gone too, not left behind as
+// orphaned posts + postmeta. A direct $wpdb query also doesn't depend on
+// edbs_meeting (or any Pro-registered custom meeting status) being a
+// registered post type at uninstall time, unlike get_posts()/WP_Query.
+global $wpdb;
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time uninstall cleanup, no post type registered to query through WP_Query.
+$edbs_meeting_post_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s", 'edbs_meeting' ) );
 
 foreach ( $edbs_meeting_post_ids as $edbs_meeting_post_id ) {
-	wp_delete_post( $edbs_meeting_post_id, true );
+	wp_delete_post( (int) $edbs_meeting_post_id, true );
 }
 
 // Delete plugin settings.
