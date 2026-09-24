@@ -33,6 +33,7 @@ class FieldRegistry {
 	const TYPE_TEXTAREA        = 'textarea';
 	const TYPE_CHECKBOX        = 'checkbox';
 	const TYPE_SELECT          = 'select';
+	const TYPE_MULTISELECT     = 'multiselect';
 	const TYPE_NUMBER          = 'number';
 	const TYPE_NUMBER_WITH_ALL = 'number_with_all';
 	const TYPE_DATE            = 'date';
@@ -94,7 +95,13 @@ class FieldRegistry {
 	 *     @type string        $group               One of: general, column_labels, hide_columns, show_columns, link_labels.
 	 *     @type string        $label               Human-readable label (builder UI caption/placeholder, block InspectorControl label).
 	 *     @type mixed         $default             Default shortcode-attribute value.
-	 *     @type array         $choices             Value => label options. Only used when type is TYPE_SELECT.
+	 *     @type array         $choices             Value => label options. Used by TYPE_SELECT (single) and
+	 *                                              TYPE_MULTISELECT (comma-separated slugs stored as one string,
+	 *                                              same shape TYPE_SELECT's `sanitize_key()` produces for one
+	 *                                              value - see resolve_value()). For a taxonomy-backed field,
+	 *                                              build this from get_terms() at registration time so it always
+	 *                                              reflects real terms, the same way MeetingCategory/MeetingType
+	 *                                              (boardscribe-pro) do.
 	 *     @type array         $choice_descriptions Optional. Value => help text for that choice, shown instead of
 	 *                                              `description` while it's the selected option. Only used when
 	 *                                              type is TYPE_SELECT. A plugin adding a choice adds its own
@@ -464,6 +471,9 @@ class FieldRegistry {
 				// same as the pre-registry sanitize_key() behavior.
 				return sanitize_key( (string) $raw_value );
 
+			case self::TYPE_MULTISELECT:
+				return self::sanitize_multiselect( $raw_value );
+
 			case self::TYPE_TEXTAREA:
 				return sanitize_textarea_field( (string) $raw_value );
 
@@ -613,5 +623,29 @@ class FieldRegistry {
 
 		$int = (int) $value;
 		return $int > 0 ? $int : -1;
+	}
+
+	/**
+	 * Sanitizes a TYPE_MULTISELECT value: a comma-separated list of slugs,
+	 * the same on-the-wire shape a taxonomy-backed field (e.g. Pro's
+	 * category/type filters) already stored as a plain TYPE_TEXT value
+	 * before this type existed - only the authoring control changes, not
+	 * the stored/shortcode-attribute/REST-arg format, so no migration of
+	 * existing content is needed. Not restricted to $field['choices'] for
+	 * the same reason TYPE_SELECT isn't (see resolve_value()) - the
+	 * choices list only populates the picker's suggestions.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $raw_value A comma-separated string (or an array, from a
+	 *                         REST client sending repeated params - already
+	 *                         normalized to '' by resolve_value() before
+	 *                         this runs, matching every other type here).
+	 * @return string Comma-separated, deduplicated, sanitize_title()'d slugs.
+	 */
+	private static function sanitize_multiselect( $raw_value ): string {
+		$slugs = array_filter( array_map( 'sanitize_title', explode( ',', (string) $raw_value ) ) );
+
+		return implode( ',', array_values( array_unique( $slugs ) ) );
 	}
 }

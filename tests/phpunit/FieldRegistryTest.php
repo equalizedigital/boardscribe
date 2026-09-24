@@ -225,4 +225,25 @@ class FieldRegistryTest extends TestCase {
 			'real bool false' => [ false, false ],
 		];
 	}
+
+	/**
+	 * TYPE_MULTISELECT's resolver sanitizes each comma-separated value as
+	 * a slug (sanitize_title()), same as a taxonomy-backed field like Pro's
+	 * category/type filters requires - and dedupes/drops empties, which a
+	 * FormTokenField client can otherwise send (e.g. a value re-selected
+	 * after being removed, or a trailing comma).
+	 */
+	public function test_resolve_value_sanitizes_multiselect_as_slugs(): void {
+		$field = [
+			'key'  => 'edbs_test_multiselect',
+			'type' => \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::TYPE_MULTISELECT,
+		];
+
+		$result = \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::resolve_value(
+			$field,
+			'Public Safety,public-safety,Budget & Finance,,'
+		);
+
+		$this->assertSame( 'public-safety,budget-finance', $result );
+	}
 }

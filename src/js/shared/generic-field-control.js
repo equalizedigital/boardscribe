@@ -3,8 +3,10 @@ import {
 	TextareaControl,
 	ToggleControl,
 	SelectControl,
+	FormTokenField,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Renders the control matching a field's type - the generic renderer
@@ -58,6 +60,42 @@ export function GenericFieldControl( { field, value = '', onChange, controlProps
 					value={ value }
 					options={ options }
 					onChange={ onChange }
+					{ ...controlProps }
+				/>
+			);
+		}
+
+		case 'multiselect': {
+			// Stored/shortcode-attribute value is a comma-separated slug
+			// string (see FieldRegistry::sanitize_multiselect()) - FormTokenField
+			// itself only knows plain display strings, so choices' labels are
+			// what it shows/accepts, mapped back to slugs on change. A typed
+			// token that doesn't match any known label (a typo, or a term
+			// that no longer exists) is silently dropped rather than saved as
+			// free text - this field only ever means "filter by these real
+			// terms", not "create a new one".
+			const choices = field.choices || {};
+			const labelToSlug = {};
+			Object.keys( choices ).forEach( ( slug ) => {
+				labelToSlug[ choices[ slug ] ] = slug;
+			} );
+			const selectedSlugs = ( value || '' ).split( ',' ).filter( Boolean );
+			const selectedLabels = selectedSlugs.map( ( slug ) => choices[ slug ] || slug );
+			const suggestions = Object.values( choices );
+			const noChoicesHelp = __( 'No terms exist yet to filter by.', 'boardscribe' );
+
+			return (
+				<FormTokenField
+					label={ field.label }
+					help={ suggestions.length ? help : noChoicesHelp }
+					value={ selectedLabels }
+					suggestions={ suggestions }
+					onChange={ ( tokens ) => {
+						const slugs = tokens
+							.map( ( token ) => labelToSlug[ token ] )
+							.filter( Boolean );
+						onChange( slugs.join( ',' ) );
+					} }
 					{ ...controlProps }
 				/>
 			);
