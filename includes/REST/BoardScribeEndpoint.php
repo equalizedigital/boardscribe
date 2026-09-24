@@ -130,17 +130,23 @@ class BoardScribeEndpoint {
 			 * @param int $absolute_max Upper bound substituted for -1. Default 500.
 			 */
 			$posts_per_page = (int) apply_filters( 'edbs_rest_absolute_max_per_page', 500 );
-		} elseif ( $posts_per_page > 0 ) {
+		} else {
 			/**
 			 * Filters the maximum number of meetings a single REST request may return.
 			 *
-			 * Bounds arbitrary positive values sent directly to the public endpoint.
+			 * Bounds every value other than the `-1` "show all" sentinel.
 			 *
 			 * @since 1.0.0
 			 *
 			 * @param int $max_per_page Maximum posts_per_page. Default 100.
 			 */
-			$posts_per_page = min( $posts_per_page, (int) apply_filters( 'edbs_rest_max_per_page', 100 ) );
+			$max_per_page = (int) apply_filters( 'edbs_rest_max_per_page', 100 );
+
+			// The registered sanitizer already maps 0, negatives and non-numeric
+			// input to -1, so a non-positive value should not get here; if one does
+			// (a direct call, a changed sanitizer) it falls back to the cap instead of
+			// reaching WP_Query, which returns no posts for 0 and everything for -1.
+			$posts_per_page = $posts_per_page > 0 ? min( $posts_per_page, $max_per_page ) : $max_per_page;
 		}
 
 		$args = [

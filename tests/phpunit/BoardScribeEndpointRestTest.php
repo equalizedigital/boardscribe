@@ -108,6 +108,66 @@ class BoardScribeEndpointRestTest extends TestCase {
 	}
 
 	/**
+	 * PRO-1419: the "show all" (-1) sentinel is the only value allowed past the
+	 * normal cap, and even it resolves to the bounded absolute max.
+	 */
+	public function test_show_all_sentinel_resolves_to_the_absolute_max(): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'posts_per_page', -1 );
+
+		$data = rest_get_server()->dispatch( $request )->get_data();
+
+		$this->assertSame( 500, $data['per_page'] );
+	}
+
+	/**
+	 * PRO-1419: through the public route, 0, a negative number and non-numeric
+	 * input are all normalised by the registered sanitizer to the "show all"
+	 * sentinel, so they resolve to that same bounded ceiling - never past it.
+	 *
+	 * @dataProvider non_positive_posts_per_page_values
+	 *
+	 * @param mixed $value The raw posts_per_page value sent to the route.
+	 */
+	public function test_non_positive_values_never_exceed_the_absolute_max( $value ): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'posts_per_page', $value );
+
+		$data = rest_get_server()->dispatch( $request )->get_data();
+
+		$this->assertLessThanOrEqual( 500, $data['per_page'] );
+		$this->assertGreaterThan( 0, $data['per_page'] );
+	}
+
+	/**
+	 * Values that are not a positive count.
+	 *
+	 * @return array<string, array{0: mixed}>
+	 */
+	public function non_positive_posts_per_page_values(): array {
+		return [
+			'zero'         => [ 0 ],
+			'negative'     => [ -5 ],
+			'non-numeric'  => [ 'abc' ],
+			'empty string' => [ '' ],
+		];
+	}
+
+	/**
+	 * PRO-1419: a non-positive value that reaches get_meetings() without going
+	 * through the route's sanitizer (a direct call, or a changed sanitizer)
+	 * falls back to the normal 100-item cap, not the "show all" ceiling.
+	 */
+	public function test_non_positive_value_reaching_the_method_falls_back_to_the_normal_cap(): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'posts_per_page', 0 );
+
+		$data = ( new \EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint() )->get_meetings( $request )->get_data();
+
+		$this->assertSame( 100, $data['per_page'] );
+	}
+
+	/**
 	 * PRO-1395 #2: meetings sharing the same edbs_meeting_date must still
 	 * sort deterministically (newest ID first, as a tie-break) rather than
 	 * in whatever order MySQL happens to return ties under LIMIT/OFFSET -
