@@ -53,6 +53,24 @@ class BoardScribeShortcode {
 	}
 
 	/**
+	 * Enqueues the plugin stylesheet. Public and static so the block editor
+	 * can add it to its canvas on enqueue_block_assets, as well as the normal
+	 * front-end enqueue in enqueue_assets().
+	 *
+	 * @since x.x.x
+	 *
+	 * @return void
+	 */
+	public static function enqueue_styles(): void {
+		wp_enqueue_style(
+			'edbs-boardscribe',
+			EDBS_URL . 'assets/css/boardscribe.css',
+			[],
+			EDBS_VERSION
+		);
+	}
+
+	/**
 	 * Registers and enqueues the plugin stylesheet and script.
 	 * Safe to call multiple times — WordPress deduplicates by handle.
 	 *
@@ -66,12 +84,7 @@ class BoardScribeShortcode {
 	 * @return void
 	 */
 	public function enqueue_assets(): void {
-		wp_enqueue_style(
-			'edbs-boardscribe',
-			EDBS_URL . 'assets/css/boardscribe.css',
-			[],
-			EDBS_VERSION
-		);
+		self::enqueue_styles();
 
 		// The bundle is built from src/js/ by `npm run build` and is
 		// not committed. @wordpress/* imports resolve to wp.* globals via

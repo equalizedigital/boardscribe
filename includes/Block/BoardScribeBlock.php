@@ -54,6 +54,7 @@ class BoardScribeBlock {
 		add_action( 'init', [ $this, 'register_block' ], 20 );
 		add_filter( 'block_categories_all', [ $this, 'register_block_category' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_frontend_assets' ] );
+		add_action( 'enqueue_block_assets', [ $this, 'enqueue_editor_canvas_styles' ] );
 	}
 
 	/**
@@ -94,6 +95,28 @@ class BoardScribeBlock {
 				$scripts->registered[ $handle ]->deps[] = 'edbs-boardscribe';
 			}
 		}
+	}
+
+	/**
+	 * Adds the plugin stylesheet to the editor canvas.
+	 *
+	 * The canvas is an iframe that only receives assets enqueued on
+	 * enqueue_block_assets (or declared on the block type) - the stylesheet
+	 * enqueued on enqueue_block_editor_assets in enqueue_editor_frontend_assets()
+	 * only reaches the parent editor page, so the live preview rendered
+	 * unstyled (PRO-1422). This hook also fires on the front end, where the
+	 * block's own render already enqueues it, so it does nothing there.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return void
+	 */
+	public function enqueue_editor_canvas_styles(): void {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		BoardScribeShortcode::enqueue_styles();
 	}
 
 	/**
