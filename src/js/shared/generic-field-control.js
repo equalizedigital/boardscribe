@@ -24,7 +24,10 @@ import {
  * @return {JSX.Element} The control.
  */
 export function GenericFieldControl( { field, value = '', onChange, controlProps = {} } ) {
-	const help = field.description || undefined;
+	// A select can describe each choice; the selected one's text wins over the
+	// field-level description (PRO-1416).
+	const choiceHelp = ( field.choiceDescriptions || {} )[ value ];
+	const help = choiceHelp || field.description || undefined;
 
 	switch ( field.type ) {
 		case 'checkbox': {

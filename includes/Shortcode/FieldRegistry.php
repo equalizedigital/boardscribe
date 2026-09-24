@@ -95,6 +95,10 @@ class FieldRegistry {
 	 *     @type string        $label               Human-readable label (builder UI caption/placeholder, block InspectorControl label).
 	 *     @type mixed         $default             Default shortcode-attribute value.
 	 *     @type array         $choices             Value => label options. Only used when type is TYPE_SELECT.
+	 *     @type array         $choice_descriptions Optional. Value => help text for that choice, shown instead of
+	 *                                              `description` while it's the selected option. Only used when
+	 *                                              type is TYPE_SELECT. A plugin adding a choice adds its own
+	 *                                              line here (merge, don't assign) so each choice keeps its own text.
 	 *     @type callable|null $sanitize_callback   Overrides the type's default resolver, see resolve_value().
 	 *     @type callable|null $validate_callback   Optional REST validate_callback, only used when rest_arg is true.
 	 *     @type bool          $rest_arg            Whether this field also becomes a REST route arg.
@@ -197,18 +201,23 @@ class FieldRegistry {
 					'rest_arg'          => true,
 				],
 				[
-					'key'     => 'template',
-					'type'    => self::TYPE_SELECT,
-					'group'   => 'general',
-					'label'   => __( 'Display Template', 'boardscribe' ),
-					'default' => '',
+					'key'                 => 'template',
+					'type'                => self::TYPE_SELECT,
+					'group'               => 'general',
+					'label'               => __( 'Display Template', 'boardscribe' ),
+					'default'             => '',
 					// Only the built-in table ships here. A plugin providing
 					// another display template (e.g. Pro's year-timeline)
 					// appends its choice to this descriptor via the
 					// edbs_shortcode_field_registry filter, alongside
 					// registering the template itself on window.edbsTemplates.
-					'choices' => [
+					'choices'             => [
 						'' => __( 'Table (default)', 'boardscribe' ),
+					],
+					// Help text for the selected choice; a plugin adding a
+					// template merges its own line in alongside its choice.
+					'choice_descriptions' => [
+						'' => __( 'One table row per meeting, with the columns you choose below.', 'boardscribe' ),
 					],
 				],
 				[
@@ -382,7 +391,7 @@ class FieldRegistry {
 	 * @since 1.0.0
 	 *
 	 * @param bool $include_hidden Include hidden_from_ui fields (flagged via hiddenFromUi) instead of omitting them.
-	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, placeholder: ?string, description: ?string, hiddenFromUi: bool}>
+	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, choiceDescriptions: ?array, placeholder: ?string, description: ?string, hiddenFromUi: bool}>
 	 */
 	public static function js_schema( bool $include_hidden = false ): array {
 		$schema = [];
@@ -394,17 +403,18 @@ class FieldRegistry {
 			}
 
 			$schema[] = [
-				'key'          => $field['key'],
-				'attributeKey' => self::block_attribute_key( $field ),
-				'configKey'    => self::config_key( $field ),
-				'type'         => $field['type'] ?? '',
-				'group'        => $field['group'] ?? 'general',
-				'label'        => $field['label'] ?? '',
-				'default'      => $field['default'] ?? '',
-				'choices'      => $field['choices'] ?? null,
-				'placeholder'  => $field['placeholder'] ?? null,
-				'description'  => $field['description'] ?? null,
-				'hiddenFromUi' => $is_hidden,
+				'key'                => $field['key'],
+				'attributeKey'       => self::block_attribute_key( $field ),
+				'configKey'          => self::config_key( $field ),
+				'type'               => $field['type'] ?? '',
+				'group'              => $field['group'] ?? 'general',
+				'label'              => $field['label'] ?? '',
+				'default'            => $field['default'] ?? '',
+				'choices'            => $field['choices'] ?? null,
+				'choiceDescriptions' => $field['choice_descriptions'] ?? null,
+				'placeholder'        => $field['placeholder'] ?? null,
+				'description'        => $field['description'] ?? null,
+				'hiddenFromUi'       => $is_hidden,
 			];
 		}
 
