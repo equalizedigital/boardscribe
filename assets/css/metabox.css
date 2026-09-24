@@ -519,6 +519,7 @@
 
 .edbs-resource-card__title-edit {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px;
 	max-width: 320px;

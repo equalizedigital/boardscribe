@@ -98,19 +98,24 @@ function ReorderControls( { itemLabel, moveUpId, moveDownId, isFirst, isLast, on
  *                                           instead of the internal default.
  * @param {Function} [props.onEditingChange] Called with the next isEditing value (true from the
  *                                           own trigger button, false on save) when controlled.
+ * @param {string}   [props.help]            Help text shown under the input while editing (linked to it
+ *                                           with aria-describedby), e.g. that the label doesn't rename
+ *                                           the underlying document. Omit for none.
  * @param {string}   [props.ariaLabel]       Accessible name for the built-in trigger button,
  *                                           overriding its visible "Edit title"/"Add title" text -
  *                                           a repeater with several rows needs this to tell a
  *                                           screen reader which row's title each button edits.
  * @return {JSX.Element} The title cell.
  */
-export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEditButton, isEditing: isEditingProp, onEditingChange, ariaLabel } ) {
+export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEditButton, isEditing: isEditingProp, onEditingChange, ariaLabel, help } ) {
 	const [ internalIsEditing, setInternalIsEditing ] = useState( false );
 	const isControlled = undefined !== isEditingProp;
 	const isEditing = isControlled ? isEditingProp : internalIsEditing;
 	const setIsEditing = isControlled ? onEditingChange : setInternalIsEditing;
 	const [ draft, setDraft ] = useState( label );
 	const inputRef = useRef( null );
+	const triggerRef = useRef( null );
+	const returnFocusToTrigger = useRef( false );
 
 	// Belt-and-suspenders: ResourceListField/AttachedRepeaterField key rows
 	// by stable identity (not array index - see createRowKeyer()) and
@@ -127,6 +132,14 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 	useEffect( () => {
 		if ( isEditing && inputRef.current ) {
 			inputRef.current.focus();
+		} else if ( ! isEditing && returnFocusToTrigger.current ) {
+			// After a save or cancel, land back on the built-in Edit title
+			// trigger. A controlled caller that hides it (hideEditButton) owns
+			// its own trigger and moves focus there itself.
+			returnFocusToTrigger.current = false;
+			if ( triggerRef.current ) {
+				triggerRef.current.focus();
+			}
 		}
 	}, [ isEditing ] );
 
@@ -135,7 +148,7 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 			<>
 				{ label || emptyLabel || __( 'Untitled document', 'boardscribe' ) }
 				{ ! hideEditButton && (
-					<Button variant="link" className="edbs-resource-card__edit-title" aria-label={ ariaLabel || undefined } onClick={ () => setIsEditing( true ) }>
+					<Button ref={ triggerRef } variant="link" className="edbs-resource-card__edit-title" aria-label={ ariaLabel || undefined } onClick={ () => setIsEditing( true ) }>
 						{ label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ) }
 					</Button>
 				) }
@@ -145,7 +158,18 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 
 	const save = () => {
 		onChange( draft );
+		returnFocusToTrigger.current = true;
 		setIsEditing( false );
+		speak( __( 'Title saved.', 'boardscribe' ) );
+	};
+
+	// Discards the draft: the stored label is untouched, and the next edit
+	// starts from it again rather than from the abandoned text.
+	const cancel = () => {
+		setDraft( label );
+		returnFocusToTrigger.current = true;
+		setIsEditing( false );
+		speak( __( 'Title editing canceled.', 'boardscribe' ) );
 	};
 
 	return (
@@ -156,17 +180,25 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 				__nextHasNoMarginBottom
 				label={ fieldLabel || __( 'Document name', 'boardscribe' ) }
 				hideLabelFromVision
+				help={ help || undefined }
 				value={ draft }
 				onChange={ setDraft }
 				onKeyDown={ ( event ) => {
 					if ( 'Enter' === event.key ) {
 						event.preventDefault();
 						save();
+					} else if ( 'Escape' === event.key ) {
+						event.preventDefault();
+						event.stopPropagation();
+						cancel();
 					}
 				} }
 			/>
 			<Button variant="secondary" onClick={ save }>
 				{ __( 'Save', 'boardscribe' ) }
+			</Button>
+			<Button variant="tertiary" onClick={ cancel }>
+				{ __( 'Cancel', 'boardscribe' ) }
 			</Button>
 		</div>
 	);
@@ -352,9 +384,9 @@ export function ResourceListField( { field, value, onChange } ) {
 	const isAdding = 'new' === modalIndex;
 	const editTitleButtonId = ( index ) => `${ field.key }-${ index }-edit-title`;
 
-	// EditableTitle only closes editing via Save (there's no Cancel), so
-	// this always means "just saved" - move focus to the action row's own
-	// "Edit title" button, since it's now the only visible trigger.
+	// EditableTitle closes editing on Save or Cancel (or Escape) - either way
+	// move focus to the action row's own "Edit title" button, since it's the
+	// only visible trigger.
 	const finishEditingTitle = ( index ) => {
 		setEditingIndex( null );
 		window.setTimeout( () => {
@@ -453,6 +485,7 @@ export function ResourceListField( { field, value, onChange } ) {
 										<EditableTitle
 											label={ item.label }
 											onChange={ ( label ) => updateItem( index, { label } ) }
+											help={ __( 'Sets how this document appears here - it does not rename the document itself.', 'boardscribe' ) }
 											hideEditButton
 											isEditing={ editingIndex === index }
 											onEditingChange={ ( next ) => ( next ? setEditingIndex( index ) : finishEditingTitle( index ) ) }

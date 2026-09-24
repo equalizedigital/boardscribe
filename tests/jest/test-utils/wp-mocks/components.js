@@ -4,7 +4,7 @@
  * carrying data-control/data-label attributes so tests can find "the
  * control for field X" without depending on the real component library's
  * internal markup - only the props this codebase actually reads
- * (label/value/checked/onChange/options/min) are wired up.
+ * (label/value/checked/onChange/onKeyDown/options/min) are wired up.
  */
 import { createElement, forwardRef } from '@wordpress/element';
 
@@ -16,13 +16,13 @@ export function BaseControl( { id, label, help, children } ) {
 	);
 }
 
-export function Button( { id, className, variant, onClick, disabled, children, 'aria-label': ariaLabel, 'aria-disabled': ariaDisabled } ) {
+export const Button = forwardRef( function Button( { id, className, variant, onClick, disabled, children, 'aria-label': ariaLabel, 'aria-disabled': ariaDisabled }, ref ) {
 	return createElement(
 		'button',
-		{ id, className, type: 'button', 'data-variant': variant, disabled: !! disabled, onClick, 'aria-label': ariaLabel, 'aria-disabled': ariaDisabled },
+		{ ref, id, className, type: 'button', 'data-variant': variant, disabled: !! disabled, onClick, 'aria-label': ariaLabel, 'aria-disabled': ariaDisabled },
 		children,
 	);
-}
+} );
 
 export function PanelBody( { title, initialOpen, children } ) {
 	return createElement(
@@ -58,7 +58,7 @@ export function SelectControl( { label, value, options, onChange, help } ) {
 	);
 }
 
-export const TextControl = forwardRef( function TextControl( { label, value, onChange, placeholder, help, type, 'aria-invalid': ariaInvalid, 'aria-describedby': ariaDescribedBy }, ref ) {
+export const TextControl = forwardRef( function TextControl( { label, value, onChange, onKeyDown, placeholder, help, type, 'aria-invalid': ariaInvalid, 'aria-describedby': ariaDescribedBy }, ref ) {
 	return createElement(
 		'label',
 		{ 'data-control': 'text', 'data-label': label, 'data-help': help || '' },
@@ -68,6 +68,7 @@ export const TextControl = forwardRef( function TextControl( { label, value, onC
 			value: value || '',
 			placeholder: placeholder || '',
 			onChange: ( event ) => onChange( event.target.value ),
+			onKeyDown,
 			'aria-invalid': ariaInvalid,
 			'aria-describedby': ariaDescribedBy,
 		} ),
