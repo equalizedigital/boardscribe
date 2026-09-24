@@ -108,12 +108,17 @@ class BoardScribeEndpointRestTest extends TestCase {
 	}
 
 	/**
-	 * PRO-1419: the "show all" (-1) sentinel is the only value allowed past the
-	 * normal cap, and even it resolves to the bounded absolute max.
+	 * PRO-1419: "show all" is a feature - 0 and -1 (and input the route sanitizer
+	 * maps to -1) must keep returning the bounded absolute max, not be clamped to
+	 * the normal 100-item cap. Pinned so nobody "fixes" it into a regression.
+	 *
+	 * @dataProvider show_all_posts_per_page_values
+	 *
+	 * @param mixed $value The raw posts_per_page value sent to the route.
 	 */
-	public function test_show_all_sentinel_resolves_to_the_absolute_max(): void {
+	public function test_show_all_values_resolve_to_the_absolute_max_not_the_normal_cap( $value ): void {
 		$request = new \WP_REST_Request( 'GET', self::ROUTE );
-		$request->set_param( 'posts_per_page', -1 );
+		$request->set_param( 'posts_per_page', $value );
 
 		$data = rest_get_server()->dispatch( $request )->get_data();
 
@@ -121,50 +126,44 @@ class BoardScribeEndpointRestTest extends TestCase {
 	}
 
 	/**
-	 * PRO-1419: through the public route, 0, a negative number and non-numeric
-	 * input are all normalised by the registered sanitizer to the "show all"
-	 * sentinel, so they resolve to that same bounded ceiling - never past it.
-	 *
-	 * @dataProvider non_positive_posts_per_page_values
-	 *
-	 * @param mixed $value The raw posts_per_page value sent to the route.
-	 */
-	public function test_non_positive_values_never_exceed_the_absolute_max( $value ): void {
-		$request = new \WP_REST_Request( 'GET', self::ROUTE );
-		$request->set_param( 'posts_per_page', $value );
-
-		$data = rest_get_server()->dispatch( $request )->get_data();
-
-		$this->assertLessThanOrEqual( 500, $data['per_page'] );
-		$this->assertGreaterThan( 0, $data['per_page'] );
-	}
-
-	/**
-	 * Values that are not a positive count.
+	 * Values that mean "show all" through the public route.
 	 *
 	 * @return array<string, array{0: mixed}>
 	 */
-	public function non_positive_posts_per_page_values(): array {
+	public function show_all_posts_per_page_values(): array {
 		return [
+			'minus one'    => [ -1 ],
 			'zero'         => [ 0 ],
 			'negative'     => [ -5 ],
+			'all'          => [ 'all' ],
 			'non-numeric'  => [ 'abc' ],
 			'empty string' => [ '' ],
 		];
 	}
 
 	/**
-	 * PRO-1419: a non-positive value that reaches get_meetings() without going
-	 * through the route's sanitizer (a direct call, or a changed sanitizer)
-	 * falls back to the normal 100-item cap, not the "show all" ceiling.
+	 * PRO-1419: the method itself treats a non-positive value like the route
+	 * does (show all, bounded), so a direct call can't reach WP_Query with a raw 0.
 	 */
-	public function test_non_positive_value_reaching_the_method_falls_back_to_the_normal_cap(): void {
+	public function test_method_treats_non_positive_values_as_bounded_show_all(): void {
+		$endpoint = new \EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint();
+
+		foreach ( [ 0, -1, -5 ] as $value ) {
+			$request = new \WP_REST_Request( 'GET', self::ROUTE );
+			$request->set_param( 'posts_per_page', $value );
+
+			$this->assertSame( 500, $endpoint->get_meetings( $request )->get_data()['per_page'], "posts_per_page={$value}" );
+		}
+	}
+
+	/**
+	 * PRO-1419: a positive value is still capped at the normal 100.
+	 */
+	public function test_positive_values_are_still_capped_at_the_normal_max(): void {
 		$request = new \WP_REST_Request( 'GET', self::ROUTE );
-		$request->set_param( 'posts_per_page', 0 );
+		$request->set_param( 'posts_per_page', 99999 );
 
-		$data = ( new \EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint() )->get_meetings( $request )->get_data();
-
-		$this->assertSame( 100, $data['per_page'] );
+		$this->assertSame( 100, rest_get_server()->dispatch( $request )->get_data()['per_page'] );
 	}
 
 	/**

@@ -130,6 +130,32 @@ describe( 'isValidExternalUrl', () => {
 		expect( isValidExternalUrl( 'ftp://example.com/file.pdf' ) ).toBe( false );
 	} );
 
+	it( 'rejects a host containing spaces (PRO-1410) - new URL() percent-encodes them instead of throwing', () => {
+		expect( isValidExternalUrl( 'https://not a valid url' ) ).toBe( false );
+		expect( isValidExternalUrl( 'https://exa mple.com/agenda.pdf' ) ).toBe( false );
+		expect( isValidExternalUrl( 'https://not%20a%20valid%20url' ) ).toBe( false );
+	} );
+
+	it( 'rejects hosts with characters that cannot appear in a hostname', () => {
+		expect( isValidExternalUrl( 'https://exa<mple.com' ) ).toBe( false );
+		expect( isValidExternalUrl( 'https://-example.com' ) ).toBe( false );
+		expect( isValidExternalUrl( 'https://example..com' ) ).toBe( false );
+	} );
+
+	it( 'accepts single-label, IPv4, IPv6 and punycoded hosts, with port, userinfo, path and query', () => {
+		expect( isValidExternalUrl( 'http://localhost:8080/agenda' ) ).toBe( true );
+		expect( isValidExternalUrl( 'http://192.168.1.10/agenda.pdf' ) ).toBe( true );
+		expect( isValidExternalUrl( 'http://[::1]:3000/agenda' ) ).toBe( true );
+		expect( isValidExternalUrl( 'https://b\u00fccher.de/agenda' ) ).toBe( true );
+		expect( isValidExternalUrl( 'https://user:pw@sub-domain.example.com/a b?x=1#y' ) ).toBe( true );
+		expect( isValidExternalUrl( 'https://my_bucket.example.com/agenda.pdf' ) ).toBe( true );
+	} );
+
+	it( 'does not throw on a non-string value', () => {
+		expect( isValidExternalUrl( undefined ) ).toBe( false );
+		expect( isValidExternalUrl( null ) ).toBe( false );
+	} );
+
 	it( 'accepts a complete https URL', () => {
 		expect( isValidExternalUrl( 'https://example.com/agenda.pdf' ) ).toBe( true );
 	} );
