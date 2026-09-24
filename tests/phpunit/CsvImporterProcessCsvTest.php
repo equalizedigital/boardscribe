@@ -290,4 +290,30 @@ class CsvImporterProcessCsvTest extends TestCase {
 		$this->assertSame( '', get_post_meta( $post->ID, 'edbs_agenda_url', true ) );
 		$this->assertSame( 'https://example.com/minutes.pdf', get_post_meta( $post->ID, 'edbs_minutes_url', true ) );
 	}
+
+	/**
+	 * PRO-1414: an add-on's own URL columns can be added through the
+	 * edbs_csv_import_url_columns filter and are validated and counted with
+	 * the same rule. The column here is read back through the row-meta action,
+	 * as an add-on would save it.
+	 */
+	public function test_filtered_url_columns_are_validated_and_counted(): void {
+		add_filter(
+			'edbs_csv_import_url_columns',
+			static function ( array $columns ): array {
+				$columns[] = 'livestream_url';
+				return $columns;
+			}
+		);
+
+		$this->csv_path = tempnam( sys_get_temp_dir(), 'edbs-csv-test-' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_tempnam
+		file_put_contents( $this->csv_path, "title,date,livestream_url\nFiltered Col Meeting,2024-04-01,http://not a valid url\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		$method = new \ReflectionMethod( CsvImporter::class, 'process_csv' );
+		$method->setAccessible( true );
+		$result = $method->invoke( new CsvImporter(), $this->csv_path );
+
+		$this->assertSame( 1, $result['imported'] );
+		$this->assertSame( 1, $result['invalid_urls'] );
+	}
 }

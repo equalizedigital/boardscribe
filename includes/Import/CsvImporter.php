@@ -307,6 +307,20 @@ class CsvImporter {
 		$invalid_urls = 0;
 		$headers      = null;
 
+		/**
+		 * Filters the CSV columns validated as URLs before a row is imported.
+		 *
+		 * An invalid value in one of these columns is dropped, the rest of the
+		 * row still imports, and the row is counted in the results notice. An
+		 * add-on that saves its own URL columns adds them here so the same rule
+		 * and the same reporting apply.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param string[] $url_columns Lowercase column names. Default agenda_url and minutes_url.
+		 */
+		$url_columns = (array) apply_filters( 'edbs_csv_import_url_columns', [ 'agenda_url', 'minutes_url' ] );
+
 		while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- idiomatic fgetcsv loop pattern.
 			// First row: extract and normalise headers. Strips a leading
 			// UTF-8 BOM from the first header - common in CSVs exported from
@@ -360,7 +374,7 @@ class CsvImporter {
 			// is reported, since losing a whole meeting to one bad cell is worse
 			// than losing the link.
 			$row_invalid_urls = [];
-			foreach ( [ 'agenda_url', 'minutes_url' ] as $url_column ) {
+			foreach ( $url_columns as $url_column ) {
 				if ( isset( $data[ $url_column ] ) && '' !== trim( (string) $data[ $url_column ] ) && ! Helpers::is_valid_external_url( trim( (string) $data[ $url_column ] ) ) ) {
 					$row_invalid_urls[] = $url_column;
 				}
@@ -560,8 +574,8 @@ class CsvImporter {
 
 			if ( $invalid_urls > 0 ) {
 				$message .= ' ' . sprintf(
-					/* translators: %d: number of rows whose agenda/minutes URL was invalid */
-					_n( '%d row had an invalid agenda or minutes URL; that URL was not saved.', '%d rows had an invalid agenda or minutes URL; those URLs were not saved.', $invalid_urls, 'boardscribe' ),
+					/* translators: %d: number of rows with an invalid URL column */
+					_n( '%d row had an invalid URL; that URL was not saved.', '%d rows had an invalid URL; those URLs were not saved.', $invalid_urls, 'boardscribe' ),
 					$invalid_urls
 				);
 			}
