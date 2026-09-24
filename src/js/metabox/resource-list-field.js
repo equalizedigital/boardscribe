@@ -377,7 +377,7 @@ export function ResourceListField( { field, value, onChange } ) {
 				) }
 
 				{ items.map( ( item, index ) => {
-					const { chips, meta } = resolveResourceDisplay( item.url, item.source );
+					const { chips, meta } = resolveResourceDisplay( item.url, item.source, item.document_id );
 					const isDragging = draggingIndex === index;
 					const showIndicator = ( position ) =>
 						null !== draggingIndex && dropTarget && dropTarget.index === index && dropTarget.position === position;

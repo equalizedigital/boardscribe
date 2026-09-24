@@ -72,6 +72,28 @@ describe( 'resolveResourceDisplay', () => {
 		delete window.edbsResourceSources;
 	} );
 
+	it( 'adds the status chip a registered source supplies for a document id (PRO-1408)', () => {
+		const statusChip = jest.fn( ( { documentId } ) => ( 12 === documentId ? 'Draft' : '' ) );
+		window.edbsResourceSources = {
+			document: { label: 'Choose a BoardScribe document', chipLabel: 'BoardScribe document', description: '', render: () => null, statusChip },
+		};
+
+		expect( resolveResourceDisplay( 'https://example.com/agenda/', 'document', 12 ).chips ).toEqual( [ 'BoardScribe document', 'Draft' ] );
+		expect( statusChip ).toHaveBeenCalledWith( { documentId: 12 } );
+	} );
+
+	it( 'adds no status chip when the source has none, or returns nothing, or there is no document id', () => {
+		window.edbsResourceSources = {
+			document: { label: 'Doc', chipLabel: 'BoardScribe document', description: '', render: () => null, statusChip: () => '' },
+			plain: { label: 'Plain', description: '', render: () => null },
+		};
+
+		expect( resolveResourceDisplay( 'https://example.com/a/', 'document', 12 ).chips ).toEqual( [ 'BoardScribe document' ] );
+		expect( resolveResourceDisplay( 'https://example.com/a/', 'plain', 12 ).chips ).toEqual( [ 'Plain' ] );
+		expect( resolveResourceDisplay( 'https://example.com/a/', 'document' ).chips ).toEqual( [ 'BoardScribe document' ] );
+		expect( resolveResourceDisplay( 'https://example.com/a/', 'document', 0 ).chips ).toEqual( [ 'BoardScribe document' ] );
+	} );
+
 	it( 'uses a plugin-registered source\'s chipLabel for the chip, not its modal-chooser label', () => {
 		window.edbsResourceSources = {
 			document: {
