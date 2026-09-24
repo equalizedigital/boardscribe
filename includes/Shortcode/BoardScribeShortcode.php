@@ -18,13 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BoardScribeShortcode {
 
 	/**
-	 * Whether wp_localize_script has already been called this page load.
-	 *
-	 * @var bool
-	 */
-	private static bool $localized = false;
-
-	/**
 	 * Incrementing counter used to generate unique instance IDs.
 	 *
 	 * @var int
@@ -60,6 +53,24 @@ class BoardScribeShortcode {
 	}
 
 	/**
+	 * Enqueues the plugin stylesheet. Public and static so the block editor
+	 * can add it to its canvas on enqueue_block_assets, as well as the normal
+	 * front-end enqueue in enqueue_assets().
+	 *
+	 * @since x.x.x
+	 *
+	 * @return void
+	 */
+	public static function enqueue_styles(): void {
+		wp_enqueue_style(
+			'edbs-boardscribe',
+			EDBS_URL . 'assets/css/boardscribe.css',
+			[],
+			EDBS_VERSION
+		);
+	}
+
+	/**
 	 * Registers and enqueues the plugin stylesheet and script.
 	 * Safe to call multiple times — WordPress deduplicates by handle.
 	 *
@@ -73,12 +84,7 @@ class BoardScribeShortcode {
 	 * @return void
 	 */
 	public function enqueue_assets(): void {
-		wp_enqueue_style(
-			'edbs-boardscribe',
-			EDBS_URL . 'assets/css/boardscribe.css',
-			[],
-			EDBS_VERSION
-		);
+		self::enqueue_styles();
 
 		// The bundle is built from src/js/ by `npm run build` and is
 		// not committed. @wordpress/* imports resolve to wp.* globals via
@@ -115,7 +121,19 @@ class BoardScribeShortcode {
 	 * @return void
 	 */
 	private function localize_script(): void {
-		if ( self::$localized ) {
+		// Checks the script's actual data, not a static flag: core's block editor
+		// preload restores $wp_scripts after rendering the block, discarding the
+		// localization while a flag would still read as done (PRO-1413).
+		//
+		// Specifically for edbsConfig, not merely "any data at all" - the
+		// 'data' slot is one concatenated string covering every
+		// wp_localize_script()/wp_add_inline_script() call ever made against
+		// this handle. Another integration localizing a different variable
+		// onto 'edbs-boardscribe' first would otherwise make this guard
+		// wrongly conclude edbsConfig was already set and skip localizing it
+		// at all, leaving the front-end bundle with no config.
+		$existing_data = wp_scripts()->get_data( 'edbs-boardscribe', 'data' );
+		if ( $existing_data && false !== strpos( $existing_data, 'edbsConfig' ) ) {
 			return;
 		}
 
@@ -145,8 +163,6 @@ class BoardScribeShortcode {
 				],
 			]
 		);
-
-		self::$localized = true;
 	}
 
 	/**

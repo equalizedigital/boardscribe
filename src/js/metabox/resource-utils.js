@@ -17,9 +17,9 @@ export function resolveFieldSources( field, defaultSources ) {
 }
 
 /**
- * Whether a string is a complete, absolute http(s) URL - "not a url" and
- * an unedited/incomplete "https://" (no host) both fail this, unlike a
- * bare non-empty check. Used by resource-modal.js's ExternalUrlSource to
+ * Whether a string is a complete, absolute http(s) URL with a plausible host -
+ * "not a url", an unedited "https://" and a host containing spaces all fail,
+ * unlike a bare non-empty check. Used by resource-modal.js's ExternalUrlSource to
  * validate before calling onSave, rather than relying only on the
  * browser's native type="url" constraint validation.
  *
@@ -27,12 +27,50 @@ export function resolveFieldSources( field, defaultSources ) {
  * @return {boolean} Whether it's a valid external URL.
  */
 export function isValidExternalUrl( value ) {
+	const raw = String( value ?? '' ).trim();
+	if ( '' === raw ) {
+		return false;
+	}
+
+	// The WHATWG URL parser strips every ASCII tab/newline from the input
+	// before parsing anything else (spec: "remove all ASCII tab or newline
+	// from input") - so a pasted "https://exa\nmple.com" reaches new URL()
+	// below as "https://example.com" with a perfectly clean hostname,
+	// passing every check after it. Rejected here, on the untouched raw
+	// string, before that stripping can hide it.
+	if ( /[\t\n\r]/.test( raw ) ) {
+		return false;
+	}
+
+	let parsed;
 	try {
-		const parsed = new URL( value.trim() );
-		return ( 'http:' === parsed.protocol || 'https:' === parsed.protocol ) && '' !== parsed.hostname;
+		parsed = new URL( raw );
 	} catch ( error ) {
 		return false;
 	}
+
+	if ( 'http:' !== parsed.protocol && 'https:' !== parsed.protocol ) {
+		return false;
+	}
+
+	const host = parsed.hostname;
+
+	// new URL() percent-encodes invalid host characters instead of throwing, so
+	// "https://not a valid url" parses with hostname "not%20a%20valid%20url".
+	// '%' can only reach a host through that encoding.
+	if ( '' === host || /[\s%]/.test( host ) ) {
+		return false;
+	}
+
+	// Bracketed IPv6 literal, e.g. [::1].
+	if ( /^\[[0-9a-f:.]+\]$/i.test( host ) ) {
+		return true;
+	}
+
+	// DNS name or IPv4: dot-separated labels of letters, digits, hyphens and
+	// underscores, not starting or ending with a hyphen. Single-label hosts
+	// (localhost, intranet names) stay valid; IDN hosts arrive punycoded.
+	return /^[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?(?:\.[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?)*$/i.test( host );
 }
 
 /**
@@ -205,12 +243,17 @@ export function classifyResourceUrl( url ) {
  * id on window.edbsResourceSources, whose own `chipLabel` (falling back
  * to `label`) is used for the chip.
  *
- * @param {string} url    The field's raw value.
- * @param {string} source The value's tracked source - empty/unset falls
- *                        back to classifyResourceUrl().
+ * A registered source can also give a `statusChip( { documentId } )` that
+ * returns an extra chip for the underlying post (e.g. "Draft"), added after
+ * the source chip when it returns a non-empty string.
+ *
+ * @param {string} url        The field's raw value.
+ * @param {string} source     The value's tracked source - empty/unset falls
+ *                            back to classifyResourceUrl().
+ * @param {number} documentId The underlying post id, when the source has one.
  * @return {{chips: Array<string>, meta: string}} Display chips and the meta line.
  */
-export function resolveResourceDisplay( url, source ) {
+export function resolveResourceDisplay( url, source, documentId ) {
 	if ( ! url ) {
 		return { chips: [], meta: '' };
 	}
@@ -236,7 +279,16 @@ export function resolveResourceDisplay( url, source ) {
 	// document"). Falls back to `label` for a source that only registers
 	// that one string.
 	const chip = registered ? ( registered.chipLabel || registered.label ) : source;
-	return { chips: [ chip ], meta: hostPathMeta( url ) };
+	const chips = [ chip ];
+
+	if ( registered && 'function' === typeof registered.statusChip && documentId ) {
+		const statusChip = registered.statusChip( { documentId } );
+		if ( statusChip ) {
+			chips.push( statusChip );
+		}
+	}
+
+	return { chips, meta: hostPathMeta( url ) };
 }
 
 /**

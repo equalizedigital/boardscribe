@@ -240,6 +240,36 @@ describe( 'BoardScribe block edit()', () => {
 	} );
 
 	/**
+	 * PRO-1416: the template picker's help follows the selected choice
+	 * (field.choiceDescriptions), falling back to the field-level description.
+	 * Mutates the shared fixture in place for the test, like the hiddenFromUi
+	 * test below, since the module keeps a reference to that array.
+	 */
+	it( 'shows the selected template choice\'s own help text (PRO-1416)', () => {
+		const templateField = FIELD_FIXTURE.find( ( field ) => 'template' === field.attributeKey );
+		const original = { choices: templateField.choices, choiceDescriptions: templateField.choiceDescriptions };
+		templateField.choices = { '': 'Table (default)', list: 'List (stacked)' };
+		templateField.choiceDescriptions = { '': 'Table help.', list: 'List help.' };
+
+		try {
+			container = renderEdit( { ...defaultAttributes(), template: '' } );
+			expect( controlFor( container, 'select', 'Display Template' ).getAttribute( 'data-help' ) ).toBe( 'Table help.' );
+			act( () => roots.get( container ).unmount() );
+			container.remove();
+
+			container = renderEdit( { ...defaultAttributes(), template: 'list' } );
+			expect( controlFor( container, 'select', 'Display Template' ).getAttribute( 'data-help' ) ).toBe( 'List help.' );
+		} finally {
+			templateField.choices = original.choices;
+			if ( undefined === original.choiceDescriptions ) {
+				delete templateField.choiceDescriptions;
+			} else {
+				templateField.choiceDescriptions = original.choiceDescriptions;
+			}
+		}
+	} );
+
+	/**
 	 * PRO-1397 follow-up (CodeRabbit finding on PR #141): the template
 	 * picker is a special case rendered outside the generic fieldsByGroup
 	 * loop, so its own hiddenFromUi check needed adding separately - the

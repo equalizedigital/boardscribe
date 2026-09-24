@@ -108,6 +108,65 @@ class BoardScribeEndpointRestTest extends TestCase {
 	}
 
 	/**
+	 * PRO-1419: "show all" is a feature - 0 and -1 (and input the route sanitizer
+	 * maps to -1) must keep returning the bounded absolute max, not be clamped to
+	 * the normal 100-item cap. Pinned so nobody "fixes" it into a regression.
+	 *
+	 * @dataProvider show_all_posts_per_page_values
+	 *
+	 * @param mixed $value The raw posts_per_page value sent to the route.
+	 */
+	public function test_show_all_values_resolve_to_the_absolute_max_not_the_normal_cap( $value ): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'posts_per_page', $value );
+
+		$data = rest_get_server()->dispatch( $request )->get_data();
+
+		$this->assertSame( 500, $data['per_page'] );
+	}
+
+	/**
+	 * Values that mean "show all" through the public route.
+	 *
+	 * @return array<string, array{0: mixed}>
+	 */
+	public function show_all_posts_per_page_values(): array {
+		return [
+			'minus one'    => [ -1 ],
+			'zero'         => [ 0 ],
+			'negative'     => [ -5 ],
+			'all'          => [ 'all' ],
+			'non-numeric'  => [ 'abc' ],
+			'empty string' => [ '' ],
+		];
+	}
+
+	/**
+	 * PRO-1419: the method itself treats a non-positive value like the route
+	 * does (show all, bounded), so a direct call can't reach WP_Query with a raw 0.
+	 */
+	public function test_method_treats_non_positive_values_as_bounded_show_all(): void {
+		$endpoint = new \EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint();
+
+		foreach ( [ 0, -1, -5 ] as $value ) {
+			$request = new \WP_REST_Request( 'GET', self::ROUTE );
+			$request->set_param( 'posts_per_page', $value );
+
+			$this->assertSame( 500, $endpoint->get_meetings( $request )->get_data()['per_page'], "posts_per_page={$value}" );
+		}
+	}
+
+	/**
+	 * PRO-1419: a positive value is still capped at the normal 100.
+	 */
+	public function test_positive_values_are_still_capped_at_the_normal_max(): void {
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'posts_per_page', 99999 );
+
+		$this->assertSame( 100, rest_get_server()->dispatch( $request )->get_data()['per_page'] );
+	}
+
+	/**
 	 * PRO-1395 #2: meetings sharing the same edbs_meeting_date must still
 	 * sort deterministically (newest ID first, as a tie-break) rather than
 	 * in whatever order MySQL happens to return ties under LIMIT/OFFSET -

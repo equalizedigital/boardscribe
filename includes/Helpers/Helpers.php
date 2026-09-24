@@ -138,4 +138,28 @@ class Helpers {
 
 		return max( 0, (int) floor( ( time() - $activation_timestamp ) / DAY_IN_SECONDS ) );
 	}
+
+	/**
+	 * Whether a string is a complete, usable http(s) URL.
+	 *
+	 * Mirrors the editor's isValidExternalUrl(). `esc_url_raw()` alone is not a
+	 * validator: it percent-encodes "http://not a valid url" into a
+	 * well-formed-looking but dead URL (PRO-1401, PRO-1410, PRO-1414).
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $value Raw, already-trimmed value.
+	 * @return bool
+	 */
+	public static function is_valid_external_url( string $value ): bool {
+		if ( '' === $value || ! preg_match( '#^https?://#i', $value ) || false === filter_var( $value, FILTER_VALIDATE_URL ) ) {
+			return false;
+		}
+
+		$host = (string) wp_parse_url( $value, PHP_URL_HOST );
+
+		// No whitespace and no percent-encoded whitespace in the host, so this
+		// rejects the same set as the JavaScript validator.
+		return '' !== $host && ! preg_match( '/[\s%]/', $host );
+	}
 }

@@ -139,14 +139,16 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
  * chooser first. Built-in sources are "media_library" and "external_url";
  * a field can list additional source ids a plugin has registered on
  * window.edbsResourceSources (keyed by id, each `{ label, description,
- * render( { onSave, onCancel, currentValue, fieldKey } ), chipLabel? }`) -
+ * render( { onSave, onCancel, currentValue, fieldKey } ), chipLabel?,
+ * statusChip?( { documentId } ) }`) -
  * e.g. Pro's document picker, shared by Agenda and Minutes and told apart
  * via fieldKey. `label` is this chooser row's own heading (can be a full
  * imperative phrase, e.g. "Choose a BoardScribe document"); the optional
  * `chipLabel` is what the card's chip reads once a value from this source
  * is actually saved (a shorter noun phrase reads better there, e.g.
  * "BoardScribe document") - see resource-utils.js's resolveResourceDisplay().
- * Falls back to `label` when omitted.
+ * Falls back to `label` when omitted. The optional `statusChip( { documentId } )`
+ * returns an extra chip (e.g. "Draft") for the picked post, or an empty string.
  *
  * @param {Object}        props                 Component props.
  * @param {string}        props.title           Modal title, e.g. "Replace Agenda".

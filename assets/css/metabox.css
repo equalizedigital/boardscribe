@@ -267,8 +267,11 @@
 }
 
 .edbs-resource-card__action-icon {
-	margin-inline-start: 3px;
-	vertical-align: -1px;
+	/* A plain unicode glyph now (see resource-card.js), not an SVG - no
+	 * vertical-align tuning needed, it sits on the same baseline as the
+	 * label text either side of it. The leading space is baked into the
+	 * glyph string itself, not this margin. */
+	margin-inline-start: 1px;
 }
 
 .edbs-resource-card__action {
@@ -519,6 +522,7 @@
 
 .edbs-resource-card__title-edit {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px;
 	max-width: 320px;

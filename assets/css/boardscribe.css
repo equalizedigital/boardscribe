@@ -79,6 +79,7 @@
     .edbs-boardscribe-table td {
         display: flex;
         justify-content: space-between;
+        gap: 0.75em;
         padding: 10px;
         border: 1px solid #ddd;
         text-align: left;

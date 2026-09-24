@@ -33,7 +33,7 @@ describe( 'ResourceCard href actions', () => {
 		const link = rendered.querySelector( 'a' );
 
 		expect( link.getAttribute( 'aria-label' ) ).toBe( 'View Agenda (opens in a new tab)' );
-		expect( link.querySelector( 'svg[aria-hidden="true"]' ) ).not.toBeNull();
+		expect( link.querySelector( '.edbs-resource-card__action-icon[aria-hidden="true"]' ).textContent ).toBe( ' ↗' );
 		expect( link.getAttribute( 'target' ) ).toBe( '_blank' );
 	} );
 

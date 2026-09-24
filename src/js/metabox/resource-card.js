@@ -43,9 +43,11 @@ function CardAction( { label, ariaLabel, onClick, href, danger, disabled, id } )
 			>
 				{ label }
 				{ ! ariaLabel && <span className="screen-reader-text">{ ` ${ notice }` }</span> }
-				<svg className="edbs-resource-card__action-icon" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true" focusable="false">
-					<path d="M9 3v2H5v10h10v-4h2v6H3V3h6zm4 0h4v4h-2V6.4l-5.3 5.3-1.4-1.4L13.6 5H13V3z" fill="currentColor" />
-				</svg>
+				{ /* Same unicode glyph + aria-hidden pattern as Accessibility
+				     Checker's sidebar ExternalLinkIcon.js, so a "new tab" cue
+				     reads consistently across both plugins' admin UIs rather
+				     than one being an SVG glyph and the other plain text. */ }
+				<span className="edbs-resource-card__action-icon" aria-hidden="true">{ ' ↗' }</span>
 			</a>
 		);
 	}

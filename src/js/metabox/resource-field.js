@@ -124,7 +124,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 		speak( sprintf( /* translators: %s: field label, e.g. "Agenda". */ __( '%s removed.', 'boardscribe' ), field.label ) );
 	};
 
-	const { chips, meta } = resolveResourceDisplay( value, sourceValue );
+	const { chips, meta } = resolveResourceDisplay( value, sourceValue, documentIdValue );
 	const title = resolveResourceTitle( field, allValues && allValues.edbs_meeting_date );
 
 	const actions = [

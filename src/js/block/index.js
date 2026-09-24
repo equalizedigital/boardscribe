@@ -227,7 +227,7 @@ function Edit( { attributes, setAttributes } ) {
 					{ showTemplatePicker && (
 						<SelectControl
 							label={ templateField.label }
-							help={ templateField.description || undefined }
+							help={ ( templateField.choiceDescriptions && templateField.choiceDescriptions[ attributes.template ] ) || templateField.description || undefined }
 							value={ attributes.template }
 							options={ Object.keys( templateChoices ).map( ( choiceValue ) => ( {
 								value: choiceValue,

@@ -106,6 +106,20 @@ class FieldRegistryJsSchemaTest extends TestCase {
 	}
 
 	/**
+	 * PRO-1416: a select field can describe each of its choices, so the help
+	 * text can follow the selected option. The built-in Table choice (value '')
+	 * has its own line, and fields without per-choice help expose null.
+	 */
+	public function test_choice_descriptions_are_exposed_for_the_template_field_only(): void {
+		$by_key = array_column( FieldRegistry::js_schema(), null, 'key' );
+
+		$this->assertIsArray( $by_key['template']['choiceDescriptions'] );
+		$this->assertArrayHasKey( '', $by_key['template']['choiceDescriptions'] );
+		$this->assertNotSame( '', $by_key['template']['choiceDescriptions'][''] );
+		$this->assertNull( $by_key['posts_per_page']['choiceDescriptions'] );
+	}
+
+	/**
 	 * A hidden_from_ui field (e.g. a Pro field left behind once a license
 	 * lapses) is omitted from the default js_schema() call - the settings-
 	 * page builder app's own use, which only ever builds a *new* shortcode

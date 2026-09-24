@@ -117,24 +117,28 @@ class BoardScribeEndpoint {
 
 		$posts_per_page = (int) $posts_per_page;
 
-		if ( -1 === $posts_per_page ) {
+		// 0 and -1 (and anything non-numeric, which the route sanitizer maps to -1)
+		// mean "show all" - a feature the shortcode builder and block rely on. Kept
+		// explicit here so a non-positive value is always the bounded ceiling, never
+		// passed to WP_Query raw (0 returns WordPress's default of 10, -1 everything).
+		if ( $posts_per_page <= 0 ) {
 			/**
-			 * Filters the absolute ceiling applied to "show all" (`-1`) requests.
+			 * Filters the absolute ceiling applied to "show all" (`0` / `-1`) requests.
 			 *
 			 * The endpoint is public, so even the shortcode builder's explicit
-			 * no-limit option must resolve to a bounded query — otherwise any
+			 * no-limit option must resolve to a bounded query - otherwise any
 			 * anonymous caller could request every record in one response.
 			 *
 			 * @since 1.0.0
 			 *
-			 * @param int $absolute_max Upper bound substituted for -1. Default 500.
+			 * @param int $absolute_max Upper bound substituted for "show all". Default 500.
 			 */
 			$posts_per_page = (int) apply_filters( 'edbs_rest_absolute_max_per_page', 500 );
-		} elseif ( $posts_per_page > 0 ) {
+		} else {
 			/**
 			 * Filters the maximum number of meetings a single REST request may return.
 			 *
-			 * Bounds arbitrary positive values sent directly to the public endpoint.
+			 * Bounds every positive value sent directly to the public endpoint.
 			 *
 			 * @since 1.0.0
 			 *
