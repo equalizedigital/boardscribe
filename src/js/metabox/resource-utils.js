@@ -32,6 +32,16 @@ export function isValidExternalUrl( value ) {
 		return false;
 	}
 
+	// The WHATWG URL parser strips every ASCII tab/newline from the input
+	// before parsing anything else (spec: "remove all ASCII tab or newline
+	// from input") - so a pasted "https://exa\nmple.com" reaches new URL()
+	// below as "https://example.com" with a perfectly clean hostname,
+	// passing every check after it. Rejected here, on the untouched raw
+	// string, before that stripping can hide it.
+	if ( /[\t\n\r]/.test( raw ) ) {
+		return false;
+	}
+
 	let parsed;
 	try {
 		parsed = new URL( raw );

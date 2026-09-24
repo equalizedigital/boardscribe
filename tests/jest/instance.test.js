@@ -215,4 +215,53 @@ describe( 'initInstance', () => {
 		wrap.remove();
 		window.history.replaceState( null, '', window.location.pathname );
 	} );
+
+	/**
+	 * A caller that re-inits an already-initialized container in place
+	 * (rather than tearing it down and mounting a fresh one) - the
+	 * Shortcode Builder's live preview does this on every debounced config
+	 * change, see builder/preview.js - must not have an older
+	 * initInstance() call's in-flight request render after a newer call has
+	 * already taken over the same container. requestSequence alone can't
+	 * catch this: it only orders requests started by the *same*
+	 * initInstance() call's own fetchMeetings(), not across two separate
+	 * calls sharing one container.
+	 */
+	it( 'ignores a stale response from a superseded initInstance() call on the same container', async () => {
+		let resolveFirst;
+		const firstResponse = new Promise( ( resolve ) => {
+			resolveFirst = resolve;
+		} );
+		window.fetch = jest.fn()
+			.mockImplementationOnce( () => firstResponse )
+			.mockResolvedValueOnce( {
+				ok: true,
+				json: () => Promise.resolve( { meetings: [ { title: 'second-init' } ], max_num_pages: 1 } ),
+			} );
+
+		const { initInstance } = require( '../../src/js/instance' );
+		const wrap = buildWrap( document, 'edbs_generation' );
+		document.body.appendChild( wrap );
+
+		initInstance( wrap ); // First call's request is still pending.
+		initInstance( wrap ); // A second call takes over the same container.
+		await flushPromises();
+
+		// Only now does the first call's request resolve.
+		resolveFirst( {
+			ok: true,
+			json: () => Promise.resolve( { meetings: [ { title: 'first-init-stale' } ], max_num_pages: 1 } ),
+		} );
+		await flushPromises();
+		await flushPromises();
+
+		expect( window.edbsTemplates.table.render ).toHaveBeenCalledTimes( 1 );
+		expect( window.edbsTemplates.table.render ).toHaveBeenCalledWith(
+			expect.objectContaining( { meetings: [ { title: 'second-init' } ] } ),
+			expect.anything(),
+			expect.anything(),
+		);
+
+		wrap.remove();
+	} );
 } );

@@ -184,6 +184,15 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 				value={ draft }
 				onChange={ setDraft }
 				onKeyDown={ ( event ) => {
+					// Escape can be the key an IME uses to cancel a composing
+					// candidate (e.g. typing Japanese/Chinese) rather than a
+					// request to cancel this whole draft - isComposing (or,
+					// on browsers that don't set it for Escape specifically,
+					// the legacy keyCode 229) means the IME owns this
+					// keypress, not this field.
+					if ( event.isComposing || 229 === event.keyCode ) {
+						return;
+					}
 					if ( 'Enter' === event.key ) {
 						event.preventDefault();
 						save();

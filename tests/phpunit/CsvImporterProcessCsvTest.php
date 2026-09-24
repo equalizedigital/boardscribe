@@ -316,4 +316,42 @@ class CsvImporterProcessCsvTest extends TestCase {
 		$this->assertSame( 1, $result['imported'] );
 		$this->assertSame( 1, $result['invalid_urls'] );
 	}
+
+	/**
+	 * An invalid value in a filtered-in URL column is cleared from $data
+	 * before edbs_csv_import_row_meta fires, not just excluded from the
+	 * two columns this method saves itself - an add-on's own row-meta
+	 * callback (e.g. Pro's) must never see the invalid raw value, even if
+	 * it doesn't independently re-validate before saving.
+	 */
+	public function test_invalid_filtered_url_is_cleared_before_the_row_meta_action(): void {
+		add_filter(
+			'edbs_csv_import_url_columns',
+			static function ( array $columns ): array {
+				$columns[] = 'livestream_url';
+				return $columns;
+			}
+		);
+
+		$received = null;
+		add_action(
+			'edbs_csv_import_row_meta',
+			static function ( int $post_id, array $data ) use ( &$received ) {
+				unset( $post_id );
+				$received = $data;
+			},
+			10,
+			2
+		);
+
+		$this->csv_path = tempnam( sys_get_temp_dir(), 'edbs-csv-test-' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_tempnam
+		file_put_contents( $this->csv_path, "title,date,livestream_url\nCleared Col Meeting,2024-04-01,http://not a valid url\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		$method = new \ReflectionMethod( CsvImporter::class, 'process_csv' );
+		$method->setAccessible( true );
+		$method->invoke( new CsvImporter(), $this->csv_path );
+
+		$this->assertNotNull( $received );
+		$this->assertSame( '', $received['livestream_url'] );
+	}
 }

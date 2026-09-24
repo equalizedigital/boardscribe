@@ -22,6 +22,18 @@ export function initInstance( container ) {
 	}
 	const id = instanceCfg.instanceId;
 
+	// Cross-initialization generation guard, stored on the container itself
+	// rather than a local closure variable: requestSequence below only
+	// orders requests *within* one initInstance() call, so it can't stop an
+	// older call's in-flight fetch from rendering after a newer call has
+	// already replaced it on the same container - a caller that re-inits an
+	// already-initialized container in place (rather than tearing it down
+	// first) needs exactly that, e.g. the Shortcode Builder's live preview,
+	// which re-runs this on every debounced config change without remounting
+	// the wrapper (see builder/preview.js).
+	container.__edbsGeneration = ( container.__edbsGeneration || 0 ) + 1;
+	const generation = container.__edbsGeneration;
+
 	// Scoped off container's own document, not the bare global - container
 	// can live inside a different document than this script's own realm
 	// (the block editor canvas is iframed by default since WP ~6.3, so
@@ -239,6 +251,13 @@ export function initInstance( container ) {
 				if ( seq !== requestSequence ) {
 					return;
 				}
+				// A newer initInstance() call on this same container has
+				// superseded this whole closure - requestSequence above
+				// can't catch this, it only orders requests started by
+				// *this* closure's own fetchMeetings().
+				if ( container.__edbsGeneration !== generation ) {
+					return;
+				}
 				// Caught separately from the request promise below so a
 				// throw from renderInstance() (e.g. a broken template or
 				// edbs:table-rendered listener) isn't misreported to
@@ -252,7 +271,7 @@ export function initInstance( container ) {
 				}
 			} )
 			.catch( function( error ) {
-				if ( seq !== requestSequence ) {
+				if ( seq !== requestSequence || container.__edbsGeneration !== generation ) {
 					return;
 				}
 				// eslint-disable-next-line no-console -- Surface fetch failures for debugging; there is no other error-reporting mechanism here.

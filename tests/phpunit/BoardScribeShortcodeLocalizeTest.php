@@ -75,4 +75,19 @@ class BoardScribeShortcodeLocalizeTest extends TestCase {
 			substr_count( (string) wp_scripts()->get_data( 'edbs-boardscribe', 'data' ), 'var edbsConfig' )
 		);
 	}
+
+	/**
+	 * The guard checks specifically for edbsConfig, not "any data at all" -
+	 * another integration localizing a different variable onto this same
+	 * handle first must not make enqueue_assets() think edbsConfig was
+	 * already set and skip it.
+	 */
+	public function test_edbs_config_is_still_attached_when_other_data_was_localized_first(): void {
+		wp_register_script( 'edbs-boardscribe', 'https://example.com/boardscribe.js', [], '1.0', true );
+		wp_localize_script( 'edbs-boardscribe', 'someOtherIntegrationConfig', [ 'foo' => 'bar' ] );
+
+		( new BoardScribeShortcode() )->enqueue_assets();
+
+		$this->assertStringContainsString( 'edbsConfig', (string) wp_scripts()->get_data( 'edbs-boardscribe', 'data' ) );
+	}
 }

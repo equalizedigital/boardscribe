@@ -124,7 +124,16 @@ class BoardScribeShortcode {
 		// Checks the script's actual data, not a static flag: core's block editor
 		// preload restores $wp_scripts after rendering the block, discarding the
 		// localization while a flag would still read as done (PRO-1413).
-		if ( wp_scripts()->get_data( 'edbs-boardscribe', 'data' ) ) {
+		//
+		// Specifically for edbsConfig, not merely "any data at all" - the
+		// 'data' slot is one concatenated string covering every
+		// wp_localize_script()/wp_add_inline_script() call ever made against
+		// this handle. Another integration localizing a different variable
+		// onto 'edbs-boardscribe' first would otherwise make this guard
+		// wrongly conclude edbsConfig was already set and skip localizing it
+		// at all, leaving the front-end bundle with no config.
+		$existing_data = wp_scripts()->get_data( 'edbs-boardscribe', 'data' );
+		if ( $existing_data && false !== strpos( $existing_data, 'edbsConfig' ) ) {
 			return;
 		}
 

@@ -158,6 +158,12 @@ describe( 'isValidExternalUrl', () => {
 		expect( isValidExternalUrl( 'https://not%20a%20valid%20url' ) ).toBe( false );
 	} );
 
+	it( 'rejects an embedded newline/tab - new URL() strips them before parsing, hiding an otherwise-invalid host', () => {
+		expect( isValidExternalUrl( 'https://exa\nmple.com' ) ).toBe( false );
+		expect( isValidExternalUrl( 'https://exa\tmple.com' ) ).toBe( false );
+		expect( isValidExternalUrl( 'https://exa\rmple.com' ) ).toBe( false );
+	} );
+
 	it( 'rejects hosts with characters that cannot appear in a hostname', () => {
 		expect( isValidExternalUrl( 'https://exa<mple.com' ) ).toBe( false );
 		expect( isValidExternalUrl( 'https://-example.com' ) ).toBe( false );

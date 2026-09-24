@@ -377,6 +377,15 @@ class CsvImporter {
 			foreach ( $url_columns as $url_column ) {
 				if ( isset( $data[ $url_column ] ) && '' !== trim( (string) $data[ $url_column ] ) && ! Helpers::is_valid_external_url( trim( (string) $data[ $url_column ] ) ) ) {
 					$row_invalid_urls[] = $url_column;
+					// Cleared here, not just excluded from the two update_post_meta()
+					// calls below - $data (with the invalid raw value still intact)
+					// is what edbs_csv_import_row_meta hands to every add-on's own
+					// column-saving callback further down. Without this, "an invalid
+					// URL is not saved" is a promise this method only keeps for its
+					// own two columns; an add-on's callback that doesn't separately
+					// re-validate would still store the invalid value while the
+					// import notice reports it as skipped.
+					$data[ $url_column ] = '';
 				}
 			}
 

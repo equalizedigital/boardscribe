@@ -102,6 +102,21 @@ export function TextareaControl( { label, value, onChange, help } ) {
 	);
 }
 
+// Stand-in for FormTokenField - renders `value` (an array of token
+// strings) as a comma-joined text input; typing a new comma-separated
+// list and blurring calls onChange with the parsed array, the same
+// shape the real component's onChange gives.
+export function FormTokenField( { label, value, suggestions, onChange, help } ) {
+	return createElement(
+		'label',
+		{ 'data-control': 'form-token-field', 'data-label': label, 'data-help': help || '', 'data-suggestions': ( suggestions || [] ).join( '|' ) },
+		createElement( 'input', {
+			value: ( value || [] ).join( ',' ),
+			onChange: ( event ) => onChange( event.target.value === '' ? [] : event.target.value.split( ',' ) ),
+		} ),
+	);
+}
+
 export function __experimentalNumberControl( { label, value, onChange, min, help } ) {
 	return createElement(
 		'label',

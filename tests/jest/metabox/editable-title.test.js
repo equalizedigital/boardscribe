@@ -80,6 +80,21 @@ describe( 'EditableTitle', () => {
 		expect( input().value ).toBe( 'Original title' );
 	} );
 
+	it( 'Escape during IME composition does not discard the draft', () => {
+		const onChange = jest.fn();
+		act( () => root.render( <Standalone onChange={ onChange } /> ) );
+
+		openAndType( 'Changed' );
+		act( () => Simulate.keyDown( input(), { key: 'Escape', isComposing: true } ) );
+		flush();
+
+		expect( onChange ).not.toHaveBeenCalled();
+		// Still open, with the in-progress draft intact - Escape was
+		// consumed by the IME, not this field.
+		expect( input() ).not.toBeNull();
+		expect( input().value ).toBe( 'Changed' );
+	} );
+
 	it( 'has a visible Cancel button that behaves the same as Escape', () => {
 		const onChange = jest.fn();
 		act( () => root.render( <Standalone onChange={ onChange } /> ) );

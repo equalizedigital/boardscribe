@@ -74,25 +74,44 @@ export function GenericFieldControl( { field, value = '', onChange, controlProps
 			// that no longer exists) is silently dropped rather than saved as
 			// free text - this field only ever means "filter by these real
 			// terms", not "create a new one".
+			//
+			// WordPress allows two terms - even in a flat, non-hierarchical
+			// taxonomy - to share the same display name with different
+			// slugs (wp_insert_term() only enforces a unique slug, not a
+			// unique name). A plain label -> slug map would then collide:
+			// whichever term was processed last would own that label, and
+			// picking the token would always save that one slug regardless
+			// of which same-named term the user meant. Disambiguated here by
+			// suffixing " (slug)" onto a label only when it's not unique,
+			// so an ordinary field with no naming collisions renders
+			// exactly as before.
 			const choices = field.choices || {};
-			const labelToSlug = {};
+			const labelCounts = {};
+			Object.values( choices ).forEach( ( label ) => {
+				labelCounts[ label ] = ( labelCounts[ label ] || 0 ) + 1;
+			} );
+			const slugToToken = {};
+			const tokenToSlug = {};
 			Object.keys( choices ).forEach( ( slug ) => {
-				labelToSlug[ choices[ slug ] ] = slug;
+				const label = choices[ slug ];
+				const token = labelCounts[ label ] > 1 ? `${ label } (${ slug })` : label;
+				slugToToken[ slug ] = token;
+				tokenToSlug[ token ] = slug;
 			} );
 			const selectedSlugs = ( value || '' ).split( ',' ).filter( Boolean );
-			const selectedLabels = selectedSlugs.map( ( slug ) => choices[ slug ] || slug );
-			const suggestions = Object.values( choices );
+			const selectedTokens = selectedSlugs.map( ( slug ) => slugToToken[ slug ] || slug );
+			const suggestions = Object.values( slugToToken );
 			const noChoicesHelp = __( 'No terms exist yet to filter by.', 'boardscribe' );
 
 			return (
 				<FormTokenField
 					label={ field.label }
 					help={ suggestions.length ? help : noChoicesHelp }
-					value={ selectedLabels }
+					value={ selectedTokens }
 					suggestions={ suggestions }
 					onChange={ ( tokens ) => {
 						const slugs = tokens
-							.map( ( token ) => labelToSlug[ token ] )
+							.map( ( token ) => tokenToSlug[ token ] )
 							.filter( Boolean );
 						onChange( slugs.join( ',' ) );
 					} }
