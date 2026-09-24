@@ -17,9 +17,9 @@ export function resolveFieldSources( field, defaultSources ) {
 }
 
 /**
- * Whether a string is a complete, absolute http(s) URL - "not a url" and
- * an unedited/incomplete "https://" (no host) both fail this, unlike a
- * bare non-empty check. Used by resource-modal.js's ExternalUrlSource to
+ * Whether a string is a complete, absolute http(s) URL with a plausible host -
+ * "not a url", an unedited "https://" and a host containing spaces all fail,
+ * unlike a bare non-empty check. Used by resource-modal.js's ExternalUrlSource to
  * validate before calling onSave, rather than relying only on the
  * browser's native type="url" constraint validation.
  *
@@ -27,12 +27,40 @@ export function resolveFieldSources( field, defaultSources ) {
  * @return {boolean} Whether it's a valid external URL.
  */
 export function isValidExternalUrl( value ) {
+	const raw = String( value ?? '' ).trim();
+	if ( '' === raw ) {
+		return false;
+	}
+
+	let parsed;
 	try {
-		const parsed = new URL( value.trim() );
-		return ( 'http:' === parsed.protocol || 'https:' === parsed.protocol ) && '' !== parsed.hostname;
+		parsed = new URL( raw );
 	} catch ( error ) {
 		return false;
 	}
+
+	if ( 'http:' !== parsed.protocol && 'https:' !== parsed.protocol ) {
+		return false;
+	}
+
+	const host = parsed.hostname;
+
+	// new URL() percent-encodes invalid host characters instead of throwing, so
+	// "https://not a valid url" parses with hostname "not%20a%20valid%20url".
+	// '%' can only reach a host through that encoding.
+	if ( '' === host || /[\s%]/.test( host ) ) {
+		return false;
+	}
+
+	// Bracketed IPv6 literal, e.g. [::1].
+	if ( /^\[[0-9a-f:.]+\]$/i.test( host ) ) {
+		return true;
+	}
+
+	// DNS name or IPv4: dot-separated labels of letters, digits, hyphens and
+	// underscores, not starting or ending with a hyphen. Single-label hosts
+	// (localhost, intranet names) stay valid; IDN hosts arrive punycoded.
+	return /^[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?(?:\.[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?)*$/i.test( host );
 }
 
 /**
