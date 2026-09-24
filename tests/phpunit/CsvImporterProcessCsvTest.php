@@ -42,16 +42,16 @@ class CsvImporterProcessCsvTest extends TestCase {
 	 * and returns process_csv()'s result via reflection - no public entry
 	 * point isolates this from the full upload/file-handling flow.
 	 *
-	 * @param array<int, array{title?: string, date: string, publish_date?: string}> $rows Row data.
-	 * @return array{imported: int, skipped: int, scheduled: int, duplicates: int}
+	 * @param array<int, array{title?: string, date: string, publish_date?: string, agenda_url?: string, minutes_url?: string}> $rows Row data.
+	 * @return array{imported: int, skipped: int, scheduled: int, duplicates: int, invalid_urls: int}
 	 */
 	private function process( array $rows ): array {
 		$this->csv_path = tempnam( sys_get_temp_dir(), 'edbs-csv-test-' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_tempnam
 
 		$handle = fopen( $this->csv_path, 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-		fputcsv( $handle, [ 'title', 'date', 'publish_date' ] );
+		fputcsv( $handle, [ 'title', 'date', 'publish_date', 'agenda_url', 'minutes_url' ] );
 		foreach ( $rows as $row ) {
-			fputcsv( $handle, [ $row['title'] ?? '', $row['date'], $row['publish_date'] ?? '' ] );
+			fputcsv( $handle, [ $row['title'] ?? '', $row['date'], $row['publish_date'] ?? '', $row['agenda_url'] ?? '', $row['minutes_url'] ?? '' ] );
 		}
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
@@ -60,6 +60,25 @@ class CsvImporterProcessCsvTest extends TestCase {
 		$method->setAccessible( true );
 
 		return $method->invoke( $importer, $this->csv_path );
+	}
+
+	/**
+	 * Finds an imported meeting by its exact title, in any status.
+	 *
+	 * @param string $title The meeting title.
+	 * @return \WP_Post|null
+	 */
+	private function find_meeting( string $title ): ?\WP_Post {
+		$posts = get_posts(
+			[
+				'post_type'   => 'edbs_meeting',
+				'post_status' => 'any',
+				'title'       => $title,
+				'numberposts' => 1,
+			]
+		);
+
+		return $posts[0] ?? null;
 	}
 
 	/**
@@ -199,5 +218,76 @@ class CsvImporterProcessCsvTest extends TestCase {
 		$this->assertSame( 1, $first['imported'] );
 		$this->assertSame( 0, $second['imported'] );
 		$this->assertSame( 1, $second['duplicates'] );
+	}
+
+	/**
+	 * PRO-1414: an invalid agenda/minutes URL doesn't discard the meeting - it
+	 * is imported without that link, and the row is reported as having an
+	 * invalid URL instead of silently saving esc_url_raw()'s encoded garbage.
+	 */
+	public function test_invalid_urls_are_not_saved_and_are_reported(): void {
+		$result = $this->process(
+			[
+				[
+					'title'       => 'Bad Links Meeting',
+					'date'        => '2024-03-15',
+					'agenda_url'  => 'http://not a valid url',
+					'minutes_url' => 'https://exa mple.com/minutes.pdf',
+				],
+			]
+		);
+
+		$this->assertSame( 1, $result['imported'] );
+		$this->assertSame( 1, $result['invalid_urls'] );
+
+		$post = $this->find_meeting( 'Bad Links Meeting' );
+		$this->assertNotNull( $post );
+		$this->assertSame( '', get_post_meta( $post->ID, 'edbs_agenda_url', true ) );
+		$this->assertSame( '', get_post_meta( $post->ID, 'edbs_minutes_url', true ) );
+	}
+
+	/**
+	 * PRO-1414: valid URLs are saved as before and aren't counted as invalid.
+	 */
+	public function test_valid_urls_are_saved_and_not_reported(): void {
+		$result = $this->process(
+			[
+				[
+					'title'       => 'Good Links Meeting',
+					'date'        => '2024-03-16',
+					'agenda_url'  => 'https://example.com/agenda.pdf',
+					'minutes_url' => 'https://example.com/minutes.pdf',
+				],
+			]
+		);
+
+		$this->assertSame( 0, $result['invalid_urls'] );
+
+		$post = $this->find_meeting( 'Good Links Meeting' );
+		$this->assertSame( 'https://example.com/agenda.pdf', get_post_meta( $post->ID, 'edbs_agenda_url', true ) );
+		$this->assertSame( 'https://example.com/minutes.pdf', get_post_meta( $post->ID, 'edbs_minutes_url', true ) );
+	}
+
+	/**
+	 * PRO-1414: one bad URL keeps the good one on the same row, and a row is
+	 * counted once however many of its URLs are invalid.
+	 */
+	public function test_one_bad_url_keeps_the_good_one_and_counts_the_row_once(): void {
+		$result = $this->process(
+			[
+				[
+					'title'       => 'Mixed Links Meeting',
+					'date'        => '2024-03-17',
+					'agenda_url'  => 'http://not a valid url',
+					'minutes_url' => 'https://example.com/minutes.pdf',
+				],
+			]
+		);
+
+		$this->assertSame( 1, $result['invalid_urls'] );
+
+		$post = $this->find_meeting( 'Mixed Links Meeting' );
+		$this->assertSame( '', get_post_meta( $post->ID, 'edbs_agenda_url', true ) );
+		$this->assertSame( 'https://example.com/minutes.pdf', get_post_meta( $post->ID, 'edbs_minutes_url', true ) );
 	}
 }

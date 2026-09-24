@@ -8,6 +8,7 @@
 namespace EqualizeDigital\BoardScribe\Import;
 
 use EqualizeDigital\BoardScribe\Admin\MetaBox;
+use EqualizeDigital\BoardScribe\Helpers\Helpers;
 
 /**
  * Provides a bulk CSV import admin page under the BoardScribe menu.
@@ -74,11 +75,11 @@ class CsvImporter {
 			],
 			'agenda_url'   => [
 				'required' => false,
-				'notes'    => __( 'Full URL to agenda file', 'boardscribe' ),
+				'notes'    => __( 'Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved.', 'boardscribe' ),
 			],
 			'minutes_url'  => [
 				'required' => false,
-				'notes'    => __( 'Full URL to minutes file', 'boardscribe' ),
+				'notes'    => __( 'Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved.', 'boardscribe' ),
 			],
 			'not_held'     => [
 				'required' => false,
@@ -178,10 +179,11 @@ class CsvImporter {
 		wp_safe_redirect(
 			add_query_arg(
 				[
-					'edbs_import_success'    => $result['imported'],
-					'edbs_import_skipped'    => $result['skipped'],
-					'edbs_import_scheduled'  => $result['scheduled'],
-					'edbs_import_duplicates' => $result['duplicates'],
+					'edbs_import_success'      => $result['imported'],
+					'edbs_import_skipped'      => $result['skipped'],
+					'edbs_import_scheduled'    => $result['scheduled'],
+					'edbs_import_duplicates'   => $result['duplicates'],
+					'edbs_import_invalid_urls' => $result['invalid_urls'],
 				],
 				$this->get_page_url()
 			)
@@ -266,17 +268,18 @@ class CsvImporter {
 	 * @since 1.1.0
 	 *
 	 * @param string $file Path to the temporary uploaded file.
-	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int }
+	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int, invalid_urls: int }
 	 */
 	private function process_csv( string $file ): array {
 		$handle = fopen( $file, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
 		if ( ! $handle ) {
 			return [
-				'imported'   => 0,
-				'skipped'    => 0,
-				'scheduled'  => 0,
-				'duplicates' => 0,
+				'imported'     => 0,
+				'skipped'      => 0,
+				'scheduled'    => 0,
+				'duplicates'   => 0,
+				'invalid_urls' => 0,
 			];
 		}
 
@@ -297,11 +300,12 @@ class CsvImporter {
 		$required_columns = array_keys( array_filter( $this->columns(), fn( array $column ): bool => ! empty( $column['required'] ) ) );
 		$meta_box         = new MetaBox();
 
-		$imported   = 0;
-		$skipped    = 0;
-		$scheduled  = 0;
-		$duplicates = 0;
-		$headers    = null;
+		$imported     = 0;
+		$skipped      = 0;
+		$scheduled    = 0;
+		$duplicates   = 0;
+		$invalid_urls = 0;
+		$headers      = null;
 
 		while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- idiomatic fgetcsv loop pattern.
 			// First row: extract and normalise headers. Strips a leading
@@ -347,6 +351,18 @@ class CsvImporter {
 				if ( null === $publish_date ) {
 					++$skipped;
 					continue;
+				}
+			}
+
+			// Validate the optional URL columns. esc_url_raw() alone encodes a
+			// malformed value into a dead link with nothing in the results to say
+			// so. An invalid URL doesn't discard the meeting - it is not saved and
+			// is reported, since losing a whole meeting to one bad cell is worse
+			// than losing the link.
+			$row_invalid_urls = [];
+			foreach ( [ 'agenda_url', 'minutes_url' ] as $url_column ) {
+				if ( isset( $data[ $url_column ] ) && '' !== trim( (string) $data[ $url_column ] ) && ! Helpers::is_valid_external_url( trim( (string) $data[ $url_column ] ) ) ) {
+					$row_invalid_urls[] = $url_column;
 				}
 			}
 
@@ -398,12 +414,16 @@ class CsvImporter {
 				++$imported;
 			}
 
-			if ( ! empty( $data['agenda_url'] ) ) {
+			if ( ! empty( $data['agenda_url'] ) && ! in_array( 'agenda_url', $row_invalid_urls, true ) ) {
 				update_post_meta( $post_id, 'edbs_agenda_url', esc_url_raw( trim( $data['agenda_url'] ) ) );
 			}
 
-			if ( ! empty( $data['minutes_url'] ) ) {
+			if ( ! empty( $data['minutes_url'] ) && ! in_array( 'minutes_url', $row_invalid_urls, true ) ) {
 				update_post_meta( $post_id, 'edbs_minutes_url', esc_url_raw( trim( $data['minutes_url'] ) ) );
+			}
+
+			if ( $row_invalid_urls ) {
+				++$invalid_urls;
 			}
 
 			$not_held = strtolower( trim( $data['not_held'] ?? '' ) );
@@ -426,10 +446,11 @@ class CsvImporter {
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 		return [
-			'imported'   => $imported,
-			'skipped'    => $skipped,
-			'scheduled'  => $scheduled,
-			'duplicates' => $duplicates,
+			'imported'     => $imported,
+			'skipped'      => $skipped,
+			'scheduled'    => $scheduled,
+			'duplicates'   => $duplicates,
+			'invalid_urls' => $invalid_urls,
 		];
 	}
 
@@ -506,8 +527,9 @@ class CsvImporter {
 	private function resolve_status_message(): ?array {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data.
 		if ( isset( $_GET['edbs_import_success'] ) ) {
-			$scheduled  = absint( $_GET['edbs_import_scheduled'] ?? 0 );
-			$duplicates = absint( $_GET['edbs_import_duplicates'] ?? 0 );
+			$scheduled    = absint( $_GET['edbs_import_scheduled'] ?? 0 );
+			$duplicates   = absint( $_GET['edbs_import_duplicates'] ?? 0 );
+			$invalid_urls = absint( $_GET['edbs_import_invalid_urls'] ?? 0 );
 
 			$message = sprintf(
 				/* translators: 1: number imported, 2: number skipped */
@@ -533,6 +555,14 @@ class CsvImporter {
 					/* translators: %d: number of duplicate rows skipped */
 					_n( '%d row matched an existing meeting, or an earlier row in this file, with the same title and date and was skipped.', '%d rows matched an existing meeting, or an earlier row in this file, with the same title and date and were skipped.', $duplicates, 'boardscribe' ),
 					$duplicates
+				);
+			}
+
+			if ( $invalid_urls > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of rows whose agenda/minutes URL was invalid */
+					_n( '%d row had an invalid agenda or minutes URL; that URL was not saved.', '%d rows had an invalid agenda or minutes URL; those URLs were not saved.', $invalid_urls, 'boardscribe' ),
+					$invalid_urls
 				);
 			}
 
