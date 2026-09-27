@@ -146,7 +146,14 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
 	if ( ! isEditing ) {
 		return (
 			<>
-				{ label || emptyLabel || __( 'Untitled document', 'boardscribe' ) }
+				{ /* Wrapped rather than a bare text node: a script outside React
+				     can rewrite a text node in place (WordPress's emoji polyfill
+				     swaps an emoji for an `<img class="emoji">`), and removing
+				     that now-stale node when this branch is swapped for the
+				     editor below threw NotFoundError (PRO-1424). */ }
+				<span className="edbs-resource-card__title-text">
+					{ label || emptyLabel || __( 'Untitled document', 'boardscribe' ) }
+				</span>
 				{ ! hideEditButton && (
 					<Button ref={ triggerRef } variant="link" className="edbs-resource-card__edit-title" aria-label={ ariaLabel || undefined } onClick={ () => setIsEditing( true ) }>
 						{ label ? __( 'Edit title', 'boardscribe' ) : __( 'Add title', 'boardscribe' ) }

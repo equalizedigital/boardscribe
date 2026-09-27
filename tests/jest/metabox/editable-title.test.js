@@ -33,8 +33,8 @@ afterEach( () => {
 	jest.useRealTimers();
 } );
 
-function Standalone( { onChange, help } ) {
-	const [ label, setLabel ] = useState( 'Original title' );
+function Standalone( { onChange, help, initial = 'Original title' } ) {
+	const [ label, setLabel ] = useState( initial );
 	return (
 		<EditableTitle
 			label={ label }
@@ -187,5 +187,62 @@ describe( 'ResourceListField (Supporting Documents) title editor', () => {
 
 		expect( container.textContent ).toContain( 'Budget 2027' );
 		expect( document.activeElement ).toBe( editButton() );
+	} );
+} );
+
+describe( 'EditableTitle after an outside script rewrites its label (PRO-1424)', () => {
+	const UNICODE_TITLE = 'Caf\u00e9 \u2013 \u201cQuote\u201d \ud83d\udcc4';
+
+	/**
+	 * Replaces the label's text node the way WordPress's emoji polyfill (or a
+	 * translation extension) does: the text node React created is thrown away and
+	 * a text + <img class="emoji"> pair takes its place, without React hearing
+	 * about it.
+	 */
+	function replaceLabelTextNodeWithEmojiImage() {
+		const labelNode = [ container, ...container.querySelectorAll( '*' ) ]
+			.flatMap( ( element ) => Array.from( element.childNodes ) )
+			.find( ( node ) => 3 === node.nodeType && node.nodeValue.includes( '\ud83d\udcc4' ) );
+
+		expect( labelNode ).toBeDefined();
+
+		const replacement = document.createDocumentFragment();
+		replacement.appendChild( document.createTextNode( labelNode.nodeValue.replace( '\ud83d\udcc4', '' ) ) );
+		const image = document.createElement( 'img' );
+		image.className = 'emoji';
+		image.setAttribute( 'alt', '\ud83d\udcc4' );
+		replacement.appendChild( image );
+		labelNode.parentNode.replaceChild( replacement, labelNode );
+	}
+
+	it( 'opens the editor even though React no longer owns the label text node', () => {
+		act( () => root.render( <Standalone initial={ UNICODE_TITLE } onChange={ () => {} } /> ) );
+		expect( container.textContent ).toContain( UNICODE_TITLE );
+
+		replaceLabelTextNodeWithEmojiImage();
+
+		// React no longer holds a node that is a child of the title cell, so the
+		// swap to the editor's own <div> has to remove an element it owns rather
+		// than that text node - otherwise this throws NotFoundError and takes the
+		// whole meta box down with it.
+		expect( () => {
+			act( () => Simulate.click( button( 'Edit title' ) ) );
+		} ).not.toThrow();
+		expect( input().value ).toBe( UNICODE_TITLE );
+	} );
+
+	it( 'saves the label it was given, not the text the other script left behind', () => {
+		const onChange = jest.fn();
+		act( () => root.render( <Standalone initial={ UNICODE_TITLE } onChange={ onChange } /> ) );
+
+		replaceLabelTextNodeWithEmojiImage();
+
+		act( () => Simulate.click( button( 'Edit title' ) ) );
+		act( () => Simulate.change( input(), { target: { value: 'Board packet' } } ) );
+		act( () => Simulate.click( button( 'Save' ) ) );
+		flush();
+
+		expect( onChange ).toHaveBeenCalledWith( 'Board packet' );
+		expect( container.textContent ).toContain( 'Board packet' );
 	} );
 } );
