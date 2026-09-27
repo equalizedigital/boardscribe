@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ResourceCard, ResourceCardEmpty } from './resource-card';
 import { ResourceModal, resourceModalTitle } from './resource-modal';
-import { createRowKeyer, focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
+import { createRowKeyer, focusFirstActionable, HiddenFields, normalizeStoredRows, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * One row's reorder controls: a drag handle for mouse/touch users (plain
@@ -250,7 +250,8 @@ export function EditableTitle( { label, onChange, emptyLabel, fieldLabel, hideEd
  * @return {JSX.Element} The field.
  */
 export function ResourceListField( { field, value, onChange } ) {
-	const items = Array.isArray( value ) ? value : [];
+	// Stored rows are normalised, not trusted - see normalizeStoredRows().
+	const items = normalizeStoredRows( value );
 	const [ modalIndex, setModalIndex ] = useState( null );
 	const [ editingIndex, setEditingIndex ] = useState( null );
 	const [ draggingIndex, setDraggingIndex ] = useState( null );
