@@ -39,6 +39,18 @@ describe( 'normalizeStoredRows', () => {
 		expect( result[ 0 ] ).toBe( rows[ 0 ] );
 	} );
 
+	it( 'returns the same repaired row object every time it is asked for that row', () => {
+		const bad = { label: { raw: 'Minutes' }, url: 'https://example.org/minutes.pdf' };
+
+		const first = normalizeStoredRows( [ bad ] )[ 0 ];
+		const second = normalizeStoredRows( [ bad ] )[ 0 ];
+
+		// Rows are keyed by identity (createRowKeyer), so a repaired row that
+		// comes back as a new object each render would remount every time.
+		expect( first ).not.toBe( bad );
+		expect( second ).toBe( first );
+	} );
+
 	it( 'keeps the identity of the usable rows it leaves alone while repairing the others', () => {
 		const good = { label: 'Budget', url: 'https://example.org/budget.pdf' };
 		const bad = { label: { raw: 'Minutes' }, url: 'https://example.org/minutes.pdf' };

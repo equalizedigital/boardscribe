@@ -110,21 +110,37 @@ function rowNeedsRepair( row ) {
 }
 
 /**
- * A copy of a row with every field that can't be rendered blanked out.
+ * Repaired rows, keyed by the stored row they were repaired from.
+ *
+ * The repeaters key rows by object identity (see createRowKeyer), so a
+ * repaired row has to come back as the same object every time it is asked
+ * for - a fresh copy on each render remounts that row and throws away
+ * whatever was open on it (PRO-1365). Keyed by the original row, so the
+ * entries go away with the data they came from.
+ */
+const repairedRows = new WeakMap();
+
+/**
+ * A copy of a row with every field that can't be rendered blanked out, cached
+ * against the row it was built from (see repairedRows above).
  *
  * @param {Object} row A stored row.
  * @return {Object} The repairable fields blanked.
  */
 function repairedRow( row ) {
-	const repaired = { ...row };
+	if ( ! repairedRows.has( row ) ) {
+		const repaired = { ...row };
 
-	STORED_ROW_FIELDS.forEach( ( key ) => {
-		if ( storedValueNeedsRepair( repaired[ key ] ) ) {
-			repaired[ key ] = '';
-		}
-	} );
+		STORED_ROW_FIELDS.forEach( ( key ) => {
+			if ( storedValueNeedsRepair( repaired[ key ] ) ) {
+				repaired[ key ] = '';
+			}
+		} );
 
-	return repaired;
+		repairedRows.set( row, repaired );
+	}
+
+	return repairedRows.get( row );
 }
 
 /**

@@ -16,6 +16,7 @@
  */
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Simulate } from 'react-dom/test-utils';
 import { MetaBoxApp } from '../../../src/js/metabox/app';
 
 window.IS_REACT_ACT_ENVIRONMENT = true;
@@ -171,6 +172,29 @@ describe( 'a stored resource_list value the app did not write', () => {
 		expect( mounted.errors ).toEqual( [] );
 		expect( mounted.container.querySelectorAll( '.edbs-resource-card:not(.edbs-resource-card--empty)' ) ).toHaveLength( 1 );
 		expect( mounted.container.querySelector( '.edbs-resource-card__title' ).textContent ).toBe( 'Untitled document' );
+
+		cleanup( mounted );
+	} );
+
+	it( 'does not remount a repaired row when the field re-renders', () => {
+		const raw = JSON.stringify( [ GOOD_ROW, { ...SECOND_ROW, label: { raw: 'Minutes' } }, 'junk' ] );
+		const mounted = renderApp( raw );
+
+		const cards = () => [ ...mounted.container.querySelectorAll( '.edbs-resource-card:not(.edbs-resource-card--empty)' ) ];
+
+		expect( mounted.errors ).toEqual( [] );
+		expect( cards() ).toHaveLength( 2 );
+
+		const repairedRow = cards()[ 1 ];
+
+		// Any state change in the field re-renders every row, so opening the
+		// first row's title editor stands in for all of them.
+		act( () => {
+			Simulate.click( mounted.container.querySelector( 'button[id$="-edit-title"]' ) );
+		} );
+
+		// A remount here would throw away anything open on that row (PRO-1365).
+		expect( cards()[ 1 ] ).toBe( repairedRow );
 
 		cleanup( mounted );
 	} );
