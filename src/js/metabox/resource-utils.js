@@ -73,6 +73,113 @@ export function isValidExternalUrl( value ) {
 	return /^[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?(?:\.[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?)*$/i.test( host );
 }
 
+/** The fields a stored row is expected to carry, and the ones repaired below. */
+const STORED_ROW_FIELDS = [ 'label', 'url', 'source', 'edit_url', 'document_id' ];
+
+/**
+ * Whether a stored row is an object this app can treat as a row at all.
+ *
+ * @param {*} row A stored row.
+ * @return {boolean} True when the row is usable.
+ */
+function isStoredRow( row ) {
+	return Boolean( row ) && 'object' === typeof row && ! Array.isArray( row );
+}
+
+/**
+ * Whether a stored field holds something React can't render - an object (or
+ * array) where a string belongs. Primitives are left alone: React
+ * stringifies a number, renders nothing for a boolean, and neither throws,
+ * so blanking them would only discard stored data.
+ *
+ * @param {*} value A stored row field.
+ * @return {boolean} True when the value needs blanking.
+ */
+function storedValueNeedsRepair( value ) {
+	return null !== value && 'object' === typeof value;
+}
+
+/**
+ * Whether a stored row holds anything the card can't render.
+ *
+ * @param {Object} row A stored row.
+ * @return {boolean} True when the row needs repairing.
+ */
+function rowNeedsRepair( row ) {
+	return STORED_ROW_FIELDS.some( ( key ) => storedValueNeedsRepair( row[ key ] ) );
+}
+
+/**
+ * Repaired rows, keyed by the stored row they were repaired from.
+ *
+ * The repeaters key rows by object identity (see createRowKeyer), so a
+ * repaired row has to come back as the same object every time it is asked
+ * for - a fresh copy on each render remounts that row and throws away
+ * whatever was open on it (PRO-1365). Keyed by the original row, so the
+ * entries go away with the data they came from.
+ */
+const repairedRows = new WeakMap();
+
+/**
+ * A copy of a row with every field that can't be rendered blanked out, cached
+ * against the row it was built from (see repairedRows above).
+ *
+ * @param {Object} row A stored row.
+ * @return {Object} The repairable fields blanked.
+ */
+function repairedRow( row ) {
+	if ( ! repairedRows.has( row ) ) {
+		const repaired = { ...row };
+
+		STORED_ROW_FIELDS.forEach( ( key ) => {
+			if ( storedValueNeedsRepair( repaired[ key ] ) ) {
+				repaired[ key ] = '';
+			}
+		} );
+
+		repairedRows.set( row, repaired );
+	}
+
+	return repairedRows.get( row );
+}
+
+/**
+ * Normalises a repeater's stored rows, dropping anything that isn't a row
+ * object and blanking any field holding an object where a string belongs.
+ *
+ * A stored value is JSON written by an older version of the plugin, a CSV
+ * import or a filter - not necessarily by this app - so it can hold a
+ * primitive where a row belongs. Both repeaters key each row through
+ * createRowKeyer()'s WeakMap (a primitive throws "Invalid value used as
+ * weak map key") and render each row's label/url as children (an object
+ * throws "Objects are not valid as a React child"); either throw unmounts
+ * the whole Meeting Details meta box until the editor is reloaded. A
+ * dropped row is gone from the form on the next save, which is the only
+ * repair that was ever available for it by hand.
+ *
+ * The original value is returned untouched - same array, same row objects -
+ * whenever every row is already usable. Rows are keyed by object identity,
+ * so handing back copies would remount every row on every render and lose
+ * whatever was open on it (see createRowKeyer() and PRO-1365). An object
+ * row is kept even when it's empty or holds nothing usable: it is still a
+ * row an editor can see and remove, and dropping stored data isn't this
+ * function's call.
+ *
+ * @param {*} value Stored value, already parsed.
+ * @return {Array<Object>} Rows safe to render and key.
+ */
+export function normalizeStoredRows( value ) {
+	if ( ! Array.isArray( value ) ) {
+		return [];
+	}
+
+	if ( value.every( ( row ) => isStoredRow( row ) && ! rowNeedsRepair( row ) ) ) {
+		return value;
+	}
+
+	return value.filter( isStoredRow ).map( ( row ) => ( rowNeedsRepair( row ) ? repairedRow( row ) : row ) );
+}
+
 /**
  * Builds a `getRowKey(item)` function for a repeater's `key={}` prop - a
  * stable id per row, independent of its position in the array. Keying by

@@ -1,4 +1,68 @@
-import { classifyResourceUrl, isValidExternalUrl, resolveResourceDisplay, resolveResourceTitle } from '../../../src/js/metabox/resource-utils';
+import { classifyResourceUrl, isValidExternalUrl, normalizeStoredRows, resolveResourceDisplay, resolveResourceTitle } from '../../../src/js/metabox/resource-utils';
+
+describe( 'normalizeStoredRows', () => {
+	it( 'returns an empty array for a value that is not an array', () => {
+		for ( const value of [ null, undefined, '', 'not json', 233, { 0: { label: 'a' } } ] ) {
+			expect( normalizeStoredRows( value ) ).toEqual( [] );
+		}
+	} );
+
+	it( 'drops rows that are not objects, which is what used to take the meta box down', () => {
+		const result = normalizeStoredRows( [ 'Board packet', null, 233, true, [ 'label', 'url' ] ] );
+
+		expect( result ).toEqual( [] );
+	} );
+
+	it( 'keeps usable rows untouched, including any extra keys a source stamped on', () => {
+		const row = { label: 'Budget', url: 'https://example.org/budget.pdf', source: 'external_url', document_id: 12, edit_url: '/wp-admin/post.php?post=12', custom: 'kept' };
+
+		expect( normalizeStoredRows( [ row ] ) ).toEqual( [ row ] );
+	} );
+
+	it( 'blanks a field holding an object instead of dropping the row', () => {
+		const result = normalizeStoredRows( [ { label: { raw: 'Budget' }, url: { raw: 'https://example.org/budget.pdf' }, source: 'external_url' } ] );
+
+		expect( result ).toEqual( [ { label: '', url: '', source: 'external_url' } ] );
+	} );
+
+	it( 'blanks a document_id holding an object, leaving numbers and strings alone', () => {
+		expect( normalizeStoredRows( [ { document_id: 0 } ] )[ 0 ].document_id ).toBe( 0 );
+		expect( normalizeStoredRows( [ { document_id: '12' } ] )[ 0 ].document_id ).toBe( '12' );
+		expect( normalizeStoredRows( [ { document_id: { raw: 12 } } ] )[ 0 ].document_id ).toBe( '' );
+	} );
+
+	it( 'returns the same array and row objects when every row is usable', () => {
+		const rows = [ { label: 'Budget', url: 'https://example.org/budget.pdf', source: 'external_url', document_id: 12, edit_url: '' } ];
+		const result = normalizeStoredRows( rows );
+
+		expect( result ).toBe( rows );
+		expect( result[ 0 ] ).toBe( rows[ 0 ] );
+	} );
+
+	it( 'returns the same repaired row object every time it is asked for that row', () => {
+		const bad = { label: { raw: 'Minutes' }, url: 'https://example.org/minutes.pdf' };
+
+		const first = normalizeStoredRows( [ bad ] )[ 0 ];
+		const second = normalizeStoredRows( [ bad ] )[ 0 ];
+
+		// Rows are keyed by identity (createRowKeyer), so a repaired row that
+		// comes back as a new object each render would remount every time.
+		expect( first ).not.toBe( bad );
+		expect( second ).toBe( first );
+	} );
+
+	it( 'keeps the identity of the usable rows it leaves alone while repairing the others', () => {
+		const good = { label: 'Budget', url: 'https://example.org/budget.pdf' };
+		const bad = { label: { raw: 'Minutes' }, url: 'https://example.org/minutes.pdf' };
+		const result = normalizeStoredRows( [ 'junk', good, bad ] );
+
+		expect( result ).toEqual( [ good, { label: '', url: 'https://example.org/minutes.pdf' } ] );
+		// Rows are keyed by identity (createRowKeyer), so an untouched row has
+		// to come back as the same object or it remounts and loses its state.
+		expect( result[ 0 ] ).toBe( good );
+		expect( result[ 1 ] ).not.toBe( bad );
+	} );
+} );
 
 describe( 'classifyResourceUrl', () => {
 	it( 'returns no chips/meta for an empty value', () => {

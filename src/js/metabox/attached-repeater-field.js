@@ -4,7 +4,7 @@ import { useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { EditableTitle } from './resource-list-field';
 import { ResourceModal } from './resource-modal';
-import { createRowKeyer, focusFirstActionable, HiddenFields, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
+import { createRowKeyer, focusFirstActionable, HiddenFields, normalizeStoredRows, resolveFieldSources, resolveResourceDisplay } from './resource-utils';
 
 /**
  * An `attached` field's inline repeater - a 'resource' field's own card
@@ -62,7 +62,8 @@ import { createRowKeyer, focusFirstActionable, HiddenFields, resolveFieldSources
  * @return {JSX.Element} The field.
  */
 export function AttachedRepeaterField( { field, value, onChange } ) {
-	const rows = Array.isArray( value ) ? value : [];
+	// Stored rows are normalised, not trusted - see normalizeStoredRows().
+	const rows = normalizeStoredRows( value );
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
 	const itemNoun = field.itemNoun || __( 'Item', 'boardscribe' );
 	const emptyItemLabel = field.emptyItemLabel || sprintf( /* translators: %s: item noun, e.g. "Caption Track". */ __( 'Untitled %s', 'boardscribe' ), itemNoun.toLowerCase() );
