@@ -526,4 +526,8 @@
 	align-items: center;
 	gap: 8px;
 	max-width: 320px;
+	background: #fff;
+	padding: 15px;
+	border: 1px solid #ccc;
+	margin-bottom: 10px;
 }
