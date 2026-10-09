@@ -452,7 +452,7 @@ class FieldRegistry {
 			if ( ! is_string( $field_key ) || '' === $field_key ) {
 				continue;
 			}
-			$allowed = array_values( array_filter( array_map( 'strval', array_filter( (array) $allowed, 'is_scalar' ) ), 'strlen' ) );
+			$allowed = array_values( array_map( 'strval', array_filter( (array) $allowed, 'is_scalar' ) ) );
 			if ( $allowed ) {
 				$normalized[ $field_key ] = $allowed;
 			}

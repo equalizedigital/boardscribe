@@ -185,7 +185,7 @@ class FieldRegistryJsSchemaTest extends TestCase {
 				'key'          => 'edbs_test_conditional_field',
 				'type'         => 'text',
 				'visible_when' => [
-					'template' => [ 'table', 'list' ],
+					'template' => [ '', 'list' ],
 					'order'    => 'asc',
 					'bad'      => [],
 					5          => [ 'x' ],
@@ -204,7 +204,7 @@ class FieldRegistryJsSchemaTest extends TestCase {
 
 		$this->assertSame(
 			[
-				'template' => [ 'table', 'list' ],
+				'template' => [ '', 'list' ],
 				'order'    => [ 'asc' ],
 			],
 			$by_key['edbs_test_conditional_field']['visibleWhen']
