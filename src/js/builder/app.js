@@ -235,7 +235,7 @@ export function BuilderApp( { fields } ) {
 					</CardBody>
 				</Card>
 
-				<Preview fields={ fields } values={ values } />
+				<Preview fields={ visibleFields } values={ values } />
 			</div>
 
 			{ notice && (
