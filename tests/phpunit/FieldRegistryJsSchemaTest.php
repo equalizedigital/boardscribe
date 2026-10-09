@@ -174,4 +174,42 @@ class FieldRegistryJsSchemaTest extends TestCase {
 		$this->assertSame( 'secret', $by_key['edbs_test_hidden_field']['default'] );
 		$this->assertFalse( $by_key['posts_per_page']['hiddenFromUi'] );
 	}
+
+	/**
+	 * visible_when is normalized to field key => list of string values,
+	 * malformed conditions are dropped, and a field without any is null.
+	 */
+	public function test_visible_when_is_normalized_in_schema(): void {
+		$this->callback = static function ( array $fields ) {
+			$fields[] = [
+				'key'          => 'edbs_test_conditional_field',
+				'type'         => 'text',
+				'visible_when' => [
+					'template' => [ 'table', 'list' ],
+					'order'    => 'asc',
+					'bad'      => [],
+					5          => [ 'x' ],
+				],
+			];
+			$fields[] = [
+				'key'          => 'edbs_test_bad_conditions',
+				'type'         => 'text',
+				'visible_when' => 'nope',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_shortcode_field_registry', $this->callback );
+
+		$by_key = array_column( FieldRegistry::js_schema(), null, 'key' );
+
+		$this->assertSame(
+			[
+				'template' => [ 'table', 'list' ],
+				'order'    => [ 'asc' ],
+			],
+			$by_key['edbs_test_conditional_field']['visibleWhen']
+		);
+		$this->assertNull( $by_key['edbs_test_bad_conditions']['visibleWhen'] );
+		$this->assertNull( $by_key['posts_per_page']['visibleWhen'] );
+	}
 }
