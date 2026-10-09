@@ -16,6 +16,7 @@ import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import metadata from '../../../block.json';
 import { withDateFilterHelpText } from '../shared/date-filter-help-text';
+import { isFieldVisible } from '../shared/field-visibility';
 import { GenericFieldControl } from '../shared/generic-field-control';
 
 // Localized by BoardScribeBlock::register_block() from the shared
@@ -138,13 +139,19 @@ function Edit( { attributes, setAttributes } ) {
 	// must not render.
 	const showTemplatePicker = Boolean( templateField ) && ! templateField.hiddenFromUi && Object.keys( templateChoices ).length > 0;
 
+	const attributeKeyByFieldKey = {};
+	FIELD_REGISTRY.forEach( ( field ) => {
+		attributeKeyByFieldKey[ field.key ] = field.attributeKey;
+	} );
+	const getAttributeByFieldKey = ( key ) => attributes[ attributeKeyByFieldKey[ key ] ];
+
 	const fieldsByGroup = {};
 	FIELD_REGISTRY.forEach( ( field ) => {
 		// hiddenFromUi fields (PRO-1397) still need to reach
 		// buildInstanceConfig() below, via the same FIELD_REGISTRY array,
 		// so a saved value keeps rendering in the live preview exactly as
 		// it does on the front end - only their picker is skipped here.
-		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) || field.hiddenFromUi ) {
+		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) || field.hiddenFromUi || ! isFieldVisible( field, getAttributeByFieldKey ) ) {
 			return;
 		}
 		const group = field.group || 'general';
