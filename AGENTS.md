@@ -24,6 +24,7 @@ includes/
   PostType/BoardScribeCPT.php          CPT registration
   Admin/MetaBox.php                    Native meta box (React app mount point) + registry-driven save handling
   Admin/MetaBoxFieldRegistry.php       Single source of truth for the Meeting Details meta box's fields (see edbs_meeting_meta_fields below)
+  Admin/MeetingDateGuard.php           Keeps a meeting from being published without a valid Y-m-d meeting date (drafts may lack one): meta sanitizer, REST publish check, meta-box-save revert to draft, list-screen notice for already-published dateless meetings (PRO-1460)
   Admin/AdminColumns.php                Board Meetings admin list table columns (Meeting Date, Canceled, Agenda, Minutes); Meeting Date is sortable
   Admin/SettingsPage.php               Tabbed settings page (General / Shortcode Builder / Support); the Builder tab enqueues the React builder app
   Helpers/Helpers.php                  UTM link builder for outbound equalizedigital.com links (edition + days_active reporting)
