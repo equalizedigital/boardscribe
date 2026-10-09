@@ -102,8 +102,17 @@ class MetaBoxRegisterMetaTest extends TestCase {
 	 * Text-type fields use sanitize_text_field.
 	 */
 	public function test_text_fields_use_sanitize_text_field(): void {
-		$this->assertSame( 'sanitize_text_field', $this->get_meta_args( 'edbs_meeting_date' )['sanitize_callback'] );
 		$this->assertSame( 'sanitize_text_field', $this->get_meta_args( 'edbs_meeting_not_held' )['sanitize_callback'] );
+	}
+
+	/**
+	 * The meeting date only accepts a valid Y-m-d date.
+	 */
+	public function test_meeting_date_uses_the_date_guard_sanitizer(): void {
+		$this->assertSame(
+			[ 'EqualizeDigital\BoardScribe\Admin\MeetingDateGuard', 'sanitize_date' ],
+			$this->get_meta_args( 'edbs_meeting_date' )['sanitize_callback']
+		);
 	}
 
 	/**

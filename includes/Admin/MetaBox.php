@@ -116,7 +116,7 @@ class MetaBox {
 				[
 					'type'              => 'string',
 					'description'       => __( 'Meeting date in Y-m-d format.', 'boardscribe' ),
-					'sanitize_callback' => 'sanitize_text_field',
+					'sanitize_callback' => [ MeetingDateGuard::class, 'sanitize_date' ],
 				]
 			)
 		);

@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use EqualizeDigital\BoardScribe\Admin\AdminColumns;
+use EqualizeDigital\BoardScribe\Admin\MeetingDateGuard;
 use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use EqualizeDigital\BoardScribe\Admin\SettingsPage;
 use EqualizeDigital\BoardScribe\Block\BoardScribeBlock;
@@ -105,6 +106,7 @@ class Plugin {
 		( new FieldRegistry() )->register();
 		( new BoardScribeCPT() )->register();
 		( new MetaBox() )->register();
+		( new MeetingDateGuard() )->register();
 		( new AdminColumns() )->register();
 		( new SettingsPage() )->register();
 		( new BoardScribeEndpoint() )->register();
