@@ -543,6 +543,7 @@ export function ResourceListField( { field, value, onChange } ) {
 					title={ resourceModalTitle( itemNoun, ! isAdding ) }
 					sources={ resolveFieldSources( field, [ 'media_library', 'external_url' ] ) }
 					mediaTitle={ field.mediaTitle }
+					mediaTypes={ field.mediaTypes || undefined }
 					fieldLabel={ itemNoun }
 					currentValue={ isAdding ? '' : items[ modalIndex ].url }
 					currentSource={ isAdding ? '' : items[ modalIndex ].source }

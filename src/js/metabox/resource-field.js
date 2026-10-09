@@ -181,6 +181,7 @@ export function ResourceField( { field, value, onChange, sourceValue, onSourceCh
 					title={ resourceModalTitle( field.label, hasValue ) }
 					sources={ sources }
 					mediaTitle={ field.mediaTitle }
+					mediaTypes={ field.mediaTypes || undefined }
 					fieldLabel={ field.label }
 					currentValue={ value }
 					currentSource={ sourceValue }
