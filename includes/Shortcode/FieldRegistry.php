@@ -111,6 +111,10 @@ class FieldRegistry {
 	 *     @type bool          $rest_arg            Whether this field also becomes a REST route arg.
 	 *     @type string|null   $config_key          Overrides the camelCase instance-config key derived from $key.
 	 *     @type string|null   $block_attribute_key Overrides the camelCase block-attribute key derived from $key/config_key.
+	 *     @type array|null    $visible_when        Optional. Field key => allowed value(s); the picker only shows while
+	 *                                              every listed field currently holds one of its allowed values
+	 *                                              (e.g. [ 'template' => [ '', 'list' ] ]). UI-only, like
+	 *                                              hidden_from_ui: parsing, REST args and saved values are untouched.
 	 *     @type bool          $hidden_from_ui      Optional, default false. Excludes the field from js_schema()'s
 	 *                                              default call (used by the settings-page builder app) — this
 	 *                                              hides the field's picker control without affecting all() (shortcode-attribute
@@ -398,7 +402,7 @@ class FieldRegistry {
 	 * @since 1.0.0
 	 *
 	 * @param bool $include_hidden Include hidden_from_ui fields (flagged via hiddenFromUi) instead of omitting them.
-	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, choiceDescriptions: ?array, placeholder: ?string, description: ?string, hiddenFromUi: bool}>
+	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, choiceDescriptions: ?array, placeholder: ?string, description: ?string, hiddenFromUi: bool, visibleWhen: ?array<string, string[]>}>
 	 */
 	public static function js_schema( bool $include_hidden = false ): array {
 		$schema = [];
@@ -422,10 +426,46 @@ class FieldRegistry {
 				'placeholder'        => $field['placeholder'] ?? null,
 				'description'        => $field['description'] ?? null,
 				'hiddenFromUi'       => $is_hidden,
+				'visibleWhen'        => self::normalize_visible_when( $field['visible_when'] ?? null ),
 			];
 		}
 
 		return $schema;
+	}
+
+	/**
+	 * Normalizes a visible_when descriptor value to field key => list of
+	 * allowed string values, dropping malformed entries.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param mixed $visible_when Raw visible_when value from a descriptor.
+	 * @return array<string, string[]>|null Null when there are no usable conditions.
+	 */
+	private static function normalize_visible_when( $visible_when ): ?array {
+		if ( ! is_array( $visible_when ) ) {
+			return null;
+		}
+
+		$normalized = [];
+		foreach ( $visible_when as $field_key => $allowed ) {
+			if ( ! is_string( $field_key ) || '' === $field_key ) {
+				continue;
+			}
+			$allowed = array_values(
+				array_map(
+					static function ( $value ) {
+						return is_bool( $value ) ? ( $value ? 'true' : 'false' ) : (string) $value;
+					},
+					array_filter( (array) $allowed, 'is_scalar' )
+				)
+			);
+			if ( $allowed ) {
+				$normalized[ $field_key ] = $allowed;
+			}
+		}
+
+		return $normalized ? $normalized : null;
 	}
 
 	/**

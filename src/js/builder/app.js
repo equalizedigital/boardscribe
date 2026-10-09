@@ -12,6 +12,7 @@ import {
 import { useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { withDateFilterHelpText } from '../shared/date-filter-help-text';
+import { isFieldVisible } from '../shared/field-visibility';
 import { GenericFieldControl } from '../shared/generic-field-control';
 import { buildShortcode } from './build-shortcode';
 import { Preview } from './preview';
@@ -98,16 +99,21 @@ export function BuilderApp( { fields } ) {
 	const outputRef = useRef( null );
 	const copyResetTimer = useRef( null );
 
-	const shortcode = useMemo( () => buildShortcode( fields, values ), [ fields, values ] );
+	const visibleFields = useMemo(
+		() => fields.filter( ( field ) => isFieldVisible( field, ( key ) => values[ key ] ) ),
+		[ fields, values ],
+	);
+
+	const shortcode = useMemo( () => buildShortcode( visibleFields, values ), [ visibleFields, values ] );
 
 	const fieldsByGroup = useMemo( () => {
 		const grouped = {};
-		fields.forEach( ( field ) => {
+		visibleFields.forEach( ( field ) => {
 			const group = GROUPS.some( ( { key } ) => key === field.group ) ? field.group : 'general';
 			( grouped[ group ] = grouped[ group ] || [] ).push( field );
 		} );
 		return grouped;
-	}, [ fields ] );
+	}, [ visibleFields ] );
 
 	const setValue = ( key, value ) => setValues( ( prev ) => ( { ...prev, [ key ]: value } ) );
 
@@ -229,7 +235,7 @@ export function BuilderApp( { fields } ) {
 					</CardBody>
 				</Card>
 
-				<Preview fields={ fields } values={ values } />
+				<Preview fields={ visibleFields } values={ values } />
 			</div>
 
 			{ notice && (

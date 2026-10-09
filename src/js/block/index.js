@@ -16,6 +16,7 @@ import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import metadata from '../../../block.json';
 import { withDateFilterHelpText } from '../shared/date-filter-help-text';
+import { isFieldVisible } from '../shared/field-visibility';
 import { GenericFieldControl } from '../shared/generic-field-control';
 
 // Localized by BoardScribeBlock::register_block() from the shared
@@ -119,6 +120,12 @@ function Edit( { attributes, setAttributes } ) {
 	}
 	const showingAllMeetings = -1 === postsPerPage;
 
+	const attributeKeyByFieldKey = {};
+	FIELD_REGISTRY.forEach( ( field ) => {
+		attributeKeyByFieldKey[ field.key ] = field.attributeKey;
+	} );
+	const getAttributeByFieldKey = ( key ) => attributes[ attributeKeyByFieldKey[ key ] ];
+
 	// The template picker renders from the registry field's choices, so
 	// a Pro/third-party template registered via the
 	// edbs_shortcode_field_registry filter becomes selectable with no
@@ -136,7 +143,9 @@ function Edit( { attributes, setAttributes } ) {
 	// unlicensed) must still map into buildInstanceConfig() so an
 	// already-saved choice keeps previewing correctly, but its own picker
 	// must not render.
-	const showTemplatePicker = Boolean( templateField ) && ! templateField.hiddenFromUi && Object.keys( templateChoices ).length > 0;
+	const showTemplatePicker = Boolean( templateField ) && ! templateField.hiddenFromUi && isFieldVisible( templateField, getAttributeByFieldKey ) && Object.keys( templateChoices ).length > 0;
+	const postsPerPageField = FIELD_REGISTRY.find( ( field ) => 'postsPerPage' === field.attributeKey );
+	const showPostsPerPage = ! postsPerPageField || isFieldVisible( postsPerPageField, getAttributeByFieldKey );
 
 	const fieldsByGroup = {};
 	FIELD_REGISTRY.forEach( ( field ) => {
@@ -144,7 +153,7 @@ function Edit( { attributes, setAttributes } ) {
 		// buildInstanceConfig() below, via the same FIELD_REGISTRY array,
 		// so a saved value keeps rendering in the live preview exactly as
 		// it does on the front end - only their picker is skipped here.
-		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) || field.hiddenFromUi ) {
+		if ( SPECIAL_CASED_KEYS.includes( field.attributeKey ) || field.hiddenFromUi || ! isFieldVisible( field, getAttributeByFieldKey ) ) {
 			return;
 		}
 		const group = field.group || 'general';
@@ -256,19 +265,23 @@ function Edit( { attributes, setAttributes } ) {
 							} }
 						/>
 					) }
-					<ToggleControl
-						label={ __( 'Show all meetings', 'boardscribe' ) }
-						help={ __( 'Ignores the per-page limit below and fetches every meeting in one request.', 'boardscribe' ) }
-						checked={ showingAllMeetings }
-						onChange={ ( val ) => setAttributes( { postsPerPage: val ? -1 : lastCustomPostsPerPage.current } ) }
-					/>
-					{ ! showingAllMeetings && (
-						<NumberControl
-							label={ __( 'Records Per Page', 'boardscribe' ) }
-							value={ postsPerPage }
-							onChange={ ( val ) => setAttributes( { postsPerPage: parseInt( val, 10 ) || 20 } ) }
-							min={ 1 }
-						/>
+					{ showPostsPerPage && (
+						<>
+							<ToggleControl
+								label={ __( 'Show all meetings', 'boardscribe' ) }
+								help={ __( 'Ignores the per-page limit below and fetches every meeting in one request.', 'boardscribe' ) }
+								checked={ showingAllMeetings }
+								onChange={ ( val ) => setAttributes( { postsPerPage: val ? -1 : lastCustomPostsPerPage.current } ) }
+							/>
+							{ ! showingAllMeetings && (
+								<NumberControl
+									label={ __( 'Records Per Page', 'boardscribe' ) }
+									value={ postsPerPage }
+									onChange={ ( val ) => setAttributes( { postsPerPage: parseInt( val, 10 ) || 20 } ) }
+									min={ 1 }
+								/>
+							) }
+						</>
 					) }
 					{ renderGenericFields( 'general' ) }
 				</PanelBody>
