@@ -7,6 +7,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @param {Object}   config            Config.
  * @param {string}   [config.title]    wp.media() modal title.
+ * @param {string[]} [config.types]    MIME types the library is limited to. Optional.
  * @param {Function} config.onSelect   Called with the selected attachment's URL and a
  *                                     `{ title }` argument (title falls back to filename).
  * @param {Function} [config.onCancel] Called if the frame closes with no selection, or
@@ -16,7 +17,7 @@ import { __ } from '@wordpress/i18n';
  *                             if it unmounts while the frame is still open - undefined
  *                             when wp.media isn't available and nothing was opened.
  */
-export function openMediaLibrary( { title, onSelect, onCancel } ) {
+export function openMediaLibrary( { title, types, onSelect, onCancel } ) {
 	if ( ! window.wp || ! window.wp.media ) {
 		if ( onCancel ) {
 			onCancel();
@@ -30,6 +31,7 @@ export function openMediaLibrary( { title, onSelect, onCancel } ) {
 		title: title || __( 'Select a File', 'boardscribe' ),
 		button: { text: __( 'Use this file', 'boardscribe' ) },
 		multiple: false,
+		...( Array.isArray( types ) && types.length ? { library: { type: types } } : {} ),
 	} );
 
 	frame.on( 'select', () => {

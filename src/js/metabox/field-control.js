@@ -128,7 +128,7 @@ export function MetaField( { field, value, onChange, sourceValue, onSourceChange
 					{ field.mediaPicker && (
 						<Button
 							variant="secondary"
-							onClick={ () => openMediaLibrary( { title: field.mediaTitle, onSelect: onChange } ) }
+							onClick={ () => openMediaLibrary( { title: field.mediaTitle, types: field.mediaTypes || undefined, onSelect: onChange } ) }
 						>
 							{ __( 'Media Library', 'boardscribe' ) }
 						</Button>

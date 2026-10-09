@@ -11,6 +11,7 @@ import { isValidExternalUrl } from './resource-utils';
  *
  * @param {Object}   props              Component props.
  * @param {string}   [props.mediaTitle] wp.media() modal title.
+ * @param {string[]} [props.mediaTypes] MIME types the library is limited to.
  * @param {Function} props.onSave       Called with the selected attachment's URL, and a
  *                                      second `{ title }` argument (the attachment's own
  *                                      title, falling back to its filename) - callers that
@@ -20,7 +21,7 @@ import { isValidExternalUrl } from './resource-utils';
  * @param {Function} props.onCancel     Called if the frame closes with no selection.
  * @return {null} Renders nothing - it's a side-effecting launcher, not UI.
  */
-function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
+function MediaLibrarySource( { mediaTitle, mediaTypes, onSave, onCancel } ) {
 	// A lazy useState initializer (the previous approach) runs its
 	// callback during render, which is a React anti-pattern for a side
 	// effect like opening wp.media() - flagged as a CodeRabbit nitpick on
@@ -29,7 +30,7 @@ function MediaLibrarySource( { mediaTitle, onSave, onCancel } ) {
 	// still open (e.g. ResourceModal's caller closes the whole flow some
 	// other way), instead of leaving it open behind.
 	useEffect( () => {
-		const frame = openMediaLibrary( { title: mediaTitle, onSelect: onSave, onCancel } );
+		const frame = openMediaLibrary( { title: mediaTitle, types: mediaTypes, onSelect: onSave, onCancel } );
 		return () => {
 			if ( frame ) {
 				frame.close();
@@ -154,6 +155,7 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
  * @param {string}        props.title           Modal title, e.g. "Replace Agenda".
  * @param {Array<string>} props.sources         Source ids this field accepts, in display order.
  * @param {string}        [props.mediaTitle]    wp.media() modal title for the media_library source.
+ * @param {string[]}      [props.mediaTypes]    MIME types the media_library source is limited to.
  * @param {string}        [props.fieldLabel]    Field label passed to the external_url source's text field.
  * @param {string}        [props.currentValue]  The field's current value, for the external_url source's starting text.
  * @param {string}        [props.currentSource] Which source produced currentValue ('' for legacy/unknown). The External URL step only
@@ -175,7 +177,7 @@ function ExternalUrlSource( { label, initialValue, onSave } ) {
  * @param {Function}      props.onClose         Called to dismiss the modal without saving.
  * @return {JSX.Element} The modal.
  */
-export function ResourceModal( { title, sources, mediaTitle, fieldLabel, currentValue, currentSource, fieldKey, onSave, onClose } ) {
+export function ResourceModal( { title, sources, mediaTitle, mediaTypes, fieldLabel, currentValue, currentSource, fieldKey, onSave, onClose } ) {
 	const [ activeSource, setActiveSource ] = useState( 1 === sources.length ? sources[ 0 ] : null );
 
 	// Every source component below just calls onSave(url) or onSave(url,
@@ -205,6 +207,7 @@ export function ResourceModal( { title, sources, mediaTitle, fieldLabel, current
 		return (
 			<MediaLibrarySource
 				mediaTitle={ mediaTitle }
+				mediaTypes={ mediaTypes }
 				onSave={ handleSourceSave }
 				onCancel={ 1 === sources.length ? onClose : () => setActiveSource( null ) }
 			/>
