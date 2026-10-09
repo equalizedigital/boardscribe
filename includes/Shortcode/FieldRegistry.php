@@ -113,7 +113,7 @@ class FieldRegistry {
 	 *     @type string|null   $block_attribute_key Overrides the camelCase block-attribute key derived from $key/config_key.
 	 *     @type array|null    $visible_when        Optional. Field key => allowed value(s); the picker only shows while
 	 *                                              every listed field currently holds one of its allowed values
-	 *                                              (e.g. [ 'template' => [ 'table', 'list' ] ]). UI-only, like
+	 *                                              (e.g. [ 'template' => [ '', 'list' ] ]). UI-only, like
 	 *                                              hidden_from_ui: parsing, REST args and saved values are untouched.
 	 *     @type bool          $hidden_from_ui      Optional, default false. Excludes the field from js_schema()'s
 	 *                                              default call (used by the settings-page builder app) — this
@@ -452,7 +452,14 @@ class FieldRegistry {
 			if ( ! is_string( $field_key ) || '' === $field_key ) {
 				continue;
 			}
-			$allowed = array_values( array_map( 'strval', array_filter( (array) $allowed, 'is_scalar' ) ) );
+			$allowed = array_values(
+				array_map(
+					static function ( $value ) {
+						return is_bool( $value ) ? ( $value ? 'true' : 'false' ) : (string) $value;
+					},
+					array_filter( (array) $allowed, 'is_scalar' )
+				)
+			);
 			if ( $allowed ) {
 				$normalized[ $field_key ] = $allowed;
 			}

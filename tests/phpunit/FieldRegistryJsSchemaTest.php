@@ -187,6 +187,7 @@ class FieldRegistryJsSchemaTest extends TestCase {
 				'visible_when' => [
 					'template' => [ '', 'list' ],
 					'order'    => 'asc',
+					'checked'  => [ true, false ],
 					'bad'      => [],
 					5          => [ 'x' ],
 				],
@@ -206,6 +207,7 @@ class FieldRegistryJsSchemaTest extends TestCase {
 			[
 				'template' => [ '', 'list' ],
 				'order'    => [ 'asc' ],
+				'checked'  => [ 'true', 'false' ],
 			],
 			$by_key['edbs_test_conditional_field']['visibleWhen']
 		);
