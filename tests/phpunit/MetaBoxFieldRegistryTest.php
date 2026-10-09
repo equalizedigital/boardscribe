@@ -20,6 +20,7 @@ class MetaBoxFieldRegistryTest extends TestCase {
 	 */
 	public function tear_down(): void {
 		remove_all_filters( 'edbs_meeting_meta_fields' );
+		remove_all_filters( 'edbs_document_media_types' );
 		parent::tear_down();
 	}
 
@@ -239,5 +240,34 @@ class MetaBoxFieldRegistryTest extends TestCase {
 			array_filter( $schema, static fn( $field ) => 'edbs_meeting_date' === $field['key'] )
 		);
 		$this->assertNull( $core['initFn'] );
+	}
+
+	/**
+	 * Agenda and minutes limit the Media Library to document types (no
+	 * images), exposed to JS as mediaTypes; other fields stay unrestricted.
+	 */
+	public function test_agenda_and_minutes_limit_media_types_to_documents(): void {
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+
+		foreach ( [ 'edbs_agenda_url', 'edbs_minutes_url' ] as $key ) {
+			$this->assertContains( 'application/pdf', $by_key[ $key ]['mediaTypes'] );
+			$this->assertNotContains( 'image/jpeg', $by_key[ $key ]['mediaTypes'] );
+		}
+		$this->assertNull( $by_key['edbs_meeting_date']['mediaTypes'] );
+	}
+
+	/**
+	 * The edbs_document_media_types filter changes the list, and an empty
+	 * list lifts the limit.
+	 */
+	public function test_document_media_types_are_filterable(): void {
+		add_filter( 'edbs_document_media_types', static fn() => [ 'application/pdf' ] );
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+		$this->assertSame( [ 'application/pdf' ], $by_key['edbs_agenda_url']['mediaTypes'] );
+
+		remove_all_filters( 'edbs_document_media_types' );
+		add_filter( 'edbs_document_media_types', '__return_empty_array' );
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+		$this->assertNull( $by_key['edbs_agenda_url']['mediaTypes'] );
 	}
 }

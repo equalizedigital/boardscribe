@@ -95,6 +95,9 @@ class MetaBoxFieldRegistry {
 		 *     @type bool          $media_picker        Optional, 'url' type only. Adds a "Media Library" button.
 		 *     @type string|null   $media_title         Optional. wp.media() modal title ('url' type's button, or
 		 *                                              'resource' type's media_library source).
+		 *     @type string[]|null $media_types         Optional. MIME types the Media Library picker is limited to
+		 *                                              ('url' type's button, or 'resource' type's media_library
+		 *                                              source). Omit for no restriction.
 		 *     @type array|null    $sources             Optional, 'resource' type only. Source ids offered in the
 		 *                                              Add/Replace modal, in display order — built-in
 		 *                                              'media_library'/'external_url', or a plugin-registered id
@@ -216,6 +219,7 @@ class MetaBoxFieldRegistry {
 				'placeholder'      => $field['placeholder'] ?? null,
 				'mediaPicker'      => ! empty( $field['media_picker'] ),
 				'mediaTitle'       => $field['media_title'] ?? '',
+				'mediaTypes'       => ! empty( $field['media_types'] ) ? array_values( (array) $field['media_types'] ) : null,
 				'initFn'           => $field['init_fn'] ?? null,
 				'sources'          => $field['sources'] ?? null,
 				'titleTemplate'    => $field['title_template'] ?? null,
@@ -229,6 +233,44 @@ class MetaBoxFieldRegistry {
 		}
 
 		return $schema;
+	}
+
+	/**
+	 * The MIME types the Media Library picker offers for a document field
+	 * (agenda, minutes, and similar): PDFs, word processing, spreadsheet and
+	 * presentation files, and plain text — not images or media.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @return string[]
+	 */
+	public static function document_mime_types(): array {
+		$types = [
+			'application/pdf',
+			'application/msword',
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'application/vnd.oasis.opendocument.text',
+			'application/rtf',
+			'text/plain',
+			'application/vnd.ms-excel',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'application/vnd.oasis.opendocument.spreadsheet',
+			'application/vnd.ms-powerpoint',
+			'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'application/vnd.oasis.opendocument.presentation',
+		];
+
+		/**
+		 * Filters the MIME types the Media Library picker offers for document
+		 * fields (agenda, minutes). Return an empty array to lift the limit.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param string[] $types MIME types.
+		 */
+		$filtered = apply_filters( 'edbs_document_media_types', $types );
+
+		return is_array( $filtered ) ? array_values( $filtered ) : $types;
 	}
 
 	/**
@@ -252,6 +294,7 @@ class MetaBoxFieldRegistry {
 				'type'           => 'resource',
 				'label'          => __( 'Agenda', 'boardscribe' ),
 				'media_title'    => __( 'Choose Agenda File', 'boardscribe' ),
+				'media_types'    => self::document_mime_types(),
 				'title_template' => __( '{date} Board Meeting Agenda', 'boardscribe' ),
 			],
 			[
@@ -259,6 +302,7 @@ class MetaBoxFieldRegistry {
 				'type'           => 'resource',
 				'label'          => __( 'Minutes', 'boardscribe' ),
 				'media_title'    => __( 'Choose Minutes File', 'boardscribe' ),
+				'media_types'    => self::document_mime_types(),
 				'title_template' => __( '{date} Board Meeting Minutes', 'boardscribe' ),
 			],
 			[
