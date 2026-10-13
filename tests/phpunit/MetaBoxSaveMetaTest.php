@@ -594,4 +594,78 @@ class MetaBoxSaveMetaTest extends TestCase {
 
 		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_attached_list', true ) );
 	}
+	/**
+	 * A submitted start and end time are saved, normalized to HH:MM.
+	 */
+	public function test_meeting_time_is_saved_normalized(): void {
+		$_POST['edbs_meeting_start_time'] = '17:00';
+		$_POST['edbs_meeting_end_time']   = '19:30:15';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '17:00', get_post_meta( $this->post_id, 'edbs_meeting_start_time', true ) );
+		$this->assertSame( '19:30', get_post_meta( $this->post_id, 'edbs_meeting_end_time', true ) );
+	}
+
+	/**
+	 * Clearing the inputs removes the meta instead of storing an empty row.
+	 */
+	public function test_clearing_meeting_time_deletes_the_meta(): void {
+		update_post_meta( $this->post_id, 'edbs_meeting_start_time', '17:00' );
+		update_post_meta( $this->post_id, 'edbs_meeting_end_time', '19:00' );
+
+		$_POST['edbs_meeting_start_time'] = '';
+		$_POST['edbs_meeting_end_time']   = '';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertFalse( metadata_exists( 'post', $this->post_id, 'edbs_meeting_start_time' ) );
+		$this->assertFalse( metadata_exists( 'post', $this->post_id, 'edbs_meeting_end_time' ) );
+	}
+
+	/**
+	 * A junk time is not stored and does not leave an empty row, and the
+	 * rest of the save still goes through.
+	 */
+	public function test_invalid_meeting_time_stores_nothing_and_does_not_block_the_save(): void {
+		$_POST['edbs_meeting_date']       = '2024-03-15';
+		$_POST['edbs_meeting_start_time'] = 'noon';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertFalse( metadata_exists( 'post', $this->post_id, 'edbs_meeting_start_time' ) );
+		$this->assertSame( '2024-03-15', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
+	}
+
+	/**
+	 * Saving a meeting without the time inputs leaves existing times alone
+	 * and does not create rows for a meeting that never had one.
+	 */
+	public function test_save_without_time_inputs_changes_nothing(): void {
+		$untimed = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		$timed   = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $timed, 'edbs_meeting_start_time', '09:00' );
+
+		$_POST['edbs_meeting_date'] = '2024-03-15';
+
+		$this->meta_box->save_meta( $untimed );
+		$this->meta_box->save_meta( $timed );
+
+		$this->assertFalse( metadata_exists( 'post', $untimed, 'edbs_meeting_start_time' ) );
+		$this->assertFalse( metadata_exists( 'post', $untimed, 'edbs_meeting_end_time' ) );
+		$this->assertSame( '09:00', get_post_meta( $timed, 'edbs_meeting_start_time', true ) );
+	}
+
+	/**
+	 * Re-saving an untimed meeting with the inputs posted empty (what the
+	 * Meeting Time row always does) leaves it with no time rows at all.
+	 */
+	public function test_resaving_an_untimed_meeting_creates_no_time_rows(): void {
+		$_POST['edbs_meeting_start_time'] = '';
+		$_POST['edbs_meeting_end_time']   = '';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( [], array_intersect( [ 'edbs_meeting_start_time', 'edbs_meeting_end_time' ], array_keys( get_post_meta( $this->post_id ) ) ) );
+	}
 }

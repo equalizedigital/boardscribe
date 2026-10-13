@@ -7,6 +7,8 @@
 
 namespace EqualizeDigital\BoardScribe\Admin;
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -274,7 +276,7 @@ class MetaBoxFieldRegistry {
 	}
 
 	/**
-	 * The four fields the free plugin ships.
+	 * The five fields the free plugin ships.
 	 *
 	 * @since 1.6.0
 	 *
@@ -288,6 +290,21 @@ class MetaBoxFieldRegistry {
 				'label'       => __( 'Meeting Date', 'boardscribe' ),
 				'description' => __( 'Required. Select the date the meeting was or will be held.', 'boardscribe' ),
 				'required'    => true,
+			],
+			[
+				// One row holding both times, not two fields: Pro chains its own
+				// fields off the date with insert_after, and two free fields
+				// would end up on opposite sides of that chain. The key is the
+				// start time's; the end time is saved alongside it from the same
+				// row (MetaBox::save_time_range()).
+				'key'             => MeetingTime::META_START,
+				'type'            => 'time_range',
+				'label'           => __( 'Meeting Time', 'boardscribe' ),
+				'description'     => __( 'Optional. Shown under the meeting date.', 'boardscribe' ),
+				'insert_after'    => 'edbs_meeting_date',
+				'render_callback' => static function ( \WP_Post $post ): array {
+					return MeetingTime::get( $post->ID );
+				},
 			],
 			[
 				'key'            => 'edbs_agenda_url',

@@ -151,12 +151,35 @@
  * row 1 (not spanning row 2) since help now lives in row 2's OTHER
  * column, not stacked underneath it in the same column.
  */
-.edbs-metabox-app__field--date > .components-base-control > .components-base-control__field > .components-base-control__label + * {
+.edbs-metabox-app__field--date > .components-base-control > .components-base-control__field > .components-base-control__label + *,
+.edbs-metabox-app__field--time_range > .components-base-control > .components-base-control__field > .components-base-control__label + * {
 	grid-row: 1;
 }
 
-.edbs-metabox-app__field--date > .components-base-control > .components-base-control__help {
+.edbs-metabox-app__field--date > .components-base-control > .components-base-control__help,
+.edbs-metabox-app__field--time_range > .components-base-control > .components-base-control__help,
+.edbs-metabox-app__field--time_range > .components-base-control > .edbs-metabox-app__time-hint {
 	grid-column: 2;
+}
+
+/*
+ * Meeting Time: the start and end inputs sit on one line, each with a short
+ * visible label, and wrap on a narrow screen.
+ */
+.edbs-metabox-app__time-range {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 12px;
+}
+
+.edbs-metabox-app__time-range label:not(:first-child) {
+	margin-left: 8px;
+}
+
+.edbs-metabox-app__time-hint {
+	margin: 4px 0 0;
+	color: #8a2424;
 }
 
 /*
