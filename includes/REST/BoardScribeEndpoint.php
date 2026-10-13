@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
@@ -108,6 +109,7 @@ class BoardScribeEndpoint {
 		$posts_per_page        = $request->get_param( 'posts_per_page' );
 		$held_date_format      = $request->get_param( 'held_date_format' );
 		$not_held_date_format  = $request->get_param( 'not_held_date_format' );
+		$time_format           = $request->get_param( 'time_format' );
 		$included_years        = $request->get_param( 'included_years' );
 		$start_date            = $request->get_param( 'start_date' );
 		$end_date              = $request->get_param( 'end_date' );
@@ -246,6 +248,7 @@ class BoardScribeEndpoint {
 					[
 						'held_date_format'      => $held_date_format,
 						'not_held_date_format'  => $not_held_date_format,
+						'time_format'           => $time_format,
 						'agenda_link_label'     => $agenda_link_label,
 						'minutes_link_label'    => $minutes_link_label,
 						'open_links_new_window' => $open_links_new_window,
@@ -302,6 +305,7 @@ class BoardScribeEndpoint {
 	 *
 	 *     @type string $held_date_format      PHP date() format for held meetings.
 	 *     @type string $not_held_date_format  PHP date() format for not-held meetings.
+	 *     @type string $time_format           PHP date() format for the meeting time. Default 'g:i a'.
 	 *     @type string $agenda_link_label     Link text for the agenda link.
 	 *     @type string $minutes_link_label    Link text for the minutes link.
 	 *     @type bool   $open_links_new_window Whether the agenda/minutes links open in a new window.
@@ -312,6 +316,7 @@ class BoardScribeEndpoint {
 	public function build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array {
 		$held_date_format     = $format_args['held_date_format'] ?? 'l, F j, Y';
 		$not_held_date_format = $format_args['not_held_date_format'] ?? 'F Y';
+		$time_format          = ! empty( $format_args['time_format'] ) ? $format_args['time_format'] : MeetingTime::DEFAULT_FORMAT;
 		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'boardscribe' );
 		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'boardscribe' );
 
@@ -344,8 +349,14 @@ class BoardScribeEndpoint {
 		 * @param int    $post_id          The post ID.
 		 * @param bool   $meeting_not_held Whether the meeting is marked not held.
 		 */
-		$filtered_date  = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
-		$formatted_date = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
+		$filtered_date = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
+
+		// A callback that replaced the computed date (Pro's Date display
+		// override) supplied the author's complete wording for it, so the time
+		// is only shown with a date this method computed itself. Compared on the
+		// raw filter result, before wp_kses_post() below can alter it.
+		$date_is_computed = $date_object && $filtered_date === $formatted_date;
+		$formatted_date   = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
 
 		$open_links_new_window = ! empty( $format_args['open_links_new_window'] );
 
@@ -422,6 +433,32 @@ class BoardScribeEndpoint {
 		 * @param int                    $post_id The post ID.
 		 * @param \WP_REST_Request|null $request  The REST request, if any.
 		 */
+		// Only a meeting that has a time gets a `time` key, so the row of every
+		// untimed meeting is exactly what it was before meeting times existed.
+		// The date and the link labels above never include it.
+		if ( $date_is_computed && ! $meeting_not_held ) {
+			$times       = MeetingTime::get( $post_id );
+			$time_markup = MeetingTime::markup( $times['start'], $times['end'], $time_format );
+
+			if ( '' !== $time_markup ) {
+				/**
+				 * Filters the escaped markup for a meeting's time, shown under its date.
+				 *
+				 * @since x.x.x
+				 *
+				 * @param string $time_markup The time markup (one or two <time> elements).
+				 * @param int    $post_id     The meeting post ID.
+				 * @param string $start       The start time as HH:MM, or ''.
+				 * @param string $end         The end time as HH:MM, or ''.
+				 */
+				$time_markup = apply_filters( 'edbs_meeting_formatted_time', $time_markup, $post_id, $times['start'], $times['end'] );
+
+				if ( is_string( $time_markup ) && '' !== $time_markup ) {
+					$row['time'] = wp_kses_post( $time_markup );
+				}
+			}
+		}
+
 		return apply_filters( 'edbs_meeting_row_data', $row, $post_id, $request );
 	}
 

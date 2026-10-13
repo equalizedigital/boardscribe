@@ -117,7 +117,19 @@ export function resolveColumns( instanceCfg ) {
 			labelHtml: escapeHTML( label ),
 			isRowHeader: key === rowHeaderColumn,
 			render( meeting ) {
-				return ( meeting && meeting[ key ] ) || '';
+				const value = ( meeting && meeting[ key ] ) || '';
+
+				// A meeting with a time shows it under its date. Only 'date'
+				// ever has one, and only when the endpoint sent it. Both parts
+				// go in one wrapper (and are space-separated) so the stacked
+				// mobile layout keeps them together and text readers see
+				// "date time", not "datetime".
+				if ( 'date' === key && value && meeting.time && ! cfg.hideTime ) {
+					return '<span class="edbs-meeting-datetime">' + value +
+						' <span class="edbs-meeting-time">' + meeting.time + '</span></span>';
+				}
+
+				return value;
 			},
 		};
 	}
