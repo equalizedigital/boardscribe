@@ -218,4 +218,51 @@ class MeetingTimeTest extends TestCase {
 	public function test_get_without_meta(): void {
 		$this->assertSame( [ 'start' => '', 'end' => '' ], MeetingTime::get( $this->create_meeting() ) );
 	}
+	/**
+	 * Provides human-written times and what they parse to.
+	 *
+	 * @return array<string, array{0: mixed, 1: string}>
+	 */
+	public function parse_provider(): array {
+		return [
+			'24 hour'                  => [ '17:00', '17:00' ],
+			'24 hour with seconds'     => [ '17:00:30', '17:00' ],
+			'single digit hour'        => [ '9:05', '09:05' ],
+			'midnight'                 => [ '00:00', '00:00' ],
+			'12 hour pm'               => [ '5:00 PM', '17:00' ],
+			'hour only pm'             => [ '5pm', '17:00' ],
+			'dotted marker'            => [ '5:00p.m.', '17:00' ],
+			'spaced dotted marker'     => [ '5:30 p.m.', '17:30' ],
+			'single letter marker'     => [ '5p', '17:00' ],
+			'midnight as 12am'         => [ '12am', '00:00' ],
+			'12:30 am'                 => [ '12:30 AM', '00:30' ],
+			'noon as 12pm'             => [ '12pm', '12:00' ],
+			'am morning'               => [ '9:15 am', '09:15' ],
+			'surrounding whitespace'   => [ '  5:00 PM  ', '17:00' ],
+			'24 hour with marker'      => [ '17:00 pm', '' ],
+			'hour 13 pm'               => [ '13pm', '' ],
+			'hour 0 pm'                => [ '0pm', '' ],
+			'bare hour'                => [ '17', '' ],
+			'hour 24'                  => [ '24:00', '' ],
+			'minute 60'                => [ '12:60pm', '' ],
+			'excel decimal'            => [ '0.708', '' ],
+			'european dotted'          => [ '17.30', '' ],
+			'word'                     => [ 'abc', '' ],
+			'noon word'                => [ 'noon', '' ],
+			'empty'                    => [ '', '' ],
+			'array'                    => [ [ '17:00' ], '' ],
+		];
+	}
+
+	/**
+	 * Parses a time as a person writes it.
+	 *
+	 * @dataProvider parse_provider
+	 *
+	 * @param mixed  $value    Raw cell.
+	 * @param string $expected Normalized HH:MM, or ''.
+	 */
+	public function test_parse( $value, string $expected ): void {
+		$this->assertSame( $expected, MeetingTime::parse( $value ) );
+	}
 }

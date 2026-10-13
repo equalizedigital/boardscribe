@@ -50,6 +50,58 @@ class MeetingTime {
 	}
 
 	/**
+	 * Reads a time as a person writes it (as in a CSV cell) and returns it
+	 * normalized to 24-hour HH:MM.
+	 *
+	 * Accepts 24-hour times (17:00, 17:00:30) and 12-hour times with an
+	 * am/pm marker in any case, with or without dots and spaces (5pm, 5:30 PM,
+	 * 5:30 p.m.). Hours must be 1-12 with a marker and 0-23 without one, and a
+	 * time with no marker needs its minutes: a bare "17" is ambiguous, so it is
+	 * rejected, as are decimals and dotted times (0.708, 17.30), which are
+	 * Excel fractions or European notation. Seconds are ignored.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $value Candidate time.
+	 * @return string HH:MM, or '' when it can't be read.
+	 */
+	public static function parse( $value ): string {
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		$text = strtolower( str_replace( [ ' ', '.' ], '', trim( $value ) ) );
+
+		if ( ! preg_match( '/^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?(am|pm|a|p)?$/', $text, $matches ) ) {
+			return '';
+		}
+
+		$hour   = (int) $matches[1];
+		$minute = isset( $matches[2] ) && '' !== $matches[2] ? $matches[2] : '';
+		$marker = $matches[4] ?? '';
+
+		if ( '' === $marker ) {
+			if ( '' === $minute ) {
+				return '';
+			}
+
+			return self::normalize( sprintf( '%02d:%s', $hour, $minute ) );
+		}
+
+		if ( $hour < 1 || $hour > 12 ) {
+			return '';
+		}
+
+		if ( 'p' === $marker[0] && 12 !== $hour ) {
+			$hour += 12;
+		} elseif ( 'a' === $marker[0] && 12 === $hour ) {
+			$hour = 0;
+		}
+
+		return self::normalize( sprintf( '%02d:%s', $hour, '' !== $minute ? $minute : '00' ) );
+	}
+
+	/**
 	 * Meta sanitize callback: anything that isn't a valid time is stored as
 	 * an empty string rather than as garbage.
 	 *
