@@ -87,6 +87,30 @@ class AdminColumnsTest extends TestCase {
 	}
 
 	/**
+	 * The Meeting Date cell shows a meeting's time under its date in the
+	 * site's time format, and is unchanged for a meeting without one or one
+	 * that was not held.
+	 */
+	public function test_render_meeting_date_cell_shows_the_time(): void {
+		update_option( 'time_format', 'H:i' );
+
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $post_id, 'edbs_meeting_date', '2024-03-15' );
+		$date_only = $this->admin_columns->render_meeting_date_cell( $post_id );
+
+		update_post_meta( $post_id, 'edbs_meeting_start_time', '17:00' );
+		update_post_meta( $post_id, 'edbs_meeting_end_time', '19:30' );
+
+		$this->assertSame(
+			$date_only . '<br><time datetime="17:00">17:00</time> to <time datetime="19:30">19:30</time>',
+			$this->admin_columns->render_meeting_date_cell( $post_id )
+		);
+
+		update_post_meta( $post_id, 'edbs_meeting_not_held', '1' );
+		$this->assertSame( $date_only, $this->admin_columns->render_meeting_date_cell( $post_id ) );
+	}
+
+	/**
 	 * The Canceled cell shows a dashicon (with screen-reader text) when
 	 * the meeting is marked not held, and an em dash otherwise.
 	 */

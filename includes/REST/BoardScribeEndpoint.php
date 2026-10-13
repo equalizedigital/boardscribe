@@ -32,6 +32,53 @@ class BoardScribeEndpoint {
 	 */
 	public function register(): void {
 		add_action( 'rest_api_init', [ $this, 'register_route' ] );
+		add_filter( 'posts_clauses', [ $this, 'add_start_time_tie_break' ], 10, 2 );
+	}
+
+	/**
+	 * Orders meetings that share a date by start time, ahead of the ID tie-break.
+	 *
+	 * Done with a join restricted to the start time key, applied only to this
+	 * endpoint's query (flagged by the edbs_sort_by_start_time query var). A
+	 * meta_query clause can't do this: WP_Query's EXISTS clause joins every
+	 * meta row of the post and orders by an arbitrary one of them, which
+	 * would reorder meetings that have no time at all. A meeting with no start
+	 * time sorts as NULL, so a site where none has one ties every time and
+	 * keeps the order it always had. The direction follows the ID tie-break's,
+	 * which MeetingSort flips together with the date when order=asc.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array     $clauses The query's SQL clauses.
+	 * @param \WP_Query $query   The query.
+	 * @return array
+	 */
+	public function add_start_time_tie_break( array $clauses, \WP_Query $query ): array {
+		global $wpdb;
+
+		if ( ! $query->get( 'edbs_sort_by_start_time' ) ) {
+			return $clauses;
+		}
+
+		$orderby = preg_replace(
+			'/,\s*' . preg_quote( $wpdb->posts, '/' ) . '\.ID\s+(ASC|DESC)\s*$/i',
+			', edbs_start_time.meta_value $1, ' . $wpdb->posts . '.ID $1',
+			$clauses['orderby'],
+			1,
+			$replaced
+		);
+
+		if ( ! $replaced ) {
+			return $clauses;
+		}
+
+		$clauses['orderby'] = $orderby;
+		$clauses['join']   .= $wpdb->prepare(
+			" LEFT JOIN {$wpdb->postmeta} AS edbs_start_time ON ( {$wpdb->posts}.ID = edbs_start_time.post_id AND edbs_start_time.meta_key = %s )",
+			MeetingTime::META_START
+		);
+
+		return $clauses;
 	}
 
 	/**
@@ -150,28 +197,31 @@ class BoardScribeEndpoint {
 		}
 
 		$args = [
-			'post_type'      => 'edbs_meeting',
-			'post_status'    => 'publish',
+			'post_type'               => 'edbs_meeting',
+			'post_status'             => 'publish',
 			// A "Password protected" meeting has no real public page for this
 			// endpoint to link to (meetings have no content of their own to
 			// gate) - the option protects nothing here, so such a meeting is
 			// excluded from every list rather than appearing with live
 			// agenda/minutes links as if it weren't protected at all.
-			'has_password'   => false,
-			'posts_per_page' => $posts_per_page,
-			'paged'          => $page,
-			'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
+			'has_password'            => false,
+			'posts_per_page'          => $posts_per_page,
+			'paged'                   => $page,
+			'meta_key'                => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
+			// Same-day meetings order by start time before the ID tie-break
+			// below: see add_start_time_tie_break().
+			'edbs_sort_by_start_time' => true,
 			// ID is a tie-break, not a second sort criterion: two meetings
 			// sharing the same edbs_meeting_date otherwise have no
 			// guaranteed relative order between pages (MySQL doesn't
 			// stably order ties under LIMIT/OFFSET), so one could appear on
 			// two pages and another on none. MeetingSort::apply_order()
 			// rewrites both directions together when order=asc.
-			'orderby'        => [
+			'orderby'                 => [
 				'meta_value' => 'DESC', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- required to order results by meeting date.
 				'ID'         => 'DESC',
 			],
-			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
+			'meta_query'              => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
 				'relation' => 'AND',
 				[
 					'key'     => 'edbs_meeting_date',
