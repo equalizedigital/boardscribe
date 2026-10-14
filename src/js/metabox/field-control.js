@@ -11,8 +11,65 @@ const CONTROL_PROPS = {
 };
 
 /**
+ * The Meeting Time row: a start and an end time input, both optional. Its
+ * value is `{ start, end }` of 24-hour HH:MM strings (what an <input
+ * type="time"> submits), and the inputs post as the two time meta keys that
+ * MetaBox::save_time_range() reads.
+ *
+ * @param {Object}   props          Component props.
+ * @param {Object}   props.field    Field descriptor; its key is the start time's meta key.
+ * @param {Object}   props.value    Current `{ start, end }` value.
+ * @param {Function} props.onChange Called with the new `{ start, end }` value.
+ * @param {string}   props.id       Base id for the row's elements.
+ * @return {Element} The row.
+ */
+function TimeRangeField( { field, value, onChange, id } ) {
+	const start = ( value && value.start ) || '';
+	const end = ( value && value.end ) || '';
+	const endBeforeStart = '' !== start && '' !== end && end < start;
+	const labelId = `${ id }__label`;
+	const helpId = `${ id }__help`;
+	const hintId = `${ id }__order`;
+	const describedBy = [ field.description ? helpId : null, endBeforeStart ? hintId : null ].filter( Boolean ).join( ' ' ) || undefined;
+
+	return (
+		<div className="components-base-control">
+			<div className="components-base-control__field">
+				<span className="components-base-control__label" id={ labelId }>{ field.label }</span>
+				<div className="edbs-metabox-app__time-range" role="group" aria-labelledby={ labelId }>
+					<label htmlFor={ id }>{ __( 'Start', 'boardscribe' ) }</label>
+					<input
+						type="time"
+						id={ id }
+						name={ field.key }
+						value={ start }
+						aria-describedby={ describedBy }
+						onChange={ ( event ) => onChange( { start: event.target.value, end } ) }
+					/>
+					<label htmlFor={ `${ id }-end` }>{ __( 'End', 'boardscribe' ) }</label>
+					<input
+						type="time"
+						id={ `${ id }-end` }
+						name="edbs_meeting_end_time"
+						value={ end }
+						aria-describedby={ describedBy }
+						onChange={ ( event ) => onChange( { start, end: event.target.value } ) }
+					/>
+				</div>
+			</div>
+			{ field.description && <p className="components-base-control__help" id={ helpId }>{ field.description }</p> }
+			{ endBeforeStart && (
+				<p className="edbs-metabox-app__time-hint" id={ hintId } role="status">
+					{ __( 'The end time is before the start time.', 'boardscribe' ) }
+				</p>
+			) }
+		</div>
+	);
+}
+
+/**
  * Renders one Meeting Details field. Built-in types are text/url/date/
- * checkbox; any other type defers to window.edbsMetaBoxControls[type] (a
+ * time_range/checkbox; any other type defers to window.edbsMetaBoxControls[type] (a
  * plugin-registered custom control - see src/js/metabox/index.js), falling
  * back to a plain text input if nothing is registered for it.
  *
@@ -109,6 +166,10 @@ export function MetaField( { field, value, onChange, sourceValue, onSourceChange
 				/>
 			</BaseControl>
 		);
+	}
+
+	if ( 'time_range' === field.type ) {
+		return <TimeRangeField field={ field } value={ value } onChange={ onChange } id={ id } />;
 	}
 
 	if ( 'url' === field.type ) {

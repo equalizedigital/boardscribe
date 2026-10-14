@@ -87,6 +87,66 @@ class AdminColumnsTest extends TestCase {
 	}
 
 	/**
+	 * The Meeting Date cell shows a meeting's time under its date in the
+	 * site's time format, and is unchanged for a meeting without one or one
+	 * that was not held.
+	 */
+	public function test_render_meeting_date_cell_shows_the_time(): void {
+		update_option( 'time_format', 'H:i' );
+
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $post_id, 'edbs_meeting_date', '2024-03-15' );
+		$date_only = $this->admin_columns->render_meeting_date_cell( $post_id );
+
+		update_post_meta( $post_id, 'edbs_meeting_start_time', '17:00' );
+		update_post_meta( $post_id, 'edbs_meeting_end_time', '19:30' );
+
+		$this->assertSame(
+			$date_only . '<br><time datetime="17:00">17:00</time> to <time datetime="19:30">19:30</time>',
+			$this->admin_columns->render_meeting_date_cell( $post_id )
+		);
+
+		update_post_meta( $post_id, 'edbs_meeting_not_held', '1' );
+		$this->assertSame( $date_only, $this->admin_columns->render_meeting_date_cell( $post_id ) );
+	}
+
+	/**
+	 * A site time format that would print the server timezone (or that uses
+	 * escapes) falls back to the default instead of being passed through: the
+	 * stored time is site-local, so a "T" would print a misleading "UTC".
+	 *
+	 * @dataProvider unusual_site_time_format_provider
+	 *
+	 * @param string $site_format The site's time_format option.
+	 */
+	public function test_render_meeting_date_cell_ignores_an_unusual_site_time_format( string $site_format ): void {
+		update_option( 'time_format', $site_format );
+
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $post_id, 'edbs_meeting_date', '2024-03-15' );
+		update_post_meta( $post_id, 'edbs_meeting_start_time', '17:00' );
+
+		$cell = $this->admin_columns->render_meeting_date_cell( $post_id );
+
+		$this->assertStringEndsWith( '<br><time datetime="17:00">5:00 pm</time>', $cell );
+		$this->assertStringNotContainsString( 'UTC', $cell );
+	}
+
+	/**
+	 * Provides site time formats the admin cell must not use.
+	 *
+	 * @return array<string, array{0: string}>
+	 */
+	public function unusual_site_time_format_provider(): array {
+		return [
+			'timezone abbreviation' => [ 'g:i a T' ],
+			'timezone identifier'   => [ 'g:i a e' ],
+			'escaped literal'       => [ 'H \\h i' ],
+			'empty'                 => [ '' ],
+		];
+	}
+
+	/**
 	 * The Canceled cell shows a dashicon (with screen-reader text) when
 	 * the meeting is marked not held, and an em dash otherwise.
 	 */

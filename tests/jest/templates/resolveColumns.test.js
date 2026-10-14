@@ -149,4 +149,47 @@ describe( 'resolveColumns', () => {
 		window.edbsExtraColumns = [ null, { key: 'location', label: 'Location' } ];
 		expect( keys( {} ) ).toEqual( [ 'title', 'date', 'agenda', 'minutes', 'location' ] );
 	} );
+	describe( 'meeting time in the date column', () => {
+		const TIME = '<time datetime="17:00">5:00 pm</time> to <time datetime="19:00">7:00 pm</time>';
+		const dateColumn = ( cfg ) => resolveColumns( cfg ).find( ( column ) => 'date' === column.key );
+
+		it( 'renders a meeting with no time exactly as before, with no wrapper', () => {
+			expect( dateColumn( {} ).render( MEETING ) ).toBe( 'January 15, 2026' );
+		} );
+
+		it( 'puts the time under the date inside one wrapper, separated by a space', () => {
+			const html = dateColumn( {} ).render( { ...MEETING, time: TIME } );
+
+			expect( html ).toBe(
+				'<span class="edbs-meeting-datetime">January 15, 2026 <span class="edbs-meeting-time">' + TIME + '</span></span>',
+			);
+		} );
+
+		it( 'reads as "date time" as text, not run together', () => {
+			const container = document.createElement( 'div' );
+			container.innerHTML = dateColumn( {} ).render( { ...MEETING, time: TIME } );
+
+			expect( container.textContent ).toBe( 'January 15, 2026 5:00 pm to 7:00 pm' );
+		} );
+
+		it( 'omits the time when hideTime is on', () => {
+			expect( dateColumn( { hideTime: true } ).render( { ...MEETING, time: TIME } ) ).toBe( 'January 15, 2026' );
+		} );
+
+		it( 'has no time column of its own, and hideDate removes the time with the date', () => {
+			expect( keys( {} ) ).toEqual( [ 'title', 'date', 'agenda', 'minutes' ] );
+			expect( keys( { hideDate: true } ) ).toEqual( [ 'title', 'agenda', 'minutes' ] );
+		} );
+
+		it( 'adds no time to a date that is missing', () => {
+			expect( dateColumn( {} ).render( { ...MEETING, date: '', time: TIME } ) ).toBe( '' );
+		} );
+
+		it( 'adds the time to the title column\'s date heading when the title is hidden', () => {
+			const column = dateColumn( { hideTitle: true } );
+
+			expect( column.isRowHeader ).toBe( true );
+			expect( column.render( { ...MEETING, time: TIME } ) ).toContain( 'edbs-meeting-time' );
+		} );
+	} );
 } );

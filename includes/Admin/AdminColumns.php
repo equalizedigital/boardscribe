@@ -7,6 +7,7 @@
 
 namespace EqualizeDigital\BoardScribe\Admin;
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -157,8 +158,24 @@ class AdminColumns {
 		}
 
 		$date_format = (string) get_option( 'date_format' );
+		$cell        = esc_html( $date_object->format( '' !== $date_format ? $date_format : 'F j, Y' ) );
 
-		return esc_html( $date_object->format( '' !== $date_format ? $date_format : 'F j, Y' ) );
+		// A meeting that has a time shows it under the date, in the site's own
+		// time format when that is a plain time format. A format that would print
+		// the server's timezone (T, e) or that uses escapes falls back to the
+		// default, the same as the front end, since the stored time is site-local.
+		// Not for a meeting that wasn't held, same as the front end.
+		if ( ! get_post_meta( $post_id, 'edbs_meeting_not_held', true ) ) {
+			$times       = MeetingTime::get( $post_id );
+			$time_format = (string) get_option( 'time_format' );
+			$time_markup = MeetingTime::markup( $times['start'], $times['end'], MeetingTime::is_valid_format( $time_format ) ? $time_format : MeetingTime::DEFAULT_FORMAT );
+
+			if ( '' !== $time_markup ) {
+				$cell .= '<br>' . $time_markup;
+			}
+		}
+
+		return $cell;
 	}
 
 	/**

@@ -25,14 +25,96 @@ class MetaBoxFieldRegistryTest extends TestCase {
 	}
 
 	/**
-	 * The four core fields are present, in their declared order, when
-	 * nothing filters the registry.
+	 * The core fields are present, in their declared order, when nothing
+	 * filters the registry. The Meeting Time row sits directly after the date.
 	 */
 	public function test_core_fields_are_present_in_declared_order(): void {
 		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
 
 		$this->assertSame(
-			[ 'edbs_meeting_date', 'edbs_agenda_url', 'edbs_minutes_url', 'edbs_meeting_not_held' ],
+			[ 'edbs_meeting_date', 'edbs_meeting_start_time', 'edbs_agenda_url', 'edbs_minutes_url', 'edbs_meeting_not_held' ],
+			$keys
+		);
+	}
+
+	/**
+	 * The Meeting Time row is one field, optional, and serializes for the
+	 * React app (its render_callback is dropped, like every other callable).
+	 */
+	public function test_meeting_time_row_is_one_optional_field_in_the_js_schema(): void {
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+
+		$this->assertSame( 'time_range', $by_key['edbs_meeting_start_time']['type'] );
+		$this->assertFalse( $by_key['edbs_meeting_start_time']['required'] );
+		$this->assertArrayNotHasKey( 'edbs_meeting_end_time', $by_key );
+		$this->assertNotFalse( wp_json_encode( MetaBoxFieldRegistry::js_schema() ) );
+	}
+
+	/**
+	 * Pro re-chains the core fields and hangs its own off the date. The
+	 * Meeting Time row must stay directly under the date (not drift to the
+	 * bottom of the box, or between Pro's fields) with that chain in place.
+	 * This mirrors the shape of Pro's add_meta_box_fields().
+	 */
+	public function test_meeting_time_row_stays_under_the_date_with_pro_style_chaining(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$core = [];
+				foreach ( $fields as $i => $field ) {
+					if ( in_array( $field['key'], [ 'edbs_agenda_url', 'edbs_minutes_url', 'edbs_meeting_not_held' ], true ) ) {
+						$core[ $field['key'] ] = $field;
+						unset( $fields[ $i ] );
+					}
+				}
+
+				$not_held                 = $core['edbs_meeting_not_held'];
+				$not_held['insert_after'] = 'edbs_location_id';
+				$agenda                   = $core['edbs_agenda_url'];
+				$agenda['insert_after']   = 'edbs_meeting_not_held';
+				$minutes                  = $core['edbs_minutes_url'];
+				$minutes['insert_after']  = 'edbs_agenda_url';
+
+				$fields   = array_values( $fields );
+				$fields[] = [
+					'key'          => 'edbs_date_display_override',
+					'type'         => 'text',
+					'label'        => 'Date Display Override',
+					'insert_after' => 'edbs_meeting_date',
+				];
+				$fields[] = [
+					'key'          => 'edbs_location_id',
+					'type'         => 'text',
+					'label'        => 'Location',
+					'insert_after' => 'edbs_date_display_override',
+				];
+				$fields[] = $not_held;
+				$fields[] = $agenda;
+				$fields[] = $minutes;
+				$fields[] = [
+					'key'          => 'edbs_livestream_url',
+					'type'         => 'text',
+					'label'        => 'Livestream',
+					'insert_after' => 'edbs_minutes_url',
+				];
+
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertSame(
+			[
+				'edbs_meeting_date',
+				'edbs_meeting_start_time',
+				'edbs_date_display_override',
+				'edbs_location_id',
+				'edbs_meeting_not_held',
+				'edbs_agenda_url',
+				'edbs_minutes_url',
+				'edbs_livestream_url',
+			],
 			$keys
 		);
 	}

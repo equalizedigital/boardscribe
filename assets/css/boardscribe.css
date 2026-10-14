@@ -44,6 +44,13 @@
     border: 1px solid #ddd;
 }
 
+/* A meeting's time sits on its own line under its date. Both are inside one
+   wrapper so the stacked small-screen layout below keeps them together as a
+   single cell child, next to the generated column label. */
+.edbs-meeting-time {
+    display: block;
+}
+
 /* table-layout: fixed splits the table's 100% width evenly across
    however many columns exist (no explicit widths needed), giving every
    column the same width for consistent vertical rhythm. Cell content

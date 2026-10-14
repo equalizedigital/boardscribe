@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
@@ -31,6 +32,54 @@ class BoardScribeEndpoint {
 	 */
 	public function register(): void {
 		add_action( 'rest_api_init', [ $this, 'register_route' ] );
+		add_filter( 'posts_clauses', [ $this, 'add_start_time_tie_break' ], 10, 2 );
+	}
+
+	/**
+	 * Orders meetings that share a date by start time, ahead of the ID tie-break.
+	 *
+	 * Done with a join restricted to the start time key, applied only to this
+	 * endpoint's query (flagged by the edbs_sort_by_start_time query var). A
+	 * meta_query clause can't do this: WP_Query's EXISTS clause joins every
+	 * meta row of the post and orders by an arbitrary one of them, which
+	 * would reorder meetings that have no time at all. A meeting with no start
+	 * time sorts as NULL, so a site where none has one ties every time and
+	 * keeps the order it always had. The direction follows the ID tie-break's,
+	 * which MeetingSort flips together with the date when order=asc.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $clauses The query's SQL clauses.
+	 * @param mixed $query   The query.
+	 * @return mixed The clauses, unchanged unless this is the endpoint's query.
+	 */
+	public function add_start_time_tie_break( $clauses, $query = null ) {
+		global $wpdb;
+
+		// Untyped: posts_clauses is a core filter other code also fires.
+		if ( ! is_array( $clauses ) || ! $query instanceof \WP_Query || ! $query->get( 'edbs_sort_by_start_time' ) ) {
+			return $clauses;
+		}
+
+		$orderby = preg_replace(
+			'/,\s*' . preg_quote( $wpdb->posts, '/' ) . '\.ID\s+(ASC|DESC)\s*$/i',
+			', edbs_start_time.meta_value $1, ' . $wpdb->posts . '.ID $1',
+			$clauses['orderby'],
+			1,
+			$replaced
+		);
+
+		if ( ! $replaced ) {
+			return $clauses;
+		}
+
+		$clauses['orderby'] = $orderby;
+		$clauses['join']   .= $wpdb->prepare(
+			" LEFT JOIN {$wpdb->postmeta} AS edbs_start_time ON ( {$wpdb->posts}.ID = edbs_start_time.post_id AND edbs_start_time.meta_key = %s )",
+			MeetingTime::META_START
+		);
+
+		return $clauses;
 	}
 
 	/**
@@ -108,6 +157,7 @@ class BoardScribeEndpoint {
 		$posts_per_page        = $request->get_param( 'posts_per_page' );
 		$held_date_format      = $request->get_param( 'held_date_format' );
 		$not_held_date_format  = $request->get_param( 'not_held_date_format' );
+		$time_format           = $request->get_param( 'time_format' );
 		$included_years        = $request->get_param( 'included_years' );
 		$start_date            = $request->get_param( 'start_date' );
 		$end_date              = $request->get_param( 'end_date' );
@@ -148,28 +198,31 @@ class BoardScribeEndpoint {
 		}
 
 		$args = [
-			'post_type'      => 'edbs_meeting',
-			'post_status'    => 'publish',
+			'post_type'               => 'edbs_meeting',
+			'post_status'             => 'publish',
 			// A "Password protected" meeting has no real public page for this
 			// endpoint to link to (meetings have no content of their own to
 			// gate) - the option protects nothing here, so such a meeting is
 			// excluded from every list rather than appearing with live
 			// agenda/minutes links as if it weren't protected at all.
-			'has_password'   => false,
-			'posts_per_page' => $posts_per_page,
-			'paged'          => $page,
-			'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
+			'has_password'            => false,
+			'posts_per_page'          => $posts_per_page,
+			'paged'                   => $page,
+			'meta_key'                => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
+			// Same-day meetings order by start time before the ID tie-break
+			// below: see add_start_time_tie_break().
+			'edbs_sort_by_start_time' => true,
 			// ID is a tie-break, not a second sort criterion: two meetings
 			// sharing the same edbs_meeting_date otherwise have no
 			// guaranteed relative order between pages (MySQL doesn't
 			// stably order ties under LIMIT/OFFSET), so one could appear on
 			// two pages and another on none. MeetingSort::apply_order()
 			// rewrites both directions together when order=asc.
-			'orderby'        => [
+			'orderby'                 => [
 				'meta_value' => 'DESC', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- required to order results by meeting date.
 				'ID'         => 'DESC',
 			],
-			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
+			'meta_query'              => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
 				'relation' => 'AND',
 				[
 					'key'     => 'edbs_meeting_date',
@@ -246,6 +299,7 @@ class BoardScribeEndpoint {
 					[
 						'held_date_format'      => $held_date_format,
 						'not_held_date_format'  => $not_held_date_format,
+						'time_format'           => $time_format,
 						'agenda_link_label'     => $agenda_link_label,
 						'minutes_link_label'    => $minutes_link_label,
 						'open_links_new_window' => $open_links_new_window,
@@ -302,6 +356,7 @@ class BoardScribeEndpoint {
 	 *
 	 *     @type string $held_date_format      PHP date() format for held meetings.
 	 *     @type string $not_held_date_format  PHP date() format for not-held meetings.
+	 *     @type string $time_format           PHP date() format for the meeting time. Default 'g:i a'.
 	 *     @type string $agenda_link_label     Link text for the agenda link.
 	 *     @type string $minutes_link_label    Link text for the minutes link.
 	 *     @type bool   $open_links_new_window Whether the agenda/minutes links open in a new window.
@@ -312,6 +367,7 @@ class BoardScribeEndpoint {
 	public function build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array {
 		$held_date_format     = $format_args['held_date_format'] ?? 'l, F j, Y';
 		$not_held_date_format = $format_args['not_held_date_format'] ?? 'F Y';
+		$time_format          = ! empty( $format_args['time_format'] ) ? $format_args['time_format'] : MeetingTime::DEFAULT_FORMAT;
 		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'boardscribe' );
 		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'boardscribe' );
 
@@ -344,8 +400,14 @@ class BoardScribeEndpoint {
 		 * @param int    $post_id          The post ID.
 		 * @param bool   $meeting_not_held Whether the meeting is marked not held.
 		 */
-		$filtered_date  = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
-		$formatted_date = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
+		$filtered_date = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
+
+		// A callback that replaced the computed date (Pro's Date display
+		// override) supplied the author's complete wording for it, so the time
+		// is only shown with a date this method computed itself. Compared on the
+		// raw filter result, before wp_kses_post() below can alter it.
+		$date_is_computed = $date_object && $filtered_date === $formatted_date;
+		$formatted_date   = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
 
 		$open_links_new_window = ! empty( $format_args['open_links_new_window'] );
 
@@ -411,6 +473,32 @@ class BoardScribeEndpoint {
 			'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'boardscribe' ) : $agenda_item,
 			'minutes' => $minutes_item,
 		];
+
+		// Only a meeting that has a time gets a `time` key, so the row of every
+		// untimed meeting is exactly what it was before meeting times existed.
+		// The date and the link labels above never include it.
+		if ( $date_is_computed && ! $meeting_not_held ) {
+			$times       = MeetingTime::get( $post_id );
+			$time_markup = MeetingTime::markup( $times['start'], $times['end'], $time_format );
+
+			if ( '' !== $time_markup ) {
+				/**
+				 * Filters the escaped markup for a meeting's time, shown under its date.
+				 *
+				 * @since x.x.x
+				 *
+				 * @param string $time_markup The time markup (one or two <time> elements).
+				 * @param int    $post_id     The meeting post ID.
+				 * @param string $start       The start time as HH:MM, or ''.
+				 * @param string $end         The end time as HH:MM, or ''.
+				 */
+				$time_markup = apply_filters( 'edbs_meeting_formatted_time', $time_markup, $post_id, $times['start'], $times['end'] );
+
+				if ( is_string( $time_markup ) && '' !== $time_markup ) {
+					$row['time'] = wp_kses( $time_markup, MeetingTime::allowed_html() );
+				}
+			}
+		}
 
 		/**
 		 * Filters a single meeting row before it is added to the response.
