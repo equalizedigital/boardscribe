@@ -225,7 +225,7 @@ class FieldRegistry {
 					'sanitize_callback' => static function ( $value ) {
 						return MeetingTime::sanitize_format( $value, MeetingTime::DEFAULT_FORMAT );
 					},
-					'validate_callback' => [ MeetingTime::class, 'is_valid_format' ],
+					'validate_callback' => [ MeetingTime::class, 'is_valid_format_or_empty' ],
 					'rest_arg'          => true,
 				],
 				[

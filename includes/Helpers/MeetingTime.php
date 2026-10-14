@@ -169,6 +169,24 @@ class MeetingTime {
 	}
 
 	/**
+	 * Whether a value is usable as a time_format request param, or empty.
+	 *
+	 * Empty is accepted because the front-end request builder sends '' for any
+	 * configured key an instance's config doesn't have (for example a cached
+	 * page whose shortcode HTML predates this setting). WordPress validates a
+	 * REST arg before sanitizing it, so rejecting '' here would fail the whole
+	 * list request; sanitize_format() turns '' into the default instead.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $value Candidate param value.
+	 * @return bool
+	 */
+	public static function is_valid_format_or_empty( $value ): bool {
+		return '' === $value || self::is_valid_format( $value );
+	}
+
+	/**
 	 * Sanitizes a time_format value, falling back to a default for anything
 	 * that isn't a valid format.
 	 *
@@ -230,6 +248,23 @@ class MeetingTime {
 		}
 
 		return $start_html;
+	}
+
+	/**
+	 * The HTML a meeting's time markup may contain: what wp_kses_post() allows
+	 * plus <time datetime>. <time> is not in the post allowlist on older
+	 * WordPress versions (6.2 strips it), so it is added here instead of
+	 * relying on the running version's list.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return array<string, array<string, bool>>
+	 */
+	public static function allowed_html(): array {
+		$allowed         = wp_kses_allowed_html( 'post' );
+		$allowed['time'] = [ 'datetime' => true ];
+
+		return $allowed;
 	}
 
 	/**

@@ -49,14 +49,15 @@ class BoardScribeEndpoint {
 	 *
 	 * @since x.x.x
 	 *
-	 * @param array     $clauses The query's SQL clauses.
-	 * @param \WP_Query $query   The query.
-	 * @return array
+	 * @param mixed $clauses The query's SQL clauses.
+	 * @param mixed $query   The query.
+	 * @return mixed The clauses, unchanged unless this is the endpoint's query.
 	 */
-	public function add_start_time_tie_break( array $clauses, \WP_Query $query ): array {
+	public function add_start_time_tie_break( $clauses, $query = null ) {
 		global $wpdb;
 
-		if ( ! $query->get( 'edbs_sort_by_start_time' ) ) {
+		// Untyped: posts_clauses is a core filter other code also fires.
+		if ( ! is_array( $clauses ) || ! $query instanceof \WP_Query || ! $query->get( 'edbs_sort_by_start_time' ) ) {
 			return $clauses;
 		}
 
@@ -473,16 +474,6 @@ class BoardScribeEndpoint {
 			'minutes' => $minutes_item,
 		];
 
-		/**
-		 * Filters a single meeting row before it is added to the response.
-		 * Pro plugin can add extra fields (e.g., category, attachments).
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param array                  $row     The meeting row data.
-		 * @param int                    $post_id The post ID.
-		 * @param \WP_REST_Request|null $request  The REST request, if any.
-		 */
 		// Only a meeting that has a time gets a `time` key, so the row of every
 		// untimed meeting is exactly what it was before meeting times existed.
 		// The date and the link labels above never include it.
@@ -504,11 +495,21 @@ class BoardScribeEndpoint {
 				$time_markup = apply_filters( 'edbs_meeting_formatted_time', $time_markup, $post_id, $times['start'], $times['end'] );
 
 				if ( is_string( $time_markup ) && '' !== $time_markup ) {
-					$row['time'] = wp_kses_post( $time_markup );
+					$row['time'] = wp_kses( $time_markup, MeetingTime::allowed_html() );
 				}
 			}
 		}
 
+		/**
+		 * Filters a single meeting row before it is added to the response.
+		 * Pro plugin can add extra fields (e.g., category, attachments).
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array                  $row     The meeting row data.
+		 * @param int                    $post_id The post ID.
+		 * @param \WP_REST_Request|null $request  The REST request, if any.
+		 */
 		return apply_filters( 'edbs_meeting_row_data', $row, $post_id, $request );
 	}
 

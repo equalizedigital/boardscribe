@@ -291,4 +291,43 @@ class BoardScribeEndpointTimeRowTest extends TestCase {
 		$request->set_param( 'time_format', 'g:i a T' );
 		$this->assertSame( 400, rest_get_server()->dispatch( $request )->get_status() );
 	}
+	/**
+	 * An empty time_format param is accepted and means "use the default". The
+	 * front-end request builder sends '' for a config key an instance doesn't
+	 * have (e.g. a cached page whose shortcode HTML predates the setting), and
+	 * WordPress validates a REST arg before sanitizing it, so rejecting '' would
+	 * stop every list on the site loading. The date format args still reject it,
+	 * as they always have.
+	 */
+	public function test_route_accepts_an_empty_time_format(): void {
+		global $wp_rest_server;
+		$wp_rest_server = new \WP_REST_Server();
+		do_action( 'rest_api_init', $wp_rest_server );
+
+		$this->create_meeting();
+		$this->create_meeting( [ 'edbs_meeting_start_time' => '17:00' ] );
+
+		$request = new \WP_REST_Request( 'GET', '/edbs/v1/boardscribe' );
+		$request->set_param( 'time_format', '' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertSame( 200, $response->get_status() );
+
+		$meetings = $response->get_data()['meetings'];
+		$this->assertCount( 2, $meetings );
+		$this->assertSame( '<time datetime="17:00">5:00 pm</time>', $meetings[0]['time'] ?? $meetings[1]['time'] );
+		$this->assertCount( 1, array_filter( $meetings, static fn( $row ) => isset( $row['time'] ) ), 'Only the timed meeting has a time key.' );
+	}
+
+	/**
+	 * The posts_clauses callback is untyped: a core filter fired with other
+	 * arguments must pass straight through, not throw.
+	 */
+	public function test_tie_break_callback_ignores_foreign_arguments(): void {
+		$endpoint = new BoardScribeEndpoint();
+
+		$this->assertSame( 'x', $endpoint->add_start_time_tie_break( 'x' ) );
+		$this->assertSame( [ 'orderby' => 'a' ], $endpoint->add_start_time_tie_break( [ 'orderby' => 'a' ], null ) );
+		$this->assertSame( [ 'orderby' => 'a' ], $endpoint->add_start_time_tie_break( [ 'orderby' => 'a' ], new \WP_Query() ) );
+	}
 }
