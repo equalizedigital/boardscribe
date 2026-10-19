@@ -70,7 +70,7 @@ class MeetingTime {
 			return '';
 		}
 
-		$text = strtolower( str_replace( [ ' ', '.' ], '', trim( $value ) ) );
+		$text = strtolower( (string) preg_replace( '/[\s\x{00A0}\x{202F}.]+/u', '', $value ) );
 
 		if ( ! preg_match( '/^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?(am|pm|a|p)?$/', $text, $matches ) ) {
 			return '';
