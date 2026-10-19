@@ -226,6 +226,39 @@ class BoardScribeEndpointTimeSortTest extends TestCase {
 	}
 
 	/**
+	 * A meeting that somehow has several start-time rows (add_post_meta() with
+	 * $unique = false) is still listed once and paging is unaffected, because
+	 * WP_Query groups the meta-queried results by post ID.
+	 */
+	public function test_a_meeting_with_duplicate_start_time_rows_is_listed_once(): void {
+		$early     = $this->meeting( '2026-03-12', '09:00' );
+		$duplicate = $this->meeting( '2026-03-12', '13:00' );
+		add_post_meta( $duplicate, 'edbs_meeting_start_time', '13:00', false );
+		add_post_meta( $duplicate, 'edbs_meeting_start_time', '08:00', false );
+		$untimed = $this->meeting( '2026-03-12' );
+
+		$this->assertCount( 3, get_post_meta( $duplicate, 'edbs_meeting_start_time', false ) );
+
+		foreach ( [ 'desc', 'asc' ] as $order ) {
+			$all = $this->ids( [ 'order' => $order ] );
+			$this->assertEqualsCanonicalizing( [ $early, $duplicate, $untimed ], $all, "Every meeting is listed exactly once ($order)." );
+
+			$paged = array_merge(
+				$this->ids( [ 'order' => $order, 'posts_per_page' => 2, 'page' => 1 ] ),
+				$this->ids( [ 'order' => $order, 'posts_per_page' => 2, 'page' => 2 ] )
+			);
+			$this->assertSame( $all, $paged, "Paged order equals the single-page order ($order)." );
+		}
+
+		$request = new \WP_REST_Request( 'GET', self::ROUTE );
+		$request->set_param( 'posts_per_page', 2 );
+		$data = rest_do_request( $request )->get_data();
+
+		$this->assertSame( 3, $data['total_entries'] );
+		$this->assertEquals( 2, $data['max_num_pages'] );
+	}
+
+	/**
 	 * The date range and date scope filters still apply alongside the time clause.
 	 */
 	public function test_date_filters_still_apply(): void {
