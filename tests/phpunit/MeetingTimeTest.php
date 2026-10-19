@@ -239,6 +239,10 @@ class MeetingTimeTest extends TestCase {
 		return [
 			'24 hour'                  => [ '17:00', '17:00' ],
 			'24 hour with seconds'     => [ '17:00:30', '17:00' ],
+			'last valid second'        => [ '17:00:59', '17:00' ],
+			'second 60'                => [ '17:00:60', '' ],
+			'second 99'                => [ '17:00:99', '' ],
+			'second 99 with marker'    => [ '5:00:99 PM', '' ],
 			'single digit hour'        => [ '9:05', '09:05' ],
 			'midnight'                 => [ '00:00', '00:00' ],
 			'12 hour pm'               => [ '5:00 PM', '17:00' ],

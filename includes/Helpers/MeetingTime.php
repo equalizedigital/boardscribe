@@ -81,6 +81,10 @@ class MeetingTime {
 			return '';
 		}
 
+		if ( isset( $matches[3] ) && (int) $matches[3] > 59 ) {
+			return '';
+		}
+
 		$hour   = (int) $matches[1];
 		$minute = isset( $matches[2] ) && '' !== $matches[2] ? $matches[2] : '';
 		$marker = $matches[4] ?? '';

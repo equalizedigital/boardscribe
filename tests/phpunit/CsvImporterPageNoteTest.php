@@ -26,7 +26,9 @@ class CsvImporterPageNoteTest extends TestCase {
 		$html = ob_get_clean();
 
 		$this->assertStringContainsString( 'Importing a file again', $html );
-		$this->assertStringContainsString( 'title, date and start time', $html );
+		$this->assertStringContainsString( 'either the same start time or no start time', $html );
+		$this->assertStringContainsString( 'A row without a start time is skipped when any saved meeting has the same title and date', $html );
+		$this->assertStringContainsString( 'change its start time to a different time', $html );
 		$this->assertStringContainsString( 'creates a new meeting', $html );
 	}
 }
