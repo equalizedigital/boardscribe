@@ -126,6 +126,15 @@ const FIELD_FIXTURE = [
 		placeholder: null,
 		description: null,
 	},
+	{
+		key: 'hide_location',
+		attributeKey: 'hideLocation',
+		configKey: 'hideLocation',
+		type: 'checkbox',
+		group: 'hide_columns',
+		label: 'Location',
+		default: true,
+	},
 	// PRO-1397: simulates a Pro field marked hidden_from_ui once its
 	// license lapses (e.g. the category filter) - still present in the
 	// localized array (FieldRegistry::js_schema( true )) so the live
@@ -226,6 +235,24 @@ describe( 'BoardScribe block edit()', () => {
 		expect( controlFor( container, 'number', 'Records Per Page' ) ).not.toBeNull();
 	} );
 
+	// Location is a simulated extension field, not a Pro dependency. This tests
+	// Free's shared grouping and default handling for fields supplied by plugins.
+	it( 'combines core and extension hide controls with their own defaults', () => {
+		const setAttributes = jest.fn();
+		container = renderEdit( defaultAttributes(), setAttributes );
+
+		const panel = container.querySelector( '[data-panel="Hide Data"]' );
+		const title = controlFor( panel, 'toggle', 'Title' ).querySelector( 'input' );
+		const location = controlFor( panel, 'toggle', 'Location' ).querySelector( 'input' );
+		expect( title.checked ).toBe( false );
+		expect( location.checked ).toBe( true );
+		expect( container.querySelectorAll( '[data-panel="Hide Data"]' ) ).toHaveLength( 1 );
+		expect( container.querySelector( '[data-panel="Show Columns"]' ) ).toBeNull();
+
+		act( () => location.click() );
+		expect( setAttributes ).toHaveBeenCalledWith( { hideLocation: false } );
+	} );
+
 	it( 'hides the Records Per Page number field once "Show all meetings" is on', () => {
 		container = renderEdit( { ...defaultAttributes(), postsPerPage: -1 } );
 
@@ -312,7 +339,7 @@ describe( 'BoardScribe block edit()', () => {
 		);
 
 		expect( panelTitles ).toEqual(
-			expect.arrayContaining( [ 'Display Settings', 'Column Labels', 'Hide Columns' ] ),
+			expect.arrayContaining( [ 'Display Settings', 'Column Labels', 'Hide Data' ] ),
 		);
 		// The fixture has no link_labels/show_columns fields - those panels
 		// must not render at all (renderGenericFields() gates on group.length).

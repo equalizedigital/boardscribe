@@ -6,6 +6,7 @@
  */
 
 use EqualizeDigital\BoardScribe\Block\BoardScribeBlock;
+use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -70,5 +71,48 @@ class BoardScribeBlockRenderTest extends TestCase {
 		$config = $this->render_config( [ 'hideTitle' => 'false' ] );
 
 		$this->assertFalse( $config['hideTitle'] ?? null );
+	}
+
+	/**
+	 * Explicit false must override a checked-by-default extension field,
+	 * while an omitted attribute must retain the registry default.
+	 *
+	 * @dataProvider checked_by_default_attribute_provider
+	 * @param array $attributes Block attributes.
+	 * @param bool  $expected   Expected visibility setting.
+	 */
+	public function test_checked_by_default_field_preserves_explicit_values( array $attributes, bool $expected ): void {
+		$register_field = static function ( array $fields ): array {
+			$fields[] = [
+				'key'     => 'hide_test_column',
+				'type'    => FieldRegistry::TYPE_CHECKBOX,
+				'group'   => 'hide_columns',
+				'label'   => 'Test column',
+				'default' => true,
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_shortcode_field_registry', $register_field );
+
+		try {
+			$config = $this->render_config( $attributes );
+			$this->assertSame( $expected, $config['hideTestColumn'] ?? null );
+		} finally {
+			remove_filter( 'edbs_shortcode_field_registry', $register_field );
+		}
+	}
+
+	/**
+	 * Values supplied by the editor or hand-edited block markup.
+	 *
+	 * @return array<string, array{array, bool}>
+	 */
+	public function checked_by_default_attribute_provider(): array {
+		return [
+			'omitted uses default' => [ [], true ],
+			'checked'              => [ [ 'hideTestColumn' => true ], true ],
+			'unchecked'            => [ [ 'hideTestColumn' => false ], false ],
+			'string false'         => [ [ 'hideTestColumn' => 'false' ], false ],
+		];
 	}
 }
