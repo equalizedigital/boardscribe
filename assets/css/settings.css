@@ -297,6 +297,7 @@ body.edbs_meeting_page_edbs-settings {
 
 /* Import tab: CSV upload form, sized to match the CSV format table above it. */
 .edbs-import__format-table,
+.edbs-import__rematch,
 .edbs-import__upload {
 	max-width: 600px;
 }
