@@ -58,11 +58,9 @@ function TimeRangeField( { field, value, onChange, id } ) {
 				</div>
 			</div>
 			{ field.description && <p className="components-base-control__help" id={ helpId }>{ field.description }</p> }
-			{ endBeforeStart && (
-				<p className="edbs-metabox-app__time-hint" id={ hintId } role="status">
-					{ __( 'The end time is earlier than the start time, so this meeting ends the next day.', 'boardscribe' ) }
-				</p>
-			) }
+			<p className="edbs-metabox-app__time-hint" id={ hintId } role="status">
+				{ endBeforeStart ? __( 'The end time is earlier than the start time, so this meeting ends the next day.', 'boardscribe' ) : '' }
+			</p>
 		</div>
 	);
 }

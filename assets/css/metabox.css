@@ -182,6 +182,10 @@
 	color: #8a2424;
 }
 
+.edbs-metabox-app__time-hint:empty {
+	margin: 0;
+}
+
 /*
  * Meeting Date is a plain <input type="date"> (see field-control.js) - WP
  * admin's core stylesheet sizes date/text-like inputs to their content by

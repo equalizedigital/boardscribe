@@ -36,12 +36,35 @@ describe( 'TimeRangeField order hint', () => {
 		expect( container.querySelector( 'input[name="edbs_meeting_end_time"]' ).getAttribute( 'aria-describedby' ) ).toBe( hint().id );
 	} );
 
-	it( 'shows no hint for an ordinary range or a single time', () => {
+	it( 'has no hint text for an ordinary range or a single time', () => {
 		render( { start: '09:00', end: '10:00' } );
-		expect( hint() ).toBeNull();
+		expect( hint().textContent ).toBe( '' );
 
 		render( { start: '09:00', end: '' } );
-		expect( hint() ).toBeNull();
+		expect( hint().textContent ).toBe( '' );
+	} );
+
+	it( 'keeps one live region in the page and only changes its text', () => {
+		render( { start: '09:00', end: '10:00' } );
+		const region = hint();
+
+		expect( region.getAttribute( 'role' ) ).toBe( 'status' );
+
+		render( { start: '22:00', end: '01:00' } );
+		expect( hint() ).toBe( region );
+		expect( region.textContent ).not.toBe( '' );
+
+		render( { start: '22:00', end: '23:00' } );
+		expect( hint() ).toBe( region );
+		expect( region.textContent ).toBe( '' );
+	} );
+
+	it( 'points the inputs at the hint only while it has text', () => {
+		render( { start: '09:00', end: '10:00' } );
+		expect( container.querySelector( 'input[name="edbs_meeting_end_time"]' ).getAttribute( 'aria-describedby' ) ).toBeNull();
+
+		render( { start: '22:00', end: '01:00' } );
+		expect( container.querySelector( 'input[name="edbs_meeting_end_time"]' ).getAttribute( 'aria-describedby' ) ).toBe( hint().id );
 	} );
 } );
 
