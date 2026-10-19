@@ -553,6 +553,7 @@ class CsvImporter {
 	 * @return bool
 	 */
 	private function find_existing_meeting( string $title, string $date, string $start = '' ): bool {
+		// With a start time, only the 50 most recent meetings with this title and date are compared.
 		$existing = get_posts(
 			[
 				'post_type'      => 'edbs_meeting',
