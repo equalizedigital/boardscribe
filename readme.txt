@@ -86,6 +86,7 @@ Use the **Shortcode Builder** (Board Meetings > Settings > Shortcode Builder) to
 * `posts_per_page` - Entries per page. Use `-1` to show all. Default: `20`.
 * `held_date_format` - PHP date format for meetings that were held. Default: `l, F j, Y`.
 * `not_held_date_format` - PHP date format for meetings not held. Default: `F Y`.
+* `time_format` - PHP date format for a meeting's start and end time, shown under its date. Only the time characters `a`, `A`, `g`, `G`, `h`, `H`, `i` and `s` are used. Meetings with no time show none. Default: `g:i a`.
 * `hide_title` - Set to `true` to hide the Title column. Default: `false`.
 * `hide_date` - Set to `true` to hide the Date column. Default: `false`.
 * `hide_agenda` - Set to `true` to hide the Agenda column. Default: `false`.

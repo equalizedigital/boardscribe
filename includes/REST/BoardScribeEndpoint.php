@@ -409,6 +409,30 @@ class BoardScribeEndpoint {
 		$date_is_computed = $date_object && $filtered_date === $formatted_date;
 		$formatted_date   = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
 
+		// Only a meeting that has a time gets a `time` key, so the row of every
+		// untimed meeting is exactly what it was before meeting times existed.
+		$time_markup = '';
+
+		if ( $date_is_computed && ! $meeting_not_held ) {
+			$times       = MeetingTime::get( $post_id );
+			$time_markup = MeetingTime::markup( $times['start'], $times['end'], $time_format );
+
+			if ( '' !== $time_markup ) {
+				/**
+				 * Filters the escaped markup for a meeting's time, shown under its date.
+				 *
+				 * @since x.x.x
+				 *
+				 * @param string $time_markup The time markup (one or two <time> elements).
+				 * @param int    $post_id     The meeting post ID.
+				 * @param string $start       The start time as HH:MM, or ''.
+				 * @param string $end         The end time as HH:MM, or ''.
+				 */
+				$time_markup = apply_filters( 'edbs_meeting_formatted_time', $time_markup, $post_id, $times['start'], $times['end'] );
+				$time_markup = is_string( $time_markup ) ? wp_kses( $time_markup, MeetingTime::allowed_html() ) : '';
+			}
+		}
+
 		$open_links_new_window = ! empty( $format_args['open_links_new_window'] );
 
 		/**
@@ -434,7 +458,7 @@ class BoardScribeEndpoint {
 		$agenda_item = $agenda_url
 			? apply_filters(
 				'edbs_agenda_link',
-				self::build_link( $agenda_url, $agenda_link_label, $formatted_date, $open_links_new_window ),
+				self::build_link( $agenda_url, $agenda_link_label, $formatted_date, $open_links_new_window, $time_markup ),
 				$agenda_url,
 				$agenda_link_label,
 				$open_links_new_window,
@@ -458,7 +482,7 @@ class BoardScribeEndpoint {
 		$minutes_item = $minutes_url
 			? apply_filters(
 				'edbs_minutes_link',
-				self::build_link( $minutes_url, $minutes_link_label, $formatted_date, $open_links_new_window ),
+				self::build_link( $minutes_url, $minutes_link_label, $formatted_date, $open_links_new_window, $time_markup ),
 				$minutes_url,
 				$minutes_link_label,
 				$open_links_new_window,
@@ -474,30 +498,8 @@ class BoardScribeEndpoint {
 			'minutes' => $minutes_item,
 		];
 
-		// Only a meeting that has a time gets a `time` key, so the row of every
-		// untimed meeting is exactly what it was before meeting times existed.
-		// The date and the link labels above never include it.
-		if ( $date_is_computed && ! $meeting_not_held ) {
-			$times       = MeetingTime::get( $post_id );
-			$time_markup = MeetingTime::markup( $times['start'], $times['end'], $time_format );
-
-			if ( '' !== $time_markup ) {
-				/**
-				 * Filters the escaped markup for a meeting's time, shown under its date.
-				 *
-				 * @since x.x.x
-				 *
-				 * @param string $time_markup The time markup (one or two <time> elements).
-				 * @param int    $post_id     The meeting post ID.
-				 * @param string $start       The start time as HH:MM, or ''.
-				 * @param string $end         The end time as HH:MM, or ''.
-				 */
-				$time_markup = apply_filters( 'edbs_meeting_formatted_time', $time_markup, $post_id, $times['start'], $times['end'] );
-
-				if ( is_string( $time_markup ) && '' !== $time_markup ) {
-					$row['time'] = wp_kses( $time_markup, MeetingTime::allowed_html() );
-				}
-			}
+		if ( '' !== $time_markup ) {
+			$row['time'] = $time_markup;
 		}
 
 		/**
@@ -531,9 +533,10 @@ class BoardScribeEndpoint {
 	 * @param string $label          Visible link text.
 	 * @param string $formatted_date Escaped, formatted meeting date (used in the aria-label).
 	 * @param bool   $new_window     Whether to open the link in a new window/tab.
+	 * @param string $time_markup    Escaped time markup for the meeting (used in the aria-label, after the date), or ''. Added in x.x.x.
 	 * @return string
 	 */
-	public static function build_link( string $url, string $label, string $formatted_date, bool $new_window ): string {
+	public static function build_link( string $url, string $label, string $formatted_date, bool $new_window, string $time_markup = '' ): string {
 		// $formatted_date arrives esc_html()'d (and possibly wp_kses_post()'d,
 		// via Pro's edbs_meeting_formatted_date override) - decoding entities
 		// back to raw characters before stripping tags avoids double-escaping
@@ -542,6 +545,13 @@ class BoardScribeEndpoint {
 		// Special") round-trips as the literal text "&#039;s" once a browser
 		// decodes the attribute value, instead of an apostrophe.
 		$date_for_label = wp_strip_all_tags( html_entity_decode( $formatted_date, ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+
+		$time_for_label = wp_strip_all_tags( html_entity_decode( $time_markup, ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+
+		if ( '' !== $time_for_label ) {
+			/* translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day. */
+			$date_for_label = sprintf( __( '%1$s, %2$s', 'boardscribe' ), $date_for_label, $time_for_label );
+		}
 
 		$aria_label = $new_window
 			/* translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string. */

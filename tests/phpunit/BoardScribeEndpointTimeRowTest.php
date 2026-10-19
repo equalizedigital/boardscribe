@@ -105,18 +105,37 @@ class BoardScribeEndpointTimeRowTest extends TestCase {
 	}
 
 	/**
-	 * The date string and the agenda/minutes link labels never include the time.
+	 * Pulls the aria-label out of an agenda or minutes link.
+	 *
+	 * @param string $link The link markup.
+	 * @return string
 	 */
-	public function test_date_and_link_labels_are_unchanged_by_a_time(): void {
-		$meta  = [
-			'edbs_agenda_url'  => 'https://example.com/a.pdf',
-			'edbs_minutes_url' => 'https://example.com/m.pdf',
-		];
-		$plain = $this->row( $this->create_meeting( $meta ) );
+	private function label( string $link ): string {
+		preg_match( '/aria-label="([^"]*)"/', $link, $matches );
+
+		return html_entity_decode( $matches[1] ?? '' );
+	}
+
+	/**
+	 * Link meta used by the label tests.
+	 *
+	 * @var array<string, string>
+	 */
+	private array $links = [
+		'edbs_agenda_url'  => 'https://example.com/a.pdf',
+		'edbs_minutes_url' => 'https://example.com/m.pdf',
+	];
+
+	/**
+	 * The date string is unchanged by a time, and the agenda/minutes link
+	 * labels carry it so same-day meetings are told apart.
+	 */
+	public function test_link_labels_include_the_time_and_the_date_does_not(): void {
+		$plain = $this->row( $this->create_meeting( $this->links ) );
 		$timed = $this->row(
 			$this->create_meeting(
 				array_merge(
-					$meta,
+					$this->links,
 					[
 						'edbs_meeting_start_time' => '17:00',
 						'edbs_meeting_end_time'   => '19:00',
@@ -125,10 +144,60 @@ class BoardScribeEndpointTimeRowTest extends TestCase {
 			)
 		);
 
-		$this->assertArrayNotHasKey( 'time', $plain );
-		$this->assertArrayHasKey( 'time', $timed );
-		unset( $timed['time'] );
-		$this->assertSame( $plain, $timed );
+		$this->assertSame( $plain['date'], $timed['date'] );
+		$this->assertSame( 'View Agenda for 2026/03/12', $this->label( $plain['agenda'] ) );
+		$this->assertSame( 'View Agenda for 2026/03/12, 5:00 pm to 7:00 pm', $this->label( $timed['agenda'] ) );
+		$this->assertSame( 'View Minutes for 2026/03/12, 5:00 pm to 7:00 pm', $this->label( $timed['minutes'] ) );
+	}
+
+	/**
+	 * A start time alone is used as is.
+	 */
+	public function test_link_label_with_a_start_time_only(): void {
+		$row = $this->row( $this->create_meeting( array_merge( $this->links, [ 'edbs_meeting_start_time' => '09:00' ] ) ) );
+
+		$this->assertSame( 'View Agenda for 2026/03/12, 9:00 am', $this->label( $row['agenda'] ) );
+	}
+
+	/**
+	 * Two meetings on one day get different link labels.
+	 */
+	public function test_same_day_meetings_get_different_link_labels(): void {
+		$morning = $this->row( $this->create_meeting( array_merge( $this->links, [ 'edbs_meeting_start_time' => '09:00' ] ) ) );
+		$evening = $this->row( $this->create_meeting( array_merge( $this->links, [ 'edbs_meeting_start_time' => '18:00' ] ) ) );
+
+		$this->assertNotSame( $this->label( $morning['agenda'] ), $this->label( $evening['agenda'] ) );
+		$this->assertNotSame( $this->label( $morning['minutes'] ), $this->label( $evening['minutes'] ) );
+	}
+
+	/**
+	 * The new-window warning still ends the label.
+	 */
+	public function test_new_window_label_keeps_its_suffix_after_the_time(): void {
+		$row = $this->row(
+			$this->create_meeting( array_merge( $this->links, [ 'edbs_meeting_start_time' => '17:00' ] ) ),
+			[ 'open_links_new_window' => true ]
+		);
+
+		$this->assertSame( 'View Agenda for 2026/03/12, 5:00 pm (opens in a new window)', $this->label( $row['agenda'] ) );
+	}
+
+	/**
+	 * A replaced date, or a time the filter removed, adds nothing to the label.
+	 */
+	public function test_label_has_no_time_when_the_row_has_none(): void {
+		$id     = $this->create_meeting( array_merge( $this->links, [ 'edbs_meeting_start_time' => '17:00' ] ) );
+		$filter = static fn() => 'TBD';
+		add_filter( 'edbs_meeting_formatted_date', $filter );
+		$replaced = $this->row( $id );
+		remove_filter( 'edbs_meeting_formatted_date', $filter );
+
+		add_filter( 'edbs_meeting_formatted_time', '__return_empty_string' );
+		$removed = $this->row( $id );
+		remove_filter( 'edbs_meeting_formatted_time', '__return_empty_string' );
+
+		$this->assertSame( 'View Agenda for TBD', $this->label( $replaced['agenda'] ) );
+		$this->assertSame( 'View Agenda for 2026/03/12', $this->label( $removed['agenda'] ) );
 	}
 
 	/**

@@ -57,6 +57,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 | `posts_per_page` | `20` | Number of entries per page. Use `-1` (or `all`) to show every entry, up to the site's configured maximum. |
 | `held_date_format` | `l, F j, Y` | PHP `date()` format for meetings that were held. |
 | `not_held_date_format` | `F Y` | PHP `date()` format for meetings that were not held. |
+| `time_format` | `g:i a` | PHP `date()` format for a meeting's start and end time, shown under its date. Only the time characters `a`, `A`, `g`, `G`, `h`, `H`, `i` and `s` are used. Meetings with no time show none. |
 | `template` | *(table)* | Name of a registered display template to render with. Free ships only the built-in table; add-ons can register additional templates (see [Display Templates](#display-templates--javascript-registries)). |
 | `equal_columns` | `false` | Set to `true` to force all table columns to the same width. |
 | `class` | *(none)* | Custom CSS class(es) added to the `<table>` element. |
