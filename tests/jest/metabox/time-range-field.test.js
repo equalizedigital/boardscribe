@@ -23,7 +23,7 @@ afterEach( () => {
 	container.remove();
 } );
 
-const FIELD = { key: 'edbs_meeting_start_time', type: 'time_range', label: 'Meeting Time' };
+const FIELD = { key: 'edbs_meeting_start_time', endKey: 'edbs_meeting_end_time', type: 'time_range', label: 'Meeting Time' };
 
 const render = ( value ) => act( () => root.render( <MetaField field={ FIELD } value={ value } onChange={ () => {} } /> ) );
 const hint = () => container.querySelector( '.edbs-metabox-app__time-hint' );
@@ -48,6 +48,13 @@ describe( 'TimeRangeField order hint', () => {
 describe( 'TimeRangeField inputs', () => {
 	const input = ( name ) => container.querySelector( `input[name="${ name }"]` );
 	const change = ( element, value ) => act( () => Simulate.change( element, { target: { value } } ) );
+
+	it( 'names the end input from the field descriptor, not a literal', () => {
+		act( () => root.render( <MetaField field={ { ...FIELD, endKey: 'custom_end_key' } } value={ { start: '', end: '' } } onChange={ () => {} } /> ) );
+
+		expect( container.querySelector( 'input[name="custom_end_key"]' ) ).not.toBeNull();
+		expect( container.querySelector( 'input[name="edbs_meeting_end_time"]' ) ).toBeNull();
+	} );
 
 	it( 'posts the start under the field key and the end under its own meta key', () => {
 		render( { start: '09:00', end: '10:00' } );

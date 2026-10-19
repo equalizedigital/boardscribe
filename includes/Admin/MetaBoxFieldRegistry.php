@@ -112,6 +112,8 @@ class MetaBoxFieldRegistry {
 		 *                                              plain string, or one containing "{date}" (resolved
 		 *                                              against the meeting's own edbs_meeting_date value
 		 *                                              client-side; falls back to $label with no date set yet).
+		 *     @type string|null   $end_key             Optional, 'time_range' type only. Meta key (and form field name) of the
+		 *                                              end time, saved alongside the start time from the same row.
 		 *     @type string|null   $item_noun           Optional, 'resource_list' type only. Singular noun for one
 		 *                                              row, used in its "+ Add {noun}"/empty-state text (e.g.
 		 *                                              "Document"). Defaults to "Document" for a top-level
@@ -225,6 +227,7 @@ class MetaBoxFieldRegistry {
 				'initFn'           => $field['init_fn'] ?? null,
 				'sources'          => $field['sources'] ?? null,
 				'titleTemplate'    => $field['title_template'] ?? null,
+				'endKey'           => $field['end_key'] ?? null,
 				'itemNoun'         => $field['item_noun'] ?? null,
 				'attached'         => ! empty( $field['attached'] ),
 				'attachedFieldKey' => $field['attached_field_key'] ?? null,
@@ -299,6 +302,7 @@ class MetaBoxFieldRegistry {
 				// row (MetaBox::save_time_range()).
 				'key'             => MeetingTime::META_START,
 				'type'            => 'time_range',
+				'end_key'         => MeetingTime::META_END,
 				'label'           => __( 'Meeting Time', 'boardscribe' ),
 				'description'     => __( 'Optional. Shown under the meeting date.', 'boardscribe' ),
 				'insert_after'    => 'edbs_meeting_date',

@@ -50,7 +50,7 @@ function TimeRangeField( { field, value, onChange, id } ) {
 					<input
 						type="time"
 						id={ `${ id }-end` }
-						name="edbs_meeting_end_time"
+						name={ field.endKey }
 						value={ end }
 						aria-describedby={ describedBy }
 						onChange={ ( event ) => onChange( { start, end: event.target.value } ) }

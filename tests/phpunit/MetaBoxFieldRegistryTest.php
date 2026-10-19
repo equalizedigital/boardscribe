@@ -6,6 +6,7 @@
  */
 
 use EqualizeDigital\BoardScribe\Admin\MetaBoxFieldRegistry;
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -46,6 +47,7 @@ class MetaBoxFieldRegistryTest extends TestCase {
 
 		$this->assertSame( 'time_range', $by_key['edbs_meeting_start_time']['type'] );
 		$this->assertFalse( $by_key['edbs_meeting_start_time']['required'] );
+		$this->assertSame( MeetingTime::META_END, $by_key['edbs_meeting_start_time']['endKey'] );
 		$this->assertArrayNotHasKey( 'edbs_meeting_end_time', $by_key );
 		$this->assertNotFalse( wp_json_encode( MetaBoxFieldRegistry::js_schema() ) );
 	}
