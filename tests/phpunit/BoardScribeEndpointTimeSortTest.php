@@ -259,6 +259,19 @@ class BoardScribeEndpointTimeSortTest extends TestCase {
 	}
 
 	/**
+	 * Untimed meetings sort on the opposite side of timed ones by direction,
+	 * because a missing start time is NULL: first when ascending, last when
+	 * descending. Documented in the readme and the data model.
+	 */
+	public function test_untimed_meetings_sort_first_ascending_and_last_descending(): void {
+		$timed   = $this->meeting( '2026-03-12', '09:00' );
+		$untimed = $this->meeting( '2026-03-12' );
+
+		$this->assertSame( [ $timed, $untimed ], $this->ids( [ 'order' => 'desc' ] ) );
+		$this->assertSame( [ $untimed, $timed ], $this->ids( [ 'order' => 'asc' ] ) );
+	}
+
+	/**
 	 * The date range and date scope filters still apply alongside the time clause.
 	 */
 	public function test_date_filters_still_apply(): void {
