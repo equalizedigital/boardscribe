@@ -65,6 +65,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 | `agenda_link_label` / `minutes_link_label` | *("View Agenda" / "View Minutes")* | Overrides the link text for the Agenda/Minutes cell links. |
 | `hide_title` | `false` | Set to `true` to hide the Title column. |
 | `hide_date` | `false` | Set to `true` to hide the Date column. |
+| `hide_time` | `false` | Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. |
 | `hide_agenda` | `false` | Set to `true` to hide the Agenda column. |
 | `hide_minutes` | `false` | Set to `true` to hide the Minutes column. |
 
@@ -83,6 +84,7 @@ A **BoardScribe** block (`equalize-digital/boardscribe`) is also available in th
 Each meeting minute post has four native meta fields:
 
 - **Meeting Date** — Required. Date the meeting occurred (`YYYY-MM-DD`).
+- **Meeting Time** — Optional start and end time, shown under the date.
 - **Agenda URL** — Link to the meeting agenda document.
 - **Minutes URL** — Link to the published meeting minutes document.
 - **Meeting Not Held** — Checkbox to mark that a scheduled meeting did not take place.
