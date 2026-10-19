@@ -151,6 +151,21 @@ class BoardScribeEndpointTimeRowTest extends TestCase {
 	}
 
 	/**
+	 * hide_time hides the visible time on the client only. The server never
+	 * receives it, and the link labels keep the time on purpose so same-day
+	 * meetings can be told apart; the row still carries `time` for any template.
+	 */
+	public function test_hide_time_does_not_remove_the_time_from_link_labels(): void {
+		$row = $this->row(
+			$this->create_meeting( array_merge( $this->links, [ 'edbs_meeting_start_time' => '17:00' ] ) ),
+			[ 'hide_time' => true ]
+		);
+
+		$this->assertSame( 'View Agenda for 2026/03/12, 5:00 pm', $this->label( $row['agenda'] ) );
+		$this->assertArrayHasKey( 'time', $row );
+	}
+
+	/**
 	 * A start time alone is used as is.
 	 */
 	public function test_link_label_with_a_start_time_only(): void {

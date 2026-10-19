@@ -261,6 +261,7 @@ class FieldRegistryTest extends TestCase {
 		$this->assertFalse( $by_key['hide_time']['default'] );
 		$this->assertSame( 'hide_columns', $by_key['hide_time']['group'] );
 		$this->assertEmpty( $by_key['hide_time']['rest_arg'] ?? false );
+		$this->assertStringContainsString( 'Link labels still include the time', $by_key['hide_time']['description'] );
 	}
 
 	/**

@@ -339,7 +339,7 @@ class FieldRegistry {
 					'group'       => 'hide_columns',
 					'label'       => __( 'Time (shown under the date)', 'boardscribe' ),
 					'default'     => false,
-					'description' => __( 'The time is part of the Date column, so hiding the Date column hides it too.', 'boardscribe' ),
+					'description' => __( 'The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart.', 'boardscribe' ),
 				],
 				[
 					'key'     => 'hide_agenda',

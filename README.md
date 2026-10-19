@@ -65,7 +65,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 | `agenda_link_label` / `minutes_link_label` | *("View Agenda" / "View Minutes")* | Overrides the link text for the Agenda/Minutes cell links. |
 | `hide_title` | `false` | Set to `true` to hide the Title column. |
 | `hide_date` | `false` | Set to `true` to hide the Date column. |
-| `hide_time` | `false` | Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. |
+| `hide_time` | `false` | Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. This only changes what is displayed: the agenda and minutes link labels read by screen readers still include the time, so same-day meetings can be told apart. |
 | `hide_agenda` | `false` | Set to `true` to hide the Agenda column. |
 | `hide_minutes` | `false` | Set to `true` to hide the Minutes column. |
 

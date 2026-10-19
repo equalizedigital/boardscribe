@@ -89,7 +89,7 @@ Use the **Shortcode Builder** (Board Meetings > Settings > Shortcode Builder) to
 * `time_format` - PHP date format for a meeting's start and end time, shown under its date. Only the time characters `a`, `A`, `g`, `G`, `h`, `H`, `i` and `s` are used. Meetings with no time show none. Default: `g:i a`.
 * `hide_title` - Set to `true` to hide the Title column. Default: `false`.
 * `hide_date` - Set to `true` to hide the Date column. Default: `false`.
-* `hide_time` - Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. Default: `false`.
+* `hide_time` - Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. This only changes what is displayed: the agenda and minutes link labels read by screen readers still include the time, so same-day meetings can be told apart. Default: `false`.
 * `hide_agenda` - Set to `true` to hide the Agenda column. Default: `false`.
 * `hide_minutes` - Set to `true` to hide the Minutes column. Default: `false`.
 * `title_label`, `date_label`, `agenda_label`, `minutes_label` - Override the header text for each column. Default: the column's built-in name.
