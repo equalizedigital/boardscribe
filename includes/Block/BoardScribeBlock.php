@@ -288,8 +288,10 @@ class BoardScribeBlock {
 				// filter_var(), not !empty(): a stringified "false" (as
 				// could arrive from hand-edited block markup) is non-empty
 				// in PHP and would otherwise be treated as checked.
-				if ( filter_var( $value, FILTER_VALIDATE_BOOLEAN ) ) {
-					$atts[ $field['key'] ] = 'true';
+				// Preserve explicit false for fields whose default is true.
+				// Omitted attributes still use the registry's shortcode default.
+				if ( array_key_exists( $block_key, $attributes ) ) {
+					$atts[ $field['key'] ] = filter_var( $value, FILTER_VALIDATE_BOOLEAN ) ? 'true' : 'false';
 				}
 				continue;
 			}
