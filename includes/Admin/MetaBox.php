@@ -170,6 +170,12 @@ class MetaBox {
 				$common,
 				[
 					'type'              => 'string',
+					'show_in_rest'      => [
+						'schema' => [
+							'type'    => 'string',
+							'pattern' => MeetingTime::REST_PATTERN,
+						],
+					],
 					'description'       => __( 'Meeting start time in 24-hour HH:MM format, in the site timezone.', 'boardscribe' ),
 					'sanitize_callback' => [ MeetingTime::class, 'sanitize' ],
 				]
@@ -183,6 +189,12 @@ class MetaBox {
 				$common,
 				[
 					'type'              => 'string',
+					'show_in_rest'      => [
+						'schema' => [
+							'type'    => 'string',
+							'pattern' => MeetingTime::REST_PATTERN,
+						],
+					],
 					'description'       => __( 'Meeting end time in 24-hour HH:MM format, in the site timezone.', 'boardscribe' ),
 					'sanitize_callback' => [ MeetingTime::class, 'sanitize' ],
 				]

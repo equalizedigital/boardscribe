@@ -27,6 +27,11 @@ class MeetingTime {
 	const DEFAULT_FORMAT = 'g:i a';
 
 	/**
+	 * Schema pattern for a time sent over REST: HH:MM or HH:MM:SS, or empty to clear it.
+	 */
+	const REST_PATTERN = '^$|^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$';
+
+	/**
 	 * Normalizes a stored or submitted 24-hour time to HH:MM.
 	 *
 	 * Accepts HH:MM and HH:MM:SS (what a time input can submit); anything

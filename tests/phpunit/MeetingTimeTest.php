@@ -172,7 +172,7 @@ class MeetingTimeTest extends TestCase {
 	}
 
 	/**
-	 * Both keys are registered as single, REST-visible strings.
+	 * Both keys are registered as single strings that REST only accepts as a time.
 	 */
 	public function test_meta_keys_are_registered(): void {
 		global $wp_meta_keys;
@@ -180,7 +180,7 @@ class MeetingTimeTest extends TestCase {
 		foreach ( [ MeetingTime::META_START, MeetingTime::META_END ] as $key ) {
 			$args = $wp_meta_keys['post']['edbs_meeting'][ $key ];
 			$this->assertTrue( $args['single'] );
-			$this->assertTrue( $args['show_in_rest'] );
+			$this->assertSame( MeetingTime::REST_PATTERN, $args['show_in_rest']['schema']['pattern'] );
 			$this->assertSame( [ MeetingTime::class, 'sanitize' ], $args['sanitize_callback'] );
 		}
 	}
