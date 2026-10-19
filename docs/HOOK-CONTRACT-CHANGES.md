@@ -272,3 +272,13 @@ The single-link building logic (URL escaping, aria-label, `target`/`rel`) was al
 **`edbs_meeting_formatted_date` now has a side effect.** When a callback returns a different string than the one the endpoint built, the row's `time` is left empty, because the time belongs to the date that was replaced (Pro's date-display override relies on this). A callback that only wraps the date in markup also drops the time. Return the built string unchanged to keep it.
 
 **`edbs_csv_import_row_meta`: `$data['start_time']` and `$data['end_time']` are now normalized.** They were the raw CSV cell; they are now `HH:MM`, or `''` when the cell could not be read. An add-on with its own `start_time` or `end_time` column no longer sees the original text. Pro uses neither column name.
+
+---
+
+## `edbs_csv_import_row_meta` gains a third argument; new `edbs_csv_import_notes` filter (PRO-1514)
+
+**Before:** `do_action( 'edbs_csv_import_row_meta', $post_id, $data )` — an add-on had no way to tell the user about a row it could only partly handle, since the results notice only counted free's own skips, duplicates, scheduled rows and invalid URLs.
+
+**After:** the action also receives `$notes`, an `EqualizeDigital\BoardScribe\Import\ImportNotes` collector (`add( string $key, int $by = 1 )`). An add-on registers wording for its keys on the new `edbs_csv_import_notes` filter, and the importer adds them to the notice. Purely additive: a callback that accepts two arguments is unaffected, and an import that adds no notes produces the same notice as before.
+
+**Action for Pro:** declare the new argument as optional (`?ImportNotes $notes = null`) so Pro still works with a free release that predates it.
