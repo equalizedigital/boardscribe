@@ -201,6 +201,15 @@ class CsvImporterNotesTest extends TestCase {
 		$_GET['edbs_import_notes'] = 'not-an-array';
 
 		$this->assertSame( 'Import complete. 3 rows imported, 0 skipped.', $this->call( 'resolve_status_message' )['message'] );
+
+		// Registered keys with non-scalar or non-numeric values: this is what the is_scalar() guard is for.
+		$_GET['edbs_import_notes'] = [ 'widgets' => [ '1' ] ];
+
+		$this->assertSame( 'Import complete. 3 rows imported, 0 skipped.', $this->call( 'resolve_status_message' )['message'] );
+
+		$_GET['edbs_import_notes'] = [ 'widgets' => 'abc' ];
+
+		$this->assertSame( 'Import complete. 3 rows imported, 0 skipped.', $this->call( 'resolve_status_message' )['message'] );
 	}
 
 	/**
