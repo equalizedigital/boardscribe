@@ -122,6 +122,31 @@ class MetaBoxFieldRegistryTest extends TestCase {
 	}
 
 	/**
+	 * The same chain with Pro's Location anchored to the date itself, which is
+	 * where it sits while the date-display override is hidden (the default):
+	 * the Meeting Time row still sits directly under the date.
+	 */
+	public function test_meeting_time_row_stays_under_the_date_when_location_shares_its_anchor(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'          => 'edbs_location_id',
+					'type'         => 'text',
+					'label'        => 'Location',
+					'insert_after' => 'edbs_meeting_date',
+				];
+
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertSame( [ 'edbs_meeting_date', 'edbs_meeting_start_time', 'edbs_location_id' ], array_slice( $keys, 0, 3 ) );
+	}
+
+	/**
 	 * A field with no insert_after is appended at the end, same as the old
 	 * edbs_meta_fields hook's behavior.
 	 */
