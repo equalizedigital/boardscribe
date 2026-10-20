@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:43+0000\n"
+"PO-Revision-Date: 2026-10-20 20:43+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: ar\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,169 @@ msgstr "يتطلب BoardScribe إصدار PHP %1$s أو أحدث. أنت تقو�
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "يفتقد BoardScribe إلى أداة التحميل التلقائي (autoloader). أعد التثبيت من ملف zip تم إصداره، أو قم بتشغيل `composer install` إذا كنت تقوم بالتطوير من المصدر."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "تاريخ الاجتماع"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "تم الإلغاء"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "جدول الأعمال"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "محضر الاجتماع"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "عرض"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "يتطلب الاجتماع تاريخ اجتماع صالحًا (YYYY-MM-DD) قبل أن يمكن نشره."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "تم حفظ الاجتماع كمسودة لعدم وجود تاريخ اجتماع له. أضف تاريخًا، ثم انشره."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "لا يوجد تاريخ اجتماع صالح لـ %d اجتماع منشور. أضف تاريخًا لكل منها."
+msgstr[1] "لا يوجد تاريخ اجتماع صالح لـ %d اجتماع منشور واحد. أضف تاريخًا له."
+msgstr[2] "لا يوجد تاريخ اجتماع صالح لـ %d اجتماعين منشورين. أضف تاريخًا لكل منهما."
+msgstr[3] "لا يوجد تاريخ اجتماع صالح لـ %d اجتماعات منشورة. أضف تاريخًا لكل منها."
+msgstr[4] "لا يوجد تاريخ اجتماع صالح لـ %d اجتماعًا منشورًا. أضف تاريخًا لكل منها."
+msgstr[5] "لا يوجد تاريخ اجتماع صالح لـ %d اجتماع منشور. أضف تاريخًا لكل منها."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "تاريخ الاجتماع بتنسيق Y-m-d."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "رابط إلى مستند جدول أعمال الاجتماع."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "رابط إلى مستند محضر الاجتماع المنشور لهذا الاجتماع."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "ما إذا كان الاجتماع لم يُعقد."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "وقت بدء الاجتماع بتنسيق 24 ساعة HH:MM، حسب المنطقة الزمنية للموقع."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "وقت انتهاء الاجتماع بتنسيق 24 ساعة HH:MM، حسب المنطقة الزمنية للموقع."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "أي مصدر من مصادر نافذة الإضافة/الاستبدال (media_library، أو external_url، أو معرف مسجل عبر إضافة) أنتج القيمة الحالية لـ %s."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "شاشة تحرير wp-admin للمنشور الأساسي التابع لـ %s، عندما يتضمن مصدره واحدة (مثل مستند مرتبط) - فارغة لملف مكتبة وسائط عادي أو رابط خارجي."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "معرّف المنشور المرتبط الأساسي للقيمة الحالية لـ %s، عندما يتضمن مصدره معرفًا (مثل مستند مرتبط) - 0 لملف مكتبة وسائط عادي أو رابط خارجي."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "تفاصيل الاجتماع"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "تتطلب حقول تفاصيل الاجتماع تفعيل JavaScript."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "الحقل ”%s“ هو resource_list أو حقل مرفق ويجب تعيين saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "اجتماع مجلس الإدارة"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "مطلوب. اختر التاريخ الذي عُقد فيه الاجتماع أو سيُعقد فيه."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "وقت الاجتماع"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "اختياري. يُعرض أسفل تاريخ الاجتماع، إلا إذا تم تمييز الاجتماع بأنه لم يُعقد."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "اختر ملف جدول الأعمال"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "جدول أعمال اجتماع مجلس الإدارة {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "اختر ملف محضر الاجتماع"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "محضر اجتماع مجلس الإدارة {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "الاجتماع لم يُعقد"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "لم يُعقد هذا الاجتماع."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "عام"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "منشئ الكود القصير"
 
@@ -94,7 +219,7 @@ msgid "Support"
 msgstr "الدعم"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "إعدادات BoardScribe"
 
@@ -123,144 +248,204 @@ msgstr "إزالة جميع مقالات اجتماعات BoardScribe وإعدا
 msgid "Warning: this cannot be undone."
 msgstr "تحذير: لا يمكن التراجع عن هذا الإجراء."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "إعدادات BoardScribe"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "قم بتكوين خيارات الكود القصير أدناه، ثم انسخ الكود القصير الناتج والصقه في أي صفحة أو مقال."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "يتطلب منشئ الكود القصير تفعيل JavaScript."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "تنزيل وتثبيت BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "نوع مقال اجتماعات مجلس الإدارة"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "هل BoardScribe متاح للجميع (accessible)؟"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "ما هي اللغات التي تُرجم إليها BoardScribe؟"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "كيف يمكنني إضافة معلومات حجم الملف ونوعه إلى الروابط؟"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "الوثائق"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "هل تحتاج إلى مساعدة؟ تحقق من وثائقنا للحصول على أدلة خطوة بخطوة وشروحات للميزات."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "عرض الوثائق"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(يفتح في تبويب جديد)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "اتصل بنا"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "لديك أسئلة أو تحتاج إلى مساعدة؟ تواصل مع فريق الدعم لدينا."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "الاتصال بالدعم"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "روابط سريعة"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "العنوان"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "من %1$s إلى %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "التاريخ"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "ينتهي في %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "جدول الأعمال"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "محضر الاجتماع"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "عنوان الاجتماع. إذا تُرك فارغًا، فسيتم إنشاؤه تلقائيًا من التاريخ (على سبيل المثال: ”اجتماع مجلس الإدارة - 15 مارس 2025“)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "التنسيق: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "رابط URL الكامل لملف جدول الأعمال"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "اختياري. وقت بدء الاجتماع (مثال: %s)، ويُعرض أسفل تاريخ الاجتماع. هذا هو وقت الاجتماع، وليس وقت النشر في WordPress (راجع publish_date). الوقت الذي يتعذر قراءته لن يُحفظ، ومع ذلك سيتم استيراد الاجتماع. إعادة استيراد الملف لن تضيف أبدًا وقتًا إلى اجتماع موجود بالفعل."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "رابط URL الكامل لملف محضر الاجتماع"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "اختياري. وقت نهاية الاجتماع، بالتنسيقات نفسها مثل start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "عنوان URL الكامل لملف جدول الأعمال. يجب أن يكون عنوانًا كاملاً يبدأ بـ http:// أو https://؛ لن يتم حفظ عنوان URL غير الصالح."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "عنوان URL الكامل لملف محضر الاجتماع. يجب أن يكون عنوانًا كاملاً يبدأ بـ http:// أو https://؛ لن يتم حفظ عنوان URL غير الصالح."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "القيم المقبولة: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "أي تاريخ أو تاريخ/وقت يمكن التعرف عليه (مثل %s). يحدد تاريخ نشر WordPress الفعلي بدلاً من لحظة الاستيراد — استخدم هذا لتأريخ الاجتماعات التاريخية بأثر رجعي. لا يؤثر على تاريخ الاجتماع/ترتيب الفرز أعلاه."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "أي تاريخ أو تاريخ/وقت يمكن التعرف عليه (مثال: %s). يحدد تاريخ النشر الفعلي في WordPress بدلاً من لحظة الاستيراد — استخدم هذا لتأريخ الاجتماعات السابقة بأثر رجعي. لا يؤثر ذلك في تاريخ الاجتماع/ترتيب الفرز أعلاه. يؤدي تحديد تاريخ/وقت مستقبلي إلى جدولة الاجتماع بدلاً من نشره على الفور، ولن يظهر على الموقع حتى ذلك الحين."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "استيراد"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "فشل التحقق من الأمان."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "صلاحيات غير كافية."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "اكتمل الاستيراد. تم استيراد %1$d من الصفوف، وتخطى %2$d."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "تمت جدولة %d صف لتاريخ مستقبلي ولن تظهر حتى ذلك الحين."
+msgstr[1] "تمت جدولة صف واحد (%d) لتاريخ مستقبلي ولن يظهر حتى ذلك الحين."
+msgstr[2] "تمت جدولة صفين (%d) لتاريخ مستقبلي ولن يظهرا حتى ذلك الحين."
+msgstr[3] "تمت جدولة %d صفوف لتاريخ مستقبلي ولن تظهر حتى ذلك الحين."
+msgstr[4] "تمت جدولة %d صفًا لتاريخ مستقبلي ولن تظهر حتى ذلك الحين."
+msgstr[5] "تمت جدولة %d صف لتاريخ مستقبلي ولن تظهر حتى ذلك الحين."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "تطابق %d صف مع اجتماع حالي، أو صف سابق في هذا الملف، بنفس العنوان والتاريخ، مع وقت بدء متطابق أو غير موجود، وتم تخطيها."
+msgstr[1] "تطابق صف واحد (%d) مع اجتماع حالي، أو صف سابق في هذا الملف، بنفس العنوان والتاريخ، مع وقت بدء متطابق أو غير موجود، وتم تخطيه."
+msgstr[2] "تطابق صفان (%d) مع اجتماع حالي، أو صف سابق في هذا الملف، بنفس العنوان والتاريخ، مع وقت بدء متطابق أو غير موجود، وتم تخطيهما."
+msgstr[3] "تطابقت %d صفوف مع اجتماع حالي، أو صف سابق في هذا الملف، بنفس العنوان والتاريخ، مع وقت بدء متطابق أو غير موجود، وتم تخطيها."
+msgstr[4] "تطابق %d صفًا مع اجتماع حالي، أو صف سابق في هذا الملف، بنفس العنوان والتاريخ، مع وقت بدء متطابق أو غير موجود، وتم تخطيها."
+msgstr[5] "تطابق %d صف مع اجتماع حالي، أو صف سابق في هذا الملف، بنفس العنوان والتاريخ، مع وقت بدء متطابق أو غير موجود، وتم تخطيها."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "احتوى %d صف على عنوان URL غير صالح؛ ولم تُحفظ عناوين URL تلك."
+msgstr[1] "احتوى صف واحد (%d) على عنوان URL غير صالح؛ ولم يُحفظ عنوان URL هذا."
+msgstr[2] "احتوى صفان (%d) على عنوان URL غير صالح؛ ولم يُحفظ عنوانا URL ذانك."
+msgstr[3] "احتوت %d صفوف على عنوان URL غير صالح؛ ولم تُحفظ عناوين URL تلك."
+msgstr[4] "احتوى %d صفًا على عنوان URL غير صالح؛ ولم تُحفظ عناوين URL تلك."
+msgstr[5] "احتوى %d صف على عنوان URL غير صالح؛ ولم تُحفظ عناوين URL تلك."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "احتوى %d صف على وقت بدء أو نهاية تعذر قراءته؛ ولم تُحفظ تلك الأوقات."
+msgstr[1] "احتوى صف واحد (%d) على وقت بدء أو نهاية تعذر قراءته؛ ولم يُحفظ ذلك الوقت."
+msgstr[2] "احتوى صفان (%d) على وقت بدء أو نهاية تعذر قراءته؛ ولم يُحفظ هذان الوقتان."
+msgstr[3] "احتوت %d صفوف على وقت بدء أو نهاية تعذر قراءته؛ ولم تُحفظ تلك الأوقات."
+msgstr[4] "احتوى %d صفًا على وقت بدء أو نهاية تعذر قراءته؛ ولم تُحفظ تلك الأوقات."
+msgstr[5] "احتوى %d صف على وقت بدء أو نهاية تعذر قراءته؛ ولم تُحفظ تلك الأوقات."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "لم يتم رفع أي ملف. يرجى اختيار ملف CSV والمحاولة مرة أخرى."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "نوع ملف غير صالح. يرجى رفع ملف بتنسيق .csv."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "فشل رفع الملف بالكامل. يُرجى المحاولة مرة أخرى."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "حدث خطأ غير معروف."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +474,293 @@ msgstr "إضافة اجتماع"
 msgid "Add New Meeting"
 msgstr "إضافة اجتماع جديد"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "عرض جدول الأعمال"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "عرض محضر الاجتماع"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "التاريخ غير متوفر"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "جدول الأعمال غير متوفر"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "محضر الاجتماع غير متوفر"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "الاجتماع لم يُعقد"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s، %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s لـ %2$s (يفتح في نافذة جديدة)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s لـ %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "جدول الأعمال غير متوفر"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "العنوان"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "محضر الاجتماع غير متوفر"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "التاريخ"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "الاجتماع لم يُعقد"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "السابق"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "التالي"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "الصفحة السابقة"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "الصفحة التالية"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "التنقل بين الصفحات"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "صفحة %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "عرض من %1$s إلى %2$s من أصل %3$s مدخلة"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "السنوات المضمنة"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "قائمة سنوات مفصولة بفاصلة. اتركها فارغة لعرض جميع السنوات."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "تاريخ البدء"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "عرض الاجتماعات التي عُقدت في هذا التاريخ أو بعده فقط. له الأولوية على السنوات المضمنة."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "تاريخ الانتهاء"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "عرض الاجتماعات التي عُقدت في هذا التاريخ أو قبله فقط. له الأولوية على السنوات المضمنة."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "المقالات لكل صفحة"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "تنسيق تاريخ الانعقاد"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "تنسيق PHP date(). راجع php.net/manual/en/datetime.format.php للمرجع الكامل."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "تنسيق تاريخ عدم الانعقاد"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "تنسيق الوقت"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "تنسيق PHP date() للوقت المعروض أسفل تاريخ الاجتماع، عندما يتوفر. تُستخدم أحرف الوقت a وA وg وG وh وH وi وs فقط."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "قالب العرض"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "جدول (افتراضي)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "صف جدول واحد لكل اجتماع، مع الأعمدة التي تختارها أدناه."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "فرض نفس العرض على جميع الأعمدة"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "يساعد في محاذاة الأعمدة بشكل متسق للإيقاع العمودي عبر الصفوف."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "فئة CSS مخصصة"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "تسمية رابط جدول الأعمال"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "تسمية رابط محضر الاجتماع"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "لم يتم العثور على اجتماعات منشورة."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "فتح روابط جدول الأعمال/المحاضر في نافذة جديدة"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "تُفتح روابط جدول الأعمال والمحاضر في علامة تبويب جديدة بالمتصفح. تتم إضافة تلميح لقارئ الشاشة وrel=\"noopener noreferrer\" تلقائيًا."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "الوقت (معروض أسفل التاريخ)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "الوقت جزء من عمود التاريخ، لذا فإن إخفاء عمود التاريخ يخفيه أيضًا. تستمر تسميات الروابط في تضمين الوقت حتى يمكن التمييز بين اجتماعات اليوم نفسه."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "نطاق التاريخ"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "جميع الاجتماعات هو الأرشيف الكامل. يعرض خيار ”القادمة“ الاجتماعات بدءًا من اليوم فصاعدًا فقط؛ ويعرض خيار ”السابقة“ الاجتماعات التي عُقدت بالفعل فقط."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "جميع الاجتماعات"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "الاجتماعات القادمة"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "الاجتماعات السابقة"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "ترتيب الفرز"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "الأحدث أولاً هو الخيار الافتراضي ويناسب أرشيف المحاضر السابقة. اختر الأقدم أولاً لقائمة مستقبلية مثل الاجتماعات القادمة."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "الأحدث أولاً"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "الأقدم أولاً"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "اكتمل الاستيراد. تم استيراد %1$d من الصفوف، وتخطى %2$d."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "ارفع ملف CSV لاستيراد الاجتماعات بكميات كبيرة."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "لم يتم رفع أي ملف. يرجى اختيار ملف CSV والمحاولة مرة أخرى."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "نوع ملف غير صالح. يرجى رفع ملف بتنسيق .csv."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "حدث خطأ غير معروف."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "ارفع ملف CSV لاستيراد الاجتماعات بكميات كبيرة. يجب أن يكون الصف الأول هو صف الرأس."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "تنسيق CSV"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "العمود"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "مطلوب"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "ملاحظات"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "نعم"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "لا"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "استيراد ملف مرة أخرى"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "يتم تخطي الصف الذي يحتوي على وقت بدء باعتباره مكررًا عندما يتطابق اجتماع محفوظ في العنوان والتاريخ، وإما أن يكون له نفس وقت البدء أو بدون وقت بدء. يتم تخطي الصف الذي ليس له وقت بدء عندما يتطابق أي اجتماع محفوظ في العنوان والتاريخ. رفع الملف نفسه مرتين لا يُنشئ نسخًا مكررة."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "تعتمد المطابقة على ما هو محفوظ في كل اجتماع حاليًا، وليس على ما كان عليه الملف في الأصل. إذا قمت بتغيير عنوان الاجتماع أو تاريخه بعد استيراده، أو قمت بتغيير وقت بدئه إلى وقت مختلف عندما يحتوي الصف على وقت، فلن يتطابق الصف الأصلي بعد الآن وسيؤدي استيراد هذا الملف مرة أخرى إلى إنشاء اجتماع جديد. لتغيير الاجتماعات الحالية، قم بتحريرها في WordPress بدلاً من استيرادها مرة أخرى."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "رفع ملف CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "اختر ملفًا باستخدام الأعمدة أعلاه. يجب أن يكون الصف الأول صف رأس، وينشئ كل صف صالح بعده اجتماعًا واحدًا."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "ملف CSV"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "تاريخ الاجتماع"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "مطلوب. اختر التاريخ الذي عُقد فيه الاجتماع أو سيُعقد فيه."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "رابط جدول الأعمال"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "اختر ملف جدول الأعمال"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "استخدم هذا الملف"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "مكتبة الوسائط"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "رابط محضر الاجتماع"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "اختر ملف محضر الاجتماع"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "الاجتماع لم يُعقد"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "هذا الاجتماع لم يُعقد"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "استيراد الاجتماعات"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +785,11 @@ msgstr "عرض الاجتماعات التي عُقدت في هذا التاري
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "لا توجد مصطلحات بعد للتصفية بها."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "إعدادات العرض"
 
@@ -560,13 +800,13 @@ msgstr "تسميات الأعمدة"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "تسميات الروابط"
+msgid "Links"
+msgstr "الروابط"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "إخفاء الأعمدة"
+msgid "Hide Data"
+msgstr "إخفاء البيانات"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +824,10 @@ msgstr "يتجاهل حد عدد المقالات لكل صفحة أدناه و�
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "السجلات لكل صفحة"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "تعذر تحميل المعاينة. تحقق من إمكانية الوصول إلى REST API للموقع، ثم حاول مجددًا."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +856,263 @@ msgstr "تم نسخ الكود القصير إلى الحافظة."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "فشل النسخ. حدد نص الكود القصير وانسخه يدويًا."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "حدد ملفًا"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "استخدم هذا الملف"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "لا يمكن استخدام نوع الملف هذا لهذا الحقل. اختر ملفًا مختلفًا."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (يفتح في تبويب جديد)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "فيديو من مكتبة الوسائط"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "مكتبة الوسائط"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "عنوان URL خارجي"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "يبقى المورد الحالي كما هو دون تغيير حتى تؤكد ذلك."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "أدخل عنوان URL كاملاً، يبدأ بـ http:// أو https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "حفظ عنوان URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "تحديد من مكتبة الوسائط"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "افتح أداة اختيار الملفات الأصلية في WordPress لاختيار ملف أو رفعه."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "أدخل عنوان URL خارجيًا"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "رابط إلى ملف أو صفحة ويب مستضافة في مكان آخر."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "→ للخلف"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "استبدال %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "إضافة %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "تحريك %s لأعلى"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "تحريك %s لأسفل"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "مستند بلا عنوان"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "تحرير العنوان"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "إضافة عنوان"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "تم حفظ العنوان."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "تم إلغاء تحرير العنوان."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "اسم المستند"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "حفظ"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "تم نقل %1$s إلى الموضع %2$d من %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "مستند"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "لم تتم إضافة أي %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "يحدد كيفية ظهور هذا المستند هنا - ولا يؤدي ذلك إلى إعادة تسمية المستند نفسه."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "عرض %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "تعديل"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "تحرير %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "تحرير عنوان %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "إضافة عنوان %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "استبدال"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "إزالة"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "إزالة %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "تمت إزالة %s."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ إضافة %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "تمت إضافة %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "عنصر"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "%s بلا عنوان"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "إضافة عنوان لـ %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "تحديد ملف %s"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "لم يتم إرفاق أي %s."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "تم استبدال %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "البدء"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "النهاية"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "وقت النهاية يسبق وقت البدء، لذا ينتهي هذا الاجتماع في اليوم التالي."
 
 #: block.json
 msgctxt "block title"

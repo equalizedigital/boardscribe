@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Estonian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:44+0000\n"
+"PO-Revision-Date: 2026-10-20 20:44+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: et\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,165 @@ msgstr "BoardScribe vajab PHP versiooni %1$s või uuemat. Teie kasutate PHP vers
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "BoardScribe'i automaatlaadija on puudu. Installige uuesti ametlikust zip-failist või käivitage „composer install“, kui arendate lähtekoodist."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Koosoleku kuupäev"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Tühistatud"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Päevakord"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Protokoll"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Vaata"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Koosoleku avaldamiseks peab sellel olema kehtiv koosoleku kuupäev (YYYY-MM-DD)."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "Koosolek salvestati mustandina, kuna sellel puudub koosoleku kuupäev. Lisage kuupäev ja seejärel avaldage see."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d avaldatud koosolekul puudub kehtiv koosoleku kuupäev. Lisage sellele kuupäev."
+msgstr[1] "%d avaldatud koosolekul puudub kehtiv koosoleku kuupäev. Lisage igaühele kuupäev."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Koosoleku kuupäev vormingus AAAA-KK-PP."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "Koosoleku päevakorra dokumendi URL."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "Selle koosoleku avaldatud protokolli dokumendi URL."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "Kas koosolek jäi toimumata."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Koosoleku algusaeg 24-tunnises vormingus TT:MM saidi ajavööndis."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Koosoleku lõpuaeg 24-tunnises vormingus TT:MM saidi ajavööndis."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Milline modaalakna „Lisa/asenda“ allikas (media_library, external_url või pistikprogrammi registreeritud ID) lõi välja %s praeguse väärtuse."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "Välja %s aluseks oleva postituse wp-admini muutmise kuva, kui selle allikal see on (nt lingitud dokument) – tavalise meediateegi faili või välislingi puhul tühi."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "Lingitud postituse ID välja %s praeguse väärtuse aluseks, kui selle allikal see on (nt lingitud dokument) – tavalise meediateegi faili või välislingi puhul 0."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Koosoleku üksikasjad"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Koosoleku üksikasjade väljad vajavad JavaScripti."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "Väli „%s“ on resource_list või manustatud väli ja selle väärtuseks peab olema seatud saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Juhatuse koosolek"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s – %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Kohustuslik. Valige kuupäev, millal koosolek toimus või toimub."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Koosoleku kellaaeg"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Valikuline. Kuvatakse koosoleku kuupäeva all, välja arvatud juhul, kui koosolek on märgitud mittetoimunuks."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Vali päevakorra fail"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "{date} juhatuse koosoleku päevakord"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Vali protokolli fail"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "{date} juhatuse koosoleku protokoll"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Koosolek jäi toimumata"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "Seda koosolekut ei toimunud."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "Üldine"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Lühikoodi koostaja"
 
@@ -94,7 +215,7 @@ msgid "Support"
 msgstr "Tugi"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "BoardScribe'i seaded"
 
@@ -123,144 +244,188 @@ msgstr "Eemalda kõik BoardScribe'i koosolekute postitused ja plugina seaded, ku
 msgid "Warning: this cannot be undone."
 msgstr "Hoiatus: seda tegevust ei saa tagasi võtta."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "BoardScribe'i seaded"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "Seadistage allpool oma lühikoodi valikud, seejärel kopeerige loodud lühikood ja kleepige see mis tahes lehele või postitusse."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "Lühikoodi koostaja vajab JavaScripti."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "BoardScribe'i allalaadimine ja installimine"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Juhatuse koosolekute postituse tüüp"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "Kas BoardScribe on ligipääsetav?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "Mis keeltesse on BoardScribe tõlgitud?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Kuidas lisada linkidele faili suuruse ja tüübi teavet?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Dokumentatsioon"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Vajate abi? Vaadake meie dokumentatsiooni samm-sammuliste juhiste ja funktsioonide tutvustuste saamiseks."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Vaata dokumentatsiooni"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(avaneb uuel vahelehel)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Võta meiega ühendust"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "Kas teil on küsimusi või vajate abi? Võtke ühendust meie tugimeeskonnaga."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Võta ühendust toega"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Kiirlingid"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Pealkiri"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s kuni %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Kuupäev"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Lõpeb kell %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Päevakord"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Protokoll"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Koosoleku pealkiri. Kui see on tühi, genereeritakse see automaatselt kuupäeva põhjal (nt „Juhatuse koosolek – 15. märts 2025“)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Vorming: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "Päevakorra faili täielik URL"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Valikuline. Koosoleku algusaeg (nt %s), mida kuvatakse koosoleku kuupäeva all. See on koosoleku toimumise aeg, mitte WordPressi avaldamisaeg (vt publish_date). Loetamatut aega ei salvestata ja koosolek imporditakse ikkagi. Faili uuesti importimisel ei lisata aega juba olemasolevale koosolekule."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "Protokolli faili täielik URL"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Valikuline. Koosoleku lõpuaeg, samas vormingus kui start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Päevakorra faili täielik URL. Peab olema täielik http:// või https:// aadress; vigast URL-i ei salvestata."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Protokolli faili täielik URL. Peab olema täielik http:// või https:// aadress; vigast URL-i ei salvestata."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Lubatud väärtused: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Igasugune tuvastatav kuupäev või kuupäev/kellaaeg (nt %s). Määrab importimise hetke asemel WordPressi tegeliku avaldamiskuupäeva – kasutage seda ajalooliste koosolekute tagantjärele dateerimiseks. See ei mõjuta ülaltoodud koosoleku kuupäeva ega sordi järjekorda."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Iga äratuntav kuupäev või kuupäev/kellaaeg (nt %s). Määrab importimise hetke asemel tegeliku WordPressi avaldamiskuupäeva – kasutage seda varasemate koosolekute tagantjärele dateerimiseks. Ei mõjuta ülaltoodud koosoleku kuupäeva ega sortimisjärjekorda. Tulevikus olev kuupäev/kellaaeg ajastab koosoleku kohese avaldamise asemel ning see ei ilmu saidile enne seda aega."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "Impordi"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Turvakontroll ebaõnnestus."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Ebapiisavad õigused."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Importimine on lõpetatud. Imporditi %1$d rida, vahele jäeti %2$d."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d rida ajastati tulevasele kuupäevale ja seda ei kuvata enne seda aega."
+msgstr[1] "%d rida ajastati tulevasele kuupäevale ja neid ei kuvata enne seda aega."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d rida vastas olemasolevale koosolekule või selle faili varasemale reale sama pealkirja ja kuupäevaga ning kattuva või puuduva algusajaga ning jäeti vahele."
+msgstr[1] "%d rida vastasid olemasolevale koosolekule või selle faili varasemale reale sama pealkirja ja kuupäevaga ning kattuva või puuduva algusajaga ning jäeti vahele."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d real oli vigane URL; seda URL-i ei salvestatud."
+msgstr[1] "%d real oli vigane URL; neid URL-e ei salvestatud."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d real oli loetamatu algus- või lõpuaeg; seda aega ei salvestatud."
+msgstr[1] "%d real oli loetamatu algus- või lõpuaeg; neid aegu ei salvestatud."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Faili ei laaditud üles. Palun valige CSV-fail ja proovige uuesti."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Vigane failitüüp. Palun laadige üles .csv-fail."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "Faili täielik üleslaadimine ebaõnnestus. Palun proovige uuesti."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "Ilmnes tundmatu viga."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +454,293 @@ msgstr "Lisa koosolek"
 msgid "Add New Meeting"
 msgstr "Lisa uus koosolek"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Vaata päevakorda"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Vaata protokolli"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Kuupäev pole saadaval"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Päevakord pole saadaval"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Protokoll pole saadaval"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Toimumata jäänud"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s: %2$s (avaneb uues aknas)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%2$s %1$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Päevakord pole saadaval"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Pealkiri"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Protokoll pole saadaval"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Kuupäev"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Toimumata jäänud"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Eelmine"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Järgmine"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Eelmine lehekülg"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Järgmine lehekülg"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Lehekülgede numeratsioon"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Lehekülg %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Kuvatakse %1$s kuni %2$s kokku %3$s kirjest"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Kaasatud aastad"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Komadega eraldatud aastate loend. Jätke tühjaks, et näidata kõiki aastaid."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Alguskuupäev"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Näita ainult koosolekuid, mis toimuvad sel kuupäeval või hiljem. On prioriteetsem kui kaasatud aastad."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Lõpukuupäev"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Näita ainult koosolekuid, mis toimuvad sel kuupäeval või varem. On prioriteetsem kui kaasatud aastad."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Postitusi lehel"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Toimunud koosoleku kuupäeva vorming"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHP date() vorming. Täieliku viite leiate aadressilt php.net/manual/en/datetime.format.php."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Toimumata jäänud koosoleku kuupäeva vorming"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Ajavorming"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "PHP date() vorming kellaajale, mida kuvatakse koosoleku kuupäeva all, kui see on olemas. Kasutatakse ainult kellaajasümboleid a, A, g, G, h, H, i ja s."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Kuvamise mall"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Tabel (vaikimisi)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Üks tabelirida koosoleku kohta koos allpool valitud veergudega."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "Sunni kõik veerud samale laiusele"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Aitab joondada veerge järjepidevalt, et hoida ridade vahel ühtlast vertikaalset rütmi."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Kohandatud CSS-klass"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Päevakorra lingi silt"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Protokolli lingi silt"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "Avaldatud koosolekuid ei leitud."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Ava päevakorra/protokolli lingid uues aknas"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Päevakorra ja protokolli lingid avanevad uuel brauseri vahekaardil. Ekraanilugeja vihje ja rel=\"noopener noreferrer\" lisatakse automaatselt."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Kellaaeg (kuvatakse kuupäeva all)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "Kellaaeg on osa kuupäeva veerust, seega kuupäeva veeru peitmine peidab ka selle. Lingisildid sisaldavad endiselt kellaaega, et samal päeval toimuvaid koosolekuid saaks eristada."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Kuupäevavahemik"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "„Kõik koosolekud“ on täielik arhiiv. „Tulevased“ kuvab ainult koosolekuid alates tänasest; „Möödunud“ kuvab ainult juba toimunud koosolekuid."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Kõik koosolekud"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Tulevased koosolekud"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Möödunud koosolekud"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Sortimisjärjestus"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "„Uusimad eespool“ on vaikesäte ja sobib varasemate protokollide arhiivile. Tulevikku suunatud loendi (nt eelseisvate koosolekute) puhul valige „Vanimad eespool“."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Uusimad eespool"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Vanimad eespool"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Importimine on lõpetatud. Imporditi %1$d rida, vahele jäeti %2$d."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Laadige üles CSV-fail koosolekute hulgimpordiks."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "Faili ei laaditud üles. Palun valige CSV-fail ja proovige uuesti."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Vigane failitüüp. Palun laadige üles .csv-fail."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "Ilmnes tundmatu viga."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Laadige üles CSV-fail koosolekute hulgimpordiks. Esimene rida peab olema päiserida."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "CSV-vorming"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Veerg"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Kohustuslik"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Märkused"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Jah"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "Ei"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Faili uuesti importimine"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "Algusajaga rida jäetakse duikaadina vahele, kui salvestatud koosolekul on sama pealkiri ja kuupäev ning kas sama algusaeg või algusaeg puudub. Algusajata rida jäetakse vahele, kui mistahes salvestatud koosolekul on sama pealkiri ja kuupäev. Sama faili uuesti üleslaadimine koopiaid ei tekita."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "Vaste leidmisel lähtutakse sellest, mis on iga koosoleku kohta praegu salvestatud, mitte sellest, mis oli failis algselt. Kui muudate koosoleku pealkirja või kuupäeva pärast importimist või muudate selle algusaega teistsuguseks, kui real on see olemas, siis algne rida enam ei kattu ja faili uuesti importimine loob uue koosoleku. Olemasolevate koosolekute muutmiseks muutke neid uuesti importimise asemel WordPressis."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "Laadi CSV üles"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Valige fail, kasutades ülaltoodud veerge. Esimene rida peab olema päiserida ja iga järgnev kehtiv rida loob ühe koosoleku."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSV-fail"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Koosoleku kuupäev"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Kohustuslik. Valige kuupäev, millal koosolek toimus või toimub."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "Päevakorra URL"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Vali päevakorra fail"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Kasuta seda faili"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Meediateek"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "Protokolli URL"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Vali protokolli fail"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Koosolek jäi toimumata"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "See koosolek jäi toimumata"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "Impordi koosolekud"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +765,11 @@ msgstr "Näita ainult koosolekuid, mis toimuvad sel kuupäeval või varem. Alist
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Filtreerimiseks pole veel ühtegi terminit."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Kuvamise seaded"
 
@@ -560,13 +780,13 @@ msgstr "Veergude sildid"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Linkide sildid"
+msgid "Links"
+msgstr "Lingid"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Peida veerud"
+msgid "Hide Data"
+msgstr "Peida andmed"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +804,10 @@ msgstr "Ignoreerib allpool olevat lehekülje piirangut ja pärib kõik koosoleku
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Kirjeid lehel"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "Eelvaadet ei saanud laadida. Kontrollige, kas saidi REST API on kättesaadav, ja proovige siis uuesti."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +836,263 @@ msgstr "Lühikood kopeeriti lõikelauale."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "Kopeerimine ebaõnnestus. Valige lühikoodi tekst ja kopeerige see käsitsi."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Valige fail"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Kasuta seda faili"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Seda failitüüpi ei saa selle välja jaoks kasutada. Valige teine fail."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (avaneb uuel vahelehel)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Meediateegi video"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Meediateek"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "Väline URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "Praegune ressurss jääb muutmata kuni kinnitamiseni."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Sisestage täielik URL, mis algab prefiksiga http:// või https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "Salvesta URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Valige meediateegist"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Faili valimiseks või üleslaadimiseks avage WordPressi algupärane failivalija."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Sisestage väline URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "Linkige mujal majutatud failile või veebilehele."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Tagasi"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "Asenda %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "Lisa %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "Liiguta %s üles"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "Liiguta %s alla"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Pealkirjata dokument"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "Muuda pealkirja"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Lisa pealkiri"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "Pealkiri on salvestatud."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "Pealkirja muutmine tühistati."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Dokumendi nimi"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "Salvesta"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Tühista"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s liigutati positsioonile %2$d / %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Dokument"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "%s pole lisatud."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Määrab, kuidas see dokument siin kuvatakse – see ei nimeta dokumenti ennast ümber."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "Kuva %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "Muuda"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "Muuda: %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "Muuda pealkirja: %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Lisa pealkiri: %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Asenda"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Eemalda"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "Eemalda %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%s on eemaldatud."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ Lisa %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%s on lisatud."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Kirje"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "Pealkirjata %s"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Lisa pealkiri: %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Valige %s fail"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "Pole ühtegi %s lisatud."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%s on asendatud."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Algus"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Lõpp"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "Lõpuaeg on algusajast varasem, seega lõpeb see koosolek järgmisel päeval."
 
 #: block.json
 msgctxt "block title"

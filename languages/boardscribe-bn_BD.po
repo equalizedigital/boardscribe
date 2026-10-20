@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Bengali\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:45+0000\n"
+"PO-Revision-Date: 2026-10-20 20:45+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
-"Language: bn\n"
+"Language: bn_BD\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,165 @@ msgstr "BoardScribe-এর জন্য PHP %1$s বা তার উচ্চ�
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "BoardScribe-এর অটোলোডার (autoloader) পাওয়া যাচ্ছে না। রিলিজ করা জিপ (zip) ফাইল থেকে পুনরায় ইনস্টল করুন, অথবা সোর্স থেকে ডেভেলপ করলে `composer install` রান করুন।"
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "মিটিংয়ের তারিখ"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "বাতিল করা হয়েছে"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "আলোচ্যসূচি"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "কার্যবিবরণী"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "দেখুন"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "একটি মিটিং প্রকাশ করার পূর্বে একটি বৈধ মিটিং তারিখ (YYYY-MM-DD) থাকা প্রয়োজন।"
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "মিটিংটিতে কোনো মিটিং তারিখ না থাকায় এটি ড্রাফট হিসেবে সংরক্ষণ করা হয়েছে। একটি তারিখ যোগ করুন, তারপর এটি প্রকাশ করুন।"
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d টি প্রকাশিত মিটিংয়ে কোনো বৈধ মিটিং তারিখ নেই। এটিতে একটি তারিখ যোগ করুন।"
+msgstr[1] "%d টি প্রকাশিত মিটিংয়ে কোনো বৈধ মিটিং তারিখ নেই। প্রতিটিতে একটি তারিখ যোগ করুন।"
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Y-m-d ফরম্যাটে মিটিংয়ের তারিখ।"
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "মিটিং আলোচ্যসূচি ডকুমেন্টের URL।"
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "এই মিটিংয়ের প্রকাশিত কার্যবিবরণী ডকুমেন্টের URL।"
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "মিটিংটি অনুষ্ঠিত হয়েছিল কি না।"
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "সাইটের সময় অঞ্চলে ২৪-ঘণ্টার HH:MM ফরম্যাটে মিটিং শুরুর সময়।"
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "সাইটের সময় অঞ্চলে ২৪-ঘণ্টার HH:MM ফরম্যাটে মিটিং সমাপ্তির সময়।"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "কোন Add/Replace-modal সোর্স (media_library, external_url, বা একটি প্লাগইন-নিবন্ধিত id) %s এর বর্তমান মান তৈরি করেছে।"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "%s এর অন্তর্নিহিত পোস্টের জন্য wp-admin সম্পাদনা স্ক্রিন, যখন এর সোর্সের একটি থাকে (যেমন একটি লিঙ্কযুক্ত ডকুমেন্ট) - সাধারণ Media Library ফাইল বা বাহ্যিক লিঙ্কের জন্য খালি।"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "%s এর বর্তমান মানের অন্তর্নিহিত লিঙ্কযুক্ত পোস্ট ID, যখন এর সোর্সের একটি থাকে (যেমন একটি লিঙ্কযুক্ত ডকুমেন্ট) - সাধারণ Media Library ফাইল বা বাহ্যিক লিঙ্কের জন্য ০।"
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "মিটিংয়ের বিবরণ"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Meeting Details ক্ষেত্রগুলির জন্য JavaScript প্রয়োজন।"
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "“%s” ক্ষেত্রটি একটি resource_list বা সংযুক্ত ক্ষেত্র এবং অবশ্যই saved_externally => true সেট করতে হবে।"
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "বোর্ড মিটিং"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "আবশ্যক। মিটিংটি যে তারিখে অনুষ্ঠিত হয়েছে বা হবে সেটি নির্বাচন করুন।"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "মিটিংয়ের সময়"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "ঐচ্ছিক। মিটিং অনুষ্ঠিত না হওয়ার হিসেবে চিহ্নিত না থাকলে, মিটিংয়ের তারিখের নিচে দেখানো হয়।"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "আলোচ্যসূচি ফাইল বেছে নিন"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "{date} বোর্ড মিটিংয়ের কার্যসূচি"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "কার্যবিবরণী ফাইল বেছে নিন"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "{date} বোর্ড মিটিংয়ের কার্যবিবরণী"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "মিটিং অনুষ্ঠিত হয়নি"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "এই মিটিংটি অনুষ্ঠিত হয়নি।"
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "সাধারণ"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "শর্টকোড বিল্ডার"
 
@@ -94,7 +215,7 @@ msgid "Support"
 msgstr "সাপোর্ট"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "BoardScribe সেটিংস"
 
@@ -123,144 +244,188 @@ msgstr "এই প্লাগইনটি মুছে ফেলার সম�
 msgid "Warning: this cannot be undone."
 msgstr "সতর্কতা: এটি আর ফিরিয়ে আনা যাবে না।"
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "BoardScribe সেটিংস"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "নিচে আপনার শর্টকোড অপশনগুলো কনফিগার করুন, তারপর জেনারেট করা শর্টকোডটি কপি করে যেকোনো পেজ বা পোস্টে পেস্ট করুন।"
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "শর্টকোড বিল্ডারের জন্য JavaScript প্রয়োজন।"
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "BoardScribe ডাউনলোড এবং ইনস্টল করা"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "বোর্ড মিটিং পোস্ট টাইপ"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "BoardScribe কি অ্যাক্সেসযোগ্য?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "BoardScribe কোন কোন ভাষায় অনুবাদ করা হয়েছে?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "আমি কীভাবে লিঙ্কে ফাইলের আকার এবং টাইপ সংক্রান্ত তথ্য যোগ করব?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "ডকুমেন্টেশন"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "সাহায্য প্রয়োজন? ধাপে ধাপে নির্দেশিকা এবং ফিচারের বিস্তারিত জানতে আমাদের ডকুমেন্টেশন দেখুন।"
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "ডকুমেন্টেশন দেখুন"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(নতুন ট্যাবে খোলে)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "আমাদের সাথে যোগাযোগ করুন"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "কোনো প্রশ্ন আছে বা সাহায্য প্রয়োজন? আমাদের সাপোর্ট টিমের সাথে যোগাযোগ করুন।"
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "সাপোর্টের সাথে যোগাযোগ করুন"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "কুইক লিঙ্ক"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "শিরোনাম"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s থেকে %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "তারিখ"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "%s এ শেষ হয়"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "আলোচ্যসূচি"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "কার্যবিবরণী"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "মিটিংয়ের শিরোনাম। ফাঁকা থাকলে, তারিখ থেকে স্বয়ংক্রিয়ভাবে তৈরি হবে (যেমন: “বোর্ড মিটিং - ১৫ মার্চ, ২০২৫”)।"
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "ফরম্যাট: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "আলোচ্যসূচি ফাইলের সম্পূর্ণ URL"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "ঐচ্ছিক। মিটিং শুরুর সময় (যেমন %s), যা মিটিংয়ের তারিখের নিচে দেখানো হয়। এটি মিটিংয়ের সময়, WordPress প্রকাশের সময় নয় (publish_date দেখুন)। যে সময় পড়া যায় না তা সংরক্ষণ করা হয় না, এবং মিটিংটি তবুও ইম্পোর্ট করা হয়। একটি ফাইল পুনরায় ইম্পোর্ট করলে তা বিদ্যমান মিটিংয়ে কখনো সময় যোগ করে না।"
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "কার্যবিবরণী ফাইলের সম্পূর্ণ URL"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "ঐচ্ছিক। মিটিং শেষ হওয়ার সময়, start_time-এর মতো একই ফরম্যাটে।"
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "এজেন্ডা ফাইলের সম্পূর্ণ URL। অবশ্যই একটি পূর্ণাঙ্গ http:// বা https:// ঠিকানা হতে হবে; কোনো অবৈধ URL সংরক্ষণ করা হবে না।"
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "কার্যবিবরণী ফাইলের সম্পূর্ণ URL। অবশ্যই একটি পূর্ণাঙ্গ http:// বা https:// ঠিকানা হতে হবে; কোনো অবৈধ URL সংরক্ষণ করা হবে না।"
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "গ্রহণযোগ্য মানসমূহ: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "যেকোনো শনাক্তযোগ্য তারিখ বা তারিখ/সময় (যেমন %s)। এটি ইমপোর্টের সময়ের পরিবর্তে প্রকৃত WordPress পাবলিশ তারিখ সেট করে — ঐতিহাসিক মিটিংগুলোর তারিখ পেছানোর জন্য এটি ব্যবহার করুন। এটি উপরের মিটিংয়ের তারিখ/সাজানোর ক্রমকে প্রভাবিত করে না।"
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "যেকোনো শনাক্তযোগ্য তারিখ বা তারিখ/সময় (যেমন %s)। ইম্পোর্টের মুহূর্তের পরিবর্তে প্রকৃত WordPress প্রকাশের তারিখ সেট করে — পেছনের তারিখের পূর্ববর্তী মিটিংগুলোর ক্ষেত্রে এটি ব্যবহার করুন। উপরের মিটিংয়ের তারিখ/বাছাইয়ের ক্রমকে প্রভাবিত করে না। একটি ভবিষ্যতের তারিখ/সময় তাৎক্ষণিকভাবে প্রকাশ করার পরিবর্তে মিটিংটি নির্ধারণ (শিডিউল) করে রাখে এবং সেই সময় না আসা পর্যন্ত এটি সাইটে প্রদর্শিত হবে না।"
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
-msgstr "ইমপোর্ট করুন"
+msgstr "ইম্পোর্ট"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "সিকিউরিটি চেক ব্যর্থ হয়েছে।"
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "পর্যাপ্ত অনুমতি নেই।"
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "ইমপোর্ট সম্পন্ন হয়েছে। %1$dটি সারি ইমপোর্ট করা হয়েছে, %2$dটি বাদ দেওয়া হয়েছে।"
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d-টি সারি ভবিষ্যতের একটি তারিখের জন্য নির্ধারণ করা হয়েছে এবং সেই সময় না আসা পর্যন্ত প্রদর্শিত হবে না।"
+msgstr[1] "%d-টি সারি ভবিষ্যতের একটি তারিখের জন্য নির্ধারণ করা হয়েছে এবং সেই সময় না আসা পর্যন্ত প্রদর্শিত হবে না।"
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d-টি সারি একই শিরোনাম ও তারিখ এবং মিল থাকা বা অনুপস্থিত শুরুর সময়সহ একটি বিদ্যমান মিটিংয়ের সাথে অথবা এই ফাইলের পূর্ববর্তী একটি সারির সাথে মিলে যাওয়ায় এড়িয়ে যাওয়া হয়েছে।"
+msgstr[1] "%d-টি সারি একই শিরোনাম ও তারিখ এবং মিল থাকা বা অনুপস্থিত শুরুর সময়সহ একটি বিদ্যমান মিটিংয়ের সাথে অথবা এই ফাইলের পূর্ববর্তী একটি সারির সাথে মিলে যাওয়ায় এড়িয়ে যাওয়া হয়েছে।"
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d-টি সারিতে একটি অবৈধ URL ছিল; সেই URLটি সংরক্ষণ করা হয়নি।"
+msgstr[1] "%d-টি সারিতে অবৈধ URL ছিল; সেই URLগুলো সংরক্ষণ করা হয়নি।"
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d-টি সারিতে এমন একটি শুরু বা শেষ সময় ছিল যা পড়া যায়নি; সেই সময় সংরক্ষণ করা হয়নি।"
+msgstr[1] "%d-টি সারিতে এমন শুরু বা শেষ সময় ছিল যা পড়া যায়নি; সেই সময়গুলো সংরক্ষণ করা হয়নি।"
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "কোনো ফাইল আপলোড করা হয়নি। অনুগ্রহ করে একটি CSV ফাইল বেছে নিন এবং আবার চেষ্টা করুন।"
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "অকার্যকর ফাইলের ধরন। অনুগ্রহ করে একটি.csv ফাইল আপলোড করুন।"
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "ফাইলটি সম্পূর্ণভাবে আপলোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "একটি অজানা ত্রুটি ঘটেছে।"
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +454,293 @@ msgstr "মিটিং যোগ করুন"
 msgid "Add New Meeting"
 msgstr "নতুন মিটিং যোগ করুন"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "আলোচ্যসূচি দেখুন"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "কার্যবিবরণী দেখুন"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "তারিখ পাওয়া যায়নি"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "আলোচ্যসূচি পাওয়া যায়নি"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "কার্যবিবরণী পাওয়া যায়নি"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "মিটিং অনুষ্ঠিত হয়নি"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%2$s-এর জন্য %1$s (নতুন উইন্ডোতে খোলে)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%2$s-এর জন্য %1$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "আলোচ্যসূচি পাওয়া যায়নি"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "শিরোনাম"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "কার্যবিবরণী পাওয়া যায়নি"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "তারিখ"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "মিটিং অনুষ্ঠিত হয়নি"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "পূর্ববর্তী"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "পরবর্তী"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "পূর্ববর্তী পৃষ্ঠা"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "পরবর্তী পৃষ্ঠা"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "পৃষ্ঠা সংখ্যায়ন"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "পৃষ্ঠা %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "%3$sটি এন্ট্রির মধ্যে %1$s থেকে %2$s দেখানো হচ্ছে"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "অন্তর্ভুক্ত বছরসমূহ"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "কমা দিয়ে আলাদা করা বছরের তালিকা। সব বছর দেখাতে খালি রাখুন।"
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "শুরুর তারিখ"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "শুধুমাত্র এই তারিখে বা এর পরের মিটিংগুলো দেখান। এটি 'অন্তর্ভুক্ত বছরসমূহ'-এর চেয়ে বেশি অগ্রাধিকার পাবে।"
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "শেষের তারিখ"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "শুধুমাত্র এই তারিখে বা এর আগের মিটিংগুলো দেখান। এটি 'অন্তর্ভুক্ত বছরসমূহ'-এর চেয়ে বেশি অগ্রাধিকার পাবে।"
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "প্রতি পৃষ্ঠায় পোস্ট সংখ্যা"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "অনুষ্ঠিত হওয়ার তারিখের ফরম্যাট"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHP date() ফরম্যাট। বিস্তারিত রেফারেন্সের জন্য php.net/manual/en/datetime.format.php দেখুন।"
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "অনুষ্ঠিত না হওয়ার তারিখের ফরম্যাট"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "সময়ের ফরম্যাট"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "মিটিংয়ের তারিখের নিচে প্রদর্শিত সময়ের জন্য PHP date() ফরম্যাট, যদি থাকে। শুধুমাত্র সময়ের অক্ষর a, A, g, G, h, H, i এবং s ব্যবহৃত হয়।"
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "ডিসপ্লে টেমপ্লেট"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "টেবিল (ডিফল্ট)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "নিচে আপনার নির্বাচিত কলামগুলো সহ প্রতি মিটিংয়ের জন্য একটি করে টেবিল সারি।"
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "সবগুলো কলামের প্রস্থ সমান করতে বাধ্য করুন"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "সারিগুলোর মধ্যে ভার্টিকাল রিদম বজায় রাখতে কলামগুলোকে একইভাবে সারিবদ্ধ করতে সাহায্য করে।"
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "কাস্টম CSS ক্লাস"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "আলোচ্যসূচি লিঙ্ক লেবেল"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "কার্যবিবরণী লিঙ্ক লেবেল"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "কোনো প্রকাশিত মিটিং পাওয়া যায়নি।"
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "নতুন উইন্ডোতে agenda/minutes লিঙ্কগুলি খুলুন"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Agenda এবং minutes লিঙ্কগুলি একটি নতুন ব্রাউজার ট্যাবে খোলে। একটি স্ক্রিন-রিডার ইঙ্গিত এবং rel=\"noopener noreferrer\" স্বয়ংক্রিয়ভাবে যুক্ত করা হয়।"
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "সময় (তারিখের নিচে দেখানো হয়েছে)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "সময়টি Date কলামের অংশ, তাই Date কলামটি আড়াল করলে এটিও আড়াল হয়ে যাবে। লিঙ্কের লেবেলে এখনও সময় অন্তর্ভুক্ত থাকে যাতে একই দিনের মিটিংগুলো আলাদা করা যায়।"
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "তারিখের ব্যাপ্তি"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "All meetings হলো সম্পূর্ণ আর্কাইভ। Upcoming শুধুমাত্র আজকের পরের মিটিংগুলো দেখায়; Past শুধুমাত্র ইতিমধ্যে অনুষ্ঠিত মিটিংগুলো দেখায়।"
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "সব মিটিং"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "আসন্ন মিটিংসমূহ"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "অতীতের মিটিংসমূহ"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "সাজানোর ক্রম"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "Newest first হলো ডিফল্ট এবং অতীতের কার্যবিবরণীর আর্কাইভের জন্য উপযুক্ত। আসন্ন মিটিংয়ের মতো ভবিষ্যৎ তালিকার জন্য Oldest first বেছে নিন।"
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "সবচেয়ে নতুন আগে"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "সবচেয়ে পুরনো আগে"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "ইমপোর্ট সম্পন্ন হয়েছে। %1$dটি সারি ইমপোর্ট করা হয়েছে, %2$dটি বাদ দেওয়া হয়েছে।"
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "মিটিংগুলো বাল্ক-ইমপোর্ট করতে একটি CSV ফাইল আপলোড করুন।"
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "কোনো ফাইল আপলোড করা হয়নি। অনুগ্রহ করে একটি CSV ফাইল বেছে নিন এবং আবার চেষ্টা করুন।"
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "অকার্যকর ফাইলের ধরন। অনুগ্রহ করে একটি.csv ফাইল আপলোড করুন।"
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "একটি অজানা ত্রুটি ঘটেছে।"
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "মিটিংগুলো বাল্ক-ইমপোর্ট করতে একটি CSV ফাইল আপলোড করুন। প্রথম সারিটি অবশ্যই একটি হেডার সারি হতে হবে।"
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "CSV ফরম্যাট"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "কলাম"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "আবশ্যক"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "নোট"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "হ্যাঁ"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "না"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "একটি ফাইল পুনরায় ইম্পোর্ট করা"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "শুরুর সময়সহ কোনো সারির ক্ষেত্রে, সংরক্ষিত কোনো মিটিংয়ের একই শিরোনাম ও তারিখ এবং একই শুরুর সময় অথবা কোনো শুরুর সময় না থাকলে সেটিকে ডুপ্লিকেট হিসেবে এড়িয়ে যাওয়া হয়। শুরুর সময় ছাড়া কোনো সারির ক্ষেত্রে, সংরক্ষিত কোনো মিটিংয়ের একই শিরোনাম ও তারিখ থাকলে সেটিকে এড়িয়ে যাওয়া হয়। একই ফাইল দুবার আপলোড করলে কোনো অনুলিপি তৈরি হয় না।"
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "এই মিলটি প্রতিটি মিটিংয়ে বর্তমানে যা সংরক্ষিত আছে তা ব্যবহার করে, ফাইলে মূলত যা ছিল তা নয়। ইম্পোর্ট করার পর আপনি যদি কোনো মিটিংয়ের শিরোনাম বা তারিখ পরিবর্তন করেন, অথবা সারিতে শুরুর সময় থাকলে তা পরিবর্তন করে অন্য সময় দেন, তবে মূল সারিটি আর মিলবে না এবং সেই ফাইলটি আবার ইম্পোর্ট করলে একটি নতুন মিটিং তৈরি হবে। বিদ্যমান মিটিংগুলো পরিবর্তন করতে পুনরায় ইম্পোর্ট করার পরিবর্তে সেগুলোকে WordPress-এ এডিট করুন।"
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "CSV আপলোড"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "উপরের কলামগুলো ব্যবহার করে একটি ফাইল নির্বাচন করুন। প্রথম সারিটি অবশ্যই একটি হেডার সারি হতে হবে এবং এর পরবর্তী প্রতিটি বৈধ সারি একটি করে মিটিং তৈরি করে।"
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSV ফাইল"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "মিটিংয়ের তারিখ"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "আবশ্যক। মিটিংটি যে তারিখে অনুষ্ঠিত হয়েছে বা হবে সেটি নির্বাচন করুন।"
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "আলোচ্যসূচি URL"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "আলোচ্যসূচি ফাইল বেছে নিন"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "এই ফাইলটি ব্যবহার করুন"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "মিডিয়া লাইব্রেরি"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "কার্যবিবরণী URL"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "কার্যবিবরণী ফাইল বেছে নিন"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "মিটিং অনুষ্ঠিত হয়নি"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "এই মিটিংটি অনুষ্ঠিত হয়নি"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "মিটিং ইম্পোর্ট করুন"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +765,11 @@ msgstr "শুধুমাত্র এই তারিখে বা এর আ�
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "ফিল্টার করার মতো কোনো টার্ম এখনও নেই।"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "ডিসপ্লে সেটিংস"
 
@@ -560,13 +780,13 @@ msgstr "কলাম লেবেল"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "লিঙ্ক লেবেল"
+msgid "Links"
+msgstr "লিঙ্কসমূহ"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "কলাম লুকান"
+msgid "Hide Data"
+msgstr "ডেটা লুকান"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +804,10 @@ msgstr "এটি নিচের প্রতি-পৃষ্ঠার সী�
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "প্রতি পৃষ্ঠায় রেকর্ড সংখ্যা"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "প্রিভিউ লোড করা যায়নি। সাইটের REST API পৌঁছানো যোগ্য কিনা তা পরীক্ষা করুন, তারপর আবার চেষ্টা করুন।"
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +836,263 @@ msgstr "শর্টকোড ক্লিপবোর্ডে কপি কর
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "কপি করা ব্যর্থ হয়েছে। শর্টকোড টেক্সটটি সিলেক্ট করুন এবং ম্যানুয়ালি কপি করুন।"
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "একটি ফাইল নির্বাচন করুন"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "এই ফাইলটি ব্যবহার করুন"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "এই ফিল্ডের জন্য ফাইলের ওই ধরনটি ব্যবহার করা যাবে না। অন্য একটি ফাইল বেছে নিন।"
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (নতুন ট্যাবে খোলে)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "মিডিয়া লাইব্রেরি ভিডিও"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "মিডিয়া লাইব্রেরি"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "বাহ্যিক URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "আপনি নিশ্চিত না করা পর্যন্ত বর্তমান রিসোর্স অপরিবর্তিত থাকবে।"
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "http:// বা https:// দিয়ে শুরু হওয়া একটি সম্পূর্ণ URL লিখুন।"
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "URL সংরক্ষণ করুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "মিডিয়া লাইব্রেরি থেকে নির্বাচন করুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "কোনো ফাইল বেছে নিতে বা আপলোড করতে WordPress-এর নিজস্ব ফাইল পিকার খুলুন।"
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "একটি বাহ্যিক URL লিখুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "অন্য কোথাও হোস্ট করা কোনো ফাইল বা ওয়েবপেজের সাথে লিঙ্ক করুন।"
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← পেছনে"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "%s প্রতিস্থাপন করুন"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "%s যোগ করুন"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "%s উপরে সরান"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "%s নিচে সরান"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "শিরোনামহীন নথি"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "শিরোনাম এডিট করুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "শিরোনাম যোগ করুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "শিরোনাম সংরক্ষণ করা হয়েছে।"
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "শিরোনাম সম্পাদনা বাতিল করা হয়েছে।"
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "নথির নাম"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "সংরক্ষণ করুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "বাতিল করুন"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s-কে %3$d-এর %2$d অবস্থানে সরানো হয়েছে।"
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "ডকুমেন্ট"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "কোনো %s যোগ করা হয়নি।"
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "এই নথিটি এখানে কীভাবে প্রদর্শিত হবে তা নির্ধারণ করে - এটি নথির নিজস্ব নাম পরিবর্তন করে না।"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "%s দেখুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "সম্পাদনা করুন"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "%s এডিট করুন"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "%s-এর শিরোনাম এডিট করুন"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "%s-এর শিরোনাম যোগ করুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "প্রতিস্থাপন করুন"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "সরিয়ে ফেলুন"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "%s সরিয়ে ফেলুন"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%s সরিয়ে ফেলা হয়েছে।"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ %s যোগ করুন"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%s যোগ করা হয়েছে।"
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "আইটেম"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "শিরোনামহীন %s"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "%s-এর জন্য শিরোনাম যোগ করুন"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "একটি %s ফাইল নির্বাচন করুন"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "কোনো %s সংযুক্ত নেই।"
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%s প্রতিস্থাপন করা হয়েছে।"
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "শুরু"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "শেষ"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "শেষের সময়টি শুরুর সময়ের চেয়ে আগের, তাই এই মিটিংটি পরের দিন শেষ হবে।"
 
 #: block.json
 msgctxt "block title"

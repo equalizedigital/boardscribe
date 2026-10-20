@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:44+0000\n"
+"PO-Revision-Date: 2026-10-20 20:44+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: pl_PL\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,166 @@ msgstr "BoardScribe wymaga PHP w wersji %1$s lub nowszej. Twoja wersja PHP to %2
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "Brakuje autoloadera wtyczki BoardScribe. Zainstaluj ją ponownie z oficjalnego pliku zip lub uruchom „composer install”, jeśli pracujesz na kodzie źródłowym."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Data posiedzenia"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Anulowano"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Porządek obrad"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Protokół"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Zobacz"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Spotkanie wymaga prawidłowej daty spotkania (YYYY-MM-DD), aby można je było opublikować."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "Spotkanie zostało zapisane jako szkic, ponieważ nie ma przypisanej daty. Dodaj datę, a następnie je opublikuj."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d opublikowane spotkanie nie ma prawidłowej daty spotkania. Dodaj do niego datę."
+msgstr[1] "%d opublikowane spotkania nie mają prawidłowej daty spotkania. Dodaj datę do każdego z nich."
+msgstr[2] "%d opublikowanych spotkań nie ma prawidłowej daty spotkania. Dodaj datę do każdego z nich."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Data posiedzenia w formacie Y-m-d."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "Adres URL do dokumentu z porządkiem obrad."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "Adres URL do opublikowanego protokołu z tego posiedzenia."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "Czy posiedzenie nie odbyło się."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Godzina rozpoczęcia spotkania w formacie 24-godzinnym GG:MM, w strefie czasowej witryny."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Godzina zakończenia spotkania w formacie 24-godzinnym GG:MM, w strefie czasowej witryny."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Które źródło okna modalnego Dodaj/Zastąp (media_library, external_url lub identyfikator zarejestrowany przez wtyczkę) wygenerowało bieżącą wartość pola %s."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "Ekran edycji wpisu nadrzędnego dla pola %s w panelu wp-admin, gdy jego źródło go posiada (np. powiązany dokument) – puste w przypadku zwykłego pliku z Biblioteki mediów lub odnośnika zewnętrznego."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "Identyfikator powiązanego wpisu nadrzędnego dla bieżącej wartości pola %s, gdy jego źródło go posiada (np. powiązany dokument) – 0 w przypadku zwykłego pliku z Biblioteki mediów lub odnośnika zewnętrznego."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Szczegóły posiedzenia"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Pola sekcji Szczegóły spotkania wymagają obsługi JavaScriptu."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "Pole „%s” jest polem typu resource_list lub polem załączonym i musi mieć ustawioną wartość saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Posiedzenie zarządu"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s — %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Wymagane. Wybierz datę, w której odbyło się lub odbędzie się posiedzenie."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Godzina posiedzenia"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Opcjonalnie. Wyświetlane pod datą posiedzenia, chyba że posiedzenie oznaczono jako nieodbyte."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Wybierz plik porządku obrad"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "Porządek obrad posiedzenia zarządu {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Wybierz plik protokołu"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "Protokół z posiedzenia zarządu {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Posiedzenie nie odbyło się"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "To posiedzenie się nie odbyło."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "Ogólne"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Kreator shortcode’ów"
 
@@ -94,7 +216,7 @@ msgid "Support"
 msgstr "Wsparcie"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "Ustawienia BoardScribe"
 
@@ -123,144 +245,192 @@ msgstr "Usuń wszystkie wpisy o posiedzeniach BoardScribe i ustawienia wtyczki p
 msgid "Warning: this cannot be undone."
 msgstr "Ostrzeżenie: tej operacji nie można cofnąć."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "Ustawienia BoardScribe"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "Skonfiguruj poniższe opcje shortcode’u, a następnie skopiuj wygenerowany kod i wklej go na dowolnej stronie lub we wpisie."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "Kreator shortcode’ów wymaga obsługi JavaScript."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "Pobieranie i instalacja BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Typ wpisu posiedzeń zarządu"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "Czy BoardScribe jest dostępny?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "Na jakie języki przetłumaczono BoardScribe?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Jak dodać informacje o rozmiarze i typie pliku do linków?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Dokumentacja"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Potrzebujesz pomocy? Sprawdź naszą dokumentację, aby znaleźć instrukcje krok po kroku i opisy funkcji."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Zobacz dokumentację"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(otwiera się w nowej karcie)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Kontakt z nami"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "Masz pytania lub potrzebujesz pomocy? Skontaktuj się z naszym zespołem wsparcia."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Skontaktuj się ze wsparciem"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Szybkie linki"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Tytuł"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "Od %1$s do %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Data"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Koniec: %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Porządek obrad"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Protokół"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Tytuł posiedzenia. Jeśli pozostanie pusty, zostanie wygenerowany automatycznie na podstawie daty (np. „Posiedzenie zarządu — 15 marca 2025”)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Format: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "Pełny adres URL do pliku porządku obrad"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Opcjonalnie. Czas rozpoczęcia posiedzenia (np. %s), wyświetlany pod datą posiedzenia. Jest to godzina posiedzenia, a nie data publikacji w WordPressie (zobacz: publish_date). Godzina, której nie można odczytać, nie zostanie zapisana, a posiedzenie zostanie mimo to zaimportowane. Ponowny import pliku nigdy nie dodaje godziny do już istniejącego posiedzenia."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "Pełny adres URL do pliku protokołu"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Opcjonalnie. Czas zakończenia posiedzenia, w tych samych formatach co start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Pełny adres URL pliku porządku obrad. Musi być pełnym adresem http:// lub https://; nieprawidłowy adres URL nie zostanie zapisany."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Pełny adres URL pliku protokołu. Musi być pełnym adresem http:// lub https://; nieprawidłowy adres URL nie zostanie zapisany."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Akceptowane wartości: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Dowolna rozpoznawalna data lub data i godzina (np. %s). Ustawia faktyczną datę publikacji w WordPress zamiast momentu importu — należy użyć tej opcji, aby antydatować historyczne posiedzenia. Nie wpływa to na powyższą datę posiedzenia ani kolejność sortowania."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Dowolna rozpoznawalna data lub data i godzina (np. %s). Ustawia rzeczywistą datę publikacji w WordPressie zamiast momentu importu — użyj tej opcji, aby ustawić datę wsteczną dla posiedzeń historycznych. Nie wpływa na powyższą datę ani kolejność sortowania posiedzeń. Przyszła data lub godzina zaplanuje publikację posiedzenia zamiast publikować je natychmiast, a posiedzenie nie pojawi się w witrynie do tego momentu."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "Importuj"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Kontrola bezpieczeństwa nie powiodła się."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Niewystarczające uprawnienia."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Import zakończony. Zaimportowano %1$d wierszy, pominięto %2$d."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d wiersz został zaplanowany na przyszłą datę i nie pojawi się do tego czasu."
+msgstr[1] "%d wiersze zostały zaplanowane na przyszłą datę i nie pojawią się do tego czasu."
+msgstr[2] "%d wierszy zostało zaplanowanych na przyszłą datę i nie pojawi się do tego czasu."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d wiersz odpowiadał istniejącemu posiedzeniu lub wcześniejszemu wierszowi w tym pliku o tym samym tytule i dacie oraz pasującej lub brakującej godzinie rozpoczęcia i został pominięty."
+msgstr[1] "%d wiersze odpowiadały istniejącemu posiedzeniu lub wcześniejszemu wierszowi w tym pliku o tym samym tytule i dacie oraz pasującej lub brakującej godzinie rozpoczęcia i zostały pominięte."
+msgstr[2] "%d wierszy odpowiadało istniejącemu posiedzeniu lub wcześniejszemu wierszowi w tym pliku o tym samym tytule i dacie oraz pasującej lub brakującej godzinie rozpoczęcia i zostało pominiętych."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d wiersz zawierał nieprawidłowy adres URL; ten adres URL nie został zapisany."
+msgstr[1] "%d wiersze zawierały nieprawidłowy adres URL; te adresy URL nie zostały zapisane."
+msgstr[2] "%d wierszy zawierało nieprawidłowy adres URL; te adresy URL nie zostały zapisane."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d wiersz zawierał czas rozpoczęcia lub zakończenia, którego nie można było odczytać; ta godzina nie została zapisana."
+msgstr[1] "%d wiersze zawierały czas rozpoczęcia lub zakończenia, którego nie można było odczytać; te godziny nie zostały zapisane."
+msgstr[2] "%d wierszy zawierało czas rozpoczęcia lub zakończenia, którego nie można było odczytać; te godziny nie zostały zapisane."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Nie przesłano żadnego pliku. Wybierz plik CSV i spróbuj ponownie."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Nieprawidłowy typ pliku. Prześlij plik .csv."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "Przesyłanie pliku nie powiodło się całkowicie. Spróbuj ponownie."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "Wystąpił nieznany błąd."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +459,293 @@ msgstr "Dodaj posiedzenie"
 msgid "Add New Meeting"
 msgstr "Dodaj nowe posiedzenie"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Zobacz porządek obrad"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Zobacz protokół"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Data niedostępna"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Porządek obrad niedostępny"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Protokół niedostępny"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Posiedzenie nie odbyło się"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s na %2$s (otwiera się w nowym oknie)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s — %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Porządek obrad niedostępny"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Tytuł"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Protokół niedostępny"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Data"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Posiedzenie nie odbyło się"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Poprzednia"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Następna"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Poprzednia strona"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Następna strona"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Stronicowanie"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Strona %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Wyświetlanie od %1$s do %2$s z %3$s pozycji"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Uwzględnione lata"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Lista lat oddzielona przecinkami. Pozostaw puste, aby wyświetlić wszystkie lata."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Data początkowa"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Pokaż tylko posiedzenia odbywające się w tym dniu lub później. Ma priorytet nad uwzględnionymi latami."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Data końcowa"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Pokaż tylko posiedzenia odbywające się w tym dniu lub wcześniej. Ma priorytet nad uwzględnionymi latami."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Liczba wpisów na stronę"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Format daty odbycia posiedzenia"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "Format PHP date(). Pełną listę parametrów znajdziesz na php.net/manual/en/datetime.format.php."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Format daty nieodbytego posiedzenia"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Format godziny"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "Format date() w PHP dla godziny wyświetlanej pod datą spotkania, jeśli została określona. Używane są wyłącznie znaki czasu: a, A, g, G, h, H, i oraz s."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Szablon wyświetlania"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Tabela (domyślnie)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Jeden wiersz tabeli na spotkanie z wybranymi poniżej kolumnami."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "Wymuś taką samą szerokość wszystkich kolumn"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Pomaga zachować spójne wyrównanie kolumn i pionowy rytm w rzędach."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Własna klasa CSS"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Etykieta linku do porządku obrad"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Etykieta linku do protokołu"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "Nie znaleziono opublikowanych posiedzeń."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Otwieraj odnośniki do porządku obrad / protokołu w nowym oknie"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Odnośniki do porządku obrad i protokołu otwierają się w nowej karcie przeglądarki. Wskazówka dla czytników ekranowych oraz atrybut rel=\"noopener noreferrer\" są dodawane automatycznie."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Godzina (wyświetlana pod datą)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "Godzina jest częścią kolumny Data, więc ukrycie kolumny Data spowoduje również jej ukrycie. Etykiety odnośników nadal zawierają godzinę, aby można było odróżnić spotkania odbywające się tego samego dnia."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Zakres dat"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "Opcja „Wszystkie spotkania” obejmuje pełne archiwum. Opcja „Nadchodzące” wyświetla tylko spotkania od dnia dzisiejszego, a „Minione” – tylko spotkania, które już się odbyły."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Wszystkie spotkania"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Nadchodzące spotkania"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Minione spotkania"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Kolejność sortowania"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "Opcja „Najpierw najnowsze” jest domyślna i odpowiednia dla archiwum minionych protokołów. Wybierz opcję „Najpierw najstarsze” dla listy chronologicznej w przód, na przykład dla nadchodzących spotkań."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Najpierw najnowsze"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Najpierw najstarsze"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Import zakończony. Zaimportowano %1$d wierszy, pominięto %2$d."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Prześlij plik CSV, aby masowo zaimportować posiedzenia."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "Nie przesłano żadnego pliku. Wybierz plik CSV i spróbuj ponownie."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Nieprawidłowy typ pliku. Prześlij plik .csv."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "Wystąpił nieznany błąd."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Prześlij plik CSV, aby masowo zaimportować posiedzenia. Pierwszy wiersz musi być wierszem nagłówka."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "Format CSV"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Kolumna"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Wymagane"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Uwagi"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Tak"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "Nie"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Ponowny import pliku"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "Wiersz z godziną rozpoczęcia jest pomijany jako duplikat, gdy zapisane posiedzenie ma ten sam tytuł i datę oraz tę samą godzinę rozpoczęcia lub brak godziny rozpoczęcia. Wiersz bez godziny rozpoczęcia jest pomijany, gdy dowolne zapisane posiedzenie ma ten sam tytuł i datę. Dwukrotne przesłanie tego samego pliku nie powoduje utworzenia kopii."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "Dopasowanie korzysta z tego, co jest obecnie zapisane w każdym posiedzeniu, a nie z pierwotnej zawartości pliku. Jeśli po zaimportowaniu posiedzenia zmienisz jego tytuł lub datę albo zmienisz jego godzinę rozpoczęcia na inną, gdy wiersz ją zawiera, pierwotny wiersz przestaje pasować, a ponowny import tego pliku utworzy nowe posiedzenie. Aby zmienić istniejące posiedzenia, edytuj je w WordPressie zamiast importować ponownie."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "Prześlij plik CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Wybierz plik z powyższymi kolumnami. Pierwszy wiersz musi być wierszem nagłówka, a każdy kolejny prawidłowy wiersz tworzy jedno posiedzenie."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "Plik CSV"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Data posiedzenia"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Wymagane. Wybierz datę, w której odbyło się lub odbędzie się posiedzenie."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "URL porządku obrad"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Wybierz plik porządku obrad"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Użyj tego pliku"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Biblioteka mediów"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "URL protokołu"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Wybierz plik protokołu"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Posiedzenie nie odbyło się"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "To posiedzenie nie odbyło się"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "Importuj posiedzenia"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +770,11 @@ msgstr "Pokaż tylko posiedzenia odbywające się w tym dniu lub wcześniej. Nad
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Brak jeszcze terminów do filtrowania."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Ustawienia wyświetlania"
 
@@ -560,13 +785,13 @@ msgstr "Etykiety kolumn"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Etykiety linków"
+msgid "Links"
+msgstr "Odnośniki"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Ukryj kolumny"
+msgid "Hide Data"
+msgstr "Ukryj dane"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +809,10 @@ msgstr "Ignoruje poniższy limit na stronę i pobiera wszystkie posiedzenia w je
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Liczba rekordów na stronę"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "Nie udało się załadować podglądu. Upewnij się, że REST API witryny jest dostępne, a następnie spróbuj ponownie."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +841,263 @@ msgstr "Shortcode został skopiowany do schowka."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "Kopiowanie nie powiodło się. Zaznacz tekst shortcode’u i skopiuj go ręcznie."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Wybierz plik"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Użyj tego pliku"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Tego typu pliku nie można użyć w tym polu. Wybierz inny plik."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (otwiera się w nowej karcie)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Wideo z biblioteki mediów"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Biblioteka mediów"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "Zewnętrzny adres URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "Bieżący zasób pozostanie niezmieniony do momentu zatwierdzenia."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Wprowadź pełny adres URL, zaczynający się od http:// lub https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "Zapisz adres URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Wybierz z biblioteki mediów"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Otwórz natywne okno wyboru plików WordPressa, aby wybrać lub przesłać plik."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Wprowadź zewnętrzny adres URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "Odnośnik do pliku lub strony internetowej hostowanej w innym miejscu."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Wstecz"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "Zastąp %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "Dodaj: %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "Przenieś %s w górę"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "Przenieś %s w dół"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Dokument bez tytułu"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "Edytuj tytuł"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Dodaj tytuł"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "Tytuł został zapisany."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "Anulowano edycję tytułu."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Nazwa dokumentu"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "Zapisz"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Anuluj"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "Element %1$s przeniesiono na pozycję %2$d z %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Dokument"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "Nie dodano: %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Ustawia sposób wyświetlania tego dokumentu tutaj — nie zmienia nazwy samego dokumentu."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "Wyświetl: %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "Edytuj"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "Edytuj: %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "Edytuj tytuł: %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Dodaj tytuł: %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Zastąp"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Usuń"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "Usuń: %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "Element %s został usunięty."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ Dodaj: %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "Element %s został dodany."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Element"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "%s bez tytułu"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Dodaj tytuł dla: %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Wybierz plik: %s"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "Brak załącznika: %s."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "Zastąpiono: %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Rozpoczęcie"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Zakończenie"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "Czas zakończenia jest wcześniejszy niż czas rozpoczęcia, więc to posiedzenie kończy się następnego dnia."
 
 #: block.json
 msgctxt "block title"

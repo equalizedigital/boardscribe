@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Hebrew\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:43+0000\n"
+"PO-Revision-Date: 2026-10-20 20:43+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: he_IL\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,165 @@ msgstr "BoardScribe דורש גרסת PHP %1$s ומעלה. הגרסה הנוכח
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "ה-autoloader של BoardScribe חסר. התקן מחדש מקובץ zip רשמי, או הרץ את הפקודה `composer install` אם אתה מפתח מקוד המקור."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "תאריך הישיבה"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "בוטל"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "סדר יום"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "פרוטוקול"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "הצג"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "פגישה זקוקה לתאריך פגישה תקין (YYYY-MM-DD) לפני שניתן יהיה לפרסם אותה."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "הפגישה נשמרה כטיוטה מכיוון שאין לה תאריך פגישה. הוסף תאריך ולאחר מכן פרסם אותה."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "ל־%d פגישה שפורסמה אין תאריך פגישה תקין. הוסף לה תאריך."
+msgstr[1] "ל־%d פגישות שפורסמו אין תאריך פגישה תקין. הוסף תאריך לכל אחת מהן."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "תאריך הישיבה בפורמט Y-m-d."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "כתובת URL למסמך סדר היום של הישיבה."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "כתובת URL למסמך הפרוטוקול שפורסם עבור ישיבה זו."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "האם הישיבה לא התקיימה."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "שעת תחילת הפגישה בפורמט 24 שעות של HH:MM, באזור הזמן של האתר."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "שעת סיום הפגישה בפורמט 24 שעות של HH:MM, באזור הזמן של האתר."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "איזה מקור של חלונית הוספה/החלפה (media_library, ‏external_url, או מזהה שנרשם על ידי תוסף) הפיק את הערך הנוכחי של %s."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "מסך העריכה ב-wp-admin עבור הפוסט הבסיסי של %s, כאשר למקור שלו יש כזה (לדוגמה, מסמך מקושר) - ריק עבור קובץ ספריית מדיה רגיל או קישור חיצוני."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "מזהה הפוסט המקושר שבבסיס הערך הנוכחי של %s, כאשר למקור שלו יש כזה (לדוגמה, מסמך מקושר) - 0 עבור קובץ ספריית מדיה רגיל או קישור חיצוני."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "פרטי הישיבה"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "שדות פרטי הפגישה דורשים JavaScript."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "השדה ”%s“ הוא resource_list או שדה מצורף ועליו להגדיר saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "ישיבת ועד"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "חובה. בחר את התאריך שבו הישיבה התקיימה או תתקיים."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "שעת הישיבה"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "אופציונלי. מוצג מתחת לתאריך הישיבה, אלא אם הישיבה סומנה ככזו שלא התקיימה."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "בחר קובץ סדר יום"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "סדר יום של ישיבת ועד ב-{date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "בחר קובץ פרוטוקול"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "פרוטוקול ישיבת ועד ב-{date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "הישיבה לא התקיימה"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "ישיבה זו לא התקיימה."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "כללי"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "בונה שורטקודים"
 
@@ -94,7 +215,7 @@ msgid "Support"
 msgstr "תמיכה"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "הגדרות BoardScribe"
 
@@ -123,144 +244,188 @@ msgstr "הסרת כל פוסטי ישיבות הוועד והגדרות התוס
 msgid "Warning: this cannot be undone."
 msgstr "אזהרה: לא ניתן לבטל פעולה זו."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "הגדרות BoardScribe"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "הגדר את אפשרויות השורטקוד שלך להלן, לאחר מכן העתק את השורטקוד שנוצר והדבק אותו בכל עמוד או פוסט."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "בונה השורטקודים דורש JavaScript."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "הורדה והתקנה של BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "סוג פוסט ישיבות ועד"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "האם BoardScribe נגיש?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "לאילו שפות BoardScribe מתורגם?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "כיצד אוכל להוסיף מידע על גודל וסוג הקובץ לקישורים?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "תיעוד"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "זקוק לעזרה? עיין בתיעוד שלנו לקבלת מדריכים שלב אחר שלב וסקירת תכונות."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "צפייה בתיעוד"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(נפתח בלשונית חדשה)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "צור קשר"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "יש לך שאלות או שאתה זקוק לעזרה? פנה לצוות התמיכה שלנו."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "צור קשר עם התמיכה"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "קישורים מהירים"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "כותרת"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s עד %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "תאריך"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "מסתיים ב-%s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "סדר יום"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "פרוטוקול"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "כותרת הישיבה. אם השדה ריק, הכותרת תיווצר אוטומטית מהתאריך (לדוגמה: ”ישיבת ועד - 15 במרץ 2025“)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "פורמט: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "כתובת URL מלאה לקובץ סדר היום"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "אופציונלי. שעת ההתחלה של הישיבה (לדוגמה %s), מוצגת מתחת לתאריך הישיבה. זוהי שעת הישיבה, ולא מועד הפרסום ב-WordPress (ראה publish_date). שעה שלא ניתן לקרוא לא תישמר, והישיבה עדיין תיווצר. ייבוא חוזר של קובץ לעולם אינו מוסיף שעה לישיבה שכבר קיימת."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "כתובת URL מלאה לקובץ הפרוטוקול"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "אופציונלי. שעת סיום הישיבה, באותם הפורמטים כמו start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "כתובת URL מלאה לקובץ סדר היום. חייבת להיות כתובת מלאה של http:// או https://; כתובת URL לא תקינה לא תישמר."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "כתובת URL מלאה לקובץ הפרוטוקול. חייבת להיות כתובת מלאה של http:// או https://; כתובת URL לא תקינה לא תישמר."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "ערכים מקובלים: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "כל תאריך או תאריך/שעה שניתן לזהות (למשל %s). מגדיר את תאריך הפרסום בפועל ב-WordPress במקום את רגע הייבוא – השתמש באפשרות זו כדי להזין רטרואקטיבית ישיבות ועד היסטוריות. אינו משפיע על תאריך הישיבה או על סדר המיון שלעיל."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "כל תאריך או תאריך/שעה שניתן לזהות (לדוגמה %s). מגדיר את תאריך הפרסום בפועל ב-WordPress במקום את מועד הייבוא — השתמש בזה כדי לתארך ישיבות היסטוריות לאחור. אינו משפיע על תאריך הישיבה/סדר המיון שלמעלה. תאריך/שעה עתידיים יתזמנו את הישיבה במקום לפרסם אותה באופן מיידי, והיא לא תופיע באתר עד אז."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "ייבוא"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "בדיקת האבטחה נכשלה."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "הרשאות חסרות."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "הייבוא הושלם. %1$d שורות יובאו, %2$d שורות דולגו."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "שורה %d תתוזמן לתאריך עתידי ולא תופיע עד אז."
+msgstr[1] "%d שורות תתוזמנו לתאריך עתידי ולא תופענה עד אז."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "שורה %d תאמה לישיבה קיימת, או לשורה מוקדמת יותר בקובץ זה, עם אותה כותרת ואותו תאריך, ושעת התחלה תואמת או חסרה, ודולגה."
+msgstr[1] "%d שורות תאמו לישיבה קיימת, או לשורה מוקדמת יותר בקובץ זה, עם אותה כותרת ואותו תאריך, ושעת התחלה תואמת או חסרה, ודולגו."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "בשורה %d הייתה כתובת URL לא תקינה; כתובת זו לא נשמרה."
+msgstr[1] "ב-%d שורות הייתה כתובת URL לא תקינה; כתובות אלו לא נשמרו."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "בשורה %d הייתה שעת התחלה או סיום שלא ניתן היה לקרוא; שעה זו לא נשמרה."
+msgstr[1] "ב-%d שורות הייתה שעת התחלה או סיום שלא ניתן היה לקרוא; שעות אלו לא נשמרו."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "לא הועלה קובץ. נא לבחור קובץ CSV ולנסות שוב."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "סוג קובץ לא חוקי. נא להעלות קובץ ‎.csv."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "העלאת הקובץ במלואו נכשלה. אנא נסה שוב."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "אירעה שגיאה לא ידועה."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +454,293 @@ msgstr "הוסף ישיבה"
 msgid "Add New Meeting"
 msgstr "הוסף ישיבה חדשה"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "צפייה בסדר היום"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "צפייה בפרוטוקול"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "תאריך אינו זמין"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "סדר היום אינו זמין"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "הפרוטוקול אינו זמין"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "הישיבה לא התקיימה"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s עבור %2$s (נפתח בחלון חדש)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s של %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "סדר היום אינו זמין"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "כותרת"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "הפרוטוקול אינו זמין"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "תאריך"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "הישיבה לא התקיימה"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "הקודם"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "הבא"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "העמוד הקודם"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "העמוד הבא"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "ניווט עמודים"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "עמוד %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "מציג %1$s עד %2$s מתוך %3$s רשומות"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "שנים כלולות"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "רשימת שנים מופרדת בפסיקים. השאר ריק כדי להציג את כל השנים."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "תאריך התחלה"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "הצג רק ישיבות בתאריך זה או אחריו. מקבל עדיפות על פני שנים כלולות."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "תאריך סיום"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "הצג רק ישיבות בתאריך זה או לפניו. מקבל עדיפות על פני שנים כלולות."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "פוסטים לעמוד"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "פורמט תאריך ישיבה שהתקיימה"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "פורמט PHP date()‎. ראה php.net/manual/en/datetime.format.php לעיון מלא."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "פורמט תאריך ישיבה שלא התקיימה"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "מבנה שעה"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "מבנה ()date של PHP עבור השעה המוצגת מתחת לתאריך הפגישה, כאשר קיימת שעה. נעשה שימוש רק בתווי הזמן a,‏ A,‏ g,‏ G,‏ h,‏ H,‏ i ו-s."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "תבנית תצוגה"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "טבלה (ברירת מחדל)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "שורת טבלה אחת לכל פגישה, עם העמודות שתבחר להלן."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "אלץ את כל העמודות לאותו רוחב"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "עוזר ליישר עמודות באופן עקבי לקצב אנכי בין השורות."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "מחלקה (class) של CSS מותאמת אישית"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "תווית קישור לסדר היום"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "תווית קישור לפרוטוקול"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "לא נמצאו ישיבות שפורסמו."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "פתח קישורי סדר יום/פרוטוקול בחלון חדש"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "קישורי סדר יום ופרוטוקול נפתחים בלשונית דפדפן חדשה. רמז לקורא מסך ו-rel=\"noopener noreferrer\" מתווספים באופן אוטומטי."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "שעה (מוצגת מתחת לתאריך)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "השעה היא חלק מעמודת התאריך, כך שהסתרת עמודת התאריך מסתירה גם אותה. תוויות הקישורים עדיין כוללות את השעה כדי שניתן יהיה להבדיל בין פגישות המתקיימות באותו יום."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "טווח תאריכים"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "כל הפגישות מציג את הארכיון המלא. עתידיות מציג רק פגישות מהיום והלאה; קודמות מציג רק פגישות שכבר התקיימו."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "כל הפגישות"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "פגישות עתידיות"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "פגישות קודמות"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "סדר מיון"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "החדש ביותר תחילה היא ברירת המחדל ומתאימה לארכיון של פרוטוקולים קודמים. בחר בישן ביותר תחילה עבור רשימה הצופה פני עתיד, כגון פגישות קרובות."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "החדש ביותר תחילה"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "הישן ביותר תחילה"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "הייבוא הושלם. %1$d שורות יובאו, %2$d שורות דולגו."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "העלה קובץ CSV לייבוא מרוכז של ישיבות."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "לא הועלה קובץ. נא לבחור קובץ CSV ולנסות שוב."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "סוג קובץ לא חוקי. נא להעלות קובץ ‎.csv."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "אירעה שגיאה לא ידועה."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "העלה קובץ CSV לייבוא מרוכז של ישיבות. השורה הראשונה חייבת להיות שורת כותרת."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "פורמט CSV"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "עמודה"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "חובה"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "הערות"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "כן"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "לא"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "ייבוא חוזר של קובץ"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "שורה עם שעת התחלה תדולג ככפילות כאשר לישיבה שמורה יש את אותה כותרת ואותו תאריך, ואו את אותה שעת התחלה או ללא שעת התחלה. שורה ללא שעת התחלה תדולג כאשר לכל ישיבה שמורה יש את אותה כותרת ואותו תאריך. העלאת אותו קובץ פעמיים אינה יוצרת עותקים."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "ההתאמה מתבססת על מה ששמור כעת בכל ישיבה, ולא על מה שהופיע במקור בקובץ. אם תשנה את כותרת הישיבה או את התאריך שלה לאחר הייבוא, או תשנה את שעת ההתחלה שלה לשעה אחרת כאשר לשורה יש שעה כזו, השורה המקורית כבר לא תתאים וייבוא הקובץ שוב ייצור ישיבה חדשה. כדי לשנות ישיבות קיימות, ערוך אותן ב-WordPress במקום לייבא שוב."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "העלאת CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "בחר קובץ המשתמש בעמודות שלמעלה. השורה הראשונה חייבת להיות שורת כותרת, וכל שורה תקינה אחריה יוצרת ישיבה אחת."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "קובץ CSV"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "תאריך הישיבה"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "חובה. בחר את התאריך שבו הישיבה התקיימה או תתקיים."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "URL של סדר היום"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "בחר קובץ סדר יום"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "השתמש בקובץ זה"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "ספריית המדיה"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "URL של הפרוטוקול"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "בחר קובץ פרוטוקול"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "הישיבה לא התקיימה"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "ישיבה זו לא התקיימה"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "ייבוא ישיבות"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +765,11 @@ msgstr "הצג רק ישיבות בתאריך זה או לפניו. דורס א�
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "אין עדיין מונחים לסינון לפיהם."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "הגדרות תצוגה"
 
@@ -560,13 +780,13 @@ msgstr "תוויות עמודות"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "תוויות קישורים"
+msgid "Links"
+msgstr "קישורים"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "הסתר עמודות"
+msgid "Hide Data"
+msgstr "הסתר נתונים"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +804,10 @@ msgstr "מתעלם ממגבלת הפוסטים לעמוד להלן ומביא א
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "רשומות לעמוד"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "לא ניתן לטעון את התצוגה המקדימה. ודא שה-REST API של האתר זמין, ולאחר מכן נסה שוב."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +836,263 @@ msgstr "השורטקוד הועתק ללוח."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "ההעתקה נכשלה. בחר את טקסט השורטקוד והעתק אותו ידנית."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "בחר קובץ"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "השתמש בקובץ זה"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "לא ניתן להשתמש בסוג קובץ זה עבור שדה זה. בחר קובץ אחר."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (נפתח בלשונית חדשה)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "וידאו מספריית המדיה"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "ספריית המדיה"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "כתובת URL חיצונית"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "המשאב הנוכחי יישאר ללא שינוי עד לאישור."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "הזן כתובת URL מלאה, המתחילה ב-http:// או ב-https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "שמור כתובת URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "בחר מספריית המדיה"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "פתח את בורר הקבצים המובנה של WordPress כדי לבחור או להעלות קובץ."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "הזן כתובת URL חיצונית"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "קישור לקובץ או לדף אינטרנט המאוחסנים במקום אחר."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← חזרה"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "החלף את %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "הוסף %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "העבר את %s למעלה"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "העבר את %s למטה"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "מסמך ללא כותרת"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "ערוך כותרת"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "הוסף כותרת"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "הכותרת נשמרה."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "עריכת הכותרת בוטלה."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "שם המסמך"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "שמור"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "ביטול"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s הועבר למיקום %2$d מתוך %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "מסמך"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "לא נוספו %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "מגדיר כיצד מסמך זה יופיע כאן — פעולה זו אינה משנה את שם המסמך עצמו."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "הצג את %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "ערוך"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "ערוך את %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "ערוך כותרת של %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "הוסף כותרת של %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "החלף"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "הסר"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "הסר את %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%s הוסר."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ הוסף %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%s נוסף."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "פריט"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "%s ללא כותרת"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "הוסף כותרת עבור %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "בחר קובץ %s"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "לא צורף %s."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%s הוחלף."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "התחלה"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "סיום"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "שעת הסיום מוקדמת משעת ההתחלה, ולכן ישיבה זו מסתיימת ביום שלמחרת."
 
 #: block.json
 msgctxt "block title"

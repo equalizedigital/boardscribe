@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:44+0000\n"
+"PO-Revision-Date: 2026-10-20 20:44+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: nl_NL\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,165 @@ msgstr "BoardScribe vereist PHP %1$s of hoger. U gebruikt PHP %2$s. Upgrade PHP 
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "De autoloader van BoardScribe ontbreekt. Installeer de plugin opnieuw vanuit een officiële zip, of voer `composer install` uit als u vanuit de broncode ontwikkelt."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Vergaderdatum"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Geannuleerd"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Agenda"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Notulen"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Bekijken"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Een vergadering heeft een geldige vergaderdatum (YYYY-MM-DD) nodig voordat deze kan worden gepubliceerd."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "De vergadering is opgeslagen als concept omdat deze geen vergaderdatum heeft. Voeg een datum toe en publiceer deze vervolgens."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d gepubliceerde vergadering heeft geen geldige vergaderdatum. Voeg er een datum aan toe."
+msgstr[1] "%d gepubliceerde vergaderingen hebben geen geldige vergaderdatum. Voeg aan elk een datum toe."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Vergaderdatum in Y-m-d-formaat."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "URL naar het document met de agenda van de vergadering."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "URL naar het gepubliceerde document met de notulen van deze vergadering."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "Of de vergadering niet is gehouden."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Begintijd van de vergadering in 24-uurs UU:MM-notatie, in de tijdzone van de site."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Eindtijd van de vergadering in 24-uurs UU:MM-notatie, in de tijdzone van de site."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Welke bron voor de toevoegen/vervangen-pop-up (media_library, external_url of een door een plug-in geregistreerde id) de huidige waarde van %s heeft gegenereerd."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "Het bewerkscherm in wp-admin voor het onderliggende bericht van %s, wanneer de bron er een heeft (bijv. een gekoppeld document) - leeg voor een gewoon mediabibliotheekbestand of een externe link."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "De gekoppelde bericht-ID onder de huidige waarde van %s, wanneer de bron er een heeft (bijv. een gekoppeld document) - 0 voor een gewoon mediabibliotheekbestand of een externe link."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Vergaderdetails"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "De velden voor vergaderdetails vereisen JavaScript."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "Het veld “%s” is een resource_list of bijgevoegd veld en moet saved_externally => true instellen."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Bestuursvergadering"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Verplicht. Selecteer de datum waarop de vergadering is of wordt gehouden."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Vergaderingstijd"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Optioneel. Wordt getoond onder de vergaderdatum, behalve wanneer de vergadering als niet-gehouden is gemarkeerd."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Agendabestand kiezen"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "Agenda bestuursvergadering {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Notulenbestand kiezen"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "Notulen bestuursvergadering {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Vergadering niet gehouden"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "Deze vergadering heeft niet plaatsgevonden."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "Algemeen"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Shortcode-builder"
 
@@ -94,7 +215,7 @@ msgid "Support"
 msgstr "Ondersteuning"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "BoardScribe-instellingen"
 
@@ -123,144 +244,188 @@ msgstr "Verwijder alle BoardScribe-vergaderingen en plugin-instellingen wanneer 
 msgid "Warning: this cannot be undone."
 msgstr "Waarschuwing: dit kan niet ongedaan worden gemaakt."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "BoardScribe-instellingen"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "Configureer hieronder uw shortcode-opties, kopieer vervolgens de gegenereerde shortcode en plak deze in een pagina of bericht."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "De shortcode-builder vereist JavaScript."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "BoardScribe downloaden en installeren"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Berichttype bestuursvergaderingen"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "Is BoardScribe toegankelijk?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "In welke talen is BoardScribe vertaald?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Hoe voeg ik informatie over bestandsgrootte en type toe aan links?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Documentatie"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Hulp nodig? Bekijk onze documentatie voor stapsgewijze handleidingen en functie-uitleg."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Documentatie bekijken"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(opent in een nieuw tabblad)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Contact"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "Heeft u vragen of hulp nodig? Neem contact op met ons ondersteuningsteam."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Contact opnemen met ondersteuning"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Snelle links"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Titel"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s tot %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Datum"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Eindigt om %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Agenda"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Notulen"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Vergadertitel. Indien leeg, wordt deze automatisch gegenereerd op basis van de datum (bijv. “Bestuursvergadering - 15 maart 2025”)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Formaat: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "Volledige URL naar agendabestand"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Optioneel. De starttijd van de vergadering (bijv. %s), getoond onder de vergaderdatum. Dit is het tijdstip van de vergadering, niet het publicatietijdstip in WordPress (zie publish_date). Een tijd die niet kan worden gelezen, wordt niet opgeslagen; de vergadering wordt alsnog geïmporteerd. Het opnieuw importeren van een bestand voegt nooit een tijd toe aan een reeds bestaande vergadering."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "Volledige URL naar notulenbestand"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Optioneel. De eindtijd van de vergadering, in dezelfde notaties als start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Volledige URL naar het agendabestand. Moet een volledig http://- of https://-adres zijn; een ongeldige URL wordt niet opgeslagen."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Volledige URL naar het notulenbestand. Moet een volledig http://- of https://-adres zijn; een ongeldige URL wordt niet opgeslagen."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Geaccepteerde waarden: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Elke herkenbare datum of datum/tijd (bijv. %s). Stelt de feitelijke WordPress-publicatiedatum in in plaats van het moment van importeren — gebruik dit om historische vergaderingen met terugwerkende kracht te dateren. Heeft geen invloed op de hierboven genoemde vergaderdatum of sorteervolgorde."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Elke herkenbare datum of datum/tijd (bijv. %s). Stelt de daadwerkelijke WordPress-publicatiedatum in in plaats van het importmoment — gebruik dit om historische vergaderingen van een eerdere datum te voorzien. Heeft geen invloed op de bovenstaande vergaderdatum/sorteervolgorde. Een toekomstige datum/tijd plant de vergadering in plaats van deze direct te publiceren, waardoor deze pas vanaf dat moment op de site verschijnt."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "Importeren"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Beveiligingscontrole mislukt."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Onvoldoende rechten."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Importeren voltooid. %1$d rijen geïmporteerd, %2$d overgeslagen."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d rij is ingepland voor een toekomstige datum en verschijnt pas vanaf dat moment."
+msgstr[1] "%d rijen zijn ingepland voor een toekomstige datum en verschijnen pas vanaf dat moment."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d rij kwam overeen met een bestaande vergadering, of een eerdere rij in dit bestand, met dezelfde titel en datum en een overeenkomende of ontbrekende starttijd, en is overgeslagen."
+msgstr[1] "%d rijen kwamen overeen met een bestaande vergadering, of een eerdere rij in dit bestand, met dezelfde titel en datum en een overeenkomende of ontbrekende starttijd, en zijn overgeslagen."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d rij bevatte een ongeldige URL; die URL is niet opgeslagen."
+msgstr[1] "%d rijen bevatten een ongeldige URL; die URL's zijn niet opgeslagen."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d rij bevatte een start- of eindtijd die niet kon worden gelezen; die tijd is niet opgeslagen."
+msgstr[1] "%d rijen bevatten een start- of eindtijd die niet kon worden gelezen; die tijden zijn niet opgeslagen."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Er is geen bestand geüpload. Kies een CSV-bestand en probeer het opnieuw."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Ongeldig bestandstype. Upload een .csv-bestand."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "Het bestand kon niet volledig worden geüpload. Probeer het opnieuw."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "Er is een onbekende fout opgetreden."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +454,293 @@ msgstr "Vergadering toevoegen"
 msgid "Add New Meeting"
 msgstr "Nieuwe vergadering toevoegen"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Agenda bekijken"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Notulen bekijken"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Datum niet beschikbaar"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Agenda niet beschikbaar"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Notulen niet beschikbaar"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Vergadering niet gehouden"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s voor %2$s (opent in een nieuw venster)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s voor %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Agenda niet beschikbaar"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Titel"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Notulen niet beschikbaar"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Datum"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Vergadering niet gehouden"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Vorige"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Volgende"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Vorige pagina"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Volgende pagina"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Paginering"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Pagina %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Items %1$s tot %2$s van %3$s worden getoond"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Inbegrepen jaren"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Komma-gescheiden lijst van jaren. Laat leeg om alle jaren te tonen."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Startdatum"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Toon alleen vergaderingen op of na deze datum. Heeft voorrang op inbegrepen jaren."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Einddatum"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Toon alleen vergaderingen op of voor deze datum. Heeft voorrang op inbegrepen jaren."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Berichten per pagina"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Datumformaat gehouden vergadering"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHP date() formaat. Zie php.net/manual/en/datetime.format.php voor de volledige referentie."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Datumformaat niet gehouden vergadering"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Tijdnotatie"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "PHP date()-notatie voor de tijd die onder de datum van een vergadering wordt weergegeven, indien aanwezig. Alleen de tijdtekens a, A, g, G, h, H, i en s worden gebruikt."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Weergave-sjabloon"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Tabel (standaard)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Eén tabelrij per vergadering, met de kolommen die u hieronder kiest."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "Forceer alle kolommen naar dezelfde breedte"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Helpt kolommen consistent uit te lijnen voor een verticaal ritme over de rijen heen."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Aangepaste CSS-klasse"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Linklabel agenda"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Linklabel notulen"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "Geen gepubliceerde vergaderingen gevonden."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Links naar agenda/notulen openen in een nieuw venster"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Links naar de agenda en notulen worden geopend in een nieuw browsertabblad. Er worden automatisch een schermlezerinstructie en rel=\"noopener noreferrer\" toegevoegd."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Tijd (weergegeven onder de datum)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "De tijd maakt deel uit van de kolom Datum, dus het verbergen van de kolom Datum verbergt ook de tijd. Linklabels bevatten nog steeds de tijd, zodat vergaderingen op dezelfde dag uit elkaar kunnen worden gehouden."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Datumbereik"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "“Alle vergaderingen” is het volledige archief. “Aankomend” toont alleen vergaderingen vanaf vandaag; “Verleden” toont alleen vergaderingen die al hebben plaatsgevonden."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Alle vergaderingen"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Aankomende vergaderingen"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Eerdere vergaderingen"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Sorteervolgorde"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "“Nieuwste eerst” is de standaardinstelling en is geschikt voor een archief van eerdere notulen. Kies “Oudste eerst” voor een toekomstgerichte lijst, zoals aankomende vergaderingen."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Nieuwste eerst"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Oudste eerst"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Importeren voltooid. %1$d rijen geïmporteerd, %2$d overgeslagen."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Upload een CSV-bestand om vergaderingen in bulk te importeren."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "Er is geen bestand geüpload. Kies een CSV-bestand en probeer het opnieuw."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Ongeldig bestandstype. Upload een .csv-bestand."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "Er is een onbekende fout opgetreden."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Upload een CSV-bestand om vergaderingen in bulk te importeren. De eerste rij moet een koprij zijn."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "CSV-formaat"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Kolom"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Vereist"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Opmerkingen"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Ja"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "Nee"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Een bestand opnieuw importeren"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "Een rij met een starttijd wordt overgeslagen als duplicaat wanneer een opgeslagen vergadering dezelfde titel en datum heeft én dezelfde starttijd of geen starttijd heeft. Een rij zonder starttijd wordt overgeslagen wanneer een opgeslagen vergadering dezelfde titel en datum heeft. Het tweemaal uploaden van hetzelfde bestand leidt niet tot dubbele items."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "De vergelijking gebruikt wat er op dit moment bij elke vergadering is opgeslagen, niet wat er oorspronkelijk in het bestand stond. Als u na het importeren de titel of datum van een vergadering wijzigt, of de starttijd verandert in een ander tijdstip terwijl de rij een tijd heeft, komt de oorspronkelijke rij niet meer overeen en maakt het opnieuw importeren van dat bestand een nieuwe vergadering aan. Bewerk bestaande vergaderingen in WordPress in plaats van ze opnieuw te importeren."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "CSV uploaden"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Kies een bestand met de bovenstaande kolommen. De eerste rij moet een koprij zijn; elke geldige volgende rij maakt één vergadering aan."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSV-bestand"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Vergaderdatum"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Verplicht. Selecteer de datum waarop de vergadering is of wordt gehouden."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "Agenda-URL"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Agendabestand kiezen"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Dit bestand gebruiken"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Mediabibliotheek"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "Notulen-URL"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Notulenbestand kiezen"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Vergadering niet gehouden"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "Deze vergadering is niet gehouden"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "Vergaderingen importeren"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +765,11 @@ msgstr "Toon alleen vergaderingen op of voor deze datum. Overschrijft de bovenst
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Er zijn nog geen termen om op te filteren."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Weergave-instellingen"
 
@@ -560,13 +780,13 @@ msgstr "Kolomlabels"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Linklabels"
+msgid "Links"
+msgstr "Links"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Kolommen verbergen"
+msgid "Hide Data"
+msgstr "Gegevens verbergen"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +804,10 @@ msgstr "Negeert de onderstaande limiet per pagina en haalt elke vergadering op i
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Items per pagina"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "Het voorvertonen is mislukt. Controleer of de REST API van de site bereikbaar is en probeer het opnieuw."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +836,263 @@ msgstr "Shortcode naar klembord gekopieerd."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "Kopiëren mislukt. Selecteer de shortcode-tekst en kopieer deze handmatig."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Selecteer een bestand"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Dit bestand gebruiken"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Dat bestandstype kan niet voor dit veld worden gebruikt. Kies een ander bestand."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (opent in een nieuw tabblad)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Mediabibliotheek-video"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Mediabibliotheek"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "Externe URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "Het huidige item blijft ongewijzigd totdat u bevestigt."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Voer een volledige URL in, beginnend met http:// of https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "URL opslaan"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Selecteren uit mediabibliotheek"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Open de standaard bestandskiezer van WordPress om een bestand te kiezen of te uploaden."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Voer een externe URL in"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "Link naar een bestand of webpagina die elders wordt gehost."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Terug"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "%s vervangen"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "%s toevoegen"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "%s omhoog verplaatsen"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "%s omlaag verplaatsen"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Naamloos document"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "Titel bewerken"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Titel toevoegen"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "Titel opgeslagen."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "Titel bewerken geannuleerd."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Documentnaam"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "Opslaan"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Annuleren"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s verplaatst naar positie %2$d van %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Document"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "Geen %s toegevoegd."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Bepaalt hoe dit document hier wordt weergegeven — het hernoemt het document zelf niet."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "%s bekijken"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "Bewerken"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "%s bewerken"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "Titel van %s bewerken"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Titel van %s toevoegen"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Vervangen"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Verwijderen"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "%s verwijderen"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%s verwijderd."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ %s toevoegen"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%s toegevoegd."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Item"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "Naamloze %s"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Titel voor %s toevoegen"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Selecteer een %s-bestand"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "Geen %s bijgevoegd."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%s vervangen."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Start"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Einde"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "De eindtijd ligt vóór de starttijd, dus deze vergadering eindigt de volgende dag."
 
 #: block.json
 msgctxt "block title"

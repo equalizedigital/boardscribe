@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Latvian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:45+0000\n"
+"PO-Revision-Date: 2026-10-20 20:45+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: lv\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,166 @@ msgstr "BoardScribe nepieciešama PHP versija %1$s vai jaunāka. Jūs izmantojat
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "BoardScribe trūkst automātiskās ielādes faila (autoloader). Instalējiet atkārtoti no oficiālā zip arhīva vai palaidiet “composer install”, ja veicat izstrādi no pirmkoda."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Sēdes datums"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Atcelts"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Darba kārtība"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Protokols"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Skatīt"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Pirms sanāksmes publicēšanas ir jānorāda derīgs sanāksmes datums (YYYY-MM-DD)."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "Sanāksme tika saglabāta kā melnraksts, jo tai nav norādīts sanāksmes datums. Pievienojiet datumu un pēc tam publicējiet to."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d publicētai sanāksmei nav derīga sanāksmes datuma. Pievienojiet tai datumu."
+msgstr[1] "%d publicētām sanāksmēm nav derīga sanāksmes datuma. Pievienojiet datumu katrai no tām."
+msgstr[2] "%d publicētām sanāksmēm nav derīga sanāksmes datuma. Pievienojiet datumu katrai no tām."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Sēdes datums Y-m-d formātā."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "URL uz sēdes darba kārtības dokumentu."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "URL uz šīs sēdes publicēto protokolu."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "Vai sēde nenotika."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Sanāksmes sākuma laiks 24 stundu formātā HH:MM vietnes laika joslā."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Sanāksmes beigu laiks 24 stundu formātā HH:MM vietnes laika joslā."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Kurš pievienošanas/aizstāšanas modālā loga avots (media_library, external_url vai spraudņa reģistrēts ID) ģenerēja lauka %s pašreizējo vērtību."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "Wp-admin rediģēšanas ekrāns lauka %s pamatā esošajam ierakstam, ja tā avotam tāds ir (piemēram, saistītam dokumentam) — tukšs parastam multivides bibliotēkas failam vai ārējai saitei."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "Saistītā ieraksta ID, kas ir lauka %s pašreizējās vērtības pamatā, ja tā avotam tāds ir (piemēram, saistītam dokumentam) — 0 parastam multivides bibliotēkas failam vai ārējai saitei."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Sēdes informācija"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Sanāksmes informācijas laukiem ir nepieciešams JavaScript."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "Lauks “%s” ir resource_list vai pievienots lauks, un tam ir jāiestata saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Valdes sēde"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Obligāts. Izvēlieties datumu, kurā sēde notika vai notiks."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Sēdes laiks"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Neobligāti. Tiek rādīts zem sēdes datuma, izņemot gadījumus, kad sēde ir atzīmēta kā nenotikusi."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Izvēlēties darba kārtības failu"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "{date} valdes sēdes darba kārtība"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Izvēlēties protokola failu"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "{date} valdes sēdes protokols"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Sēde nenotika"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "Šī sēde nenotika."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "Vispārīgi"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Īskoda veidotājs"
 
@@ -94,7 +216,7 @@ msgid "Support"
 msgstr "Atbalsts"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "BoardScribe iestatījumi"
 
@@ -123,144 +245,192 @@ msgstr "Dzēšot šo spraudni, noņemt visus BoardScribe sēžu ierakstus un spr
 msgid "Warning: this cannot be undone."
 msgstr "Brīdinājums: šo darbību nevar atsaukt."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "BoardScribe iestatījumi"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "Zemāk konfigurējiet īskoda opcijas, pēc tam nokopējiet ģenerēto īskodu un ielīmējiet to jebkurā lapā vai ierakstā."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "Īskoda veidotājam ir nepieciešams JavaScript."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "BoardScribe lejupielāde un instalēšana"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Valdes sēžu ieraksta veids"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "Vai BoardScribe ir piekļūstams?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "Kādās valodās BoardScribe ir tulkots?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Kā saitēm pievienot informāciju par faila izmēru un veidu?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Dokumentācija"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Nepieciešama palīdzība? Skatiet mūsu dokumentāciju, lai iegūtu pamācības un funkciju aprakstus."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Skatīt dokumentāciju"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(atveras jaunā cilnē)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Sazinieties ar mums"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "Ir jautājumi vai nepieciešama palīdzība? Sazinieties ar mūsu atbalsta komandu."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Sazināties ar atbalstu"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Ātrās saites"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Nosaukums"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "No %1$s līdz %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Datums"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Beidzas plkst. %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Darba kārtība"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Protokols"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Sēdes nosaukums. Ja lauks ir tukšs, tas tiek automātiski ģenerēts no datuma (piemēram, “Valdes sēde — 2025. gada 15. marts”)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Formāts: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "Pilns URL uz darba kārtības failu"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Neobligāti. Sēdes sākuma laiks (piem., %s), kas tiek rādīts zem sēdes datuma. Šis ir sēdes laiks, nevis WordPress publicēšanas laiks (sk. publish_date). Nenolasāms laiks netiek saglabāts, un sēde tik un tā tiek importēta. Atkārtota faila importēšana nekad nepievieno laiku jau esošai sēdei."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "Pilns URL uz protokola failu"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Neobligāti. Sēdes beigu laiks tajā pašā formātā, kādā norādīts start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Pilns darba kārtības faila URL. Jābūt pilnai http:// vai https:// adresei; nederīgs URL netiek saglabāts."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Pilns protokola faila URL. Jābūt pilnai http:// vai https:// adresei; nederīgs URL netiek saglabāts."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Pieņemtās vērtības: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Jebkurš atpazīstams datums vai datums/laiks (piemēram, %s). Iestata faktisko WordPress publicēšanas datumu, nevis importēšanas brīdi — izmantojiet šo, lai norādītu vēsturisku sēžu datumus. Neietekmē iepriekš norādīto sēdes datumu/kārtošanas secību."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Jebkurš atpazīstams datums vai datums un laiks (piem., %s). Iestata faktisko WordPress publicēšanas datumu importēšanas brīža vietā — izmantojiet to, lai mainītu vēsturisko sēžu datumu uz pagātni. Neietekmē iepriekš norādīto sēžu datumu vai kārtošanas secību. Nākotnes datums un laiks ieplāno sēdes publicēšanu, nevis publicē to uzreiz, un tā vietnē parādīsies tikai pēc šī laika sasniegšanas."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "Importēt"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Drošības pārbaude neizdevās."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Nepietiekamas atļaujas."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Imports pabeigts. Importētas %1$d rindas, izlaistas %2$d."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d rinda tika ieplānota nākotnes datumā un būs redzama tikai pēc tā sasniegšanas."
+msgstr[1] "%d rindas tika ieplānotas nākotnes datumā un būs redzamas tikai pēc tā sasniegšanas."
+msgstr[2] "%d rindu tika ieplānotas nākotnes datumā un būs redzamas tikai pēc tā sasniegšanas."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d rinda sakrita ar esošu sēdi vai agrāku rindu šajā failā ar tādu pašu nosaukumu un datumu, kā arī atbilstošu vai nenorādītu sākuma laiku, un tika izlaista."
+msgstr[1] "%d rindas sakrita ar esošu sēdi vai agrāku rindu šajā failā ar tādu pašu nosaukumu un datumu, kā arī atbilstošu vai nenorādītu sākuma laiku, un tika izlaistas."
+msgstr[2] "%d rindu sakrita ar esošu sēdi vai agrāku rindu šajā failā ar tādu pašu nosaukumu un datumu, kā arī atbilstošu vai nenorādītu sākuma laiku, un tika izlaistas."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d rindā bija nederīgs URL; šis URL netika saglabāts."
+msgstr[1] "%d rindās bija nederīgs URL; šie URL netika saglabāti."
+msgstr[2] "%d rindās bija nederīgs URL; šie URL netika saglabāti."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d rindā bija sākuma vai beigu laiks, ko nevarēja nolasīt; šis laiks netika saglabāts."
+msgstr[1] "%d rindās bija sākuma vai beigu laiks, ko nevarēja nolasīt; šie laiki netika saglabāti."
+msgstr[2] "%d rindās bija sākuma vai beigu laiks, ko nevarēja nolasīt; šie laiki netika saglabāti."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Netika augšupielādēts neviens fails. Lūdzu, izvēlieties CSV failu un mēģiniet vēlreiz."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Nederīgs faila tips. Lūdzu, augšupielādējiet .csv failu."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "Neizdevās pilnībā augšupielādēt failu. Lūdzu, mēģiniet vēlreiz."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "Radās nezināma kļūda."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +459,293 @@ msgstr "Pievienot sēdi"
 msgid "Add New Meeting"
 msgstr "Pievienot jaunu sēdi"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Skatīt darba kārtību"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Skatīt protokolu"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Datums nav pieejams"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Darba kārtība nav pieejama"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Protokols nav pieejams"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Sēde nenotika"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s par %2$s (atveras jaunā logā)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s datumam %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Darba kārtība nav pieejama"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Nosaukums"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Protokols nav pieejams"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Datums"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Sēde nenotika"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Iepriekšējā"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Nākamā"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Iepriekšējā lapa"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Nākamā lapa"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Lappušu numerācija"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Lapa %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Rāda no %1$s līdz %2$s no kopā %3$s ierakstiem"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Iekļautie gadi"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Ar komatu atdalīts gadu saraksts. Atstājiet tukšu, lai rādītu visus gadus."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Sākuma datums"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Rādīt tikai sēdes, kas notiek šajā datumā vai vēlāk. Tam ir prioritāte pār “Iekļautie gadi”."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Beigu datums"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Rādīt tikai sēdes, kas notiek šajā datumā vai agrāk. Tam ir prioritāte pār “Iekļautie gadi”."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Ieraksti lapā"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Notikušas sēdes datuma formāts"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHP date() formāts. Pilnu informāciju skatiet php.net/manual/en/datetime.format.php."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Nenotikušas sēdes datuma formāts"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Laika formāts"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "PHP date() formāts laikam, kas tiek rādīts zem sanāksmes datuma, ja tāds ir norādīts. Tiek izmantotas tikai laika rakstzīmes a, A, g, G, h, H, i un s."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Attēlošanas veidne"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Tabula (noklusējuma)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Viena tabulas rinda katrai sanāksmei ar zemāk izvēlētajām kolonnām."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "Piespiest visas kolonnas vienādā platumā"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Palīdz konsekventi izlīdzināt kolonnas vertikālam ritmam visās rindās."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Pielāgota CSS klase"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Darba kārtības saites etiķete"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Protokola saites etiķete"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "Nav atrasta neviena publicēta sēde."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Atvērt darba kārtības/protokola saites jaunā logā"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Darba kārtības un protokola saites tiek atvērtas jaunā pārlūkprogrammas cilnē. Ekrānlasītāja mājiens un rel=\"noopener noreferrer\" tiek pievienoti automātiski."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Laiks (tiek rādīts zem datuma)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "Laiks ir daļa no kolonnas “Datums”, tāpēc, paslēpjot kolonnu “Datums”, tiek paslēpts arī laiks. Saišu nosaukumos joprojām ir iekļauts laiks, lai varētu atšķirt vienā dienā notiekošās sanāksmes."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Datumu diapazons"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "Opcija “Visas sanāksmes” rāda pilnu arhīvu. Opcija “Gaidāmās sanāksmes” rāda tikai sanāksmes, sākot no šodienas; opcija “Iepriekšējās sanāksmes” rāda tikai tās sanāksmes, kas jau ir notikušas."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Visas sanāksmes"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Gaidāmās sanāksmes"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Iepriekšējās sanāksmes"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Kārtošanas secība"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "Pēc noklusējuma vispirms tiek rādītas jaunākās, kas ir piemēroti pagātnes protokolu arhīvam. Izvēlieties rādīt vecākās vispirms tādiem uz nākotni vērstiem sarakstiem kā gaidāmās sanāksmes."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Vispirms jaunākās"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Vispirms vecākās"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Imports pabeigts. Importētas %1$d rindas, izlaistas %2$d."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Augšupielādējiet CSV failu, lai veiktu sēžu lielapjoma importēšanu."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "Netika augšupielādēts neviens fails. Lūdzu, izvēlieties CSV failu un mēģiniet vēlreiz."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Nederīgs faila tips. Lūdzu, augšupielādējiet .csv failu."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "Radās nezināma kļūda."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Augšupielādējiet CSV failu, lai veiktu sēžu lielapjoma importēšanu. Pirmajai rindai jābūt galvenes rindai."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "CSV formāts"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Kolonna"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Obligāts"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Piezīmes"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Jā"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "Nē"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Faila atkārtota importēšana"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "Rinda ar sākuma laiku tiek izlaista kā dublikāts, ja saglabātajai sēdei ir tāds pats nosaukums un datums, kā arī vienāds vai nenorādīts sākuma laiks. Rinda bez sākuma laika tiek izlaista, ja jebkurai saglabātajai sēdei ir tāds pats nosaukums un datums. Viena un tā paša faila augšupielāde divreiz nerada kopijas."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "Salīdzināšanā tiek izmantoti katrai sēdei pašlaik saglabātie dati, nevis tas, kas sākotnēji bija failā. Ja pēc sēdes importēšanas maināt tās nosaukumu vai datumu, vai maināt tās sākuma laiku uz citu laiku, ja rindā tāds bija, sākotnējā rinda vairs nesakrīt un šī faila atkārtota importēšana izveido jaunu sēdi. Lai mainītu esošās sēdes, rediģējiet tās programmā WordPress, nevis importējiet no jauna."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "Augšupielādēt CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Izvēlieties failu, izmantojot iepriekš norādītās kolonnas. Pirmajai rindai jābūt galvenes rindai, un katra derīgā rinda pēc tās izveido vienu sēdi."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSV fails"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Sēdes datums"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Obligāts. Izvēlieties datumu, kurā sēde notika vai notiks."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "Darba kārtības URL"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Izvēlēties darba kārtības failu"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Izmantot šo failu"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Mediju bibliotēka"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "Protokola URL"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Izvēlēties protokola failu"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Sēde nenotika"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "Šī sēde nenotika"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "Importēt sēdes"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +770,11 @@ msgstr "Rādīt tikai sēdes, kas notiek šajā datumā vai agrāk. Pārraksta a
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Vēl nav terminu, pēc kuriem filtrēt."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Attēlošanas iestatījumi"
 
@@ -560,13 +785,13 @@ msgstr "Kolonnu etiķetes"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Saišu etiķetes"
+msgid "Links"
+msgstr "Saites"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Slēpt kolonnas"
+msgid "Hide Data"
+msgstr "Slēpt datus"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +809,10 @@ msgstr "Ignorē zemāk norādīto ierakstu skaitu lapā un ielādē visas sēdes
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Ieraksti lapā"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "Nevarēja ielādēt priekšskatījumu. Pārbaudiet, vai vietnes REST API ir sasniedzams, un mēģiniet vēlreiz."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +841,263 @@ msgstr "Īskods nokopēts starpliktuvē."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "Kopēšana neizdevās. Atlasiet īskoda tekstu un nokopējiet to manuāli."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Izvēlēties failu"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Izmantot šo failu"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Šo faila tipu nevar izmantot šim laukam. Izvēlieties citu failu."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (atveras jaunā cilnē)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Multivides bibliotēkas video"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Mediju bibliotēka"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "Ārējs URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "Pašreizējais resurss paliek nemainīgs, līdz to apstiprināsiet."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Ievadiet pilnu URL, sākot ar http:// vai https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "Saglabāt URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Izvēlēties no multivides bibliotēkas"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Atveriet WordPress iebūvēto failu atlasītāju, lai izvēlētos vai augšupielādētu failu."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Ievadīt ārēju URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "Saite uz failu vai tīmekļa lapu, kas tiek viesota citur."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Atpakaļ"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "Aizstāt: %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "Pievienot: %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "Pārvietot %s augšup"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "Pārvietot %s lejup"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Dokuments bez nosaukuma"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "Rediģēt nosaukumu"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Pievienot nosaukumu"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "Nosaukums saglabāts."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "Nosaukuma rediģēšana atcelta."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Dokumenta nosaukums"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "Saglabāt"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Atcelt"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s pārvietots uz %2$d. pozīciju no %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Dokuments"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "Nav pievienots neviens %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Iestata, kā šis dokuments tiek parādīts šeit — tas nepārdēvē pašu dokumentu."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "Skatīt: %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "Rediģēt"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "Rediģēt: %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "Rediģēt vienuma %s nosaukumu"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Pievienot vienuma %s nosaukumu"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Aizstāt"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Noņemt"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "Noņemt: %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%s noņemts."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ Pievienot %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%s pievienots."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Vienums"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "%s bez nosaukuma"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Pievienot vienumam %s nosaukumu"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Izvēlēties %s failu"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "Nav pievienots neviens %s."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%s aizstāts."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Sākums"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Beigas"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "Beigu laiks ir agrāks par sākuma laiku, tāpēc šī sēde beidzas nākamajā dienā."
 
 #: block.json
 msgctxt "block title"
