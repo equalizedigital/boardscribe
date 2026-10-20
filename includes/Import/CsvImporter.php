@@ -15,7 +15,7 @@ use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
  * Provides a bulk CSV import admin page under the BoardScribe menu.
  *
  * Core recognised columns (see columns()): title, date, agenda_url,
- * minutes_url, not_held, publish_date.
+ * minutes_url, not_held, start_time, end_time, publish_date.
  *
  * - title        : Optional. A blank title falls back to the same
  *                  auto-generated "Board Meeting - {date}" title
@@ -24,6 +24,9 @@ use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
  *                  saved without one in the admin meta box.
  * - date         : Y-m-d format (e.g. 2024-03-15)
  * - not_held     : "yes" or "1" to mark the meeting as not held
+ * - start_time   : Optional. The meeting's start time (e.g. 17:00, 5pm).
+ *                  A time that can't be read is dropped and reported.
+ * - end_time     : Optional. The meeting's end time, read the same way.
  * - publish_date : Optional. Any date/time PHP's native date parser
  *                  understands — e.g. 2024-03-15, 2024-03-15 14:30:00,
  *                  2024-03-15T14:30:00-05:00, or "March 15, 2024
