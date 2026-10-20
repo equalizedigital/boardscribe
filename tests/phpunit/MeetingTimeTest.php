@@ -164,9 +164,21 @@ class MeetingTimeTest extends TestCase {
 	 * own post list does (WP 6.2 strips <time>), and still strips scripts.
 	 */
 	public function test_allowed_html_keeps_the_time_element(): void {
+		// Drop <time> from the post list the way WP 6.2 has it, so this
+		// passes only because allowed_html() adds it.
+		$without_time = static function ( array $tags ): array {
+			unset( $tags['time'] );
+			return $tags;
+		};
+		add_filter( 'wp_kses_allowed_html', $without_time );
+
 		$markup = MeetingTime::markup( '17:00', '19:00', 'g:i a' );
 
 		$this->assertSame( $markup, wp_kses( $markup, MeetingTime::allowed_html() ) );
+		$this->assertSame( [ 'datetime' => true ], MeetingTime::allowed_html()['time'] );
+
+		remove_filter( 'wp_kses_allowed_html', $without_time );
+
 		$this->assertSame( 'alert(1)', wp_kses( '<script>alert(1)</script>', MeetingTime::allowed_html() ) );
 		$this->assertArrayHasKey( 'strong', MeetingTime::allowed_html() );
 	}
