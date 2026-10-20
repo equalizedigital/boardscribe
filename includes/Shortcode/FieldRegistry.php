@@ -700,7 +700,7 @@ class FieldRegistry {
 	 * the same reason TYPE_SELECT isn't (see resolve_value()) - the
 	 * choices list only populates the picker's suggestions.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $raw_value A comma-separated string (or an array, from a
 	 *                         REST client sending repeated params - already

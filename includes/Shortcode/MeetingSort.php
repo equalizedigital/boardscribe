@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * and applies the chosen order to the endpoint's WP_Query args via
  * edbs_rest_query_args.
  *
- * @since x.x.x
+ * @since 1.2.0
  */
 class MeetingSort {
 
@@ -39,7 +39,7 @@ class MeetingSort {
 	 * Hooks the sort field and REST arg into the field registry and REST
 	 * endpoint. Registered from Plugin::boot().
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return void
 	 */
@@ -58,7 +58,7 @@ class MeetingSort {
 	 * sanitize_key(), and apply_order() whitelists ASC/DESC before it ever
 	 * touches the query.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param array $fields Field descriptors contributed by earlier-priority callbacks.
 	 * @return array
@@ -94,7 +94,7 @@ class MeetingSort {
 	 * than a bare 'asc'/'desc' (including an absent param) is ignored, so
 	 * the endpoint keeps its newest-first default for anonymous callers.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param array            $args    The WP_Query args.
 	 * @param \WP_REST_Request $request The REST request.

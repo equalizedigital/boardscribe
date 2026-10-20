@@ -3,7 +3,7 @@
  * Meeting start/end time helpers.
  *
  * @package EqualizeDigital\BoardScribe\Helpers
- * @since   x.x.x
+ * @since   1.2.0
  */
 
 namespace EqualizeDigital\BoardScribe\Helpers;
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * HH:MM strings in two post meta keys. A missing key means "no time": an
  * empty or invalid value is never stored.
  *
- * @since x.x.x
+ * @since 1.2.0
  */
 class MeetingTime {
 
@@ -37,7 +37,7 @@ class MeetingTime {
 	 * Accepts HH:MM and HH:MM:SS (what a time input can submit); anything
 	 * else, including a missing zero-padded hour, is not a time.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $value Candidate time.
 	 * @return string HH:MM, or '' when not a valid time.
@@ -66,7 +66,7 @@ class MeetingTime {
 	 * Excel fractions or European notation, and digits split by spaces
 	 * ('1 7:00'). Seconds are ignored, but seconds above 59 reject the time.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $value Candidate time.
 	 * @return string HH:MM, or '' when it can't be read.
@@ -117,7 +117,7 @@ class MeetingTime {
 	 * Meta sanitize callback: anything that isn't a valid time is stored as
 	 * an empty string rather than as garbage.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $value Raw meta value.
 	 * @return string
@@ -131,7 +131,7 @@ class MeetingTime {
 	 * is always an absent row whichever path wrote it (meta box, REST,
 	 * importer or code). Hooked to added_post_meta and updated_post_meta.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param int    $meta_id    Meta row ID (unused).
 	 * @param int    $post_id    Post ID.
@@ -148,7 +148,7 @@ class MeetingTime {
 	/**
 	 * Reads a meeting's normalized start and end time.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param int $post_id The meeting post ID.
 	 * @return array{start: string, end: string} Each '' when unset or invalid.
@@ -170,7 +170,7 @@ class MeetingTime {
 	 * character is required, so an hour-only format such as 'g' is accepted
 	 * and prints a bare hour.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $value Candidate format.
 	 * @return bool
@@ -191,7 +191,7 @@ class MeetingTime {
 	 * REST arg before sanitizing it, so rejecting '' here would fail the whole
 	 * list request; sanitize_format() turns '' into the default instead.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $value Candidate param value.
 	 * @return bool
@@ -204,7 +204,7 @@ class MeetingTime {
 	 * Sanitizes a time_format value, falling back to a default for anything
 	 * that isn't a valid format.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed  $value         Raw time_format value.
 	 * @param string $default_value Format used when the value is invalid.
@@ -220,7 +220,7 @@ class MeetingTime {
 	 * Formats a normalized time with a PHP date() format, English-only like
 	 * the meeting date.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param string $time   HH:MM.
 	 * @param string $format PHP date() format.
@@ -237,7 +237,7 @@ class MeetingTime {
 	/**
 	 * Builds the escaped time markup shown under a meeting's date.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param string $start  HH:MM start time, or ''.
 	 * @param string $end    HH:MM end time, or ''.
@@ -271,7 +271,7 @@ class MeetingTime {
 	 * relying on the running version's list; attributes the list already allows
 	 * on <time> are kept.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return array<string, array<string, bool>>
 	 */

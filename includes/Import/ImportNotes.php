@@ -13,7 +13,7 @@ namespace EqualizeDigital\BoardScribe\Import;
  * document that was skipped) and registers the wording for that key on
  * edbs_csv_import_notes, so the importer can add it to the results notice.
  *
- * @since x.x.x
+ * @since 1.2.0
  */
 class ImportNotes {
 
@@ -27,7 +27,7 @@ class ImportNotes {
 	/**
 	 * Adds to a note's total.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param string $key Note key; sanitized with sanitize_key().
 	 * @param int    $by  How many to add. Values below 1 are ignored.
@@ -46,7 +46,7 @@ class ImportNotes {
 	/**
 	 * Returns every note total.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return array<string, int>
 	 */

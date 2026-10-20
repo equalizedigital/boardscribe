@@ -146,7 +146,7 @@ class Helpers {
 	 * validator: it percent-encodes "http://not a valid url" into a
 	 * well-formed-looking but dead URL (PRO-1401, PRO-1410, PRO-1414).
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param string $value Raw, already-trimmed value.
 	 * @return bool

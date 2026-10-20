@@ -545,7 +545,7 @@ class MetaBox {
 	 * is empty or not a valid time deletes the meta, so an unset time stays
 	 * an absent row; a time that wasn't submitted at all is left as it was.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param int                  $post_id The post ID being saved.
 	 * @param array<string, mixed> $field   The field descriptor; its `key` and `end_key` name the inputs.
