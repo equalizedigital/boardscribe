@@ -328,6 +328,13 @@ class MetaBox {
 		foreach ( MetaBoxFieldRegistry::all() as $field ) {
 			if ( ! empty( $field['render_callback'] ) && is_callable( $field['render_callback'] ) ) {
 				$values[ $field['key'] ] = call_user_func( $field['render_callback'], $post );
+			} elseif ( 'time_range' === ( $field['type'] ?? '' ) ) {
+				// Without a callback, hydrate both times from the field's own keys so the
+				// inputs show what is stored and the next save does not clear it.
+				$values[ $field['key'] ] = [
+					'start' => MeetingTime::normalize( get_post_meta( $post->ID, $field['key'], true ) ),
+					'end'   => MeetingTime::normalize( get_post_meta( $post->ID, $field['end_key'] ?? '', true ) ),
+				];
 			} else {
 				$values[ $field['key'] ] = get_post_meta( $post->ID, $field['key'], true );
 			}

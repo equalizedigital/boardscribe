@@ -115,4 +115,33 @@ class MetaBoxRenderMetaBoxTest extends TestCase {
 		$this->assertStringContainsString( 'widget for post ' . $post_id, $html );
 		$this->assertStringNotContainsString( 'raw-meta-value-should-not-appear', $html );
 	}
+
+	/**
+	 * A time_range field with no render_callback is hydrated with both of its
+	 * stored times, so its inputs are not rendered empty.
+	 */
+	public function test_time_range_without_a_render_callback_hydrates_both_times(): void {
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $post_id, 'edbs_pro_stream_start', '18:00' );
+		update_post_meta( $post_id, 'edbs_pro_stream_end', '19:15' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'     => 'edbs_pro_stream_start',
+				'type'    => 'time_range',
+				'end_key' => 'edbs_pro_stream_end',
+				'label'   => 'Stream Time',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		ob_start();
+		( new MetaBox() )->render_meta_box( get_post( $post_id ) );
+		$html = ob_get_clean();
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertStringContainsString( '&quot;start&quot;:&quot;18:00&quot;,&quot;end&quot;:&quot;19:15&quot;', $html );
+	}
 }
