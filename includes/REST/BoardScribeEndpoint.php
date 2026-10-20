@@ -454,6 +454,8 @@ class BoardScribeEndpoint {
 		 * @param bool   $open_links_new_window Whether the link opens in a new window.
 		 * @param int    $post_id               The meeting post ID.
 		 * @param string $formatted_date        The formatted date string used to build $link.
+		 * @param string $time_markup           The meeting time markup ('' when it has none); pass it as
+		 *                                      build_link()'s fifth argument to keep it in the aria-label.
 		 */
 		$agenda_item = $agenda_url
 			? apply_filters(
@@ -463,7 +465,8 @@ class BoardScribeEndpoint {
 				$agenda_link_label,
 				$open_links_new_window,
 				$post_id,
-				$formatted_date
+				$formatted_date,
+				$time_markup
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'boardscribe' ) . '</span>';
 
@@ -478,6 +481,8 @@ class BoardScribeEndpoint {
 		 * @param bool   $open_links_new_window Whether the link opens in a new window.
 		 * @param int    $post_id               The meeting post ID.
 		 * @param string $formatted_date        The formatted date string used to build $link.
+		 * @param string $time_markup           The meeting time markup ('' when it has none); pass it as
+		 *                                      build_link()'s fifth argument to keep it in the aria-label.
 		 */
 		$minutes_item = $minutes_url
 			? apply_filters(
@@ -487,7 +492,8 @@ class BoardScribeEndpoint {
 				$minutes_link_label,
 				$open_links_new_window,
 				$post_id,
-				$formatted_date
+				$formatted_date,
+				$time_markup
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'boardscribe' ) . '</span>';
 

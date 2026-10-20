@@ -177,6 +177,26 @@ class BoardScribeEndpointTimeRowTest extends TestCase {
 	}
 
 	/**
+	 * A callback on edbs_agenda_link / edbs_minutes_link that rebuilds the anchor
+	 * with build_link() can keep the time by passing the filter's seventh argument.
+	 */
+	public function test_link_filters_pass_the_time_markup_so_a_rebuilt_link_keeps_it(): void {
+		$callback = static function ( $link, $url, $label, $new_window, $post_id, $formatted_date, $time_markup ) {
+			return BoardScribeEndpoint::build_link( $url, $label, $formatted_date, $new_window, $time_markup );
+		};
+		add_filter( 'edbs_agenda_link', $callback, 10, 7 );
+		add_filter( 'edbs_minutes_link', $callback, 10, 7 );
+
+		$row = $this->row( $this->create_meeting( array_merge( $this->links, [ 'edbs_meeting_start_time' => '17:00' ] ) ) );
+
+		remove_filter( 'edbs_agenda_link', $callback, 10 );
+		remove_filter( 'edbs_minutes_link', $callback, 10 );
+
+		$this->assertSame( 'View Agenda for 2026/03/12, 5:00 pm', $this->label( $row['agenda'] ) );
+		$this->assertSame( 'View Minutes for 2026/03/12, 5:00 pm', $this->label( $row['minutes'] ) );
+	}
+
+	/**
 	 * A start time alone is used as is.
 	 */
 	public function test_link_label_with_a_start_time_only(): void {
