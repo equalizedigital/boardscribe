@@ -7,6 +7,8 @@
 
 namespace EqualizeDigital\BoardScribe\Admin;
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -110,6 +112,8 @@ class MetaBoxFieldRegistry {
 		 *                                              plain string, or one containing "{date}" (resolved
 		 *                                              against the meeting's own edbs_meeting_date value
 		 *                                              client-side; falls back to $label with no date set yet).
+		 *     @type string|null   $end_key             Optional, 'time_range' type only. Meta key (and form field name) of the
+		 *                                              end time, saved alongside the start time from the same row.
 		 *     @type string|null   $item_noun           Optional, 'resource_list' type only. Singular noun for one
 		 *                                              row, used in its "+ Add {noun}"/empty-state text (e.g.
 		 *                                              "Document"). Defaults to "Document" for a top-level
@@ -133,7 +137,10 @@ class MetaBoxFieldRegistry {
 		 *                                              $item_noun.
 		 *     @type string|null   $insert_after        Optional. Another field's key — this field's row
 		 *                                              renders immediately after that field's row instead
-		 *                                              of at the end of the registry.
+		 *                                              of at the end of the registry. Fields sharing an anchor
+		 *                                              keep their filtered array order, so a field a plugin
+		 *                                              appends lands after the core field with the same anchor
+		 *                                              (the Meeting Time row sits right under the date that way).
 		 *     @type callable|null $sanitize_callback   Optional. Overrides the type's default save-time
 		 *                                              sanitizer; receives the raw sanitize_text_field()'d
 		 *                                              $_POST value. Not called when $saved_externally is set.
@@ -144,11 +151,13 @@ class MetaBoxFieldRegistry {
 		 *                                               writes to more than one meta key. The plugin owning the
 		 *                                               field must save it itself, typically on
 		 *                                               edbs_save_meeting_meta.
-		 *     @type callable|null $render_callback     Optional, 'html' type only. `fn( \WP_Post $post ): string`
+		 *     @type callable|null $render_callback     Optional. `fn( \WP_Post $post ): string` for an 'html' type
 		 *                                              — computes this field's per-post markup (already escaped),
 		 *                                              called by MetaBox::render_meta_box() in place of the
 		 *                                              default get_post_meta( $post->ID, $key, true ) lookup, and
-		 *                                              passed to the React app as this field's `value`.
+		 *                                              passed to the React app as this field's `value`. A
+		 *                                              'time_range' field's returns `array{start: string, end: string}`
+		 *                                              (HH:MM or ''); without one, both are read from `key` and `end_key`.
 		 *     @type string|null   $init_fn             Optional, 'html' type only. Name of a global JS function
 		 *                                              (no arguments) that hydrates the rendered markup — e.g.
 		 *                                              wires up an AJAX-backed widget already scanning the page
@@ -223,6 +232,7 @@ class MetaBoxFieldRegistry {
 				'initFn'           => $field['init_fn'] ?? null,
 				'sources'          => $field['sources'] ?? null,
 				'titleTemplate'    => $field['title_template'] ?? null,
+				'endKey'           => $field['end_key'] ?? null,
 				'itemNoun'         => $field['item_noun'] ?? null,
 				'attached'         => ! empty( $field['attached'] ),
 				'attachedFieldKey' => $field['attached_field_key'] ?? null,
@@ -274,7 +284,7 @@ class MetaBoxFieldRegistry {
 	}
 
 	/**
-	 * The four fields the free plugin ships.
+	 * The five fields the free plugin ships.
 	 *
 	 * @since 1.6.0
 	 *
@@ -288,6 +298,22 @@ class MetaBoxFieldRegistry {
 				'label'       => __( 'Meeting Date', 'boardscribe' ),
 				'description' => __( 'Required. Select the date the meeting was or will be held.', 'boardscribe' ),
 				'required'    => true,
+			],
+			[
+				// One row holding both times, not two fields: Pro chains its own
+				// fields off the date with insert_after, and two free fields
+				// would end up on opposite sides of that chain. The key is the
+				// start time's; the end time is saved alongside it from the same
+				// row (MetaBox::save_time_range()).
+				'key'             => MeetingTime::META_START,
+				'type'            => 'time_range',
+				'end_key'         => MeetingTime::META_END,
+				'label'           => __( 'Meeting Time', 'boardscribe' ),
+				'description'     => __( 'Optional. Shown under the meeting date, except when the meeting is marked not held.', 'boardscribe' ),
+				'insert_after'    => 'edbs_meeting_date',
+				'render_callback' => static function ( \WP_Post $post ): array {
+					return MeetingTime::get( $post->ID );
+				},
 			],
 			[
 				'key'            => 'edbs_agenda_url',

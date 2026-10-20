@@ -48,10 +48,11 @@ describe( 'defaultBuildRequestUrl', () => {
 		window.edbsConfig = { apiUrl: 'https://example.com/wp-json/edbs/v1/boardscribe/' };
 		const { defaultBuildRequestUrl } = require( '../../../src/js/defaults/request' );
 
-		const url = new URL( defaultBuildRequestUrl( { includedYears: '2024' }, 1 ) );
+		const url = new URL( defaultBuildRequestUrl( { includedYears: '2024', timeFormat: 'H:i' }, 1 ) );
 
 		expect( url.searchParams.get( 'included_years' ) ).toBe( '2024' );
 		expect( url.searchParams.get( 'posts_per_page' ) ).toBe( '' );
+		expect( url.searchParams.get( 'time_format' ) ).toBe( 'H:i' );
 
 		delete window.edbsConfig;
 	} );

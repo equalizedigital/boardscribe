@@ -35,6 +35,31 @@ class MetaBoxRenderMetaBoxTest extends TestCase {
 	}
 
 	/**
+	 * The Meeting Time row hydrates as a start/end pair, blank for a meeting
+	 * with no time.
+	 */
+	public function test_meeting_time_hydrates_as_a_start_end_pair(): void {
+		$timed   = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		$untimed = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $timed, 'edbs_meeting_start_time', '17:00' );
+		update_post_meta( $timed, 'edbs_meeting_end_time', '19:00' );
+
+		$values = [];
+		foreach ( [ 'timed' => $timed, 'untimed' => $untimed ] as $label => $post_id ) {
+			ob_start();
+			( new MetaBox() )->render_meta_box( get_post( $post_id ) );
+			$html = ob_get_clean();
+
+			preg_match( '/data-values="([^"]*)"/', $html, $matches );
+			$decoded          = json_decode( html_entity_decode( $matches[1] ), true );
+			$values[ $label ] = $decoded['edbs_meeting_start_time'];
+		}
+
+		$this->assertSame( [ 'start' => '17:00', 'end' => '19:00' ], $values['timed'] );
+		$this->assertSame( [ 'start' => '', 'end' => '' ], $values['untimed'] );
+	}
+
+	/**
 	 * edbs_before_meta_box_fields fires with the post being edited, before
 	 * the mount point in the rendered HTML.
 	 */
@@ -89,5 +114,34 @@ class MetaBoxRenderMetaBoxTest extends TestCase {
 
 		$this->assertStringContainsString( 'widget for post ' . $post_id, $html );
 		$this->assertStringNotContainsString( 'raw-meta-value-should-not-appear', $html );
+	}
+
+	/**
+	 * A time_range field with no render_callback is hydrated with both of its
+	 * stored times, so its inputs are not rendered empty.
+	 */
+	public function test_time_range_without_a_render_callback_hydrates_both_times(): void {
+		$post_id = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $post_id, 'edbs_pro_stream_start', '18:00' );
+		update_post_meta( $post_id, 'edbs_pro_stream_end', '19:15' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'     => 'edbs_pro_stream_start',
+				'type'    => 'time_range',
+				'end_key' => 'edbs_pro_stream_end',
+				'label'   => 'Stream Time',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		ob_start();
+		( new MetaBox() )->render_meta_box( get_post( $post_id ) );
+		$html = ob_get_clean();
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertStringContainsString( '&quot;start&quot;:&quot;18:00&quot;,&quot;end&quot;:&quot;19:15&quot;', $html );
 	}
 }

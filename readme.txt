@@ -86,8 +86,10 @@ Use the **Shortcode Builder** (Board Meetings > Settings > Shortcode Builder) to
 * `posts_per_page` - Entries per page. Use `-1` to show all. Default: `20`.
 * `held_date_format` - PHP date format for meetings that were held. Default: `l, F j, Y`.
 * `not_held_date_format` - PHP date format for meetings not held. Default: `F Y`.
+* `time_format` - PHP date format for a meeting's start and end time, shown under its date. Only the time characters `a`, `A`, `g`, `G`, `h`, `H`, `i` and `s` are used. Meetings with no time show none. Default: `g:i a`.
 * `hide_title` - Set to `true` to hide the Title column. Default: `false`.
 * `hide_date` - Set to `true` to hide the Date column. Default: `false`.
+* `hide_time` - Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. This only changes what is displayed: the agenda and minutes link labels read by screen readers still include the time, so same-day meetings can be told apart. Default: `false`.
 * `hide_agenda` - Set to `true` to hide the Agenda column. Default: `false`.
 * `hide_minutes` - Set to `true` to hide the Minutes column. Default: `false`.
 * `title_label`, `date_label`, `agenda_label`, `minutes_label` - Override the header text for each column. Default: the column's built-in name.
@@ -104,6 +106,7 @@ Use the **Shortcode Builder** (Board Meetings > Settings > Shortcode Builder) to
 Each meeting post stores:
 
 * **Meeting Date** - Required. The date the meeting was or will be held.
+* **Meeting Time** - Optional start and end time, shown under the date.
 * **Agenda URL** - Link to the agenda document.
 * **Minutes URL** - Link to the published minutes document.
 * **Meeting Not Held** - Marks that a scheduled meeting did not take place.
@@ -221,6 +224,8 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 == Changelog ==
 
 = 1.2.0-alpha.2 =
+* Added an optional start and end time for each meeting. Set it in a new Meeting Time row under the date; it shows under the date in the table (and in Pro's list and timeline layouts) and in the Board Meetings list. A new Time Format setting controls how it reads, and a Hide Time option turns it off. Meetings without a time look exactly as before, and same-day meetings now list in time order. A meeting with no time lists before the timed ones on its day when the order is ascending and after them when it is descending.
+* The CSV importer accepts optional `start_time` and `end_time` columns (`17:00`, `5pm`, `5:30 p.m.`). A time that can't be read is skipped and reported while the meeting still imports, two same-titled meetings on one day with different start times both import, and files without the columns import as before.
 * Rebuilt the Meeting Details meta box as a React app, matching the updated design mocks - Agenda, Minutes, and Supporting Documents now share one consistent Add/Replace/Remove card UI instead of each field having its own bespoke markup.
 * Breaking change: removed three block editor preview hooks (`edbs_block_preview_columns`, `edbs_block_editor_preview`, `edbs_block_preview_max_rows`) and the `render_preview_table()` method - the block's editor preview now renders through the same client-side pipeline as the front end instead of a separate server-rendered lookalike. See `docs/HOOK-CONTRACT-CHANGES.md` for migration details.
 * A resource field (Agenda, Minutes) now shows an "Edit" action alongside View/Replace/Remove whenever its value is backed by an editable post (currently: Pro's linked-document source) - takes you straight to that post's own wp-admin edit screen.

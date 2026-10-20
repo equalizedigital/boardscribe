@@ -57,6 +57,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 | `posts_per_page` | `20` | Number of entries per page. Use `-1` (or `all`) to show every entry, up to the site's configured maximum. |
 | `held_date_format` | `l, F j, Y` | PHP `date()` format for meetings that were held. |
 | `not_held_date_format` | `F Y` | PHP `date()` format for meetings that were not held. |
+| `time_format` | `g:i a` | PHP `date()` format for a meeting's start and end time, shown under its date. Only the time characters `a`, `A`, `g`, `G`, `h`, `H`, `i` and `s` are used. Meetings with no time show none. |
 | `template` | *(table)* | Name of a registered display template to render with. Free ships only the built-in table; add-ons can register additional templates (see [Display Templates](#display-templates--javascript-registries)). |
 | `equal_columns` | `false` | Set to `true` to force all table columns to the same width. |
 | `class` | *(none)* | Custom CSS class(es) added to the `<table>` element. |
@@ -64,6 +65,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 | `agenda_link_label` / `minutes_link_label` | *("View Agenda" / "View Minutes")* | Overrides the link text for the Agenda/Minutes cell links. |
 | `hide_title` | `false` | Set to `true` to hide the Title column. |
 | `hide_date` | `false` | Set to `true` to hide the Date column. |
+| `hide_time` | `false` | Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. This only changes what is displayed: the agenda and minutes link labels read by screen readers still include the time, so same-day meetings can be told apart. |
 | `hide_agenda` | `false` | Set to `true` to hide the Agenda column. |
 | `hide_minutes` | `false` | Set to `true` to hide the Minutes column. |
 
@@ -82,6 +84,7 @@ A **BoardScribe** block (`equalize-digital/boardscribe`) is also available in th
 Each meeting minute post has four native meta fields:
 
 - **Meeting Date** — Required. Date the meeting occurred (`YYYY-MM-DD`).
+- **Meeting Time** — Optional start and end time, shown under the date.
 - **Agenda URL** — Link to the meeting agenda document.
 - **Minutes URL** — Link to the published meeting minutes document.
 - **Meeting Not Held** — Checkbox to mark that a scheduled meeting did not take place.

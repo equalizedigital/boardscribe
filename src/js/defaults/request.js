@@ -37,6 +37,7 @@ export function defaultBuildRequestUrl( instanceCfg, page ) {
 		{ key: 'agenda_link_label', configKey: 'agendaLinkLabel' },
 		{ key: 'minutes_link_label', configKey: 'minutesLinkLabel' },
 		{ key: 'open_links_new_window', configKey: 'openLinksNewWindow' },
+		{ key: 'time_format', configKey: 'timeFormat' },
 	];
 
 	restArgMap.forEach( function( field ) {

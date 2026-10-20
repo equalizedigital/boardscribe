@@ -9,12 +9,13 @@ namespace EqualizeDigital\BoardScribe\Import;
 
 use EqualizeDigital\BoardScribe\Admin\MetaBox;
 use EqualizeDigital\BoardScribe\Helpers\Helpers;
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 
 /**
  * Provides a bulk CSV import admin page under the BoardScribe menu.
  *
  * Core recognised columns (see columns()): title, date, agenda_url,
- * minutes_url, not_held, publish_date.
+ * minutes_url, not_held, start_time, end_time, publish_date.
  *
  * - title        : Optional. A blank title falls back to the same
  *                  auto-generated "Board Meeting - {date}" title
@@ -23,6 +24,9 @@ use EqualizeDigital\BoardScribe\Helpers\Helpers;
  *                  saved without one in the admin meta box.
  * - date         : Y-m-d format (e.g. 2024-03-15)
  * - not_held     : "yes" or "1" to mark the meeting as not held
+ * - start_time   : Optional. The meeting's start time (e.g. 17:00, 5pm).
+ *                  A time that can't be read is dropped and reported.
+ * - end_time     : Optional. The meeting's end time, read the same way.
  * - publish_date : Optional. Any date/time PHP's native date parser
  *                  understands — e.g. 2024-03-15, 2024-03-15 14:30:00,
  *                  2024-03-15T14:30:00-05:00, or "March 15, 2024
@@ -72,6 +76,18 @@ class CsvImporter {
 			'date'         => [
 				'required' => true,
 				'notes'    => __( 'Format: YYYY-MM-DD', 'boardscribe' ),
+			],
+			'start_time'   => [
+				'required' => false,
+				'notes'    => sprintf(
+					/* translators: %s: example time formats — these are literal examples, not to be translated. */
+					__( 'Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists.', 'boardscribe' ),
+					'17:00, 5:00 PM, 5pm'
+				),
+			],
+			'end_time'     => [
+				'required' => false,
+				'notes'    => __( 'Optional. The meeting end time, in the same formats as start_time.', 'boardscribe' ),
 			],
 			'agenda_url'   => [
 				'required' => false,
@@ -179,11 +195,12 @@ class CsvImporter {
 		wp_safe_redirect(
 			add_query_arg(
 				[
-					'edbs_import_success'      => $result['imported'],
-					'edbs_import_skipped'      => $result['skipped'],
-					'edbs_import_scheduled'    => $result['scheduled'],
-					'edbs_import_duplicates'   => $result['duplicates'],
-					'edbs_import_invalid_urls' => $result['invalid_urls'],
+					'edbs_import_success'       => $result['imported'],
+					'edbs_import_skipped'       => $result['skipped'],
+					'edbs_import_scheduled'     => $result['scheduled'],
+					'edbs_import_duplicates'    => $result['duplicates'],
+					'edbs_import_invalid_urls'  => $result['invalid_urls'],
+					'edbs_import_invalid_times' => $result['invalid_times'],
 				],
 				$this->get_page_url()
 			)
@@ -268,18 +285,19 @@ class CsvImporter {
 	 * @since 1.1.0
 	 *
 	 * @param string $file Path to the temporary uploaded file.
-	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int, invalid_urls: int }
+	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int, invalid_urls: int, invalid_times: int }
 	 */
 	private function process_csv( string $file ): array {
 		$handle = fopen( $file, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
 		if ( ! $handle ) {
 			return [
-				'imported'     => 0,
-				'skipped'      => 0,
-				'scheduled'    => 0,
-				'duplicates'   => 0,
-				'invalid_urls' => 0,
+				'imported'      => 0,
+				'skipped'       => 0,
+				'scheduled'     => 0,
+				'duplicates'    => 0,
+				'invalid_urls'  => 0,
+				'invalid_times' => 0,
 			];
 		}
 
@@ -300,12 +318,13 @@ class CsvImporter {
 		$required_columns = array_keys( array_filter( $this->columns(), fn( array $column ): bool => ! empty( $column['required'] ) ) );
 		$meta_box         = new MetaBox();
 
-		$imported     = 0;
-		$skipped      = 0;
-		$scheduled    = 0;
-		$duplicates   = 0;
-		$invalid_urls = 0;
-		$headers      = null;
+		$imported      = 0;
+		$skipped       = 0;
+		$scheduled     = 0;
+		$duplicates    = 0;
+		$invalid_urls  = 0;
+		$invalid_times = 0;
+		$headers       = null;
 
 		/**
 		 * Filters the CSV columns validated as URLs before a row is imported.
@@ -389,12 +408,40 @@ class CsvImporter {
 				}
 			}
 
+			// Validate the optional start_time/end_time columns. A time that can't
+			// be read is dropped and reported, and the meeting still imports, like
+			// an invalid URL. $data is rewritten to the normalized HH:MM (or '')
+			// so edbs_csv_import_row_meta callbacks never see the raw cell.
+			$row_invalid_time = false;
+			foreach ( [ 'start_time', 'end_time' ] as $time_column ) {
+				// A cell holding only non-breaking spaces is empty, not unreadable;
+				// trim() above only strips ASCII whitespace.
+				if ( ! isset( $data[ $time_column ] ) || '' === preg_replace( '/[\s\x{00A0}\x{202F}]+/u', '', $data[ $time_column ] ) ) {
+					if ( isset( $data[ $time_column ] ) ) {
+						$data[ $time_column ] = '';
+					}
+					continue;
+				}
+
+				$data[ $time_column ] = MeetingTime::parse( $data[ $time_column ] );
+
+				if ( '' === $data[ $time_column ] ) {
+					$row_invalid_time = true;
+				}
+			}
+
+			// Counted before the duplicate check so an unreadable time is reported
+			// even when its row is then skipped as a duplicate.
+			if ( $row_invalid_time ) {
+				++$invalid_times;
+			}
+
 			$title = sanitize_text_field( trim( $data['title'] ?? '' ) );
 			if ( '' === $title ) {
 				$title = $meta_box->generate_default_title( $date );
 			}
 
-			if ( $this->find_existing_meeting( $title, $date ) ) {
+			if ( $this->find_existing_meeting( $title, $date, $data['start_time'] ?? '' ) ) {
 				++$duplicates;
 				continue;
 			}
@@ -423,6 +470,16 @@ class CsvImporter {
 			}
 
 			update_post_meta( $post_id, 'edbs_meeting_date', $date );
+
+			// Only a time that was given and read is written, so a meeting without
+			// one never gets a time row.
+			if ( ! empty( $data['start_time'] ) ) {
+				update_post_meta( $post_id, MeetingTime::META_START, $data['start_time'] );
+			}
+
+			if ( ! empty( $data['end_time'] ) ) {
+				update_post_meta( $post_id, MeetingTime::META_END, $data['end_time'] );
+			}
 
 			// wp_insert_post() silently downgrades a 'publish' status to
 			// 'future' when post_date is later than now (normal WP
@@ -461,7 +518,7 @@ class CsvImporter {
 			 * @since 1.1.0
 			 *
 			 * @param int   $post_id The newly created meeting post ID.
-			 * @param array $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing.
+			 * @param array $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing. start_time and end_time are the exception: already normalized to HH:MM, or '' when the cell was unreadable, and already saved by the importer.
 			 */
 			do_action( 'edbs_csv_import_row_meta', $post_id, $data );
 		}
@@ -469,11 +526,12 @@ class CsvImporter {
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 		return [
-			'imported'     => $imported,
-			'skipped'      => $skipped,
-			'scheduled'    => $scheduled,
-			'duplicates'   => $duplicates,
-			'invalid_urls' => $invalid_urls,
+			'imported'      => $imported,
+			'skipped'       => $skipped,
+			'scheduled'     => $scheduled,
+			'duplicates'    => $duplicates,
+			'invalid_urls'  => $invalid_urls,
+			'invalid_times' => $invalid_times,
 		];
 	}
 
@@ -491,11 +549,21 @@ class CsvImporter {
 	 *
 	 * @since x.x.x
 	 *
+	 * Two meetings with the same title on the same day are still different
+	 * meetings when both have a start time and the times differ (a 9am and a
+	 * 6pm session), so a row with a start time only matches a meeting that has
+	 * the same start time or none at all. A row without one matches any meeting
+	 * with that title and date, as it always has, and a meeting without one is
+	 * matched by a row with any time - re-importing a file never adds times to
+	 * meetings that already exist.
+	 *
 	 * @param string $title The row's resolved title (after the blank-title fallback).
 	 * @param string $date  The row's edbs_meeting_date value (Y-m-d).
+	 * @param string $start The row's normalized start time (HH:MM), or ''.
 	 * @return bool
 	 */
-	private function find_existing_meeting( string $title, string $date ): bool {
+	private function find_existing_meeting( string $title, string $date, string $start = '' ): bool {
+		// With a start time, only the 50 most recent meetings with this title and date are compared.
 		$existing = get_posts(
 			[
 				'post_type'      => 'edbs_meeting',
@@ -507,12 +575,24 @@ class CsvImporter {
 				'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_value'     => $date, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'fields'         => 'ids',
-				'posts_per_page' => 1,
+				'posts_per_page' => '' === $start ? 1 : 50,
 				'no_found_rows'  => true,
 			]
 		);
 
-		return ! empty( $existing );
+		if ( '' === $start ) {
+			return ! empty( $existing );
+		}
+
+		foreach ( $existing as $existing_id ) {
+			$existing_start = MeetingTime::get( (int) $existing_id )['start'];
+
+			if ( '' === $existing_start || $existing_start === $start ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -550,9 +630,15 @@ class CsvImporter {
 	private function resolve_status_message(): ?array {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data.
 		if ( isset( $_GET['edbs_import_success'] ) ) {
-			$scheduled    = absint( $_GET['edbs_import_scheduled'] ?? 0 );
-			$duplicates   = absint( $_GET['edbs_import_duplicates'] ?? 0 );
-			$invalid_urls = absint( $_GET['edbs_import_invalid_urls'] ?? 0 );
+			// absint() on an array is 1, so only a string arg counts.
+			$count = static function ( string $key ): int {
+				return isset( $_GET[ $key ] ) && is_string( $_GET[ $key ] ) ? absint( $_GET[ $key ] ) : 0;
+			};
+
+			$scheduled     = $count( 'edbs_import_scheduled' );
+			$duplicates    = $count( 'edbs_import_duplicates' );
+			$invalid_urls  = $count( 'edbs_import_invalid_urls' );
+			$invalid_times = $count( 'edbs_import_invalid_times' );
 
 			$message = sprintf(
 				/* translators: 1: number imported, 2: number skipped */
@@ -576,7 +662,7 @@ class CsvImporter {
 			if ( $duplicates > 0 ) {
 				$message .= ' ' . sprintf(
 					/* translators: %d: number of duplicate rows skipped */
-					_n( '%d row matched an existing meeting, or an earlier row in this file, with the same title and date and was skipped.', '%d rows matched an existing meeting, or an earlier row in this file, with the same title and date and were skipped.', $duplicates, 'boardscribe' ),
+					_n( '%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped.', '%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped.', $duplicates, 'boardscribe' ),
 					$duplicates
 				);
 			}
@@ -586,6 +672,14 @@ class CsvImporter {
 					/* translators: %d: number of rows with an invalid URL column */
 					_n( '%d row had an invalid URL; that URL was not saved.', '%d rows had an invalid URL; those URLs were not saved.', $invalid_urls, 'boardscribe' ),
 					$invalid_urls
+				);
+			}
+
+			if ( $invalid_times > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of rows with a start or end time that could not be read */
+					_n( '%d row had a start or end time that could not be read; that time was not saved.', '%d rows had a start or end time that could not be read; those times were not saved.', $invalid_times, 'boardscribe' ),
+					$invalid_times
 				);
 			}
 

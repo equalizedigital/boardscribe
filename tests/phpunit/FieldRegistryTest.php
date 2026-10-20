@@ -6,6 +6,7 @@
  */
 
 use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -245,5 +246,42 @@ class FieldRegistryTest extends TestCase {
 		);
 
 		$this->assertSame( 'public-safety,budget-finance', $result );
+	}
+
+	/**
+	 * The time format and its hide toggle are registered; the format is a
+	 * REST arg with a fixed default and the toggle is JS-only like the other
+	 * hide_* fields.
+	 */
+	public function test_time_fields_are_registered(): void {
+		$by_key = array_column( FieldRegistry::all(), null, 'key' );
+
+		$this->assertSame( 'g:i a', $by_key['time_format']['default'] );
+		$this->assertTrue( $by_key['time_format']['rest_arg'] );
+		$this->assertFalse( $by_key['hide_time']['default'] );
+		$this->assertSame( 'hide_columns', $by_key['hide_time']['group'] );
+		$this->assertEmpty( $by_key['hide_time']['rest_arg'] ?? false );
+		$this->assertStringContainsString( 'Link labels still include the time', $by_key['hide_time']['description'] );
+	}
+
+	/**
+	 * An invalid time format falls back to the default instead of being used.
+	 */
+	public function test_invalid_time_format_resolves_to_the_default(): void {
+		$by_key = array_column( FieldRegistry::all(), null, 'key' );
+
+		$this->assertSame( 'H:i', FieldRegistry::resolve_value( $by_key['time_format'], 'H:i' ) );
+		$this->assertSame( 'g:i a', FieldRegistry::resolve_value( $by_key['time_format'], 'H \\h i' ) );
+		$this->assertSame( 'g:i a', FieldRegistry::resolve_value( $by_key['time_format'], 'g:i a T' ) );
+	}
+
+	/**
+	 * time_format reaches the front end through the shared REST arg map.
+	 */
+	public function test_time_format_is_in_the_rest_arg_map(): void {
+		$map = array_column( FieldRegistry::rest_arg_map(), null, 'key' );
+
+		$this->assertSame( 'timeFormat', $map['time_format']['configKey'] );
+		$this->assertArrayNotHasKey( 'hide_time', $map );
 	}
 }

@@ -42,6 +42,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tbody>
 	</table>
 
+	<div class="edbs-import__rematch">
+		<h2><?php esc_html_e( 'Importing a file again', 'boardscribe' ); ?></h2>
+		<p><?php esc_html_e( 'A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies.', 'boardscribe' ); ?></p>
+		<p><?php esc_html_e( 'The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting\'s title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again.', 'boardscribe' ); ?></p>
+	</div>
+
 	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data" aria-labelledby="edbs-import-heading" class="edbs-import__upload">
 		<?php wp_nonce_field( 'edbs_csv_import', 'edbs_csv_import_nonce' ); ?>
 		<input type="hidden" name="action" value="edbs_csv_import" />

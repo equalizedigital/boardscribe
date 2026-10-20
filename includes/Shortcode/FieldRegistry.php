@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 
 /**
@@ -212,6 +213,22 @@ class FieldRegistry {
 					'rest_arg'          => true,
 				],
 				[
+					'key'               => 'time_format',
+					'type'              => self::TYPE_TEXT,
+					'group'             => 'general',
+					'label'             => __( 'Time Format', 'boardscribe' ),
+					// A fixed default, not the site's time_format option: the value is
+					// sent to the REST endpoint on every request and validated there,
+					// and a site format with an escaped character would be rejected.
+					'default'           => MeetingTime::DEFAULT_FORMAT,
+					'description'       => __( 'PHP date() format for the time shown under a meeting\'s date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used.', 'boardscribe' ),
+					'sanitize_callback' => static function ( $value ) {
+						return MeetingTime::sanitize_format( $value, MeetingTime::DEFAULT_FORMAT );
+					},
+					'validate_callback' => [ MeetingTime::class, 'is_valid_format_or_empty' ],
+					'rest_arg'          => true,
+				],
+				[
 					'key'                 => 'template',
 					'type'                => self::TYPE_SELECT,
 					'group'               => 'general',
@@ -315,6 +332,14 @@ class FieldRegistry {
 					'group'   => 'hide_columns',
 					'label'   => __( 'Date', 'boardscribe' ),
 					'default' => false,
+				],
+				[
+					'key'         => 'hide_time',
+					'type'        => self::TYPE_CHECKBOX,
+					'group'       => 'hide_columns',
+					'label'       => __( 'Time (shown under the date)', 'boardscribe' ),
+					'default'     => false,
+					'description' => __( 'The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart.', 'boardscribe' ),
 				],
 				[
 					'key'     => 'hide_agenda',

@@ -72,8 +72,11 @@ function htmlToText( html ) {
  *   render      - function( meeting ) → cell HTML. The return value is
  *                 trusted, pre-escaped HTML by contract: the REST endpoint
  *                 escapes title/date server-side, agenda/minutes are
- *                 pre-built escaped <a> markup, and an extra column's
- *                 renderCell() escapes its own output.
+ *                 pre-built escaped <a> markup, meeting.time is <time>
+ *                 markup the endpoint has already passed through wp_kses()
+ *                 (it sits in the date cell's .edbs-meeting-datetime
+ *                 wrapper), and an extra column's renderCell() escapes its
+ *                 own output.
  *
  * As a public API any external caller can invoke directly, this defensively
  * normalizes instanceCfg and window.edbsExtraColumns, and its render()
@@ -117,7 +120,19 @@ export function resolveColumns( instanceCfg ) {
 			labelHtml: escapeHTML( label ),
 			isRowHeader: key === rowHeaderColumn,
 			render( meeting ) {
-				return ( meeting && meeting[ key ] ) || '';
+				const value = ( meeting && meeting[ key ] ) || '';
+
+				// A meeting with a time shows it under its date. Only 'date'
+				// ever has one, and only when the endpoint sent it. Both parts
+				// go in one wrapper (and are space-separated) so the stacked
+				// mobile layout keeps them together and text readers see
+				// "date time", not "datetime".
+				if ( 'date' === key && value && meeting.time && ! cfg.hideTime ) {
+					return '<span class="edbs-meeting-datetime">' + value +
+						' <span class="edbs-meeting-time">' + meeting.time + '</span></span>';
+				}
+
+				return value;
 			},
 		};
 	}
@@ -223,11 +238,12 @@ export function buildTableHtml( meetings, instanceCfg ) {
 
 	table += '</tr></thead><tbody role="rowgroup">';
 
-	// Cell content below (meeting.title, meeting.date, meeting.agenda,
-	// meeting.minutes, and any Pro-registered renderCell() output) is
-	// inserted as trusted, pre-escaped HTML by contract - the REST
-	// endpoint escapes title/date server-side, and agenda/minutes are
-	// pre-built escaped <a> markup. Any new field or extra-column
+	// Cell content below (meeting.title, meeting.date, meeting.time,
+	// meeting.agenda, meeting.minutes, and any Pro-registered renderCell()
+	// output) is inserted as trusted, pre-escaped HTML by contract - the
+	// REST endpoint escapes title/date server-side, meeting.time is <time>
+	// markup it has already passed through wp_kses(), and agenda/minutes
+	// are pre-built escaped <a> markup. Any new field or extra-column
 	// renderCell() must escape its own output before returning it here.
 	safeMeetings.forEach( function( meeting ) {
 		if ( ! meeting ) {

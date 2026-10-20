@@ -7,6 +7,7 @@
 
 namespace EqualizeDigital\BoardScribe\Admin;
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,6 +30,8 @@ class MetaBox {
 	 */
 	public function register(): void {
 		add_action( 'init', [ $this, 'register_post_meta' ] );
+		add_action( 'added_post_meta', [ MeetingTime::class, 'prune_empty' ], 10, 4 );
+		add_action( 'updated_post_meta', [ MeetingTime::class, 'prune_empty' ], 10, 4 );
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_box' ] );
 		add_action( 'save_post_edbs_meeting', [ $this, 'save_meta' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
@@ -160,6 +163,44 @@ class MetaBox {
 			)
 		);
 
+		register_post_meta(
+			'edbs_meeting',
+			MeetingTime::META_START,
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'show_in_rest'      => [
+						'schema' => [
+							'type'    => 'string',
+							'pattern' => MeetingTime::REST_PATTERN,
+						],
+					],
+					'description'       => __( 'Meeting start time in 24-hour HH:MM format, in the site timezone.', 'boardscribe' ),
+					'sanitize_callback' => [ MeetingTime::class, 'sanitize' ],
+				]
+			)
+		);
+
+		register_post_meta(
+			'edbs_meeting',
+			MeetingTime::META_END,
+			array_merge(
+				$common,
+				[
+					'type'              => 'string',
+					'show_in_rest'      => [
+						'schema' => [
+							'type'    => 'string',
+							'pattern' => MeetingTime::REST_PATTERN,
+						],
+					],
+					'description'       => __( 'Meeting end time in 24-hour HH:MM format, in the site timezone.', 'boardscribe' ),
+					'sanitize_callback' => [ MeetingTime::class, 'sanitize' ],
+				]
+			)
+		);
+
 		// Every 'resource'-type field (built-in Agenda/Minutes, or a
 		// plugin's own) automatically gets a `{key}_source`/`{key}_edit_url`/
 		// `{key}_document_id` sibling meta - see MetaBoxFieldRegistry::all()'s own docblock,
@@ -287,6 +328,13 @@ class MetaBox {
 		foreach ( MetaBoxFieldRegistry::all() as $field ) {
 			if ( ! empty( $field['render_callback'] ) && is_callable( $field['render_callback'] ) ) {
 				$values[ $field['key'] ] = call_user_func( $field['render_callback'], $post );
+			} elseif ( 'time_range' === ( $field['type'] ?? '' ) ) {
+				// Without a callback, hydrate both times from the field's own keys so the
+				// inputs show what is stored and the next save does not clear it.
+				$values[ $field['key'] ] = [
+					'start' => MeetingTime::normalize( get_post_meta( $post->ID, $field['key'], true ) ),
+					'end'   => MeetingTime::normalize( get_post_meta( $post->ID, $field['end_key'] ?? '', true ) ),
+				];
 			} else {
 				$values[ $field['key'] ] = get_post_meta( $post->ID, $field['key'], true );
 			}
@@ -427,6 +475,11 @@ class MetaBox {
 			return;
 		}
 
+		if ( 'time_range' === $type ) {
+			$this->save_time_range( $post_id, $field );
+			return;
+		}
+
 		if ( 'checkbox' === $type ) {
 			update_post_meta( $post_id, $key, isset( $_POST[ $key ] ) ? '1' : '' );
 			return;
@@ -484,6 +537,41 @@ class MetaBox {
 		}
 
 		update_post_meta( $post_id, $key, $pre_sanitized );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Saves the Meeting Time row's start and end time. A submitted value that
+	 * is empty or not a valid time deletes the meta, so an unset time stays
+	 * an absent row; a time that wasn't submitted at all is left as it was.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param int                  $post_id The post ID being saved.
+	 * @param array<string, mixed> $field   The field descriptor; its `key` and `end_key` name the inputs.
+	 * @return void
+	 */
+	private function save_time_range( int $post_id, array $field ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called.
+		$meta_keys = [
+			$field['key'] ?? MeetingTime::META_START,
+			$field['end_key'] ?? MeetingTime::META_END,
+		];
+
+		foreach ( $meta_keys as $meta_key ) {
+			// Only a string is a time; anything else (e.g. "{$key}[]") is left alone.
+			if ( ! isset( $_POST[ $meta_key ] ) || ! is_string( $_POST[ $meta_key ] ) ) {
+				continue;
+			}
+
+			$time = MeetingTime::sanitize( wp_unslash( $_POST[ $meta_key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- MeetingTime::sanitize() sanitizes and validates it.
+
+			if ( '' === $time ) {
+				delete_post_meta( $post_id, $meta_key );
+			} else {
+				update_post_meta( $post_id, $meta_key, $time );
+			}
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
