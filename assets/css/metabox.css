@@ -174,7 +174,7 @@
 }
 
 .edbs-metabox-app__time-range label:not(:first-child) {
-	margin-left: 8px;
+	margin-inline-start: 8px;
 }
 
 .edbs-metabox-app__time-hint {
