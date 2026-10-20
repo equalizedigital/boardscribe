@@ -63,7 +63,8 @@ class MeetingTime {
 	 * 5:30 p.m.). Hours must be 1-12 with a marker and 0-23 without one, and a
 	 * time with no marker needs its minutes: a bare "17" is ambiguous, so it is
 	 * rejected, as are decimals and dotted times (0.708, 17.30), which are
-	 * Excel fractions or European notation. Seconds are ignored.
+	 * Excel fractions or European notation, and digits split by spaces
+	 * ('1 7:00'). Seconds are ignored, but seconds above 59 reject the time.
 	 *
 	 * @since x.x.x
 	 *
@@ -75,9 +76,11 @@ class MeetingTime {
 			return '';
 		}
 
-		$text = strtolower( (string) preg_replace( '/[\s\x{00A0}\x{202F}.]+/u', '', $value ) );
+		// Spaces and dots are only allowed around the am/pm marker, so '1 7:00'
+		// and '17.30' are rejected rather than guessed at.
+		$pattern = '/^[\s\x{00A0}\x{202F}]*(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?(?:[\s\x{00A0}\x{202F}]*([ap])\.?(?:m\.?)?)?[\s\x{00A0}\x{202F}]*$/iu';
 
-		if ( ! preg_match( '/^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?(am|pm|a|p)?$/', $text, $matches ) ) {
+		if ( ! preg_match( $pattern, $value, $matches ) ) {
 			return '';
 		}
 
@@ -87,7 +90,7 @@ class MeetingTime {
 
 		$hour   = (int) $matches[1];
 		$minute = isset( $matches[2] ) && '' !== $matches[2] ? $matches[2] : '';
-		$marker = $matches[4] ?? '';
+		$marker = strtolower( $matches[4] ?? '' );
 
 		if ( '' === $marker ) {
 			if ( '' === $minute ) {
