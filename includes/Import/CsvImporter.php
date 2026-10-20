@@ -630,10 +630,15 @@ class CsvImporter {
 	private function resolve_status_message(): ?array {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data.
 		if ( isset( $_GET['edbs_import_success'] ) ) {
-			$scheduled     = absint( $_GET['edbs_import_scheduled'] ?? 0 );
-			$duplicates    = absint( $_GET['edbs_import_duplicates'] ?? 0 );
-			$invalid_urls  = absint( $_GET['edbs_import_invalid_urls'] ?? 0 );
-			$invalid_times = absint( $_GET['edbs_import_invalid_times'] ?? 0 );
+			// absint() on an array is 1, so only a string arg counts.
+			$count = static function ( string $key ): int {
+				return isset( $_GET[ $key ] ) && is_string( $_GET[ $key ] ) ? absint( $_GET[ $key ] ) : 0;
+			};
+
+			$scheduled     = $count( 'edbs_import_scheduled' );
+			$duplicates    = $count( 'edbs_import_duplicates' );
+			$invalid_urls  = $count( 'edbs_import_invalid_urls' );
+			$invalid_times = $count( 'edbs_import_invalid_times' );
 
 			$message = sprintf(
 				/* translators: 1: number imported, 2: number skipped */

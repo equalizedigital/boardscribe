@@ -400,4 +400,23 @@ class CsvImporterTimeTest extends TestCase {
 
 		$this->assertStringContainsString( 'a matching or absent start time', $message );
 	}
+
+	/**
+	 * An array given as a count arg is ignored, not read as 1.
+	 */
+	public function test_status_message_ignores_array_count_args(): void {
+		$method = new \ReflectionMethod( CsvImporter::class, 'resolve_status_message' );
+		$method->setAccessible( true );
+
+		$_GET['edbs_import_success']       = '3';
+		$_GET['edbs_import_invalid_times'] = [ '1' ];
+		$_GET['edbs_import_duplicates']    = [ '1' ];
+
+		$message = $method->invoke( new CsvImporter() )['message'];
+
+		unset( $_GET['edbs_import_duplicates'] );
+
+		$this->assertStringNotContainsString( 'could not be read', $message );
+		$this->assertStringNotContainsString( 'start time', $message );
+	}
 }
