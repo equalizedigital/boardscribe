@@ -161,10 +161,13 @@ class AdminColumns {
 		$cell        = esc_html( $date_object->format( '' !== $date_format ? $date_format : 'F j, Y' ) );
 
 		// A meeting that has a time shows it under the date, in the site's own
-		// time format when that is a plain time format. A format that would print
-		// the server's timezone (T, e) or that uses escapes falls back to the
-		// default, the same as the front end, since the stored time is site-local.
-		// Not for a meeting that wasn't held, same as the front end.
+		// time format when that is a plain time format, like the date above uses
+		// the site's date format; the front end uses its own default unless a
+		// time_format is set. A format that would print the server's timezone
+		// (T, e) or that uses escapes falls back to the default, since the stored
+		// time is site-local. This is the stored date and time, so the front-end
+		// filters and Pro's date-display override do not apply here. Not shown for
+		// a meeting that wasn't held, same as the front end.
 		if ( ! get_post_meta( $post_id, 'edbs_meeting_not_held', true ) ) {
 			$times       = MeetingTime::get( $post_id );
 			$time_format = (string) get_option( 'time_format' );
