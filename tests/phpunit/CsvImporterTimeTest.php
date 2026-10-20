@@ -241,6 +241,25 @@ class CsvImporterTimeTest extends TestCase {
 	}
 
 	/**
+	 * A row whose time can't be read still counts it when the row is then
+	 * skipped as a duplicate, so the notice accounts for every unreadable time.
+	 */
+	public function test_unreadable_time_is_counted_when_the_row_is_a_duplicate(): void {
+		$result = $this->import(
+			[ 'title', 'date', 'start_time' ],
+			[
+				[ 'Board', '2024-03-12', '09:00' ],
+				[ 'Board', '2024-03-12', '5.30pm' ],
+				[ 'Board', '2024-03-12', '18' ],
+			]
+		);
+
+		$this->assertSame( 1, $result['imported'] );
+		$this->assertSame( 2, $result['duplicates'] );
+		$this->assertSame( 2, $result['invalid_times'] );
+	}
+
+	/**
 	 * Without times the duplicate rule is exactly what it was: same title and
 	 * date is a duplicate, within a file and across imports.
 	 */

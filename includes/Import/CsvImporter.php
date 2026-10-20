@@ -422,6 +422,12 @@ class CsvImporter {
 				}
 			}
 
+			// Counted before the duplicate check so an unreadable time is reported
+			// even when its row is then skipped as a duplicate.
+			if ( $row_invalid_time ) {
+				++$invalid_times;
+			}
+
 			$title = sanitize_text_field( trim( $data['title'] ?? '' ) );
 			if ( '' === $title ) {
 				$title = $meta_box->generate_default_title( $date );
@@ -465,10 +471,6 @@ class CsvImporter {
 
 			if ( ! empty( $data['end_time'] ) ) {
 				update_post_meta( $post_id, MeetingTime::META_END, $data['end_time'] );
-			}
-
-			if ( $row_invalid_time ) {
-				++$invalid_times;
 			}
 
 			// wp_insert_post() silently downgrades a 'publish' status to
