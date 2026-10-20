@@ -10,8 +10,10 @@ use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
- * A time that is not HH:MM is rejected with a 400 instead of being dropped
- * with a 200.
+ * When the post type supports custom-fields (it does not by default), a time
+ * that is not HH:MM is rejected with a 400 instead of being dropped with a
+ * 200. On a stock install REST ignores meeting meta; the sanitize callback and
+ * prune hook protect every other write path.
  */
 class MeetingTimeRestMetaTest extends TestCase {
 
