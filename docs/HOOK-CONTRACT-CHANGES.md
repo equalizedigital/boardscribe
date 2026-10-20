@@ -262,3 +262,13 @@ add_filter( 'edbs_meeting_meta_fields', function ( array $fields ) {
 The single-link building logic (URL escaping, aria-label, `target`/`rel`) was also extracted into a new public `BoardScribeEndpoint::build_link( string $url, string $label, string $formatted_date, bool $new_window ): string`, previously private — a callback rebuilding the anchor can now call this directly instead of reimplementing it. `$formatted_date` (6th filter arg) is exactly what `build_link()` needs for its own 3rd parameter, including any `edbs_meeting_formatted_date` override — without it, a callback rebuilding the anchor via `build_link()` would have no way to reproduce the same date string and would have to reformat the date itself, risking drift from that filter.
 
 **Action for Pro before release:** grep Pro for `edbs_agenda_link` / `edbs_minutes_link` and, if a callback rebuilds the anchor rather than just decorating the existing string, update it to read `$open_links_new_window` (4th arg) and `$formatted_date` (6th arg), and consider calling `BoardScribeEndpoint::build_link()` directly instead of duplicating the markup.
+
+---
+
+## PRO-1454 — meeting start/end time: three contract changes
+
+**`edbs_agenda_link` / `edbs_minutes_link` gain a 7th argument, `$time_markup`; `build_link()` gains an optional 5th, `$time_markup`.** Purely additive. Agenda and minutes aria-labels now end with the meeting time (`View Agenda for March 12, 2026, 5:00 pm`) so two same-day meetings differ. A callback that rebuilds the anchor with a four-argument `build_link()` call produces a label without the time. **Action for Pro:** pass the 7th filter argument through as `build_link()`'s 5th, and give Pro's own Document-backed links and livestream/recording/transcript labels the time too.
+
+**`edbs_meeting_formatted_date` now has a side effect.** When a callback returns a different string than the one the endpoint built, the row's `time` is left empty, because the time belongs to the date that was replaced (Pro's date-display override relies on this). A callback that only wraps the date in markup also drops the time. Return the built string unchanged to keep it.
+
+**`edbs_csv_import_row_meta`: `$data['start_time']` and `$data['end_time']` are now normalized.** They were the raw CSV cell; they are now `HH:MM`, or `''` when the cell could not be read. An add-on with its own `start_time` or `end_time` column no longer sees the original text. Pro uses neither column name.
