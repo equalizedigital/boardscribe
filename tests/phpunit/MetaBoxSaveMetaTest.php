@@ -651,6 +651,19 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * An array posted as a time input is ignored; it does not clear the stored time.
+	 */
+	public function test_array_valued_time_input_leaves_the_stored_time_alone(): void {
+		update_post_meta( $this->post_id, 'edbs_meeting_start_time', '17:00' );
+
+		$_POST['edbs_meeting_start_time'] = [ '18:00' ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '17:00', get_post_meta( $this->post_id, 'edbs_meeting_start_time', true ) );
+	}
+
+	/**
 	 * A junk time is not stored and does not leave an empty row, and the
 	 * rest of the save still goes through.
 	 */

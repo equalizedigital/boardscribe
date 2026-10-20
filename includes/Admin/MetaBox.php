@@ -559,7 +559,8 @@ class MetaBox {
 		];
 
 		foreach ( $meta_keys as $meta_key ) {
-			if ( ! isset( $_POST[ $meta_key ] ) ) {
+			// Only a string is a time; anything else (e.g. "{$key}[]") is left alone.
+			if ( ! isset( $_POST[ $meta_key ] ) || ! is_string( $_POST[ $meta_key ] ) ) {
 				continue;
 			}
 
