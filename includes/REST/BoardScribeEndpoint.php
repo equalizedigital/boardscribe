@@ -73,6 +73,8 @@ class BoardScribeEndpoint {
 			return $clauses;
 		}
 
+		// The join takes every start-time row; the sort key assumes one normalized
+		// row per meeting, which every write path guarantees (sanitize + prune).
 		$clauses['orderby'] = $orderby;
 		$clauses['join']   .= $wpdb->prepare(
 			" LEFT JOIN {$wpdb->postmeta} AS edbs_start_time ON ( {$wpdb->posts}.ID = edbs_start_time.post_id AND edbs_start_time.meta_key = %s )",
