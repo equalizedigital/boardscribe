@@ -166,7 +166,9 @@ class MeetingTime {
 	 * A narrower allowlist than the date formats: only the time characters
 	 * a, A, g, G, h, H, i and s, plus plain separators. Characters such as
 	 * T or e would print the server's timezone, and a backslash can't pass
-	 * the REST validator that also checks the date formats.
+	 * the REST validator that also checks the date formats. At least one hour
+	 * character is required, so an hour-only format such as 'g' is accepted
+	 * and prints a bare hour.
 	 *
 	 * @since x.x.x
 	 *
