@@ -191,20 +191,21 @@ class CsvImporter {
 		$file = $raw_file['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- value is a server-generated tmp path, validated by validate_upload() above.
 
 		$result = $this->process_csv( $file );
+		$args   = [
+			'edbs_import_success'       => $result['imported'],
+			'edbs_import_skipped'       => $result['skipped'],
+			'edbs_import_scheduled'     => $result['scheduled'],
+			'edbs_import_duplicates'    => $result['duplicates'],
+			'edbs_import_invalid_urls'  => $result['invalid_urls'],
+			'edbs_import_invalid_times' => $result['invalid_times'],
+		];
+		$notes  = $this->notes_query_arg( $result['notes'] ?? [] );
 
-		wp_safe_redirect(
-			add_query_arg(
-				[
-					'edbs_import_success'       => $result['imported'],
-					'edbs_import_skipped'       => $result['skipped'],
-					'edbs_import_scheduled'     => $result['scheduled'],
-					'edbs_import_duplicates'    => $result['duplicates'],
-					'edbs_import_invalid_urls'  => $result['invalid_urls'],
-					'edbs_import_invalid_times' => $result['invalid_times'],
-				],
-				$this->get_page_url()
-			)
-		);
+		if ( $notes ) {
+			$args['edbs_import_notes'] = $notes;
+		}
+
+		wp_safe_redirect( add_query_arg( $args, $this->get_page_url() ) );
 		exit;
 	}
 
@@ -285,7 +286,7 @@ class CsvImporter {
 	 * @since 1.1.0
 	 *
 	 * @param string $file Path to the temporary uploaded file.
-	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int, invalid_urls: int, invalid_times: int }
+	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int, invalid_urls: int, invalid_times: int, notes?: array<string, int> } `notes` is only present when an add-on noted something.
 	 */
 	private function process_csv( string $file ): array {
 		$handle = fopen( $file, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
@@ -315,6 +316,7 @@ class CsvImporter {
 			@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- disabled entirely on some hosts; failure here isn't fatal to the import.
 		}
 
+		$notes            = new ImportNotes();
 		$required_columns = array_keys( array_filter( $this->columns(), fn( array $column ): bool => ! empty( $column['required'] ) ) );
 		$meta_box         = new MetaBox();
 
@@ -517,15 +519,16 @@ class CsvImporter {
 			 *
 			 * @since 1.1.0
 			 *
-			 * @param int   $post_id The newly created meeting post ID.
-			 * @param array $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing. start_time and end_time are the exception: already normalized to HH:MM, or '' when the cell was unreadable, and already saved by the importer.
+			 * @param int         $post_id The newly created meeting post ID.
+			 * @param array       $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing. start_time and end_time are the exception: already normalized to HH:MM, or '' when the cell was unreadable, and already saved by the importer.
+			 * @param ImportNotes $notes   Collector for extra results to show in the notice; register their wording on edbs_csv_import_notes. Added in x.x.x, so declare it as optional.
 			 */
-			do_action( 'edbs_csv_import_row_meta', $post_id, $data );
+			do_action( 'edbs_csv_import_row_meta', $post_id, $data, $notes );
 		}
 
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
-		return [
+		$result = [
 			'imported'      => $imported,
 			'skipped'       => $skipped,
 			'scheduled'     => $scheduled,
@@ -533,6 +536,95 @@ class CsvImporter {
 			'invalid_urls'  => $invalid_urls,
 			'invalid_times' => $invalid_times,
 		];
+
+		if ( $notes->all() ) {
+			$result['notes'] = $notes->all();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Wording for the notes an add-on reports, keyed by note key.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return array<string, array{singular: string, plural: string}>
+	 */
+	private function registered_notes(): array {
+		/**
+		 * Registers wording for notes an add-on counts with ImportNotes.
+		 *
+		 * Each entry is `[ 'singular' => '%d row ...', 'plural' => '%d rows ...' ]`,
+		 * already translated, with %d standing for the count. Only keys
+		 * registered here are shown; anything else in the redirect is ignored.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param array<string, array{singular: string, plural: string}> $notes Wording, keyed by note key.
+		 */
+		$notes = (array) apply_filters( 'edbs_csv_import_notes', [] );
+		$clean = [];
+
+		foreach ( $notes as $key => $wording ) {
+			$key = sanitize_key( (string) $key );
+
+			if ( '' !== $key && is_array( $wording ) && isset( $wording['singular'], $wording['plural'] ) && is_string( $wording['singular'] ) && is_string( $wording['plural'] ) ) {
+				$clean[ $key ] = [
+					'singular' => $wording['singular'],
+					'plural'   => $wording['plural'],
+				];
+			}
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * Reduces note totals to the registered keys with a positive count, for the redirect.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array<string, int> $notes Totals from ImportNotes::all().
+	 * @return array<string, int>
+	 */
+	private function notes_query_arg( array $notes ): array {
+		$registered = $this->registered_notes();
+		$arg        = [];
+
+		foreach ( $notes as $key => $count ) {
+			if ( isset( $registered[ $key ] ) && (int) $count > 0 ) {
+				$arg[ $key ] = (int) $count;
+			}
+		}
+
+		return $arg;
+	}
+
+	/**
+	 * Builds the results-notice sentences for the notes in the redirect.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $raw The edbs_import_notes query arg.
+	 * @return string Sentences, each preceded by a space; empty when there are none.
+	 */
+	private function notes_message( $raw ): string {
+		if ( ! is_array( $raw ) ) {
+			return '';
+		}
+
+		$message = '';
+
+		foreach ( $this->registered_notes() as $key => $wording ) {
+			$count = isset( $raw[ $key ] ) && is_scalar( $raw[ $key ] ) ? absint( $raw[ $key ] ) : 0;
+
+			if ( $count > 0 ) {
+				$message .= ' ' . sprintf( 1 === $count ? $wording['singular'] : $wording['plural'], $count );
+			}
+		}
+
+		return $message;
 	}
 
 	/**
@@ -682,6 +774,8 @@ class CsvImporter {
 					$invalid_times
 				);
 			}
+
+			$message .= $this->notes_message( wp_unslash( $_GET['edbs_import_notes'] ?? [] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only, only registered keys are used and each count goes through absint() in notes_message().
 
 			return [
 				'type'    => 'success',
