@@ -3,7 +3,7 @@ Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
 Tags: accessibility, document library, document management, meetings, agenda
 Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 1.2.0-alpha.2
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -223,7 +223,7 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 
 == Changelog ==
 
-= 1.2.0-alpha.2 =
+= 1.2.0 =
 * Added an optional start and end time for each meeting. Set it in a new Meeting Time row under the date; it shows under the date in the table (and in Pro's list and timeline layouts) and in the Board Meetings list. A new Time Format setting controls how it reads, and a Hide Time option turns it off. Meetings without a time look exactly as before, and same-day meetings now list in time order. A meeting with no time lists before the timed ones on its day when the order is ascending and after them when it is descending.
 * The CSV importer accepts optional `start_time` and `end_time` columns (`17:00`, `5pm`, `5:30 p.m.`). A time that can't be read is skipped and reported while the meeting still imports, two same-titled meetings on one day with different start times both import, and files without the columns import as before.
 * Rebuilt the Meeting Details meta box as a React app, matching the updated design mocks - Agenda, Minutes, and Supporting Documents now share one consistent Add/Replace/Remove card UI instead of each field having its own bespoke markup.
