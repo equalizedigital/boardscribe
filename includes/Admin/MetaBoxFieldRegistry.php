@@ -309,7 +309,7 @@ class MetaBoxFieldRegistry {
 				'type'            => 'time_range',
 				'end_key'         => MeetingTime::META_END,
 				'label'           => __( 'Meeting Time', 'boardscribe' ),
-				'description'     => __( 'Optional. Shown under the meeting date.', 'boardscribe' ),
+				'description'     => __( 'Optional. Shown under the meeting date, except when the meeting is marked not held.', 'boardscribe' ),
 				'insert_after'    => 'edbs_meeting_date',
 				'render_callback' => static function ( \WP_Post $post ): array {
 					return MeetingTime::get( $post->ID );
