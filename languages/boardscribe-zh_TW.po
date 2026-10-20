@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Chinese (Traditional)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:45+0000\n"
+"PO-Revision-Date: 2026-10-20 20:45+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
-"Language: zh@Hant\n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,164 @@ msgstr "BoardScribe 需要 PHP %1$s 或更高版本。您目前執行的版本�
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "BoardScribe 遺失自動載入器 (autoloader)。請從發佈的 zip 檔案重新安裝，或如果是從原始碼開發，請執行 `composer install`。"
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "會議日期"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "已取消"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "議程"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "會議紀錄"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "檢視"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "會議必須有有效的會議日期（YYYY-MM-DD）才能發佈。"
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "會議已儲存為草稿，因為尚未設定會議日期。請新增日期後再發佈。"
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d 場已發佈的會議沒有有效的會議日期。請為每場會議新增日期。"
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "會議日期格式為 Y-m-d。"
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "會議議程文件的 URL。"
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "此會議已發佈會議紀錄文件的 URL。"
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "會議是否未舉行。"
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "會議開始時間，採用網站時區的 24 小時制 HH:MM 格式。"
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "會議結束時間，採用網站時區的 24 小時制 HH:MM 格式。"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "產生 %s 目前值的「新增/替換」強制回應視窗來源（media_library、external_url 或外掛程式註冊的識別碼）。"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "%s 底層文章的 wp-admin 編輯畫面（若其來源有的話，例如連結的文件）；若為一般媒體庫檔案或外部連結則為空。"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "%s 目前值底層的連結文章 ID（若其來源有的話，例如連結的文件）；若為一般媒體庫檔案或外部連結則為 0。"
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "會議詳情"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "「會議詳細資訊」欄位需要 JavaScript。"
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "「%s」欄位為 resource_list 或附加欄位，且必須設定 saved_externally => true。"
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "委員會會議"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "必填。選擇會議舉行或將要舉行的日期。"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "會議時間"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "選填。顯示於會議日期下方，但標記為未舉行的會議除外。"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "選擇議程檔案"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "{date} 委員會會議議程"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "選擇會議紀錄檔案"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "{date} 委員會會議記錄"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "會議未舉行"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "此會議未舉行。"
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "一般"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "短代碼產生器"
 
@@ -94,7 +214,7 @@ msgid "Support"
 msgstr "支援"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "BoardScribe 設定"
 
@@ -123,144 +243,184 @@ msgstr "刪除此外掛時，移除所有 BoardScribe 會議文章和外掛設�
 msgid "Warning: this cannot be undone."
 msgstr "警告：此操作無法撤銷。"
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "BoardScribe 設定"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "在下方配置您的短代碼選項，然後複製產生的短代碼並將其貼到任何頁面或文章中。"
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "短代碼產生器需要 JavaScript。"
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "下載並安裝 BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "委員會會議文章類型"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "BoardScribe 是否符合無障礙標準？"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "BoardScribe 已翻譯成哪些語言？"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "如何將檔案大小和類型資訊新增至連結？"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "說明文件"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "需要協助嗎？請查看我們的說明文件，了解逐步指南和功能演練。"
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "查看說明文件"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "（在新分頁中開啟）"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "聯繫我們"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "有疑問或需要協助嗎？請聯繫我們的支援團隊。"
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "聯繫支援"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "快速連結"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "標題"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s 至 %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "日期"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "結束於 %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "議程"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "會議紀錄"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "會議標題。如果留空，將根據日期自動產生（例如：「委員會會議 - 2025 年 3 月 15 日」）。"
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "格式：YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "議程檔案的完整 URL"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "選填。會議開始時間（例如 %s），顯示於會議日期下方。這是會議的舉行時間，不是 WordPress 的發布時間（請參閱 publish_date）。無法讀取的時間不會儲存，但會議仍會匯入。重新匯入檔案絕不會為已存在的會議新增時間。"
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "會議紀錄檔案的完整 URL"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "選填。會議結束時間，格式與 start_time 相同。"
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "議程檔案的完整 URL。必須是完整的 http:// 或 https:// 位址；無效的 URL 將不會儲存。"
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "會議記錄檔案的完整 URL。必須是完整的 http:// 或 https:// 位址；無效的 URL 將不會儲存。"
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "接受的值：%s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "任何可識別的日期或日期/時間（例如 %s）。這會設定實際的 WordPress 發佈日期，而非匯入當下的時間 — 請使用此功能來回溯歷史會議的日期。這不會影響上方的會議日期或排序順序。"
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "任何可辨識的日期或日期/時間（例如 %s）。將設定實際的 WordPress 發布日期而非匯入的時間點——可用此設定歷史會議的追溯日期。不會影響上方的會議日期/排序。未來的日期/時間將會排程會議而非立即發布，在該時間到達前不會顯示在網站上。"
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "匯入"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "安全性檢查失敗。"
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "權限不足。"
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "匯入完成。已匯入 %1$d 列，已跳過 %2$d 列。"
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d 列已排程於未來日期，在該時間到達前不會顯示。"
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d 列與現有會議或此檔案中較早的列相符（標題和日期相同，且開始時間相符或未填寫），已略過。"
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d 列包含無效的 URL；這些 URL 未儲存。"
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d 列包含無法讀取的開始或結束時間；這些時間未儲存。"
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "未上傳任何檔案。請選擇一個 CSV 檔案並重試。"
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "檔案類型無效。請上傳.csv 檔案。"
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "檔案未能完整上傳。請再試一次。"
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "發生未知錯誤。"
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +449,293 @@ msgstr "新增會議"
 msgid "Add New Meeting"
 msgstr "新增會議"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "查看議程"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "查看會議紀錄"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "日期不可用"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "議程不可用"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "會議紀錄不可用"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "會議未舉行"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s，%2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%2$s 的 %1$s（在新視窗中開啟）"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%2$s 的 %1$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "議程不可用"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "標題"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "會議紀錄不可用"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "日期"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "會議未舉行"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "上一頁"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "下一頁"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "上一頁"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "下一頁"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "分頁"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "第 %s 頁"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "顯示第 %1$s 至 %2$s 項，共 %3$s 項"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "包含的年份"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "以逗號分隔的年份列表。留空則顯示所有年份。"
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "開始日期"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "僅顯示此日期或之後的會議。優先於「包含的年份」。"
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "結束日期"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "僅顯示此日期或之前的會議。優先於「包含的年份」。"
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "每頁文章數"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "舉行日期格式"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHP date() 格式。完整參考請參閱 php.net/manual/en/datetime.format.php。"
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "未舉行日期格式"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "時間格式"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "會議日期下方顯示時間所使用的 PHP date() 格式（若有設定時間）。僅使用時間字元 a、A、g、G、h、H、i 和 s。"
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "顯示範本"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "表格 (預設)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "每場會議顯示為一個表格列，包含您在下方選擇的欄位。"
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "強制所有欄位寬度相同"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "有助於在各行之間保持一致的欄位對齊，以實現垂直律動。"
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "自訂 CSS 類別"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "議程連結標籤"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "會議紀錄連結標籤"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "找不到已發佈的會議。"
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "在新視窗中開啟議程/會議記錄連結"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "議程與會議記錄連結將在新的瀏覽器分頁中開啟。系統會自動新增螢幕閱讀器提示與 rel=\"noopener noreferrer\"。"
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "時間（顯示在日期下方）"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "時間是「日期」欄位的一部分，因此隱藏「日期」欄位也會同時將其隱藏。連結標籤仍會包含時間，以便區分同一天的不同會議。"
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "日期範圍"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "「所有會議」為完整封存。「即將舉行的會議」僅顯示從今天開始的會議；「過去的會議」僅顯示已舉行的會議。"
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "所有會議"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "即將舉行的會議"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "過去的會議"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "排序順序"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "「由新到舊」為預設值，適合過去會議記錄的封存。若為即將舉行的會議等預覽清單，請選擇「由舊到新」。"
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "由新到舊"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "由舊到新"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "匯入完成。已匯入 %1$d 列，已跳過 %2$d 列。"
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "上傳 CSV 檔案以批次匯入會議。"
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "未上傳任何檔案。請選擇一個 CSV 檔案並重試。"
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "檔案類型無效。請上傳.csv 檔案。"
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "發生未知錯誤。"
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "上傳 CSV 檔案以批次匯入會議。第一列必須是標題列。"
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "CSV 格式"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "欄位"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "必填"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "備註"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "是"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "否"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "再次匯入檔案"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "若已儲存的會議具有相同的標題和日期，且具有相同的開始時間或未設定開始時間，則含有開始時間的列將視為重複項目而予以略過。若任何已儲存的會議具有相同的標題和日期，則沒有開始時間的列將予以略過。上傳相同的檔案兩次不會建立重複複本。"
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "比對是根據各個會議目前儲存的內容，而非檔案最初的內容。若您在匯入會議後變更其標題或日期，或是當該列有開始時間時將會議的開始時間變更為其他時間，則原始列將不再相符，且再次匯入該檔案將會建立新會議。若要變更現有會議，請在 WordPress 中進行編輯，而不要重新匯入。"
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "上傳 CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "請選擇使用上述欄位的檔案。第一列必須是標題列，之後的每個有效列都會建立一場會議。"
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSV 檔案"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "會議日期"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "必填。選擇會議舉行或將要舉行的日期。"
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "議程 URL"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "選擇議程檔案"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "使用此檔案"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "媒體庫"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "會議紀錄 URL"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "選擇會議紀錄檔案"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "會議未舉行"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "此會議未舉行"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "匯入會議"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +760,11 @@ msgstr "僅顯示此日期或之前的會議。一旦設定任一日期，即會
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "尚無可用於篩選的詞彙。"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "顯示設定"
 
@@ -560,13 +775,13 @@ msgstr "欄位標籤"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "連結標籤"
+msgid "Links"
+msgstr "連結"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "隱藏欄位"
+msgid "Hide Data"
+msgstr "隱藏資料"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +799,10 @@ msgstr "忽略下方的每頁限制，並在一次請求中獲取所有會議。
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "每頁記錄數"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "無法載入預覽。請檢查網站的 REST API 是否可連線，然後再試一次。"
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +831,263 @@ msgstr "短代碼已複製到剪貼簿。"
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "複製失敗。請選取短代碼文字並手動複製。"
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "選取檔案"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "使用此檔案"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "該檔案類型無法用於此欄位。請選擇其他檔案。"
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s（在新分頁中開啟）"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "媒體庫影片"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "媒體庫"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "外部 URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "在您確認之前，目前的資源將維持不變。"
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "請輸入以 http:// 或 https:// 開頭的完整 URL。"
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "儲存 URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "從媒體庫選取"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "開啟 WordPress 原生檔案選擇器以選擇或上傳檔案。"
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "輸入外部 URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "連結到代管於其他位置的檔案或網頁。"
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← 返回"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "取代 %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "新增 %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "將 %s 上移"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "將 %s 下移"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "未命名文件"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "編輯標題"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "新增標題"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "標題已儲存。"
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "已取消標題編輯。"
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "文件名稱"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "儲存"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "取消"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s 已移至第 %2$d 個位置（共 %3$d 個）。"
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "文件"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "未新增 %s。"
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "設定此文件在此處的顯示方式——這不會重新命名文件本身。"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "檢視 %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "編輯"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "編輯 %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "編輯 %s 的標題"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "新增 %s 的標題"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "取代"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "移除"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "移除 %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "已移除 %s。"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ 新增 %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "已新增 %s。"
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "項目"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "未命名 %s"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "新增 %s 的標題"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "選取 %s 檔案"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "未附加 %s。"
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "已取代 %s。"
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "開始"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "結束"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "結束時間早於開始時間，因此此會議將於隔日結束。"
 
 #: block.json
 msgctxt "block title"

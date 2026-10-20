@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Catalan\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:46+0000\n"
+"PO-Revision-Date: 2026-10-20 20:46+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,165 @@ msgstr "BoardScribe requereix PHP %1$s o superior. Esteu utilitzant PHP %2$s. Ac
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "Falta l'autocarregador de BoardScribe. Torneu a instal·lar-lo des d'un fitxer zip oficial o executeu «composer install» si esteu desenvolupant des del codi font."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Data de la reunió"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Cancel·lada"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Ordre del dia"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Actes"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Visualitza"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Una reunió necessita una data de reunió vàlida (YYYY-MM-DD) abans de poder-se publicar."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "La reunió s'ha desat com a esborrany perquè no té data de reunió. Afegiu-hi una data i després publiqueu-la."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d reunió publicada no té una data de reunió vàlida. Afegiu-hi una data."
+msgstr[1] "%d reunions publicades no tenen una data de reunió vàlida. Afegiu una data a cadascuna."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Data de la reunió en format A-m-d."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "URL al document de l'ordre del dia de la reunió."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "URL al document de les actes publicades d'aquesta reunió."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "Si la reunió no s'ha celebrat."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Hora d'inici de la reunió en format de 24 hores HH:MM, a la zona horària del lloc."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Hora de finalització de la reunió en format de 24 hores HH:MM, a la zona horària del lloc."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Quina font del diàleg modal Afegeix/Substitueix (media_library, external_url o un ID registrat per un connector) ha produït el valor actual de %s."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "La pantalla d'edició del wp-admin per a la publicació subjacent de %s, quan la seva font en té una (p. ex., un document enllaçat); buit per a un fitxer simple de la biblioteca de mitjans o un enllaç extern."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "L'ID de la publicació enllaçada subjacent al valor actual de %s, quan la seva font en té una (p. ex., un document enllaçat); 0 per a un fitxer simple de la biblioteca de mitjans o un enllaç extern."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Detalls de la reunió"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Els camps de detalls de la reunió requereixen JavaScript."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "El camp «%s» és un camp resource_list o adjunt i ha d'establir saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Reunió de la junta"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Obligatori. Seleccioneu la data en què es va celebrar o se celebrarà la reunió."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Hora de la reunió"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Opcional. Es mostra a sota de la data de la reunió, excepte quan s'indica que la reunió no s'ha celebrat."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Tria el fitxer de l'ordre del dia"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "Ordre del dia de la reunió de la junta {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Tria el fitxer de les actes"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "Acta de la reunió de la junta {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Reunió no celebrada"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "Aquesta reunió no es va celebrar."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "General"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Constructor de codis curts"
 
@@ -94,7 +215,7 @@ msgid "Support"
 msgstr "Suport"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "Configuració de BoardScribe"
 
@@ -123,144 +244,188 @@ msgstr "Elimina totes les entrades de reunions de BoardScribe i la configuració
 msgid "Warning: this cannot be undone."
 msgstr "Avís: això no es pot desfer."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "Configuració de BoardScribe"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "Configureu les opcions del codi curt a continuació, després copieu el codi curt generat i enganxeu-lo a qualsevol pàgina o entrada."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "El constructor de codis curts requereix JavaScript."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "Descàrrega i instal·lació de BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Tipus de contingut de reunions de la junta"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "És accessible BoardScribe?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "A quins idiomes està traduït BoardScribe?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Com afegeixo informació sobre la mida i el tipus de fitxer als enllaços?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Documentació"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Necessiteu ajuda? Consulteu la nostra documentació per obtenir guies pas a pas i recorreguts per les funcions."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Mostra la documentació"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(s'obre en una pestanya nova)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Contacteu amb nosaltres"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "Teniu preguntes o necessiteu ajuda? Poseu-vos en contacte amb el nostre equip de suport."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Contacta amb el suport"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Enllaços ràpids"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Títol"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "De %1$s a %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Data"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Acaba a les %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Ordre del dia"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Actes"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Títol de la reunió. Si es deixa en blanc, es genera automàticament a partir de la data (p. ex. «Board Meeting - 15 de març de 2025»)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Format: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "URL completa al fitxer de l'ordre del dia"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Opcional. L'hora d'inici de la reunió (p. ex., %s), que es mostra a sota de la data de la reunió. Aquesta és l'hora de la reunió, no l'hora de publicació a WordPress (vegeu publish_date). Les hores que no es puguin llegir no es desaran, i la reunió s'importarà igualment. Tornar a importar un fitxer mai no afegeix una hora a una reunió existent."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "URL completa al fitxer de l'acta"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Opcional. L'hora de finalització de la reunió, en els mateixos formats que start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "URL completa al fitxer de l'ordre del dia. Ha de ser una adreça http:// o https:// completa; els URL no vàlids no es desaran."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "URL completa al fitxer de l'acta. Ha de ser una adreça http:// o https:// completa; els URL no vàlids no es desaran."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Valors acceptats: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Qualsevol data o data i hora recognoscible (p. ex. %s). Estableix la data de publicació real de WordPress en lloc del moment de la importació; utilitzeu-ho per posar dates anteriors a reunions històriques. No afecta la data de la reunió ni l'ordre de classificació anterior."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Qualsevol data o data/hora reconeixible (p. ex., %s). Defineix la data de publicació real a WordPress en lloc del moment de la importació; utilitzeu-ho per a posar dates anteriors a reunions històriques. No afecta la data de la reunió ni l'ordre de classificació superior. Una data/hora futura programa la reunió en lloc de publicar-la immediatament, i no apareixerà al lloc fins aleshores."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "Importa"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Ha fallat la comprovació de seguretat."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Permisos insuficients."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Importació completada. S'han importat %1$d files i se n'han omès %2$d."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "Es va programar %d fila per a una data futura i no apareixerà fins aleshores."
+msgstr[1] "Es van programar %d files per a una data futura i no apareixeran fins aleshores."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "Es va ometre %d fila perquè coincidia amb una reunió existent, o amb una fila anterior d'aquest fitxer, amb el mateix títol i data, i una hora d'inici coincident o absent."
+msgstr[1] "Es van ometre %d files perquè coincidien amb una reunió existent, o amb una fila anterior d'aquest fitxer, amb el mateix títol i data, i una hora d'inici coincident o absent."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d fila tenia un URL no vàlid; aquest URL no s'ha desat."
+msgstr[1] "%d files tenien un URL no vàlid; aquests URL no s'han desat."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d fila tenia una hora d'inici o de finalització que no s'ha pogut llegir; aquesta hora no s'ha desat."
+msgstr[1] "%d files tenien una hora d'inici o de finalització que no s'ha pogut llegir; aquestes hores no s'han desat."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "No s'ha pujat cap fitxer. Trieu un fitxer CSV i torneu-ho a provar."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Tipus de fitxer no vàlid. Pugeu un fitxer .csv."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "El fitxer no s'ha pogut penjar completament. Torneu-ho a provar."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "S'ha produït un error desconegut."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +454,293 @@ msgstr "Afegeix reunió"
 msgid "Add New Meeting"
 msgstr "Afegeix una nova reunió"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Mostra l'ordre del dia"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Mostra les actes"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Data no disponible"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Ordre del dia no disponible"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Actes no disponibles"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Reunió no celebrada"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s per a %2$s (s'obre en una finestra nova)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s per al %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Ordre del dia no disponible"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Títol"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Actes no disponibles"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Data"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Reunió no celebrada"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Anterior"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Següent"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Pàgina anterior"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Pàgina següent"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Paginació"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Pàgina %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Es mostren de la %1$s a la %2$s de %3$s entrades"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Anys inclosos"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Llista d'anys separats per comes. Deixeu-ho en blanc per mostrar tots els anys."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Data d'inici"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Mostra només les reunions en aquesta data o posteriors. Té prioritat sobre els anys inclosos."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Data de finalització"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Mostra només les reunions en aquesta data o anteriors. Té prioritat sobre els anys inclosos."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Entrades per pàgina"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Format de la data de celebració"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "Format date() de PHP. Consulteu php.net/manual/en/datetime.format.php per a la referència completa."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Format de data no celebrada"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Format de l'hora"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "Format PHP de date() per a l'hora que es mostra a sota de la data d'una reunió, si en té una. Només s'utilitzen els caràcters d'hora a, A, g, G, h, H, i i s."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Plantilla de visualització"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Taula (per defecte)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Una fila de taula per reunió, amb les columnes que trieu a continuació."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "Força totes les columnes a la mateixa amplada"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Ajuda a alinear les columnes de manera consistent per al ritme vertical entre files."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Classe CSS personalitzada"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Etiqueta de l'enllaç de l'ordre del dia"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Etiqueta de l'enllaç de les actes"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "No s'han trobat reunions publicades."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Obre els enllaços de l'ordre del dia i les actes en una finestra nova"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Els enllaços de l'ordre del dia i de les actes s'obren en una pestanya nova del navegador. S'afegeixen automàticament una indicació per a lectors de pantalla i rel=\"noopener noreferrer\"."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Hora (es mostra a sota de la data)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "L'hora forma part de la columna Data, de manera que si s'amaga la columna Data també s'amagarà l'hora. Les etiquetes dels enllaços continuen incloent l'hora perquè es puguin distingir les reunions del mateix dia."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Abast de dates"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "«Totes les reunions» és l'arxiu complet. «Properes» només mostra les reunions a partir d'avui; «Passades» només mostra les reunions que ja s'han celebrat."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Totes les reunions"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Properes reunions"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Reunions passades"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Ordre de classificació"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "«Més recents primer» és l'opció predeterminada i és adequada per a un arxiu d'actes passades. Trieu «Més antigues primer» per a una llista cap al futur, com ara reunions properes."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Més recents primer"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Més antigues primer"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Importació completada. S'han importat %1$d files i se n'han omès %2$d."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Pugeu un fitxer CSV per a importar reunions en massa."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "No s'ha pujat cap fitxer. Trieu un fitxer CSV i torneu-ho a provar."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Tipus de fitxer no vàlid. Pugeu un fitxer .csv."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "S'ha produït un error desconegut."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Pugeu un fitxer CSV per a importar reunions en massa. La primera fila ha de ser la de capçalera."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "Format CSV"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Columna"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Obligatori"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Notes"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Sí"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "No"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Tornar a importar un fitxer"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "S'omet com a duplicada qualsevol fila amb hora d'inici quan una reunió desada té el mateix títol i data, i la mateixa hora d'inici o cap hora d'inici. S'omet qualsevol fila sense hora d'inici quan qualsevol reunió desada té el mateix títol i data. Pujar el mateix fitxer dues vegades no crea còpies."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "La coincidència es fa amb el que hi ha desat a cada reunió en aquest moment, no amb el contingut original del fitxer. Si canvieu el títol o la data d'una reunió després d'haver-la importat, o canvieu l'hora d'inici per una altra quan la fila en té una, la fila original ja no coincidirà i importar aquest fitxer una altra vegada crearà una reunió nova. Per a modificar reunions existents, editeu-les a WordPress en lloc de tornar-les a importar."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "Puja el fitxer CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Trieu un fitxer que utilitzi les columnes anteriors. La primera fila ha de ser de capçalera, i cada fila vàlida posterior crea una reunió."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "Fitxer CSV"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Data de la reunió"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Obligatori. Seleccioneu la data en què es va celebrar o se celebrarà la reunió."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "URL de l'ordre del dia"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Tria el fitxer de l'ordre del dia"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Utilitza aquest fitxer"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Biblioteca de mitjans"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "URL de les actes"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Tria el fitxer de les actes"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Reunió no celebrada"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "Aquesta reunió no es va celebrar"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "Importa reunions"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +765,11 @@ msgstr "Mostra només les reunions en aquesta data o anteriors. Substitueix els 
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Encara no hi ha termes per filtrar."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Configuració de visualització"
 
@@ -560,13 +780,13 @@ msgstr "Etiquetes de columna"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Etiquetes d'enllaç"
+msgid "Links"
+msgstr "Enllaços"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Amaga les columnes"
+msgid "Hide Data"
+msgstr "Amaga les dades"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +804,10 @@ msgstr "Ignora el límit per pàgina de més avall i obté totes les reunions en
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Registres per pàgina"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "No s'ha pogut carregar la previsualització. Comproveu que l'API REST del lloc web estigui disponible i torneu-ho a provar."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +836,263 @@ msgstr "Codi curt copiat al porta-retalls."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "La còpia ha fallat. Seleccioneu el text del codi curt i copieu-lo manualment."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Seleccioneu un fitxer"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Utilitza aquest fitxer"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Aquest tipus de fitxer no es pot utilitzar per a aquest camp. Trieu un fitxer diferent."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (s'obre en una pestanya nova)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Vídeo de la biblioteca de mitjans"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Biblioteca de mitjans"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "URL extern"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "El recurs actual no es modificarà fins que ho confirmeu."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Introduïu un URL complet que comenci per http:// o https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "Desa l'URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Selecciona de la biblioteca de mitjans"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Obre el selector natiu de fitxers de WordPress per a triar o penjar un fitxer."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Introduïu un URL extern"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "Enllaça a un fitxer o pàgina web allotjats en un altre lloc."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Enrere"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "Substitueix %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "Afegeix %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "Mou %s cap amunt"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "Mou %s cap avall"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Document sense títol"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "Edita el títol"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Afegeix un títol"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "S'ha desat el títol."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "S'ha cancel·lat l'edició del títol."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Nom del document"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "Desa"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Cancel·la"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "S'ha mogut %1$s a la posició %2$d de %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Document"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "No s'ha afegit cap %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Defineix com es mostra aquest document aquí; no canvia el nom del fitxer."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "Visualitza %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "Edita"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "Edita %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "Edita el títol de %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Afegeix el títol de %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Substitueix"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Suprimeix"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "Elimina %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "S'ha suprimit %s."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ Afegeix %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "S'ha afegit %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Element"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "%s sense títol"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Afegeix un títol per a %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Seleccioneu un fitxer %s"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "No s'ha adjuntat cap %s."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "S'ha substituït %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Inici"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Fi"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "L'hora de finalització és anterior a la d'inici, per tant la reunió finalitza l'endemà."
 
 #: block.json
 msgctxt "block title"

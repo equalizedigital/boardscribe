@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Welsh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:45+0000\n"
+"PO-Revision-Date: 2026-10-20 20:45+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: cy\n"
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,167 @@ msgstr "Mae angen PHP %1$s neu uwch ar gyfer BoardScribe. Rydych chi'n rhedeg PH
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "Mae awtolwythwr BoardScribe ar goll. Ailosodwch o ffeil zip a ryddhawyd, neu rhedwch `composer install` os ydych yn datblygu o'r cod ffynhonnell."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Dyddiad y cyfarfod"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Wedi'i ganslo"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Agenda"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Cofnodion"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Gweld"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Mae angen dyddiad cyfarfod dilys (YYYY-MM-DD) ar gyfarfod cyn y gellir ei gyhoeddi."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "Cadwyd y cyfarfod fel drafft oherwydd nid oes ganddo ddyddiad cyfarfod. Ychwanegwch ddyddiad, yna ei gyhoeddi."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "Nid oes gan %d cyfarfod cyhoeddedig ddyddiad cyfarfod dilys. Ychwanegwch ddyddiad ato."
+msgstr[1] "Nid oes gan %d gyfarfod cyhoeddedig ddyddiad cyfarfod dilys. Ychwanegwch ddyddiad at bob un."
+msgstr[2] "Nid oes gan %d o gyfarfodydd cyhoeddedig ddyddiad cyfarfod dilys. Ychwanegwch ddyddiad at bob un."
+msgstr[3] "Nid oes gan %d cyfarfod cyhoeddedig ddyddiad cyfarfod dilys. Ychwanegwch ddyddiad at bob un."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Dyddiad y cyfarfod ar ffurf Y-m-d."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "URL i ddogfen agenda'r cyfarfod."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "URL i ddogfen gofnodion gyhoeddedig y cyfarfod hwn."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "P'un a oedd y cyfarfod heb ei gynnal."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Amser dechrau'r cyfarfod mewn fformat 24-awr HH:MM, ym mharth amser y wefan."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Amser gorffen y cyfarfod mewn fformat 24-awr HH:MM, ym mharth amser y wefan."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Pa ffynhonnell foddol Ychwanegu/Amnewid (media_library, external_url, neu id a gofrestrwyd gan ategyn) a gynhyrchodd werth cyfredol %s."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "Y sgrin olygu wp-admin ar gyfer cofnod gwaelodol %s, pan fo gan ei ffynhonnell un (e.e. dogfen gysylltiedig) - gwag ar gyfer ffeil Llyfrgell Gyfryngau blaen neu ddolen allanol."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "ID y cofnod cysylltiedig sy'n sail i werth cyfredol %s, pan fo gan ei ffynhonnell un (e.e. dogfen gysylltiedig) - 0 ar gyfer ffeil Llyfrgell Gyfryngau blaen neu ddolen allanol."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Manylion y cyfarfod"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Mae angen JavaScript ar feysydd Manylion y Cyfarfod."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "Mae'r maes “%s” yn resource_list neu'n faes atodedig a rhaid iddo osod saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Cyfarfod Bwrdd"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Gofynnol. Dewiswch y dyddiad y cynhaliwyd neu y cynhelir y cyfarfod."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Amser y cyfarfod"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Dewisol. Dangosir o dan ddyddiad y cyfarfod, ac eithrio pan fydd y cyfarfod wedi'i nodi fel un na chynhaliwyd."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Dewis ffeil agenda"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "Agenda cyfarfod bwrdd {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Dewis ffeil cofnodion"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "Cofnodion cyfarfod bwrdd {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Ni chynhaliwyd y cyfarfod"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "Ni chynhaliwyd y cyfarfod hwn."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "Cyffredinol"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Adeiladwr cod byr"
 
@@ -94,7 +217,7 @@ msgid "Support"
 msgstr "Cymorth"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "Gosodiadau BoardScribe"
 
@@ -123,144 +246,196 @@ msgstr "Tynnu pob post cyfarfod BoardScribe a gosodiadau'r ategyn pan fydd yr at
 msgid "Warning: this cannot be undone."
 msgstr "Rhybudd: ni ellir dadwneud hyn."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "Gosodiadau BoardScribe"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "Ffurfweddwch eich opsiynau cod byr isod, yna copïwch y cod byr a gynhyrchwyd a'i ludo i unrhyw dudalen neu bost."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "Mae angen JavaScript ar yr adeiladwr cod byr."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "Llwytho i lawr ac ailosod BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Math o bost cyfarfodydd bwrdd"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "A yw BoardScribe yn hygyrch?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "I ba ieithoedd y mae BoardScribe wedi'i gyfieithu?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Sut mae ychwanegu gwybodaeth am faint a math o ffeil at ddolenni?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Dogfennaeth"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Angen help? Edrychwch ar ein dogfennaeth am ganllawiau cam-wrth-gam a throsolwg o nodweddion."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Gweld y ddogfennaeth"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(yn agor mewn tab newydd)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Cysylltwch â ni"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "Oes gennych chi gwestiynau neu angen help? Cysylltwch â'n tîm cymorth."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Cysylltu â chymorth"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Dolenni cyflym"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Teitl"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s i %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Dyddiad"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Yn gorffen %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Agenda"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Cofnodion"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Teitl y cyfarfod. Os yw'n wag, caiff ei gynhyrchu'n awtomatig o'r dyddiad (e.e. “Cyfarfod bwrdd - 15 Mawrth, 2025”)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Fformat: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "URL llawn i ffeil yr agenda"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Dewisol. Amser dechrau'r cyfarfod (e.e. %s), a ddangosir o dan ddyddiad y cyfarfod. Dyma amser y cyfarfod, nid amser cyhoeddi WordPress (gweler publish_date). Ni arbrir amser na ellir ei ddarllen, a chaiff y cyfarfod ei fewnforio serch hynny. Nid yw ail-mewnforio ffeil byth yn ychwanegu amser at gyfarfod sydd eisoes yn bodoli."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "URL llawn i ffeil y cofnodion"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Dewisol. Amser diwedd y cyfarfod, yn yr un fformatau â start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "URL llawn i ffeil yr agenda. Rhaid iddo fod yn gyfeiriad http:// neu https:// llawn; ni arbrir URL annilys."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "URL llawn i ffeil y cofnodion. Rhaid iddo fod yn gyfeiriad http:// neu https:// llawn; ni arbrir URL annilys."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Gwerthoedd a dderbynnir: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Unrhyw ddyddiad neu ddyddiad/amser y gellir ei adnabod (e.e. %s). Mae hyn yn gosod dyddiad cyhoeddi gwirioneddol WordPress yn lle moment y mewnforio — defnyddiwch hwn i ôl-ddyddio cyfarfodydd hanesyddol. Nid yw'n effeithio ar ddyddiad y cyfarfod/trefn ddidoli uchod."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Unrhyw ddyddiad neu ddyddiad/amser y gellir ei adnabod (e.e. %s). Mae'n gosod gwir ddyddiad cyhoeddi WordPress yn lle eiliad y mewnforio — defnyddiwch hwn i ôl-ddyddio cyfarfodydd hanesyddol. Nid yw'n effeithio ar ddyddiad/trefn ddidoli'r cyfarfod uchod. Mae dyddiad/amser yn y dyfodol yn trefnu'r cyfarfod yn hytrach na'i gyhoeddi ar unwaith, ac ni fydd yn ymddangos ar y wefan tan hynny."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "Mewnforio"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Methodd y gwiriad diogelwch."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Nid oes gennych ddigon o ganiatâd."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Mewnforio wedi'i gwblhau. %1$d rhes wedi'u mewnforio, %2$d wedi'u hepgor."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "Trefnwyd %d rhes ar gyfer dyddiad yn y dyfodol ac ni fydd yn ymddangos tan hynny."
+msgstr[1] "Trefnwyd %d res ar gyfer dyddiad yn y dyfodol ac ni fyddant yn ymddangos tan hynny."
+msgstr[2] "Trefnwyd %d o resi ar gyfer dyddiad yn y dyfodol ac ni fyddant yn ymddangos tan hynny."
+msgstr[3] "Trefnwyd %d rhes ar gyfer dyddiad yn y dyfodol ac ni fyddant yn ymddangos tan hynny."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "Roedd %d rhes yn cyfateb i gyfarfod presennol, neu res gynharach yn y ffeil hon, gyda'r un teitl a dyddiad, ac amser dechrau sy'n cyfateb neu'n absennol, a chafodd ei hepgor."
+msgstr[1] "Roedd %d res yn cyfateb i gyfarfod presennol, neu res gynharach yn y ffeil hon, gyda'r un teitl a dyddiad, ac amser dechrau sy'n cyfateb neu'n absennol, a chawsant eu hepgor."
+msgstr[2] "Roedd %d o resi yn cyfateb i gyfarfod presennol, neu res gynharach yn y ffeil hon, gyda'r un teitl a dyddiad, ac amser dechrau sy'n cyfateb neu'n absennol, a chawsant eu hepgor."
+msgstr[3] "Roedd %d rhes yn cyfateb i gyfarfod presennol, neu res gynharach yn y ffeil hon, gyda'r un teitl a dyddiad, ac amser dechrau sy'n cyfateb neu'n absennol, a chawsant eu hepgor."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "Roedd gan %d rhes URL annilys; ni arbrir yr URL hwnnw."
+msgstr[1] "Roedd gan %d res URL annilys; ni arbrir yr URLau hynny."
+msgstr[2] "Roedd gan %d o resi URL annilys; ni arbrir yr URLau hynny."
+msgstr[3] "Roedd gan %d rhes URL annilys; ni arbrir yr URLau hynny."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "Roedd gan %d rhes amser dechrau neu ddiwedd na ellid ei ddarllen; ni arbrir yr amser hwnnw."
+msgstr[1] "Roedd gan %d res amser dechrau neu ddiwedd na ellid ei ddarllen; ni arbrir yr amserau hynny."
+msgstr[2] "Roedd gan %d o resi amser dechrau neu ddiwedd na ellid ei ddarllen; ni arbrir yr amserau hynny."
+msgstr[3] "Roedd gan %d rhes amser dechrau neu ddiwedd na ellid ei ddarllen; ni arbrir yr amserau hynny."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Ni lwythwyd ffeil i fyny. Dewiswch ffeil CSV a rhoi cynnig arall arni."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Math o ffeil annilys. Llwythwch ffeil .csv i fyny."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "Methodd y ffeil ag uwchlwytho'n gyflawn. Rhowch gynnig arall arni."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "Digwyddodd gwall anhysbys."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +464,293 @@ msgstr "Ychwanegu cyfarfod"
 msgid "Add New Meeting"
 msgstr "Ychwanegu cyfarfod newydd"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Gweld yr agenda"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Gweld y cofnodion"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Dyddiad ddim ar gael"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Agenda ddim ar gael"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Cofnodion ddim ar gael"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Ni chynhaliwyd y cyfarfod"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s ar gyfer %2$s (yn agor mewn ffenestr newydd)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s ar gyfer %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Agenda ddim ar gael"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Teitl"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Cofnodion ddim ar gael"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Dyddiad"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Ni chynhaliwyd y cyfarfod"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Blaenorol"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Nesaf"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Tudalen flaenorol"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Tudalen nesaf"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Paginiad"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Tudalen %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Yn dangos %1$s i %2$s o %3$s cofnod"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Blynyddoedd wedi'u cynnwys"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Rhestr o flynyddoedd wedi'u gwahanu gan gomas. Gadewch yn wag i ddangos pob blwyddyn."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Dyddiad dechrau"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Dim ond dangos cyfarfodydd ar neu ar ôl y dyddiad hwn. Mae hwn yn cael blaenoriaeth dros y Blynyddoedd wedi'u Cynnwys."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Dyddiad gorffen"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Dim ond dangos cyfarfodydd ar neu cyn y dyddiad hwn. Mae hwn yn cael blaenoriaeth dros y Blynyddoedd wedi'u Cynnwys."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Postiadau fesul tudalen"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Fformat dyddiad cynnal"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "Fformat PHP date(). Gweler php.net/manual/en/datetime.format.php am y cyfeirnod llawn."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Fformat dyddiad heb ei gynnal"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Fformat amser"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "Fformat PHP date() ar gyfer yr amser a ddangosir o dan ddyddiad cyfarfod, pan fydd ganddo un. Dim ond y nodau amser a, A, g, G, h, H, i ac s a ddefnyddir."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Templed arddangos"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Tabl (rhagosodedig)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Un rhes tabl fesul cyfarfod, gyda'r colofnau a ddewiswch isod."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "Gorfodi pob colofn i'r un lled"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Yn helpu i alinio colofnau'n gyson ar gyfer rhythm fertigol ar draws rhesi."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Dosbarth CSS personol"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Label dolen agenda"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Label dolen cofnodion"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "Ni ddaethpwyd o hyd i unrhyw gyfarfodydd cyhoeddedig."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Agor dolenni agenda/cofnodion mewn ffenestr newydd"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Mae dolenni agenda a chofnodion yn agor mewn tab porwr newydd. Ychwanegir awgrym darllenydd sgrin a rel=\"noopener noreferrer\" yn awtomatig."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Amser (dangosir o dan y dyddiad)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "Mae'r amser yn rhan o golofn y Dyddiad, felly mae cuddio colofn y Dyddiad yn ei guddio yntau hefyd. Mae labeli dolenni'n dal i gynnwys yr amser er mwyn gallu gwahaniaethu rhwng cyfarfodydd ar yr un diwrnod."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Cwmpas dyddiad"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "Pob cyfarfod yw'r archif lawn. Mae Ar ddod yn dangos cyfarfodydd o heddiw ymlaen yn unig; mae Blaenorol yn dangos cyfarfodydd sydd eisoes wedi'u cynnal yn unig."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Pob cyfarfod"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Cyfarfodydd i ddod"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Cyfarfodydd blaenorol"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Trefn ddidoli"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "Y mwyaf newydd yn gyntaf yw'r rhagosodiad ac mae'n addas ar gyfer archif o gofnodion blaenorol. Dewiswch Yr hynaf yn gyntaf ar gyfer rhestr sy'n edrych ymlaen fel cyfarfodydd i ddod."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Y mwyaf newydd yn gyntaf"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Yr hynaf yn gyntaf"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Mewnforio wedi'i gwblhau. %1$d rhes wedi'u mewnforio, %2$d wedi'u hepgor."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Llwythwch ffeil CSV i fyny i fewnforio cyfarfodydd mewn swp."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "Ni lwythwyd ffeil i fyny. Dewiswch ffeil CSV a rhoi cynnig arall arni."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Math o ffeil annilys. Llwythwch ffeil .csv i fyny."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "Digwyddodd gwall anhysbys."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Llwythwch ffeil CSV i fyny i fewnforio cyfarfodydd mewn swp. Rhaid i'r rhes gyntaf fod yn rhes pennawd."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "Fformat CSV"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Colofn"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Gofynnol"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Nodiadau"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Ie"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "Na"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Mewnforio ffeil eto"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "Caiff rhes ag amser dechrau ei hepgor fel dyblygiad pan fydd gan gyfarfod sydd wedi'i gadw yr un teitl a dyddiad a naill ai'r un amser dechrau neu ddim amser dechrau. Caiff rhes heb amser dechrau ei hepgor pan fydd gan unrhyw gyfarfod sydd wedi'i gadw yr un teitl a dyddiad. Nid yw uwchlwytho'r un ffeil ddwywaith yn creu copïau."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "Mae'r cyfateb yn defnyddio'r hyn sydd wedi'i gadw ar bob cyfarfod nawr, nid yr hyn a nodwyd yn wreiddiol yn y ffeil. Os byddwch yn newid teitl neu ddyddiad cyfarfod ar ôl ei fewnforio, neu'n newid ei amser dechrau i amser gwahanol pan fydd gan y rhes un, nid yw'r rhes wreiddiol bellach yn cyfateb ac mae mewnforio'r ffeil honno eto yn creu cyfarfod newydd. I newid cyfarfodydd presennol, golygwch hwy yn WordPress yn hytrach na mewnforio eto."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "Llwytho CSV i fyny"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Dewiswch ffeil gan ddefnyddio'r colofnau uchod. Rhaid i'r rhes gyntaf fod yn rhes pennawd, ac mae pob rhes ddilys ar ei hôl yn creu un cyfarfod."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "Ffeil CSV"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Dyddiad y cyfarfod"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Gofynnol. Dewiswch y dyddiad y cynhaliwyd neu y cynhelir y cyfarfod."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "URL yr agenda"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Dewis ffeil agenda"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Defnyddio'r ffeil hon"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Llyfrgell Gyfryngau"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "URL y cofnodion"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Dewis ffeil cofnodion"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Ni chynhaliwyd y cyfarfod"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "Ni chynhaliwyd y cyfarfod hwn"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "Mewnforio cyfarfodydd"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +775,11 @@ msgstr "Dim ond dangos cyfarfodydd ar neu cyn y dyddiad hwn. Mae'n trosysgrifo'r
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Nid oes telerau'n bodoli eto i hidlo yn ôl."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Gosodiadau arddangos"
 
@@ -560,13 +790,13 @@ msgstr "Labeli colofnau"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Labeli dolenni"
+msgid "Links"
+msgstr "Dolenni"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Cuddio colofnau"
+msgid "Hide Data"
+msgstr "Cuddio data"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +814,10 @@ msgstr "Yn anwybyddu'r terfyn fesul tudalen isod ac yn nôl pob cyfarfod mewn un
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Cofnodion fesul tudalen"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "Ni ellid llwytho'r rhagolwg. Gwiriwch fod modd cyrraedd REST API y wefan, yna rhowch gynnig arall arni."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +846,263 @@ msgstr "Cod byr wedi'i gopïo i'r clipfwrdd."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "Methodd y copïo. Dewiswch destun y cod byr a'i gopïo â llaw."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Dewiswch ffeil"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Defnyddio'r ffeil hon"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Ni ellir defnyddio'r math hwnnw o ffeil ar gyfer y maes hwn. Dewiswch ffeil wahanol."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (yn agor mewn tab newydd)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Fideo Llyfrgell Gyfryngau"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Llyfrgell Gyfryngau"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "URL allanol"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "Mae'r adnodd presennol yn aros heb ei newid nes i chi gadarnhau."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Rhowch URL cyflawn, gan ddechrau gyda http:// neu https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "Cadw URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Dewis o'r llyfrgell gyfryngau"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Agor dewiswr ffeiliau brodorol WordPress i ddewis neu uwchlwytho ffeil."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Rhowch URL allanol"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "Dolen i ffeil neu dudalen we a gynhelir mewn man arall."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Yn ôl"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "Disodli %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "Ychwanegu %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "Symud %s i fyny"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "Symud %s i lawr"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Dogfen ddi-deitl"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "Golygu'r teitl"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Ychwanegu teitl"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "Cadwyd y teitl."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "Canslwyd golygu'r teitl."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Enw'r ddogfen"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "Cadw"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Canslo"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "Symudwyd %1$s i safle %2$d o %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Dogfen"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "Dim %s wedi'i ychwanegu."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Yn gosod sut mae'r ddogfen hon yn ymddangos yma - nid yw'n ailenwi'r ddogfen ei hun."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "Gweld %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "Golygu"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "Golygu %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "Golygu teitl %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Ychwanegu teitl %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Amnewid"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Tynnu"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "Tynnu %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%s wedi'i dynnu."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ Ychwanegu %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%s wedi'i ychwanegu."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Eitem"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "%s di-deitl"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Ychwanegu teitl ar gyfer %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Dewis ffeil %s"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "Dim %s wedi'i atodi."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%s wedi'i ddisodli."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Dechrau"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Diwedd"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "Mae'r amser gorffen yn gynharach na'r amser dechrau, felly mae'r cyfarfod hwn yn dod i ben y diwrnod canlynol."
 
 #: block.json
 msgctxt "block title"

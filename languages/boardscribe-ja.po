@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:44+0000\n"
+"PO-Revision-Date: 2026-10-20 20:44+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,164 @@ msgstr "BoardScribeにはPHP %1$s以上が必要です。現在はPHP %2$sが実
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "BoardScribeのオートローダーが見つかりません。リリースされたzipファイルから再インストールするか、ソースから開発している場合は「composer install」を実行してください。"
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "会合日"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "中止"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "アジェンダ"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "議事録"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "表示"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "会議を公開するには、有効な会議日（YYYY-MM-DD）を設定する必要があります。"
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "会議日が設定されていないため、下書きとして保存されました。日付を追加してから公開してください。"
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "公開済みの会議のうち %d 件に有効な会議日がありません。それぞれに日付を追加してください。"
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Y-m-d形式の会合日。"
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "会合アジェンダドキュメントへのURL。"
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "この会合の公開済み議事録ドキュメントへのURL。"
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "会合が開催されなかったかどうか。"
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "サイトのタイムゾーンにおける24時間形式（HH:MM）の会議開始時間。"
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "サイトのタイムゾーンにおける24時間形式（HH:MM）の会議終了時間。"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "どの追加/置換モーダルソース（media_library、external_url、またはプラグインに登録されたID）が %s の現在の値を生成したか。"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "ソースに編集画面がある場合の %s の基礎となる投稿の wp-admin 編集画面（例: リンクされたドキュメント）- 通常のメディアライブラリファイルまたは外部リンクの場合は空。"
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "ソースに関連付けられた投稿がある場合の %s の現在の値に対応する投稿ID（例: リンクされたドキュメント）- 通常のメディアライブラリファイルまたは外部リンクの場合は0。"
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "会合の詳細"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "「会議の詳細」フィールドには JavaScript が必要です。"
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "「%s」フィールドは resource_list または添付フィールドであるため、saved_externally => true を設定する必要があります。"
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "理事会"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "必須。会合が開催された、または開催される予定の日付を選択してください。"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "会合の時間"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "任意。会合の日付の下に表示されます（未開催とマークされている場合を除く）。"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "アジェンダファイルを選択"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "{date} 理事会アジェンダ"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "議事録ファイルを選択"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "{date} 理事会議事録"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "会合は開催されませんでした"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "この会合は開催されませんでした。"
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "一般"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "ショートコードビルダー"
 
@@ -94,7 +214,7 @@ msgid "Support"
 msgstr "サポート"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "BoardScribe 設定"
 
@@ -123,144 +243,184 @@ msgstr "このプラグインを削除する際、すべてのBoardScribeの理�
 msgid "Warning: this cannot be undone."
 msgstr "警告: この操作は取り消せません。"
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "BoardScribe 設定"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "以下のショートコードオプションを構成し、生成されたショートコードをコピーして任意のページまたは投稿に貼り付けてください。"
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "ショートコードビルダーにはJavaScriptが必要です。"
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "BoardScribeのダウンロードとインストール"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "理事会投稿タイプ"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "BoardScribeはアクセシブルですか？"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "BoardScribeはどの言語に翻訳されていますか？"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "リンクにファイルサイズとファイルタイプの情報を追加するにはどうすればよいですか？"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "ドキュメント"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "お困りですか？ステップバイステップのガイドや機能の解説については、ドキュメントを確認してください。"
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "ドキュメントを表示"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(新しいタブで開く)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "ご質問やサポートが必要な場合は、サポートチームにお問い合わせください。"
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "サポートに連絡"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "クイックリンク"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "タイトル"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s ～ %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "日付"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "終了 %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "アジェンダ"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "議事録"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "会合のタイトル。空欄の場合、日付から自動生成されます（例：「理事会 - 2025年3月15日」）。"
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "形式: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "アジェンダファイルへのフルURL"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "任意。会合の開始時間（例：%s）。会合の日付の下に表示されます。これは会合の時間であり、WordPressの公開日時ではありません（publish_dateを参照）。読み取れない時間は保存されませんが、会合はインポートされます。ファイルを再インポートしても、既存の会合に時間が追加されることはありません。"
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "議事録ファイルへのフルURL"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "任意。会合の終了時間（start_timeと同じ形式）。"
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "議題ファイルへの完全なURL。http://またはhttps://で始まる完全なアドレスである必要があります。無効なURLは保存されません。"
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "議事録ファイルへの完全なURL。http://またはhttps://で始まる完全なアドレスである必要があります。無効なURLは保存されません。"
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "使用可能な値: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "認識可能な日付または日時（例: %s）。インポートした時点ではなく、実際のWordPress公開日を設定します。過去の会合を遡って登録する場合に使用してください。上記の会合日や並べ替え順には影響しません。"
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "認識可能な任意の日付または日時（例：%s）。インポート日時ではなく、実際のWordPress公開日を設定します。過去の会合の日付をさかのぼって設定する場合に使用してください。上記の会合の日付や並び順には影響しません。未来の日時を指定すると、即時公開されずに予約投稿となり、その日時までサイトに表示されません。"
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "インポート"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "セキュリティチェックに失敗しました。"
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "権限が不足しています。"
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "インポートが完了しました。%1$d 行をインポートし、%2$d 行をスキップしました。"
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d行は未来の日付で予約設定されており、その日時まで表示されません。"
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d行は、タイトルと日付が同一で、開始時間が一致するか未指定の既存の会合またはこのファイル内の前の行と一致したため、スキップされました。"
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d行に無効なURLが含まれていました。それらのURLは保存されませんでした。"
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d行で読み取れない開始時間または終了時間がありました。それらの時間は保存されませんでした。"
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "ファイルがアップロードされませんでした。CSVファイルを選択して、もう一度お試しください。"
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "無効なファイル形式です。.csvファイルをアップロードしてください。"
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "ファイルのアップロードが正常に完了しませんでした。もう一度お試しください。"
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "不明なエラーが発生しました。"
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +449,293 @@ msgstr "会合を追加"
 msgid "Add New Meeting"
 msgstr "新規会合を追加"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "アジェンダを表示"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "議事録を表示"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "日付は利用不可"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "アジェンダは利用不可"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "議事録は利用不可"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "会合は開催されませんでした"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s、%2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%2$sの%1$s（新しいウィンドウで開く）"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%2$sの%1$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "アジェンダは利用不可"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "タイトル"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "議事録は利用不可"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "日付"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "会合は開催されませんでした"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "前へ"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "次へ"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "前のページ"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "次のページ"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "ページ送り"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "%sページ"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "%3$s件中 %1$sから%2$sまでを表示"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "対象年"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "カンマ区切りの年のリスト。すべての年を表示するには空白のままにします。"
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "開始日"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "この日付以降の会合のみを表示します。「対象年」よりも優先されます。"
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "終了日"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "この日付以前の会合のみを表示します。「対象年」よりも優先されます。"
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "1ページあたりの投稿数"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "開催時の日付形式"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHPのdate()形式。詳細なリファレンスについては php.net/manual/ja/datetime.format.php を参照してください。"
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "未開催時の日付形式"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "時刻の形式"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "会議の日付の下に表示される時刻の PHP date() 形式（設定されている場合）。時刻文字 a、A、g、G、h、H、i、s のみが使用されます。"
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "表示テンプレート"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "テーブル (デフォルト)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "下で選択した列を含む、会議ごとの1行のテーブル。"
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "すべての列を同じ幅に強制する"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "行をまたいで垂直方向のリズムを整え、列の配置を一定にするのに役立ちます。"
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "カスタムCSSクラス"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "アジェンダリンクのラベル"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "議事録リンクのラベル"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "公開済みの会合が見つかりませんでした。"
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "議題・議事録のリンクを新しいウィンドウで開く"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "議題および議事録のリンクを新しいブラウザタブで開きます。スクリーンリーダー用のヒントと rel=\"noopener noreferrer\" が自動的に追加されます。"
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "時刻（日付の下に表示）"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "時刻は「日付」列の一部であるため、「日付」列を非表示にすると時刻も非表示になります。同日の会議を区別できるように、リンクのラベルには引き続き時刻が含まれます。"
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "日付の範囲"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "「すべての会議」は完全なアーカイブです。「今後の会議」は今日以降の会議のみを表示し、「過去の会議」はすでに開催された会議のみを表示します。"
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "すべての会議"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "今後の会議"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "過去の会議"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "並べ替え順"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "「新しい順」がデフォルトで、過去の議事録のアーカイブに適しています。今後の会議など先々の予定のリストには「古い順」を選択してください。"
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "新しい順"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "古い順"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "インポートが完了しました。%1$d 行をインポートし、%2$d 行をスキップしました。"
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "CSVファイルをアップロードして会合を一括インポートします。"
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "ファイルがアップロードされませんでした。CSVファイルを選択して、もう一度お試しください。"
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "無効なファイル形式です。.csvファイルをアップロードしてください。"
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "不明なエラーが発生しました。"
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "CSVファイルをアップロードして、会合を一括インポートします。最初の行はヘッダー行である必要があります。"
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "CSV形式"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "列"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "必須"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "備考"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "はい"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "いいえ"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "ファイルの再インポート"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "開始時間がある行は、保存済みの会合に同一のタイトルおよび日付があり、開始時間が同一または未指定である場合に重複としてスキップされます。開始時間がない行は、保存済みのいずれかの会合に同一のタイトルおよび日付がある場合にスキップされます。同じファイルを2回アップロードしても複製は作成されません。"
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "照合には、ファイルに元々記載されていた内容ではなく、現在各会合に保存されている内容が使用されます。インポート後に会合のタイトルや日付を変更した場合、または行に開始時間がある状態で開始時間を別の時間に変更した場合、元の行は一致しなくなり、そのファイルを再インポートすると新しい会合が作成されます。既存の会合を変更するには、再インポートするのではなくWordPressで直接編集してください。"
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "CSVをアップロード"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "上記の列を使用してファイルを選択してください。最初の行はヘッダー行である必要があり、その後の有効な各行によって会合が1件作成されます。"
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSVファイル"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "会合日"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "必須。会合が開催された、または開催される予定の日付を選択してください。"
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "アジェンダURL"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "アジェンダファイルを選択"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "このファイルを使用"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "メディアライブラリ"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "議事録URL"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "議事録ファイルを選択"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "会合は開催されませんでした"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "この会合は開催されませんでした"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "会議をインポート"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +760,11 @@ msgstr "この日付以前の会合のみを表示します。いずれかの日
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "絞り込みに使用できる項目はまだありません。"
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "表示設定"
 
@@ -560,13 +775,13 @@ msgstr "列ラベル"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "リンクラベル"
+msgid "Links"
+msgstr "リンク"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "列を非表示にする"
+msgid "Hide Data"
+msgstr "データを非表示"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +799,10 @@ msgstr "以下のページごとの制限を無視し、1回のリクエスト�
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "1ページあたりの記録数"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "プレビューを読み込めませんでした。サイトのREST APIにアクセスできることを確認してから、もう一度お試しください。"
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +831,263 @@ msgstr "ショートコードをクリップボードにコピーしました。
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "コピーに失敗しました。ショートコードのテキストを選択して手動でコピーしてください。"
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "ファイルを選択"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "このファイルを使用"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "そのファイル形式はこのフィールドでは使用できません。別のファイルを選択してください。"
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s（新しいタブで開く）"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "メディアライブラリの動画"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "メディアライブラリ"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "外部URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "現在のリソースは、確定するまで変更されません。"
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "http://またはhttps://で始まる完全なURLを入力してください。"
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "URLを保存"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "メディアライブラリから選択"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "WordPress標準のファイルピッカーを開いて、ファイルを選択またはアップロードします。"
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "外部URLを入力"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "外部でホストされているファイルまたはWebページにリンクします。"
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← 戻る"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "%sを置換"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "%sを追加"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "%sを上に移動"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "%sを下に移動"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "無題のドキュメント"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "タイトルを編集"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "タイトルを追加"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "タイトルを保存しました。"
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "タイトルの編集をキャンセルしました。"
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "ドキュメント名"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "保存"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$sを%3$d件中%2$d番目の位置に移動しました。"
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "ドキュメント"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "%sは追加されていません。"
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "ここでのドキュメントの表示方法を設定します（ドキュメント自体の名前は変更されません）。"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "%sを表示"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "編集"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "%sを編集"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "%sのタイトルを編集"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "%sのタイトルを追加"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "置換"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "削除"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "%sを削除"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%sを削除しました。"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ %sを追加"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%sを追加しました。"
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "項目"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "無題の%s"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "%sのタイトルを追加"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "%sファイルを選択"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "%sは添付されていません。"
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%sを置換しました。"
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "開始"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "終了"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "終了時間は開始時間よりも前であるため、この会合は翌日に終了します。"
 
 #: block.json
 msgctxt "block title"

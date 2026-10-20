@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Korean\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:44+0000\n"
+"PO-Revision-Date: 2026-10-20 20:44+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: ko_KR\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,164 @@ msgstr "BoardScribe를 사용하려면 PHP %1$s 이상의 버전이 필요합니
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "BoardScribe의 오토로더가 누락되었습니다. 배포된 zip 파일에서 다시 설치하거나, 소스에서 개발 중인 경우 `composer install`을 실행하십시오."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "회의 날짜"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "취소됨"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "의제"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "회의록"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "보기"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "회의를 게시하려면 먼저 유효한 회의 날짜(YYYY-MM-DD)가 필요합니다."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "회의 날짜가 없어 회의가 임시글로 저장되었습니다. 날짜를 추가한 후 게시하세요."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "게시된 회의 중 %d개에 유효한 회의 날짜가 없습니다. 각 회의에 날짜를 추가하세요."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Y-m-d 형식의 회의 날짜입니다."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "회의 의제 문서의 URL입니다."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "이 회의에 대해 게시된 회의록 문서의 URL입니다."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "회의 미개개최 여부입니다."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "사이트 시간대 기준 24시간 HH:MM 형식의 회의 시작 시간입니다."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "사이트 시간대 기준 24시간 HH:MM 형식의 회의 종료 시간입니다."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "%s의 현재 값을 생성한 추가/교체 모달 소스(media_library, external_url 또는 플러그인에 등록된 ID)입니다."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "소스가 있는 경우(예: 연결된 문서) %s의 기본 글에 대한 wp-admin 편집 화면입니다. 일반 미디어 라이브러리 파일이나 외부 링크인 경우 비어 있습니다."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "소스가 있는 경우(예: 연결된 문서) %s의 현재 값을 구성하는 연결된 글 ID입니다. 일반 미디어 라이브러리 파일이나 외부 링크인 경우 0입니다."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "회의 세부 정보"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "회의 세부 정보 필드를 사용하려면 JavaScript가 필요합니다."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "“%s” 필드는 resource_list 또는 첨부 필드이며 saved_externally => true로 설정해야 합니다."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "이사회 회의"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "필수 항목입니다. 회의가 개최되었거나 개최될 날짜를 선택하세요."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "회의 시간"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "선택 사항. 회의가 미개최로 표시된 경우를 제외하고 회의 날짜 아래에 표시됩니다."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "의제 파일 선택"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "{date} 이사회 회의 안건"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "회의록 파일 선택"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "{date} 이사회 회의록"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "회의 미개최"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "이 회의는 개최되지 않았습니다."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "일반"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "숏코드 빌더"
 
@@ -94,7 +214,7 @@ msgid "Support"
 msgstr "지원"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "BoardScribe 설정"
 
@@ -123,144 +243,184 @@ msgstr "플러그인 삭제 시 모든 BoardScribe 회의 글과 플러그인 �
 msgid "Warning: this cannot be undone."
 msgstr "경고: 이 작업은 되돌릴 수 없습니다."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "BoardScribe 설정"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "아래에서 숏코드 옵션을 구성한 후, 생성된 숏코드를 복사하여 페이지나 글에 붙여넣으세요."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "숏코드 빌더를 사용하려면 JavaScript가 필요합니다."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "BoardScribe 다운로드 및 설치"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "이사회 회의 글 유형"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "BoardScribe는 접근성이 보장되나요?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "BoardScribe는 어떤 언어로 번역되어 있나요?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "링크에 파일 크기와 유형 정보를 추가하려면 어떻게 하나요?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "문서"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "도움이 필요하신가요? 단계별 가이드와 기능 설명을 보려면 문서를 확인하세요."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "문서 보기"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(새 탭에서 열림)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "문의하기"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "질문이 있거나 도움이 필요하신가요? 지원 팀에 문의하세요."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "지원팀에 문의"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "빠른 링크"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "제목"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s~%2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "날짜"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "종료: %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "의제"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "회의록"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "회의 제목입니다. 비워두면 날짜를 기준으로 자동 생성됩니다(예: “이사회 회의 - 2025년 3월 15일”)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "형식: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "의제 파일의 전체 URL"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "선택 사항. 회의 시작 시간(예: %s)으로, 회의 날짜 아래에 표시됩니다. 이는 회의 시간이며 WordPress 발행 시간이 아닙니다(publish_date 참조). 인식할 수 없는 시간은 저장되지 않으며 회의는 그대로 가져옵니다. 파일을 다시 가져와도 이미 존재하는 회의에는 시간이 추가되지 않습니다."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "회의록 파일의 전체 URL"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "선택 사항. 회의 종료 시간이며, start_time과(와) 동일한 형식입니다."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "의제 파일의 전체 URL입니다. 전체 http:// 또는 https:// 주소여야 하며, 유효하지 않은 URL은 저장되지 않습니다."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "회의록 파일의 전체 URL입니다. 전체 http:// 또는 https:// 주소여야 하며, 유효하지 않은 URL은 저장되지 않습니다."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "허용되는 값: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "인식 가능한 모든 날짜 또는 날짜/시간(예: %s)입니다. 가져오기 시점 대신 실제 WordPress 게시 날짜를 설정합니다. 이 기능은 과거 회의 날짜를 소급하여 설정할 때 사용하세요. 위의 회의 날짜나 정렬 순서에는 영향을 주지 않습니다."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "인식 가능한 날짜 또는 날짜/시간(예: %s)입니다. 가져오기 시점 대신 실제 WordPress 발행 날짜를 설정합니다. 과거 회의 날짜를 소급하여 지정할 때 사용하세요. 위의 회의 날짜/정렬 순서에는 영향을 주지 않습니다. 미래 날짜/시간으로 지정하면 즉시 발행되지 않고 예약되며, 해당 시점까지 사이트에 표시되지 않습니다."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "가져오기"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "보안 확인에 실패했습니다."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "권한이 부족합니다."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "가져오기가 완료되었습니다. %1$d개의 행을 가져왔으며, %2$d개를 건너뛰었습니다."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d개 행이 미래 날짜로 예약되었으며 해당 시점까지 표시되지 않습니다."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d개 행이 동일한 제목과 날짜를 가지고 시작 시간이 일치하거나 없는 기존 회의 또는 이 파일의 이전 행과 일치하여 건너뛰었습니다."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d개 행에 유효하지 않은 URL이 있어 해당 URL을 저장하지 않았습니다."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d개 행의 시작 또는 종료 시간을 인식할 수 없어 해당 시간을 저장하지 않았습니다."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "업로드된 파일이 없습니다. CSV 파일을 선택하고 다시 시도하세요."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "유효하지 않은 파일 형식입니다. .csv 파일을 업로드하세요."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "파일이 완전히 업로드되지 않았습니다. 다시 시도해 주세요."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "알 수 없는 오류가 발생했습니다."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +449,293 @@ msgstr "회의 추가"
 msgid "Add New Meeting"
 msgstr "새 회의 추가"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "의제 보기"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "회의록 보기"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "날짜 정보 없음"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "의제 정보 없음"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "회의록 정보 없음"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "회의 미개최"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%2$s의 %1$s (새 창에서 열림)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%2$s의 %1$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "의제 정보 없음"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "제목"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "회의록 정보 없음"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "날짜"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "회의 미개최"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "이전"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "다음"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "이전 페이지"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "다음 페이지"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "페이지네이션"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "%s페이지"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "%3$s개의 항목 중 %1$s~%2$s 표시 중"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "포함된 연도"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "쉼표로 구분된 연도 목록입니다. 모든 연도를 표시하려면 비워 두십시오."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "시작 날짜"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "이 날짜 이후의 회의만 표시합니다. '포함된 연도'보다 우선순위가 높습니다."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "종료 날짜"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "이 날짜 이전의 회의만 표시합니다. '포함된 연도'보다 우선순위가 높습니다."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "페이지당 글 수"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "개최일 날짜 형식"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHP date() 형식입니다. 전체 참조는 php.net/manual/en/datetime.format.php를 확인하세요."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "미개최일 날짜 형식"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "시간 형식"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "회의 날짜 아래에 표시되는 시간(있는 경우)을 위한 PHP date() 형식입니다. 시간 문자 a, A, g, G, h, H, i, s만 사용됩니다."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "표시 템플릿"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "표 (기본값)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "회의당 하나의 표 행이 생성되며, 아래에서 선택한 열이 표시됩니다."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "모든 열의 너비를 동일하게 고정"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "행 전체에 걸쳐 수직 리듬을 위해 열을 일관되게 정렬하도록 돕습니다."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "사용자 정의 CSS 클래스"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "의제 링크 레이블"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "회의록 링크 레이블"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "게시된 회의가 없습니다."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "안건/의사록 링크를 새 창에서 열기"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "안건 및 의사록 링크가 새 브라우저 탭에서 열립니다. 스크린 리더 힌트와 rel=\"noopener noreferrer\"가 자동으로 추가됩니다."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "시간(날짜 아래에 표시됨)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "시간은 날짜 열의 일부이므로 날짜 열을 숨기면 시간도 숨겨집니다. 같은 날 열리는 회의를 구분할 수 있도록 링크 레이블에는 시간이 계속 포함됩니다."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "날짜 범위"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "‘모든 회의’는 전체 보관소입니다. ‘예정된 회의’는 오늘 이후의 회의만 표시하고, ‘지난 회의’는 이미 진행된 회의만 표시합니다."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "모든 회의"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "예정된 회의"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "지난 회의"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "정렬 순서"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "‘최신순’이 기본값이며 지난 의사록 보관소에 적합합니다. 예정된 회의와 같이 앞으로의 일정을 보려면 ‘오래된 순’을 선택하세요."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "최신순"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "오래된 순"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "가져오기가 완료되었습니다. %1$d개의 행을 가져왔으며, %2$d개를 건너뛰었습니다."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "CSV 파일을 업로드하여 회의를 대량으로 가져옵니다."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "업로드된 파일이 없습니다. CSV 파일을 선택하고 다시 시도하세요."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "유효하지 않은 파일 형식입니다. .csv 파일을 업로드하세요."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "알 수 없는 오류가 발생했습니다."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "회의를 대량으로 가져오려면 CSV 파일을 업로드하세요. 첫 번째 행은 헤더 행이어야 합니다."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "CSV 형식"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "열"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "필수"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "참고 사항"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "예"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "아니요"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "파일 다시 가져오기"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "시작 시간이 있는 행은 저장된 회의와 제목 및 날짜가 같고 시작 시간도 같거나 없는 경우 중복으로 처리되어 건너뜁니다. 시작 시간이 없는 행은 저장된 회의 중 제목과 날짜가 같은 회의가 있으면 건너뜁니다. 동일한 파일을 두 번 업로드해도 복사본이 생성되지 않습니다."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "일치 여부는 파일의 원래 내용이 아니라 현재 각 회의에 저장된 정보를 기준으로 확인합니다. 회의를 가져온 후 제목이나 날짜를 변경하거나, 행에 시작 시간이 있을 때 다른 시간으로 변경하면 기존 행과 더 이상 일치하지 않아 해당 파일을 다시 가져올 때 새 회의가 생성됩니다. 기존 회의를 변경하려면 다시 가져오지 말고 WordPress에서 직접 편집하세요."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "CSV 업로드"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "위의 열을 참조하여 파일을 선택하세요. 첫 번째 행은 헤더 행이어야 하며, 그 뒤의 유효한 각 행마다 회의가 하나씩 생성됩니다."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSV 파일"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "회의 날짜"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "필수 항목입니다. 회의가 개최되었거나 개최될 날짜를 선택하세요."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "의제 URL"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "의제 파일 선택"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "이 파일 사용"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "미디어 라이브러리"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "회의록 URL"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "회의록 파일 선택"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "회의 미개최"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "이 회의는 개최되지 않았습니다"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "회의 가져오기"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +760,11 @@ msgstr "이 날짜 이전의 회의만 표시합니다. 날짜가 설정되는 �
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "필터링할 항목이 아직 없습니다."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "표시 설정"
 
@@ -560,13 +775,13 @@ msgstr "열 레이블"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "링크 레이블"
+msgid "Links"
+msgstr "링크"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "열 숨기기"
+msgid "Hide Data"
+msgstr "데이터 숨기기"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +799,10 @@ msgstr "아래의 페이지당 제한을 무시하고 한 번의 요청으로 �
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "페이지당 레코드 수"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "미리보기를 불러올 수 없습니다. 사이트의 REST API에 연결할 수 있는지 확인한 후 다시 시도하세요."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +831,263 @@ msgstr "숏코드가 클립보드에 복사되었습니다."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "복사 실패. 숏코드 텍스트를 선택하여 수동으로 복사하세요."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "파일 선택"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "이 파일 사용"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "해당 파일 형식은 이 필드에 사용할 수 없습니다. 다른 파일을 선택하세요."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (새 탭에서 열림)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "미디어 라이브러리 동영상"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "미디어 라이브러리"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "외부 URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "확인할 때까지 현재 리소스는 변경되지 않습니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "http:// 또는 https://로 시작하는 전체 URL을 입력하세요."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "URL 저장"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "미디어 라이브러리에서 선택"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "WordPress 기본 파일 선택기를 열어 파일을 선택하거나 업로드합니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "외부 URL 입력"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "다른 곳에 호스팅된 파일 또는 웹페이지로 연결합니다."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← 뒤로"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "%s 교체"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "%s 추가"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "%s 위로 이동"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "%s 아래로 이동"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "제목 없는 문서"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "제목 편집"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "제목 추가"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "제목이 저장되었습니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "제목 편집이 취소되었습니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "문서 이름"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "저장"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "취소"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s 항목이 %3$d개 중 %2$d번째 위치로 이동했습니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "문서"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "%s이(가) 추가되지 않았습니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "이곳에 문서가 표시되는 방식을 설정하며, 문서 자체의 이름은 변경되지 않습니다."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "%s 보기"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "편집"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "%s 편집"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "%s 제목 편집"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "%s 제목 추가"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "바꾸기"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "제거"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "%s 제거"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "%s이(가) 제거되었습니다."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ %s 추가"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "%s이(가) 추가되었습니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "항목"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "제목 없는 %s"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "%s 제목 추가"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "%s 파일 선택"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "첨부된 %s이(가) 없습니다."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "%s이(가) 교체되었습니다."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "시작"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "종료"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "종료 시간이 시작 시간보다 빨라 이 회의는 다음 날 종료됩니다."
 
 #: block.json
 msgctxt "block title"
