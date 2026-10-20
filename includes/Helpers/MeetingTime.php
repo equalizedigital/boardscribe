@@ -262,8 +262,9 @@ class MeetingTime {
 	/**
 	 * The HTML a meeting's time markup may contain: what wp_kses_post() allows
 	 * plus <time datetime>. <time> is not in the post allowlist on older
-	 * WordPress versions (6.2 strips it), so it is added here instead of
-	 * relying on the running version's list.
+	 * WordPress versions (6.2 strips it), so datetime is added here instead of
+	 * relying on the running version's list; attributes the list already allows
+	 * on <time> are kept.
 	 *
 	 * @since x.x.x
 	 *
@@ -271,7 +272,7 @@ class MeetingTime {
 	 */
 	public static function allowed_html(): array {
 		$allowed         = wp_kses_allowed_html( 'post' );
-		$allowed['time'] = [ 'datetime' => true ];
+		$allowed['time'] = array_merge( $allowed['time'] ?? [], [ 'datetime' => true ] );
 
 		return $allowed;
 	}

@@ -172,6 +172,29 @@ class MeetingTimeTest extends TestCase {
 	}
 
 	/**
+	 * An attribute a site allows on <time> through wp_kses_allowed_html is kept,
+	 * not replaced by datetime alone.
+	 */
+	public function test_allowed_html_keeps_attributes_a_site_added_to_time(): void {
+		$with_class = static function ( array $tags, string $context ): array {
+			if ( 'post' === $context ) {
+				$tags['time'] = [ 'class' => true ];
+			}
+			return $tags;
+		};
+		add_filter( 'wp_kses_allowed_html', $with_class, 10, 2 );
+
+		$allowed = MeetingTime::allowed_html();
+
+		remove_filter( 'wp_kses_allowed_html', $with_class, 10 );
+
+		$this->assertSame(
+			'<time class="x" datetime="17:00">5:00 pm</time>',
+			wp_kses( '<time class="x" datetime="17:00">5:00 pm</time>', $allowed )
+		);
+	}
+
+	/**
 	 * Both keys are registered as single strings that REST only accepts as a time.
 	 */
 	public function test_meta_keys_are_registered(): void {
