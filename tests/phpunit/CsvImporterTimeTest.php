@@ -260,6 +260,20 @@ class CsvImporterTimeTest extends TestCase {
 	}
 
 	/**
+	 * A time cell holding only a non-breaking space is an empty cell, not an
+	 * unreadable time.
+	 */
+	public function test_non_breaking_space_time_cell_is_empty_not_unreadable(): void {
+		$result = $this->import(
+			[ 'title', 'date', 'start_time' ],
+			[ [ 'Board', '2024-03-12', "\xC2\xA0" ] ]
+		);
+
+		$this->assertSame( 1, $result['imported'] );
+		$this->assertSame( 0, $result['invalid_times'] );
+	}
+
+	/**
 	 * Without times the duplicate rule is exactly what it was: same title and
 	 * date is a duplicate, within a file and across imports.
 	 */

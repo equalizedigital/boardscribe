@@ -411,7 +411,12 @@ class CsvImporter {
 			// so edbs_csv_import_row_meta callbacks never see the raw cell.
 			$row_invalid_time = false;
 			foreach ( [ 'start_time', 'end_time' ] as $time_column ) {
-				if ( ! isset( $data[ $time_column ] ) || '' === $data[ $time_column ] ) {
+				// A cell holding only non-breaking spaces is empty, not unreadable;
+				// trim() above only strips ASCII whitespace.
+				if ( ! isset( $data[ $time_column ] ) || '' === preg_replace( '/[\s\x{00A0}\x{202F}]+/u', '', $data[ $time_column ] ) ) {
+					if ( isset( $data[ $time_column ] ) ) {
+						$data[ $time_column ] = '';
+					}
 					continue;
 				}
 
