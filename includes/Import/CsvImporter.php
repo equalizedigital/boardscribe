@@ -654,7 +654,7 @@ class CsvImporter {
 			if ( $duplicates > 0 ) {
 				$message .= ' ' . sprintf(
 					/* translators: %d: number of duplicate rows skipped */
-					_n( '%d row matched an existing meeting, or an earlier row in this file, with the same title and date and was skipped.', '%d rows matched an existing meeting, or an earlier row in this file, with the same title and date and were skipped.', $duplicates, 'boardscribe' ),
+					_n( '%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped.', '%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped.', $duplicates, 'boardscribe' ),
 					$duplicates
 				);
 			}

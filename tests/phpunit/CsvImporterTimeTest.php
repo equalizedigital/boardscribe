@@ -30,7 +30,7 @@ class CsvImporterTimeTest extends TestCase {
 			unlink( $this->csv_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_unlink
 		}
 		$this->csv_path = null;
-		unset( $_GET['edbs_import_success'], $_GET['edbs_import_invalid_times'] );
+		unset( $_GET['edbs_import_success'], $_GET['edbs_import_invalid_times'], $_GET['edbs_import_duplicates'] );
 
 		parent::tear_down();
 	}
@@ -382,5 +382,22 @@ class CsvImporterTimeTest extends TestCase {
 		$message                          = $method->invoke( new CsvImporter() )['message'];
 		$this->assertStringContainsString( '2 rows had a start or end time that could not be read', $message );
 		$this->assertStringStartsWith( $plain, $message );
+	}
+
+	/**
+	 * The duplicate notice names the start time, like the import page's copy.
+	 */
+	public function test_status_message_duplicate_notice_mentions_the_start_time(): void {
+		$method = new \ReflectionMethod( CsvImporter::class, 'resolve_status_message' );
+		$method->setAccessible( true );
+
+		$_GET['edbs_import_success']    = '1';
+		$_GET['edbs_import_duplicates'] = '2';
+
+		$message = $method->invoke( new CsvImporter() )['message'];
+
+		unset( $_GET['edbs_import_duplicates'] );
+
+		$this->assertStringContainsString( 'a matching or absent start time', $message );
 	}
 }
