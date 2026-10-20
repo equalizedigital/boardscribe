@@ -105,6 +105,17 @@ class BoardScribeEndpointTimeRowTest extends TestCase {
 	}
 
 	/**
+	 * A time_format that isn't a plain time format (one that would print the
+	 * server's timezone) falls back to the default when the row is built
+	 * directly, not only through the route.
+	 */
+	public function test_invalid_time_format_falls_back_to_the_default(): void {
+		$id = $this->create_meeting( [ 'edbs_meeting_start_time' => '17:05' ] );
+
+		$this->assertSame( '<time datetime="17:05">5:05 pm</time>', $this->row( $id, [ 'time_format' => 'T e Y' ] )['time'] );
+	}
+
+	/**
 	 * Pulls the aria-label out of an agenda or minutes link.
 	 *
 	 * @param string $link The link markup.
