@@ -137,7 +137,10 @@ class MetaBoxFieldRegistry {
 		 *                                              $item_noun.
 		 *     @type string|null   $insert_after        Optional. Another field's key — this field's row
 		 *                                              renders immediately after that field's row instead
-		 *                                              of at the end of the registry.
+		 *                                              of at the end of the registry. Fields sharing an anchor
+		 *                                              keep their filtered array order, so a field a plugin
+		 *                                              appends lands after the core field with the same anchor
+		 *                                              (the Meeting Time row sits right under the date that way).
 		 *     @type callable|null $sanitize_callback   Optional. Overrides the type's default save-time
 		 *                                              sanitizer; receives the raw sanitize_text_field()'d
 		 *                                              $_POST value. Not called when $saved_externally is set.
@@ -148,11 +151,13 @@ class MetaBoxFieldRegistry {
 		 *                                               writes to more than one meta key. The plugin owning the
 		 *                                               field must save it itself, typically on
 		 *                                               edbs_save_meeting_meta.
-		 *     @type callable|null $render_callback     Optional, 'html' type only. `fn( \WP_Post $post ): string`
+		 *     @type callable|null $render_callback     Optional. `fn( \WP_Post $post ): string` for an 'html' type
 		 *                                              — computes this field's per-post markup (already escaped),
 		 *                                              called by MetaBox::render_meta_box() in place of the
 		 *                                              default get_post_meta( $post->ID, $key, true ) lookup, and
-		 *                                              passed to the React app as this field's `value`.
+		 *                                              passed to the React app as this field's `value`. A
+		 *                                              'time_range' field's returns `array{start: string, end: string}`
+		 *                                              (HH:MM or ''); without one, both are read from `key` and `end_key`.
 		 *     @type string|null   $init_fn             Optional, 'html' type only. Name of a global JS function
 		 *                                              (no arguments) that hydrates the rendered markup — e.g.
 		 *                                              wires up an AJAX-backed widget already scanning the page
