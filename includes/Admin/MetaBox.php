@@ -469,7 +469,7 @@ class MetaBox {
 		}
 
 		if ( 'time_range' === $type ) {
-			$this->save_time_range( $post_id );
+			$this->save_time_range( $post_id, $field );
 			return;
 		}
 
@@ -540,12 +540,18 @@ class MetaBox {
 	 *
 	 * @since x.x.x
 	 *
-	 * @param int $post_id The post ID being saved.
+	 * @param int                  $post_id The post ID being saved.
+	 * @param array<string, mixed> $field   The field descriptor; its `key` and `end_key` name the inputs.
 	 * @return void
 	 */
-	private function save_time_range( int $post_id ): void {
+	private function save_time_range( int $post_id, array $field ): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce is verified once in save_meta() before this is called.
-		foreach ( [ MeetingTime::META_START, MeetingTime::META_END ] as $meta_key ) {
+		$meta_keys = [
+			$field['key'] ?? MeetingTime::META_START,
+			$field['end_key'] ?? MeetingTime::META_END,
+		];
+
+		foreach ( $meta_keys as $meta_key ) {
 			if ( ! isset( $_POST[ $meta_key ] ) ) {
 				continue;
 			}

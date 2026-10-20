@@ -624,6 +624,33 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * A time_range field a plugin registers saves under its own start and end
+	 * keys, not the meeting's.
+	 */
+	public function test_a_registered_time_range_field_saves_under_its_own_keys(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'     => 'edbs_pro_stream_start',
+				'type'    => 'time_range',
+				'end_key' => 'edbs_pro_stream_end',
+				'label'   => 'Stream Time',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['edbs_pro_stream_start'] = '18:00';
+		$_POST['edbs_pro_stream_end']   = '19:15';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '18:00', get_post_meta( $this->post_id, 'edbs_pro_stream_start', true ) );
+		$this->assertSame( '19:15', get_post_meta( $this->post_id, 'edbs_pro_stream_end', true ) );
+	}
+
+	/**
 	 * A junk time is not stored and does not leave an empty row, and the
 	 * rest of the save still goes through.
 	 */
