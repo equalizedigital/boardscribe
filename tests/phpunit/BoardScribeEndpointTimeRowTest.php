@@ -268,19 +268,17 @@ class BoardScribeEndpointTimeRowTest extends TestCase {
 	}
 
 	/**
-	 * A not-held meeting has no time, however it was set.
+	 * A not-held meeting gets its time exactly like a held one; only the date
+	 * format (not_held_date_format) differs.
 	 */
-	public function test_not_held_meeting_has_no_time(): void {
-		$row = $this->row(
-			$this->create_meeting(
-				[
-					'edbs_meeting_not_held'   => '1',
-					'edbs_meeting_start_time' => '17:00',
-				]
-			)
-		);
+	public function test_not_held_meeting_has_its_time(): void {
+		$meta = [ 'edbs_meeting_start_time' => '17:00' ];
+		$held = $this->row( $this->create_meeting( $meta ) );
+		$row  = $this->row( $this->create_meeting( array_merge( $meta, [ 'edbs_meeting_not_held' => '1' ] ) ) );
 
-		$this->assertArrayNotHasKey( 'time', $row );
+		$this->assertSame( $held['time'], $row['time'] );
+		$this->assertSame( '2026/03', $row['date'] );
+		$this->assertSame( 'Meeting not held', $row['agenda'] );
 	}
 
 	/**

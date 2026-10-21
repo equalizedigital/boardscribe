@@ -355,8 +355,7 @@ class CsvImporterTimeTest extends TestCase {
 	}
 
 	/**
-	 * A meeting marked not held keeps the time it was given (the front end
-	 * simply doesn't show it).
+	 * A meeting marked not held keeps the time it was given.
 	 */
 	public function test_not_held_row_keeps_its_time(): void {
 		$this->import(

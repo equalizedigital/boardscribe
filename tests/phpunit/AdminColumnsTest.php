@@ -88,8 +88,8 @@ class AdminColumnsTest extends TestCase {
 
 	/**
 	 * The Meeting Date cell shows a meeting's time under its date in the
-	 * site's time format, and is unchanged for a meeting without one or one
-	 * that was not held.
+	 * site's time format, and is unchanged for a meeting without one. A
+	 * meeting that was not held shows its time the same way.
 	 */
 	public function test_render_meeting_date_cell_shows_the_time(): void {
 		update_option( 'time_format', 'H:i' );
@@ -106,8 +106,10 @@ class AdminColumnsTest extends TestCase {
 			$this->admin_columns->render_meeting_date_cell( $post_id )
 		);
 
+		$held = $this->admin_columns->render_meeting_date_cell( $post_id );
+
 		update_post_meta( $post_id, 'edbs_meeting_not_held', '1' );
-		$this->assertSame( $date_only, $this->admin_columns->render_meeting_date_cell( $post_id ) );
+		$this->assertSame( $held, $this->admin_columns->render_meeting_date_cell( $post_id ) );
 	}
 
 	/**

@@ -166,16 +166,14 @@ class AdminColumns {
 		// time_format is set. A format that would print the server's timezone
 		// (T, e) or that uses escapes falls back to the default, since the stored
 		// time is site-local. This is the stored date and time, so the front-end
-		// filters and Pro's date-display override do not apply here. Not shown for
-		// a meeting that wasn't held, same as the front end.
-		if ( ! get_post_meta( $post_id, 'edbs_meeting_not_held', true ) ) {
-			$times       = MeetingTime::get( $post_id );
-			$time_format = (string) get_option( 'time_format' );
-			$time_markup = MeetingTime::markup( $times['start'], $times['end'], MeetingTime::is_valid_format( $time_format ) ? $time_format : MeetingTime::DEFAULT_FORMAT );
+		// filters and Pro's date-display override do not apply here. A meeting
+		// that wasn't held shows its time too, same as the front end.
+		$times       = MeetingTime::get( $post_id );
+		$time_format = (string) get_option( 'time_format' );
+		$time_markup = MeetingTime::markup( $times['start'], $times['end'], MeetingTime::is_valid_format( $time_format ) ? $time_format : MeetingTime::DEFAULT_FORMAT );
 
-			if ( '' !== $time_markup ) {
-				$cell .= '<br>' . $time_markup;
-			}
+		if ( '' !== $time_markup ) {
+			$cell .= '<br>' . $time_markup;
 		}
 
 		return $cell;

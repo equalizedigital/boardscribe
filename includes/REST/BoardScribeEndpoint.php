@@ -415,7 +415,7 @@ class BoardScribeEndpoint {
 		// untimed meeting is exactly what it was before meeting times existed.
 		$time_markup = '';
 
-		if ( $date_is_computed && ! $meeting_not_held ) {
+		if ( $date_is_computed ) {
 			$times       = MeetingTime::get( $post_id );
 			$time_markup = MeetingTime::markup( $times['start'], $times['end'], $time_format );
 
