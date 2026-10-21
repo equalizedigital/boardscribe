@@ -57,7 +57,7 @@ class BoardScribeShortcode {
 	 * can add it to its canvas on enqueue_block_assets, as well as the normal
 	 * front-end enqueue in enqueue_assets().
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return void
 	 */

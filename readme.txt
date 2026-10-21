@@ -3,7 +3,7 @@ Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
 Tags: accessibility, document library, document management, meetings, agenda
 Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 1.2.0-alpha.2
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -223,17 +223,31 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 
 == Changelog ==
 
-= 1.2.0-alpha.2 =
-* Added an optional start and end time for each meeting. Set it in a new Meeting Time row under the date; it shows under the date in the table (and in Pro's list and timeline layouts) and in the Board Meetings list. A new Time Format setting controls how it reads, and a Hide Time option turns it off. Meetings without a time look exactly as before, and same-day meetings now list in time order. A meeting with no time lists before the timed ones on its day when the order is ascending and after them when it is descending.
-* The CSV importer accepts optional `start_time` and `end_time` columns (`17:00`, `5pm`, `5:30 p.m.`). A time that can't be read is skipped and reported while the meeting still imports, two same-titled meetings on one day with different start times both import, and files without the columns import as before.
-* Rebuilt the Meeting Details meta box as a React app, matching the updated design mocks - Agenda, Minutes, and Supporting Documents now share one consistent Add/Replace/Remove card UI instead of each field having its own bespoke markup.
-* Breaking change: removed three block editor preview hooks (`edbs_block_preview_columns`, `edbs_block_editor_preview`, `edbs_block_preview_max_rows`) and the `render_preview_table()` method - the block's editor preview now renders through the same client-side pipeline as the front end instead of a separate server-rendered lookalike. See `docs/HOOK-CONTRACT-CHANGES.md` for migration details.
-* A resource field (Agenda, Minutes) now shows an "Edit" action alongside View/Replace/Remove whenever its value is backed by an editable post (currently: Pro's linked-document source) - takes you straight to that post's own wp-admin edit screen.
-* A resource field (Agenda, Minutes, and any Pro adds) now tracks which Add/Replace-modal source actually produced its value, instead of guessing "Media Library" vs "External URL" from the URL alone - fixes an offloaded/CDN'd Media Library file showing as "External URL", and a linked document showing as "Media Library".
+= 1.2.0 =
+* New - optional start and end time for each meeting, with Time Format and Hide Time options.
+* New - the CSV importer accepts optional start_time and end_time columns.
+* New - Sort order and Date scope options in the shortcode builder and block, for newest or oldest first and upcoming or past meetings.
+* New - option to open agenda and minutes links in a new tab, with a screen reader warning.
+* New - Meeting Date, Canceled, Agenda, and Minutes columns on the Board Meetings admin list.
+* New - an Edit action on an Agenda or Minutes file that is a linked document.
+* Updated - the Meeting Details box has a new design with one consistent card for Agenda, Minutes, and Supporting Documents.
+* Updated - the Agenda and Minutes Media Library pickers only show document files.
+* Updated - the block editor preview now matches the front end.
+* Updated - the shortcode builder and block sidebar only show options that apply to the selected layout.
+* Updated - "Hide Columns" is now "Hide Data" in the block sidebar and shortcode builder.
+* Updated - the CSV import has a redesigned upload section, announces results to screen readers, reports future-dated rows as scheduled, and skips meetings that already exist.
+* Updated - the Meeting Details box keeps focus after keyboard reordering, works better with screen readers, and announces links that open in a new tab.
+* Fix - a meeting can no longer be published without a valid date.
+* Fix - saved blocks no longer forget a column you chose to show.
+* Fix - the CSV import rejects files that are not CSV or were cut off partway.
+* Fix - replacing a Supporting Document no longer overwrites its custom title, and its title editor no longer jumps to another row.
+* Fix - the External URL field is no longer prefilled with another source's link, and CDN-hosted files no longer show as External URL.
+* Fix - dragging to reorder works in Firefox.
+* Fix - block settings containing a closing square bracket are no longer cut off.
+* Updated - translations.
 
 = 1.1.0 =
 * Added CSV bulk importer for meeting minutes.
-* Added an option to open agenda and minutes links in a new browser tab, with an automatic screen-reader warning.
 
 = 1.0.0 =
 * Initial release.

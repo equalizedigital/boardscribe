@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the chosen scope into a date-bounds meta query on the endpoint's
  * WP_Query args via edbs_rest_query_args.
  *
- * @since x.x.x
+ * @since 1.2.0
  */
 class MeetingDateScope {
 
@@ -38,7 +38,7 @@ class MeetingDateScope {
 	 * Hooks the date-scope field and REST arg into the field registry and
 	 * REST endpoint. Registered from Plugin::boot().
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return void
 	 */
@@ -56,7 +56,7 @@ class MeetingDateScope {
 	 * request; apply_date_scope() whitelists the scope before it ever
 	 * touches the query.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param array $fields Field descriptors contributed by earlier-priority callbacks.
 	 * @return array
@@ -93,7 +93,7 @@ class MeetingDateScope {
 	 * 'upcoming'/'past' scope (including the 'all' default and an absent
 	 * param) leaves the args untouched.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param array            $args    The WP_Query args.
 	 * @param \WP_REST_Request $request The REST request.

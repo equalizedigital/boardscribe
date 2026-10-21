@@ -75,7 +75,7 @@ class BoardScribeBlock {
 	 * deps array has to be appended to here rather than declared
 	 * up front the way build_block_attributes() declares attributes.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return void
 	 */
@@ -107,7 +107,7 @@ class BoardScribeBlock {
 	 * unstyled (PRO-1422). This hook also fires on the front end, where the
 	 * block's own render already enqueues it, so it does nothing there.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return void
 	 */

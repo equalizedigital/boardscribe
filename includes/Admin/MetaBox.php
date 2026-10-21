@@ -437,7 +437,7 @@ class MetaBox {
 	 * skipped entirely — the plugin that owns it saves it itself (see the
 	 * edbs_meeting_meta_fields filter's docblock in MetaBoxFieldRegistry).
 	 *
-	 * @since 1.6.0
+	 * @since 1.2.0
 	 *
 	 * @param int                  $post_id The post ID being saved.
 	 * @param array<string, mixed> $field   Field descriptor from MetaBoxFieldRegistry.
@@ -470,7 +470,7 @@ class MetaBox {
 					esc_html__( 'The "%s" field is a resource_list or attached field and must set saved_externally => true.', 'boardscribe' ),
 					esc_html( $key )
 				),
-				'1.6.0'
+				'1.2.0'
 			);
 			return;
 		}
@@ -545,7 +545,7 @@ class MetaBox {
 	 * is empty or not a valid time deletes the meta, so an unset time stays
 	 * an absent row; a time that wasn't submitted at all is left as it was.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param int                  $post_id The post ID being saved.
 	 * @param array<string, mixed> $field   The field descriptor; its `key` and `end_key` name the inputs.
@@ -589,7 +589,7 @@ class MetaBox {
 	 * sanitize_key() rather than a hard enum so a plugin-registered source
 	 * id round-trips without free needing to know it exists.
 	 *
-	 * @since 1.6.0
+	 * @since 1.2.0
 	 *
 	 * @param int    $post_id The post ID being saved.
 	 * @param string $key     The 'resource' field's own meta key.

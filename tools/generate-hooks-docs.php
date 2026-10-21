@@ -22,7 +22,7 @@ function edbs_find_nearest_docblock( $contents, $pos, $max_lines = 10 ) {
 	$leading = substr( $contents, 0, $pos );
 
 	// Find all docblocks before the position.
-	if ( preg_match_all( '/\/\*\*(?:[^*]|\*(?!\/))*\*\//s', $leading, $matches, PREG_OFFSET_CAPTURE ) ) {
+	if ( preg_match_all( '/\/\*\*.*?\*\//s', $leading, $matches, PREG_OFFSET_CAPTURE ) ) {
 		$last     = end( $matches[0] );
 		$doc_text = $last[0];
 		$doc_pos  = $last[1];
@@ -80,7 +80,7 @@ function edbs_find_nearest_docblock( $contents, $pos, $max_lines = 10 ) {
 		$fn_pos  = $last_fn[1];
 
 		// Find the last docblock before the function.
-		if ( preg_match_all( '/\/\*\*(?:[^*]|\*(?!\/))*\*\//s', substr( $contents, 0, $fn_pos ), $m2, PREG_OFFSET_CAPTURE ) ) {
+		if ( preg_match_all( '/\/\*\*.*?\*\//s', substr( $contents, 0, $fn_pos ), $m2, PREG_OFFSET_CAPTURE ) ) {
 			$last2    = end( $m2[0] );
 			$doc_text = $last2[0];
 

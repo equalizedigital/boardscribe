@@ -215,7 +215,7 @@ class CsvImporter {
 	 * on every path, making it awkward to unit test directly) so this
 	 * logic is directly testable.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param array{tmp_name?: mixed, error?: mixed, name?: mixed} $file The $_FILES['edbs_csv'] entry, or [] if absent.
 	 * @return string|null The edbs_import_error code to redirect with, or null when the upload is good to process.
@@ -269,7 +269,7 @@ class CsvImporter {
 	 * is now paired with an extension check, so a renamed-but-otherwise-
 	 * plain-text non-CSV file can't ride through on text/plain alone.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param string $mime      The detected MIME type (mime_content_type()'s return value, or '' if detection failed).
 	 * @param string $extension The lowercased filename extension, without the leading dot.
@@ -336,7 +336,7 @@ class CsvImporter {
 		 * add-on that saves its own URL columns adds them here so the same rule
 		 * and the same reporting apply.
 		 *
-		 * @since x.x.x
+		 * @since 1.2.0
 		 *
 		 * @param string[] $url_columns Lowercase column names. Default agenda_url and minutes_url.
 		 */
@@ -521,7 +521,7 @@ class CsvImporter {
 			 *
 			 * @param int         $post_id The newly created meeting post ID.
 			 * @param array       $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing. start_time and end_time are the exception: already normalized to HH:MM, or '' when the cell was unreadable, and already saved by the importer.
-			 * @param ImportNotes $notes   Collector for extra results to show in the notice; register their wording on edbs_csv_import_notes. Added in x.x.x, so declare it as optional.
+			 * @param ImportNotes $notes   Collector for extra results to show in the notice; register their wording on edbs_csv_import_notes. Added in 1.2.0, so declare it as optional.
 			 */
 			do_action( 'edbs_csv_import_row_meta', $post_id, $data, $notes );
 		}
@@ -547,7 +547,7 @@ class CsvImporter {
 	/**
 	 * Wording for the notes an add-on reports, keyed by note key.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return array<string, array{singular: string, plural: string}>
 	 */
@@ -559,7 +559,7 @@ class CsvImporter {
 		 * already translated, with %d standing for the count. Only keys
 		 * registered here are shown; anything else in the redirect is ignored.
 		 *
-		 * @since x.x.x
+		 * @since 1.2.0
 		 *
 		 * @param array<string, array{singular: string, plural: string}> $notes Wording, keyed by note key.
 		 */
@@ -583,7 +583,7 @@ class CsvImporter {
 	/**
 	 * Reduces note totals to the registered keys with a positive count, for the redirect.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param array<string, int> $notes Totals from ImportNotes::all().
 	 * @return array<string, int>
@@ -604,7 +604,7 @@ class CsvImporter {
 	/**
 	 * Builds the results-notice sentences for the notes in the redirect.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $raw The edbs_import_notes query arg.
 	 * @return string Sentences, each preceded by a space; empty when there are none.
@@ -639,7 +639,7 @@ class CsvImporter {
 	 * (title, date) is already the pair a person re-running the same file
 	 * would recognise as "the same meeting".
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * Two meetings with the same title on the same day are still different
 	 * meetings when both have a start time and the times differ (a 9am and a
@@ -714,7 +714,7 @@ class CsvImporter {
 	 * screen-reader announcement (announce_status_message()), so the two
 	 * texts can never drift apart.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @return array{message: string, type: 'success'|'error'}|null Null when
 	 *         the request carries neither query arg.
@@ -839,7 +839,7 @@ class CsvImporter {
 	 * container element yet and silently no-ops, losing the announcement
 	 * with no error to indicate why.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param string $message The plain-text message to announce.
 	 * @param string $type    'success' or 'error' - an error is announced

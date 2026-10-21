@@ -47,7 +47,7 @@ class BoardScribeEndpoint {
 	 * keeps the order it always had. The direction follows the ID tie-break's,
 	 * which MeetingSort flips together with the date when order=asc.
 	 *
-	 * @since x.x.x
+	 * @since 1.2.0
 	 *
 	 * @param mixed $clauses The query's SQL clauses.
 	 * @param mixed $query   The query.
@@ -423,7 +423,7 @@ class BoardScribeEndpoint {
 				/**
 				 * Filters the escaped markup for a meeting's time, shown under its date.
 				 *
-				 * @since x.x.x
+				 * @since 1.2.0
 				 *
 				 * @param string $time_markup The time markup (one or two <time> elements).
 				 * @param int    $post_id     The meeting post ID.
@@ -541,7 +541,7 @@ class BoardScribeEndpoint {
 	 * @param string $label          Visible link text.
 	 * @param string $formatted_date Escaped, formatted meeting date (used in the aria-label).
 	 * @param bool   $new_window     Whether to open the link in a new window/tab.
-	 * @param string $time_markup    Escaped time markup for the meeting (used in the aria-label, after the date), or ''. Added in x.x.x.
+	 * @param string $time_markup    Escaped time markup for the meeting (used in the aria-label, after the date), or ''. Added in 1.2.0.
 	 * @return string
 	 */
 	public static function build_link( string $url, string $label, string $formatted_date, bool $new_window, string $time_markup = '' ): string {
