@@ -65,9 +65,28 @@ export function Preview( { fields, values } ) {
 		return () => clearTimeout( timer );
 	}, [ configJson ] );
 
+	// No `key` on the wrap div below - it used to be keyed on debouncedJson,
+	// which forced React to unmount and recreate the container (and its
+	// empty table/pagination/info children) on every single config change,
+	// blanking the preview for a moment before the refetch resolved into
+	// it - a visible flicker on every edit, not just this field's, but
+	// most noticeable on a multiselect since picking/removing a term fires
+	// this same debounced update. template.render() (see table.js) writes
+	// its result via one atomic `innerHTML =` assignment, so leaving the
+	// container itself mounted means the *previous* result stays on
+	// screen right up until the new one replaces it in that same single
+	// assignment - no gap. React never touches these children on a normal
+	// re-render regardless (see the comment on the div below) - the `key`
+	// was the only thing forcing the teardown.
 	const wrapRef = useRef( null );
 	useEffect( () => {
 		if ( wrapRef.current && window.edbsInitInstance ) {
+			// dataset.config is what initInstance() actually reads (it's
+			// the DOM's own data-config attribute, not this component's
+			// props) - React only writes it declaratively on first mount;
+			// every later config change needs this in sync before
+			// re-running init, since the div is no longer remounted.
+			wrapRef.current.dataset.config = debouncedJson;
 			window.edbsInitInstance( wrapRef.current );
 		}
 	}, [ debouncedJson ] );
@@ -82,12 +101,16 @@ export function Preview( { fields, values } ) {
 				<h2 className="edbs-builder-app__card-heading">{ __( 'Preview', 'boardscribe' ) }</h2>
 			</CardHeader>
 			<CardBody>
-				{ /* Keyed on the config so each change remounts a clean copy of
-				     the exact wrapper markup BoardScribeShortcode::render()
-				     emits - the frontend pipeline owns everything inside it,
-				     which React must never reconcile over. */ }
+				{ /* Renders the exact wrapper markup BoardScribeShortcode::render()
+				     emits - the frontend pipeline owns everything inside it
+				     (writes table/pagination/info content imperatively via
+				     innerHTML), which React must never reconcile over. Since
+				     the JSX below always describes these three children as
+				     empty, React's diffing never touches their real,
+				     imperatively-set contents on a re-render - only the
+				     initial mount and the effect above (on a real DOM config
+				     change) matter. */ }
 				<div
-					key={ debouncedJson }
 					ref={ wrapRef }
 					className="edbs-boardscribe-wrap"
 					data-config={ debouncedJson }

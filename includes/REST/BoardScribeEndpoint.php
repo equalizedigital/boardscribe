@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 
 /**
@@ -31,6 +32,56 @@ class BoardScribeEndpoint {
 	 */
 	public function register(): void {
 		add_action( 'rest_api_init', [ $this, 'register_route' ] );
+		add_filter( 'posts_clauses', [ $this, 'add_start_time_tie_break' ], 10, 2 );
+	}
+
+	/**
+	 * Orders meetings that share a date by start time, ahead of the ID tie-break.
+	 *
+	 * Done with a join restricted to the start time key, applied only to this
+	 * endpoint's query (flagged by the edbs_sort_by_start_time query var). A
+	 * meta_query clause can't do this: WP_Query's EXISTS clause joins every
+	 * meta row of the post and orders by an arbitrary one of them, which
+	 * would reorder meetings that have no time at all. A meeting with no start
+	 * time sorts as NULL, so a site where none has one ties every time and
+	 * keeps the order it always had. The direction follows the ID tie-break's,
+	 * which MeetingSort flips together with the date when order=asc.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param mixed $clauses The query's SQL clauses.
+	 * @param mixed $query   The query.
+	 * @return mixed The clauses, unchanged unless this is the endpoint's query.
+	 */
+	public function add_start_time_tie_break( $clauses, $query = null ) {
+		global $wpdb;
+
+		// Untyped: posts_clauses is a core filter other code also fires.
+		if ( ! is_array( $clauses ) || ! $query instanceof \WP_Query || ! $query->get( 'edbs_sort_by_start_time' ) ) {
+			return $clauses;
+		}
+
+		$orderby = preg_replace(
+			'/,\s*' . preg_quote( $wpdb->posts, '/' ) . '\.ID\s+(ASC|DESC)\s*$/i',
+			', edbs_start_time.meta_value $1, ' . $wpdb->posts . '.ID $1',
+			$clauses['orderby'],
+			1,
+			$replaced
+		);
+
+		if ( ! $replaced ) {
+			return $clauses;
+		}
+
+		// The join takes every start-time row; the sort key assumes one normalized
+		// row per meeting, which every write path guarantees (sanitize + prune).
+		$clauses['orderby'] = $orderby;
+		$clauses['join']   .= $wpdb->prepare(
+			" LEFT JOIN {$wpdb->postmeta} AS edbs_start_time ON ( {$wpdb->posts}.ID = edbs_start_time.post_id AND edbs_start_time.meta_key = %s )",
+			MeetingTime::META_START
+		);
+
+		return $clauses;
 	}
 
 	/**
@@ -104,36 +155,42 @@ class BoardScribeEndpoint {
 	 * @return \WP_REST_Response
 	 */
 	public function get_meetings( \WP_REST_Request $request ): \WP_REST_Response {
-		$page                 = $request->get_param( 'page' );
-		$posts_per_page       = $request->get_param( 'posts_per_page' );
-		$held_date_format     = $request->get_param( 'held_date_format' );
-		$not_held_date_format = $request->get_param( 'not_held_date_format' );
-		$included_years       = $request->get_param( 'included_years' );
-		$start_date           = $request->get_param( 'start_date' );
-		$end_date             = $request->get_param( 'end_date' );
-		$agenda_link_label    = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
-		$minutes_link_label   = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
+		$page                  = $request->get_param( 'page' );
+		$posts_per_page        = $request->get_param( 'posts_per_page' );
+		$held_date_format      = $request->get_param( 'held_date_format' );
+		$not_held_date_format  = $request->get_param( 'not_held_date_format' );
+		$time_format           = $request->get_param( 'time_format' );
+		$included_years        = $request->get_param( 'included_years' );
+		$start_date            = $request->get_param( 'start_date' );
+		$end_date              = $request->get_param( 'end_date' );
+		$agenda_link_label     = $request->get_param( 'agenda_link_label' ) ? $request->get_param( 'agenda_link_label' ) : __( 'View Agenda', 'boardscribe' );
+		$minutes_link_label    = $request->get_param( 'minutes_link_label' ) ? $request->get_param( 'minutes_link_label' ) : __( 'View Minutes', 'boardscribe' );
+		$open_links_new_window = $request->get_param( 'open_links_new_window' );
 
 		$posts_per_page = (int) $posts_per_page;
 
-		if ( -1 === $posts_per_page ) {
+		// 0 and -1 (and anything non-numeric, which the route sanitizer maps to -1)
+		// mean "show all" - a feature the shortcode builder and block rely on. Kept
+		// explicit here so a non-positive value is always the bounded ceiling, never
+		// passed to WP_Query raw (0 returns WordPress's default of 10, -1 everything).
+		if ( $posts_per_page <= 0 ) {
 			/**
-			 * Filters the absolute ceiling applied to "show all" (`-1`) requests.
+			 * Filters the absolute ceiling applied to "show all" (`0` / `-1`) requests.
 			 *
 			 * The endpoint is public, so even the shortcode builder's explicit
-			 * no-limit option must resolve to a bounded query — otherwise any
+			 * no-limit option must resolve to a bounded query - otherwise any
 			 * anonymous caller could request every record in one response.
 			 *
 			 * @since 1.0.0
 			 *
-			 * @param int $absolute_max Upper bound substituted for -1. Default 500.
+			 * @param int $absolute_max Upper bound substituted for "show all". Default 500.
 			 */
 			$posts_per_page = (int) apply_filters( 'edbs_rest_absolute_max_per_page', 500 );
-		} elseif ( $posts_per_page > 0 ) {
+		} else {
 			/**
 			 * Filters the maximum number of meetings a single REST request may return.
 			 *
-			 * Bounds arbitrary positive values sent directly to the public endpoint.
+			 * Bounds every positive value sent directly to the public endpoint.
 			 *
 			 * @since 1.0.0
 			 *
@@ -143,14 +200,31 @@ class BoardScribeEndpoint {
 		}
 
 		$args = [
-			'post_type'      => 'edbs_meeting',
-			'post_status'    => 'publish',
-			'posts_per_page' => $posts_per_page,
-			'paged'          => $page,
-			'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
-			'orderby'        => 'meta_value',
-			'order'          => 'DESC',
-			'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
+			'post_type'               => 'edbs_meeting',
+			'post_status'             => 'publish',
+			// A "Password protected" meeting has no real public page for this
+			// endpoint to link to (meetings have no content of their own to
+			// gate) - the option protects nothing here, so such a meeting is
+			// excluded from every list rather than appearing with live
+			// agenda/minutes links as if it weren't protected at all.
+			'has_password'            => false,
+			'posts_per_page'          => $posts_per_page,
+			'paged'                   => $page,
+			'meta_key'                => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- required to order results by meeting date.
+			// Same-day meetings order by start time before the ID tie-break
+			// below: see add_start_time_tie_break().
+			'edbs_sort_by_start_time' => true,
+			// ID is a tie-break, not a second sort criterion: two meetings
+			// sharing the same edbs_meeting_date otherwise have no
+			// guaranteed relative order between pages (MySQL doesn't
+			// stably order ties under LIMIT/OFFSET), so one could appear on
+			// two pages and another on none. MeetingSort::apply_order()
+			// rewrites both directions together when order=asc.
+			'orderby'                 => [
+				'meta_value' => 'DESC', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- required to order results by meeting date.
+				'ID'         => 'DESC',
+			],
+			'meta_query'              => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- required to filter to posts that have a meeting date set.
 				'relation' => 'AND',
 				[
 					'key'     => 'edbs_meeting_date',
@@ -225,10 +299,12 @@ class BoardScribeEndpoint {
 				$meetings[] = $this->build_meeting_row(
 					get_the_ID(),
 					[
-						'held_date_format'     => $held_date_format,
-						'not_held_date_format' => $not_held_date_format,
-						'agenda_link_label'    => $agenda_link_label,
-						'minutes_link_label'   => $minutes_link_label,
+						'held_date_format'      => $held_date_format,
+						'not_held_date_format'  => $not_held_date_format,
+						'time_format'           => $time_format,
+						'agenda_link_label'     => $agenda_link_label,
+						'minutes_link_label'    => $minutes_link_label,
+						'open_links_new_window' => $open_links_new_window,
 					],
 					$request
 				);
@@ -241,6 +317,15 @@ class BoardScribeEndpoint {
 			'max_num_pages' => $query->max_num_pages,
 			'current_page'  => $page,
 			'total_entries' => $query->found_posts,
+			// The effective per-page count actually applied to the query -
+			// read back off the query itself (reflects any edbs_rest_query_args
+			// or pre_get_posts change to posts_per_page, not just this
+			// method's own $posts_per_page local) and distinct from the
+			// request's raw posts_per_page param, which may be -1 ("show
+			// all") or exceed the edbs_rest_max_per_page cap. The client
+			// needs this real value to compute "Showing X to Y of N"
+			// correctly (see src/js/defaults/renderInfo.js).
+			'per_page'      => (int) $query->get( 'posts_per_page' ),
 		];
 
 		/**
@@ -271,10 +356,12 @@ class BoardScribeEndpoint {
 	 * @param array                 $format_args {
 	 *    Formatting options.
 	 *
-	 *     @type string $held_date_format     PHP date() format for held meetings.
-	 *     @type string $not_held_date_format PHP date() format for not-held meetings.
-	 *     @type string $agenda_link_label    Link text for the agenda link.
-	 *     @type string $minutes_link_label   Link text for the minutes link.
+	 *     @type string $held_date_format      PHP date() format for held meetings.
+	 *     @type string $not_held_date_format  PHP date() format for not-held meetings.
+	 *     @type string $time_format           PHP date() format for the meeting time. Default 'g:i a'.
+	 *     @type string $agenda_link_label     Link text for the agenda link.
+	 *     @type string $minutes_link_label    Link text for the minutes link.
+	 *     @type bool   $open_links_new_window Whether the agenda/minutes links open in a new window.
 	 * }
 	 * @param \WP_REST_Request|null $request     The originating REST request, if any.
 	 * @return array
@@ -282,6 +369,7 @@ class BoardScribeEndpoint {
 	public function build_meeting_row( int $post_id, array $format_args, ?\WP_REST_Request $request = null ): array {
 		$held_date_format     = $format_args['held_date_format'] ?? 'l, F j, Y';
 		$not_held_date_format = $format_args['not_held_date_format'] ?? 'F Y';
+		$time_format          = MeetingTime::sanitize_format( $format_args['time_format'] ?? '', MeetingTime::DEFAULT_FORMAT );
 		$agenda_link_label    = ! empty( $format_args['agenda_link_label'] ) ? $format_args['agenda_link_label'] : __( 'View Agenda', 'boardscribe' );
 		$minutes_link_label   = ! empty( $format_args['minutes_link_label'] ) ? $format_args['minutes_link_label'] : __( 'View Minutes', 'boardscribe' );
 
@@ -314,34 +402,100 @@ class BoardScribeEndpoint {
 		 * @param int    $post_id          The post ID.
 		 * @param bool   $meeting_not_held Whether the meeting is marked not held.
 		 */
-		$filtered_date  = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
-		$formatted_date = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
+		$filtered_date = apply_filters( 'edbs_meeting_formatted_date', $formatted_date, $post_id, $meeting_not_held );
 
+		// A callback that replaced the computed date (Pro's Date display
+		// override) supplied the author's complete wording for it, so the time
+		// is only shown with a date this method computed itself. Compared on the
+		// raw filter result, before wp_kses_post() below can alter it.
+		$date_is_computed = $date_object && $filtered_date === $formatted_date;
+		$formatted_date   = is_string( $filtered_date ) ? wp_kses_post( $filtered_date ) : $formatted_date;
+
+		// Only a meeting that has a time gets a `time` key, so the row of every
+		// untimed meeting is exactly what it was before meeting times existed.
+		$time_markup = '';
+
+		if ( $date_is_computed && ! $meeting_not_held ) {
+			$times       = MeetingTime::get( $post_id );
+			$time_markup = MeetingTime::markup( $times['start'], $times['end'], $time_format );
+
+			if ( '' !== $time_markup ) {
+				/**
+				 * Filters the escaped markup for a meeting's time, shown under its date.
+				 *
+				 * @since 1.2.0
+				 *
+				 * @param string $time_markup The time markup (one or two <time> elements).
+				 * @param int    $post_id     The meeting post ID.
+				 * @param string $start       The start time as HH:MM, or ''.
+				 * @param string $end         The end time as HH:MM, or ''.
+				 */
+				$time_markup = apply_filters( 'edbs_meeting_formatted_time', $time_markup, $post_id, $times['start'], $times['end'] );
+				$time_markup = is_string( $time_markup ) ? wp_kses( $time_markup, MeetingTime::allowed_html() ) : '';
+			}
+		}
+
+		$open_links_new_window = ! empty( $format_args['open_links_new_window'] );
+
+		/**
+		 * Filters the built agenda link markup. A callback that rebuilds the
+		 * anchor from scratch (the entire point of this filter) previously
+		 * had no way to know $open_links_new_window was enabled, so it
+		 * silently discarded that setting - the extra args are additive and
+		 * don't change behavior for a callback that only reads the first.
+		 * $formatted_date is included so such a callback can call
+		 * build_link() itself with the same (possibly filtered, via
+		 * edbs_meeting_formatted_date) date used above, rather than
+		 * reformatting the date itself and risking drift from that filter.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $link                  The built `<a>` markup.
+		 * @param string $agenda_url            The raw agenda URL.
+		 * @param string $agenda_link_label     The link's visible text.
+		 * @param bool   $open_links_new_window Whether the link opens in a new window.
+		 * @param int    $post_id               The meeting post ID.
+		 * @param string $formatted_date        The formatted date string used to build $link.
+		 * @param string $time_markup           The meeting time markup ('' when it has none); pass it as
+		 *                                      build_link()'s fifth argument to keep it in the aria-label.
+		 */
 		$agenda_item = $agenda_url
 			? apply_filters(
 				'edbs_agenda_link',
-				'<a href="' . esc_url( $agenda_url ) . '" aria-label="' . esc_attr(
-					sprintf(
-					/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
-						__( '%1$s for %2$s', 'boardscribe' ),
-						$agenda_link_label,
-						wp_strip_all_tags( $formatted_date )
-					)
-				) . '">' . esc_html( $agenda_link_label ) . '</a>'
+				self::build_link( $agenda_url, $agenda_link_label, $formatted_date, $open_links_new_window, $time_markup ),
+				$agenda_url,
+				$agenda_link_label,
+				$open_links_new_window,
+				$post_id,
+				$formatted_date,
+				$time_markup
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Agenda not available', 'boardscribe' ) . '</span>';
 
+		/**
+		 * Filters the built minutes link markup. See edbs_agenda_link above.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $link                  The built `<a>` markup.
+		 * @param string $minutes_url           The raw minutes URL.
+		 * @param string $minutes_link_label    The link's visible text.
+		 * @param bool   $open_links_new_window Whether the link opens in a new window.
+		 * @param int    $post_id               The meeting post ID.
+		 * @param string $formatted_date        The formatted date string used to build $link.
+		 * @param string $time_markup           The meeting time markup ('' when it has none); pass it as
+		 *                                      build_link()'s fifth argument to keep it in the aria-label.
+		 */
 		$minutes_item = $minutes_url
 			? apply_filters(
 				'edbs_minutes_link',
-				'<a href="' . esc_url( $minutes_url ) . '" aria-label="' . esc_attr(
-					sprintf(
-					/* translators: 1: link label e.g. "View Minutes", 2: meeting date */
-						__( '%1$s for %2$s', 'boardscribe' ),
-						$minutes_link_label,
-						wp_strip_all_tags( $formatted_date )
-					)
-				) . '">' . esc_html( $minutes_link_label ) . '</a>'
+				self::build_link( $minutes_url, $minutes_link_label, $formatted_date, $open_links_new_window, $time_markup ),
+				$minutes_url,
+				$minutes_link_label,
+				$open_links_new_window,
+				$post_id,
+				$formatted_date,
+				$time_markup
 			)
 			: '<span class="sr-text screen-reader-text">' . esc_html__( 'Minutes not available', 'boardscribe' ) . '</span>';
 
@@ -351,6 +505,10 @@ class BoardScribeEndpoint {
 			'agenda'  => $meeting_not_held ? esc_html__( 'Meeting not held', 'boardscribe' ) : $agenda_item,
 			'minutes' => $minutes_item,
 		];
+
+		if ( '' !== $time_markup ) {
+			$row['time'] = $time_markup;
+		}
 
 		/**
 		 * Filters a single meeting row before it is added to the response.
@@ -363,6 +521,55 @@ class BoardScribeEndpoint {
 		 * @param \WP_REST_Request|null $request  The REST request, if any.
 		 */
 		return apply_filters( 'edbs_meeting_row_data', $row, $post_id, $request );
+	}
+
+	/**
+	 * Builds one agenda/minutes anchor tag. When $new_window is true, adds
+	 * target="_blank" and an aria-label suffix warning screen reader users
+	 * before they activate it, per WCAG 3.2.2 / Technique H83 — accessibility-checker's
+	 * own link_blank rule flags target="_blank" without this warning.
+	 *
+	 * Public so Pro (or another plugin building its own row output, e.g. a
+	 * CSV/PDF export or iCal feed) can reuse the exact same link markup
+	 * instead of re-implementing this escaping/aria-label logic - see this
+	 * repo's own AGENTS.md note on why extracted per-row formatting logic
+	 * should be public.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $url            The agenda/minutes URL.
+	 * @param string $label          Visible link text.
+	 * @param string $formatted_date Escaped, formatted meeting date (used in the aria-label).
+	 * @param bool   $new_window     Whether to open the link in a new window/tab.
+	 * @param string $time_markup    Escaped time markup for the meeting (used in the aria-label, after the date), or ''. Added in 1.2.0.
+	 * @return string
+	 */
+	public static function build_link( string $url, string $label, string $formatted_date, bool $new_window, string $time_markup = '' ): string {
+		// $formatted_date arrives esc_html()'d (and possibly wp_kses_post()'d,
+		// via Pro's edbs_meeting_formatted_date override) - decoding entities
+		// back to raw characters before stripping tags avoids double-escaping
+		// once esc_attr() below runs over the assembled aria-label. Otherwise
+		// a raw apostrophe in an overridden date string (e.g. "Mayor's
+		// Special") round-trips as the literal text "&#039;s" once a browser
+		// decodes the attribute value, instead of an apostrophe.
+		$date_for_label = wp_strip_all_tags( html_entity_decode( $formatted_date, ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+
+		$time_for_label = wp_strip_all_tags( html_entity_decode( $time_markup, ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+
+		if ( '' !== $time_for_label ) {
+			/* translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day. */
+			$date_for_label = sprintf( __( '%1$s, %2$s', 'boardscribe' ), $date_for_label, $time_for_label );
+		}
+
+		$aria_label = $new_window
+			/* translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string. */
+			? sprintf( __( '%1$s for %2$s (opens in a new window)', 'boardscribe' ), $label, $date_for_label )
+			/* translators: 1: link label e.g. "View Agenda", 2: meeting date */
+			: sprintf( __( '%1$s for %2$s', 'boardscribe' ), $label, $date_for_label );
+
+		return '<a href="' . esc_url( $url ) . '"'
+			. ( $new_window ? ' target="_blank" rel="noopener noreferrer"' : '' )
+			. ' aria-label="' . esc_attr( $aria_label ) . '">' . esc_html( $label ) . '</a>';
 	}
 
 	/**
@@ -403,6 +610,16 @@ class BoardScribeEndpoint {
 	 * Supports Y-m-d (native/ISO), Ymd (ACF default), d/m/Y and m/d/Y
 	 * to handle data previously stored by ACF with varying format settings.
 	 *
+	 * Each format's shape is checked with a strict regex before construction,
+	 * and its extracted day/month/year validated with checkdate(), rather
+	 * than handed straight to DateTime::createFromFormat(). That function is
+	 * lenient about out-of-range values within a format (e.g. month 15 rolls
+	 * over into the next year instead of failing), so trying d/m/Y before
+	 * m/d/Y could otherwise silently misdate an m/d/Y value with day > 12 -
+	 * e.g. "03/15/2023" (March 15) rolling over to 2024-03-03 under d/m/Y
+	 * before m/d/Y is ever tried. Validating first means only a format whose
+	 * components are genuinely in range is ever accepted.
+	 *
 	 * Public and static so Pro features that derive values from the raw
 	 * edbs_meeting_date meta (e.g. year grouping) parse the stored value
 	 * with the exact same format list as this endpoint, instead of
@@ -418,7 +635,27 @@ class BoardScribeEndpoint {
 			return null;
 		}
 
-		foreach ( [ 'Y-m-d', 'Ymd', 'd/m/Y', 'm/d/Y' ] as $format ) {
+		// [ format => [ regex, day group, month group, year group ] ].
+		// Groups are fixed-width to match what each format's picker actually
+		// stores (zero-padded day/month, 4-digit year) - not a general date
+		// parser, just enough to disambiguate this plugin's own legacy
+		// storage formats.
+		$formats = [
+			'Y-m-d' => [ '/^(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})$/', 'day', 'month', 'year' ],
+			'Ymd'   => [ '/^(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})$/', 'day', 'month', 'year' ],
+			'd/m/Y' => [ '/^(?<day>\d{2})\/(?<month>\d{2})\/(?<year>\d{4})$/', 'day', 'month', 'year' ],
+			'm/d/Y' => [ '/^(?<month>\d{2})\/(?<day>\d{2})\/(?<year>\d{4})$/', 'day', 'month', 'year' ],
+		];
+
+		foreach ( $formats as $format => [ $regex, $day_key, $month_key, $year_key ] ) {
+			if ( ! preg_match( $regex, $date_string, $matches ) ) {
+				continue;
+			}
+
+			if ( ! checkdate( (int) $matches[ $month_key ], (int) $matches[ $day_key ], (int) $matches[ $year_key ] ) ) {
+				continue;
+			}
+
 			$date = \DateTime::createFromFormat( $format, $date_string );
 			if ( false !== $date ) {
 				return $date;

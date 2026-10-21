@@ -8,12 +8,14 @@
 namespace EqualizeDigital\BoardScribe\Import;
 
 use EqualizeDigital\BoardScribe\Admin\MetaBox;
+use EqualizeDigital\BoardScribe\Helpers\Helpers;
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 
 /**
  * Provides a bulk CSV import admin page under the BoardScribe menu.
  *
  * Core recognised columns (see columns()): title, date, agenda_url,
- * minutes_url, not_held, publish_date.
+ * minutes_url, not_held, start_time, end_time, publish_date.
  *
  * - title        : Optional. A blank title falls back to the same
  *                  auto-generated "Board Meeting - {date}" title
@@ -22,6 +24,9 @@ use EqualizeDigital\BoardScribe\Admin\MetaBox;
  *                  saved without one in the admin meta box.
  * - date         : Y-m-d format (e.g. 2024-03-15)
  * - not_held     : "yes" or "1" to mark the meeting as not held
+ * - start_time   : Optional. The meeting's start time (e.g. 17:00, 5pm).
+ *                  A time that can't be read is dropped and reported.
+ * - end_time     : Optional. The meeting's end time, read the same way.
  * - publish_date : Optional. Any date/time PHP's native date parser
  *                  understands — e.g. 2024-03-15, 2024-03-15 14:30:00,
  *                  2024-03-15T14:30:00-05:00, or "March 15, 2024
@@ -72,13 +77,25 @@ class CsvImporter {
 				'required' => true,
 				'notes'    => __( 'Format: YYYY-MM-DD', 'boardscribe' ),
 			],
+			'start_time'   => [
+				'required' => false,
+				'notes'    => sprintf(
+					/* translators: %s: example time formats — these are literal examples, not to be translated. */
+					__( 'Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists.', 'boardscribe' ),
+					'17:00, 5:00 PM, 5pm'
+				),
+			],
+			'end_time'     => [
+				'required' => false,
+				'notes'    => __( 'Optional. The meeting end time, in the same formats as start_time.', 'boardscribe' ),
+			],
 			'agenda_url'   => [
 				'required' => false,
-				'notes'    => __( 'Full URL to agenda file', 'boardscribe' ),
+				'notes'    => __( 'Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved.', 'boardscribe' ),
 			],
 			'minutes_url'  => [
 				'required' => false,
-				'notes'    => __( 'Full URL to minutes file', 'boardscribe' ),
+				'notes'    => __( 'Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved.', 'boardscribe' ),
 			],
 			'not_held'     => [
 				'required' => false,
@@ -92,7 +109,7 @@ class CsvImporter {
 				'required' => false,
 				'notes'    => sprintf(
 					/* translators: %s: example date/time formats — these are literal examples, not to be translated. */
-					__( 'Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above.', 'boardscribe' ),
+					__( 'Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then.', 'boardscribe' ),
 					'2024-03-15, 2024-03-15 14:30:00, or 2024-03-15T14:30:00-05:00'
 				),
 			],
@@ -163,32 +180,104 @@ class CsvImporter {
 			wp_die( esc_html__( 'Insufficient permissions.', 'boardscribe' ) );
 		}
 
-		if ( empty( $_FILES['edbs_csv']['tmp_name'] ) ) {
-			wp_safe_redirect( add_query_arg( 'edbs_import_error', 'no_file', $this->get_page_url() ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce already verified above; the whole array is handed to validate_upload() to check/sanitize, not read raw here.
+		$raw_file = isset( $_FILES['edbs_csv'] ) && is_array( $_FILES['edbs_csv'] ) ? $_FILES['edbs_csv'] : [];
+		$error    = $this->validate_upload( $raw_file );
+		if ( null !== $error ) {
+			wp_safe_redirect( add_query_arg( 'edbs_import_error', $error, $this->get_page_url() ) );
 			exit;
 		}
 
-		$file = $_FILES['edbs_csv']['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- value is a server-generated tmp path, validated by mime_content_type() below.
-
-		// Validate MIME type.
-		$mime = mime_content_type( $file );
-		if ( ! in_array( $mime, [ 'text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel' ], true ) ) {
-			wp_safe_redirect( add_query_arg( 'edbs_import_error', 'invalid_type', $this->get_page_url() ) );
-			exit;
-		}
+		$file = $raw_file['tmp_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- value is a server-generated tmp path, validated by validate_upload() above.
 
 		$result = $this->process_csv( $file );
+		$args   = [
+			'edbs_import_success'       => $result['imported'],
+			'edbs_import_skipped'       => $result['skipped'],
+			'edbs_import_scheduled'     => $result['scheduled'],
+			'edbs_import_duplicates'    => $result['duplicates'],
+			'edbs_import_invalid_urls'  => $result['invalid_urls'],
+			'edbs_import_invalid_times' => $result['invalid_times'],
+		];
+		$notes  = $this->notes_query_arg( $result['notes'] ?? [] );
 
-		wp_safe_redirect(
-			add_query_arg(
-				[
-					'edbs_import_success' => $result['imported'],
-					'edbs_import_skipped' => $result['skipped'],
-				],
-				$this->get_page_url()
-			)
-		);
+		if ( $notes ) {
+			$args['edbs_import_notes'] = $notes;
+		}
+
+		wp_safe_redirect( add_query_arg( $args, $this->get_page_url() ) );
 		exit;
+	}
+
+	/**
+	 * Validates a $_FILES['edbs_csv']-shaped array before it's handed to
+	 * process_csv(). Split out from handle_upload() (which calls exit()
+	 * on every path, making it awkward to unit test directly) so this
+	 * logic is directly testable.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param array{tmp_name?: mixed, error?: mixed, name?: mixed} $file The $_FILES['edbs_csv'] entry, or [] if absent.
+	 * @return string|null The edbs_import_error code to redirect with, or null when the upload is good to process.
+	 */
+	private function validate_upload( array $file ): ?string {
+		// Checked before tmp_name: PHP leaves tmp_name empty for several
+		// upload errors (e.g. UPLOAD_ERR_INI_SIZE, an over-large file), not
+		// just "no file chosen" (UPLOAD_ERR_NO_FILE) - checking tmp_name
+		// first would report every one of those as the generic "no file"
+		// message instead of the more accurate "upload failed", and skip
+		// the upload_failed branch below entirely.
+		$upload_error = isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
+		if ( UPLOAD_ERR_NO_FILE === $upload_error ) {
+			return 'no_file';
+		}
+		if ( UPLOAD_ERR_OK !== $upload_error ) {
+			return 'upload_failed';
+		}
+
+		// A UPLOAD_ERR_OK error code should always come with a non-empty
+		// tmp_name, but don't assume it - fall back to the same "no file"
+		// message rather than passing an empty path to is_uploaded_file()/
+		// mime_content_type() below.
+		if ( empty( $file['tmp_name'] ) ) {
+			return 'no_file';
+		}
+
+		// is_uploaded_file() confirms tmp_name actually came from this
+		// request's multipart upload (not, say, a stale/attacker-guessed
+		// tmp path) before anything else touches it.
+		if ( ! is_uploaded_file( (string) $file['tmp_name'] ) ) {
+			return 'invalid_type';
+		}
+
+		$mime      = mime_content_type( (string) $file['tmp_name'] );
+		$extension = isset( $file['name'] ) ? strtolower( (string) pathinfo( sanitize_file_name( wp_unslash( (string) $file['name'] ) ), PATHINFO_EXTENSION ) ) : '';
+		if ( ! $this->is_allowed_csv_upload( false === $mime ? '' : $mime, $extension ) ) {
+			return 'invalid_type';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Whether a detected MIME type + filename extension pair is acceptable
+	 * for a CSV upload. Pure and side-effect free (no filesystem access),
+	 * kept separate from validate_upload() so it's directly unit-testable.
+	 *
+	 * `text/plain` stays on the MIME allow-list - many simple CSV exports
+	 * are indistinguishable from plain text to mime_content_type() - but
+	 * is now paired with an extension check, so a renamed-but-otherwise-
+	 * plain-text non-CSV file can't ride through on text/plain alone.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param string $mime      The detected MIME type (mime_content_type()'s return value, or '' if detection failed).
+	 * @param string $extension The lowercased filename extension, without the leading dot.
+	 * @return bool
+	 */
+	private function is_allowed_csv_upload( string $mime, string $extension ): bool {
+		return 'csv' === $extension
+			&& in_array( $mime, [ 'text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel' ], true );
 	}
 
 	/**
@@ -197,24 +286,61 @@ class CsvImporter {
 	 * @since 1.1.0
 	 *
 	 * @param string $file Path to the temporary uploaded file.
-	 * @return array{ imported: int, skipped: int }
+	 * @return array{ imported: int, skipped: int, scheduled: int, duplicates: int, invalid_urls: int, invalid_times: int, notes?: array<string, int> } `notes` is only present when an add-on noted something.
 	 */
 	private function process_csv( string $file ): array {
 		$handle = fopen( $file, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
 		if ( ! $handle ) {
 			return [
-				'imported' => 0,
-				'skipped'  => 0,
+				'imported'      => 0,
+				'skipped'       => 0,
+				'scheduled'     => 0,
+				'duplicates'    => 0,
+				'invalid_urls'  => 0,
+				'invalid_times' => 0,
 			];
 		}
 
+		// A large CSV can comfortably outrun the default 30s/128M admin
+		// request before every row is inserted, silently truncating the
+		// import mid-file with no indication anything went wrong - raise
+		// both the same way WordPress's own bulk operations (e.g. media
+		// import) do. wp_raise_memory_limit() already checks WP_MAX_MEMORY_LIMIT
+		// and only raises, never lowers; set_time_limit() is a no-op under
+		// most restricted hosting (safe_mode is gone since PHP 8, but some
+		// hosts disable the function entirely) - suppressed rather than
+		// treated as fatal either way.
+		wp_raise_memory_limit( 'admin' );
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- disabled entirely on some hosts; failure here isn't fatal to the import.
+		}
+
+		$notes            = new ImportNotes();
 		$required_columns = array_keys( array_filter( $this->columns(), fn( array $column ): bool => ! empty( $column['required'] ) ) );
 		$meta_box         = new MetaBox();
 
-		$imported = 0;
-		$skipped  = 0;
-		$headers  = null;
+		$imported      = 0;
+		$skipped       = 0;
+		$scheduled     = 0;
+		$duplicates    = 0;
+		$invalid_urls  = 0;
+		$invalid_times = 0;
+		$headers       = null;
+
+		/**
+		 * Filters the CSV columns validated as URLs before a row is imported.
+		 *
+		 * An invalid value in one of these columns is dropped, the rest of the
+		 * row still imports, and the row is counted in the results notice. An
+		 * add-on that saves its own URL columns adds them here so the same rule
+		 * and the same reporting apply.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param string[] $url_columns Lowercase column names. Default agenda_url and minutes_url.
+		 */
+		$url_columns = (array) apply_filters( 'edbs_csv_import_url_columns', [ 'agenda_url', 'minutes_url' ] );
 
 		while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- idiomatic fgetcsv loop pattern.
 			// First row: extract and normalise headers. Strips a leading
@@ -263,9 +389,63 @@ class CsvImporter {
 				}
 			}
 
+			// Validate the optional URL columns. esc_url_raw() alone encodes a
+			// malformed value into a dead link with nothing in the results to say
+			// so. An invalid URL doesn't discard the meeting - it is not saved and
+			// is reported, since losing a whole meeting to one bad cell is worse
+			// than losing the link.
+			$row_invalid_urls = [];
+			foreach ( $url_columns as $url_column ) {
+				if ( isset( $data[ $url_column ] ) && '' !== trim( (string) $data[ $url_column ] ) && ! Helpers::is_valid_external_url( trim( (string) $data[ $url_column ] ) ) ) {
+					$row_invalid_urls[] = $url_column;
+					// Cleared here, not just excluded from the two update_post_meta()
+					// calls below - $data (with the invalid raw value still intact)
+					// is what edbs_csv_import_row_meta hands to every add-on's own
+					// column-saving callback further down. Without this, "an invalid
+					// URL is not saved" is a promise this method only keeps for its
+					// own two columns; an add-on's callback that doesn't separately
+					// re-validate would still store the invalid value while the
+					// import notice reports it as skipped.
+					$data[ $url_column ] = '';
+				}
+			}
+
+			// Validate the optional start_time/end_time columns. A time that can't
+			// be read is dropped and reported, and the meeting still imports, like
+			// an invalid URL. $data is rewritten to the normalized HH:MM (or '')
+			// so edbs_csv_import_row_meta callbacks never see the raw cell.
+			$row_invalid_time = false;
+			foreach ( [ 'start_time', 'end_time' ] as $time_column ) {
+				// A cell holding only non-breaking spaces is empty, not unreadable;
+				// trim() above only strips ASCII whitespace.
+				if ( ! isset( $data[ $time_column ] ) || '' === preg_replace( '/[\s\x{00A0}\x{202F}]+/u', '', $data[ $time_column ] ) ) {
+					if ( isset( $data[ $time_column ] ) ) {
+						$data[ $time_column ] = '';
+					}
+					continue;
+				}
+
+				$data[ $time_column ] = MeetingTime::parse( $data[ $time_column ] );
+
+				if ( '' === $data[ $time_column ] ) {
+					$row_invalid_time = true;
+				}
+			}
+
+			// Counted before the duplicate check so an unreadable time is reported
+			// even when its row is then skipped as a duplicate.
+			if ( $row_invalid_time ) {
+				++$invalid_times;
+			}
+
 			$title = sanitize_text_field( trim( $data['title'] ?? '' ) );
 			if ( '' === $title ) {
 				$title = $meta_box->generate_default_title( $date );
+			}
+
+			if ( $this->find_existing_meeting( $title, $date, $data['start_time'] ?? '' ) ) {
+				++$duplicates;
+				continue;
 			}
 
 			$post_args = [
@@ -293,12 +473,39 @@ class CsvImporter {
 
 			update_post_meta( $post_id, 'edbs_meeting_date', $date );
 
-			if ( ! empty( $data['agenda_url'] ) ) {
+			// Only a time that was given and read is written, so a meeting without
+			// one never gets a time row.
+			if ( ! empty( $data['start_time'] ) ) {
+				update_post_meta( $post_id, MeetingTime::META_START, $data['start_time'] );
+			}
+
+			if ( ! empty( $data['end_time'] ) ) {
+				update_post_meta( $post_id, MeetingTime::META_END, $data['end_time'] );
+			}
+
+			// wp_insert_post() silently downgrades a 'publish' status to
+			// 'future' when post_date is later than now (normal WP
+			// scheduling semantics) - that's a real, intentional path here
+			// (backdating uses the same publish_date column for the past),
+			// but a scheduled meeting won't appear on the site or in "N
+			// rows imported" until cron publishes it, so it's counted and
+			// reported separately rather than folded into $imported.
+			if ( 'future' === get_post_status( $post_id ) ) {
+				++$scheduled;
+			} else {
+				++$imported;
+			}
+
+			if ( ! empty( $data['agenda_url'] ) && ! in_array( 'agenda_url', $row_invalid_urls, true ) ) {
 				update_post_meta( $post_id, 'edbs_agenda_url', esc_url_raw( trim( $data['agenda_url'] ) ) );
 			}
 
-			if ( ! empty( $data['minutes_url'] ) ) {
+			if ( ! empty( $data['minutes_url'] ) && ! in_array( 'minutes_url', $row_invalid_urls, true ) ) {
 				update_post_meta( $post_id, 'edbs_minutes_url', esc_url_raw( trim( $data['minutes_url'] ) ) );
+			}
+
+			if ( $row_invalid_urls ) {
+				++$invalid_urls;
 			}
 
 			$not_held = strtolower( trim( $data['not_held'] ?? '' ) );
@@ -312,20 +519,172 @@ class CsvImporter {
 			 *
 			 * @since 1.1.0
 			 *
-			 * @param int   $post_id The newly created meeting post ID.
-			 * @param array $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing.
+			 * @param int         $post_id The newly created meeting post ID.
+			 * @param array       $data    The raw CSV row, keyed by lowercased column header. Values are trimmed but not sanitized — callbacks must sanitize before storing. start_time and end_time are the exception: already normalized to HH:MM, or '' when the cell was unreadable, and already saved by the importer.
+			 * @param ImportNotes $notes   Collector for extra results to show in the notice; register their wording on edbs_csv_import_notes. Added in 1.2.0, so declare it as optional.
 			 */
-			do_action( 'edbs_csv_import_row_meta', $post_id, $data );
-
-			++$imported;
+			do_action( 'edbs_csv_import_row_meta', $post_id, $data, $notes );
 		}
 
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
-		return [
-			'imported' => $imported,
-			'skipped'  => $skipped,
+		$result = [
+			'imported'      => $imported,
+			'skipped'       => $skipped,
+			'scheduled'     => $scheduled,
+			'duplicates'    => $duplicates,
+			'invalid_urls'  => $invalid_urls,
+			'invalid_times' => $invalid_times,
 		];
+
+		if ( $notes->all() ) {
+			$result['notes'] = $notes->all();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Wording for the notes an add-on reports, keyed by note key.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @return array<string, array{singular: string, plural: string}>
+	 */
+	private function registered_notes(): array {
+		/**
+		 * Registers wording for notes an add-on counts with ImportNotes.
+		 *
+		 * Each entry is `[ 'singular' => '%d row ...', 'plural' => '%d rows ...' ]`,
+		 * already translated, with %d standing for the count. Only keys
+		 * registered here are shown; anything else in the redirect is ignored.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param array<string, array{singular: string, plural: string}> $notes Wording, keyed by note key.
+		 */
+		$notes = (array) apply_filters( 'edbs_csv_import_notes', [] );
+		$clean = [];
+
+		foreach ( $notes as $key => $wording ) {
+			$key = sanitize_key( (string) $key );
+
+			if ( '' !== $key && is_array( $wording ) && isset( $wording['singular'], $wording['plural'] ) && is_string( $wording['singular'] ) && is_string( $wording['plural'] ) ) {
+				$clean[ $key ] = [
+					'singular' => $wording['singular'],
+					'plural'   => $wording['plural'],
+				];
+			}
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * Reduces note totals to the registered keys with a positive count, for the redirect.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param array<string, int> $notes Totals from ImportNotes::all().
+	 * @return array<string, int>
+	 */
+	private function notes_query_arg( array $notes ): array {
+		$registered = $this->registered_notes();
+		$arg        = [];
+
+		foreach ( $notes as $key => $count ) {
+			if ( isset( $registered[ $key ] ) && (int) $count > 0 ) {
+				$arg[ $key ] = (int) $count;
+			}
+		}
+
+		return $arg;
+	}
+
+	/**
+	 * Builds the results-notice sentences for the notes in the redirect.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param mixed $raw The edbs_import_notes query arg.
+	 * @return string Sentences, each preceded by a space; empty when there are none.
+	 */
+	private function notes_message( $raw ): string {
+		if ( ! is_array( $raw ) ) {
+			return '';
+		}
+
+		$message = '';
+
+		foreach ( $this->registered_notes() as $key => $wording ) {
+			$count = isset( $raw[ $key ] ) && is_scalar( $raw[ $key ] ) ? absint( $raw[ $key ] ) : 0;
+
+			if ( $count > 0 ) {
+				$message .= ' ' . sprintf( 1 === $count ? $wording['singular'] : $wording['plural'], $count );
+			}
+		}
+
+		return $message;
+	}
+
+	/**
+	 * Whether a meeting with this exact title and edbs_meeting_date already
+	 * exists (any status except trash/auto-draft, so a meeting you trashed is
+	 * re-created on re-import; the comparison is case-insensitive under the
+	 * usual MySQL collation), so re-uploading the same CSV - e.g. after a
+	 * timed-out import stopped partway through - doesn't duplicate every row
+	 * that already landed. Deliberately not scoped to a "recently imported"
+	 * window or an import-run hash: a plain, human-editable CSV has no
+	 * stable per-row identity to hash beyond its own visible columns, and
+	 * (title, date) is already the pair a person re-running the same file
+	 * would recognise as "the same meeting".
+	 *
+	 * @since 1.2.0
+	 *
+	 * Two meetings with the same title on the same day are still different
+	 * meetings when both have a start time and the times differ (a 9am and a
+	 * 6pm session), so a row with a start time only matches a meeting that has
+	 * the same start time or none at all. A row without one matches any meeting
+	 * with that title and date, as it always has, and a meeting without one is
+	 * matched by a row with any time - re-importing a file never adds times to
+	 * meetings that already exist.
+	 *
+	 * @param string $title The row's resolved title (after the blank-title fallback).
+	 * @param string $date  The row's edbs_meeting_date value (Y-m-d).
+	 * @param string $start The row's normalized start time (HH:MM), or ''.
+	 * @return bool
+	 */
+	private function find_existing_meeting( string $title, string $date, string $start = '' ): bool {
+		// With a start time, only the 50 most recent meetings with this title and date are compared.
+		$existing = get_posts(
+			[
+				'post_type'      => 'edbs_meeting',
+				'post_status'    => 'any',
+				// The title as wp_insert_post() will have stored it (kses/entity
+				// encoding, unslashing) - a raw "Parks & Rec" wouldn't otherwise
+				// match a stored "Parks &amp; Rec" on sites that filter titles.
+				'title'          => wp_unslash( sanitize_post_field( 'post_title', wp_slash( $title ), 0, 'db' ) ),
+				'meta_key'       => 'edbs_meeting_date', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => $date, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				'fields'         => 'ids',
+				'posts_per_page' => '' === $start ? 1 : 50,
+				'no_found_rows'  => true,
+			]
+		);
+
+		if ( '' === $start ) {
+			return ! empty( $existing );
+		}
+
+		foreach ( $existing as $existing_id ) {
+			$existing_start = MeetingTime::get( (int) $existing_id )['start'];
+
+			if ( '' === $existing_start || $existing_start === $start ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -340,7 +699,166 @@ class CsvImporter {
 			return;
 		}
 
+		$edbs_status_message = $this->resolve_status_message();
+		if ( $edbs_status_message ) {
+			$this->announce_status_message( $edbs_status_message['message'], $edbs_status_message['type'] );
+		}
+
 		require EDBS_DIR . 'partials/csv-import-page.php';
+	}
+
+	/**
+	 * Resolves this request's import status message (success or error) from
+	 * the redirect's own query args - the single source of truth for both
+	 * the visible notice markup (partials/csv-import-page.php) and the
+	 * screen-reader announcement (announce_status_message()), so the two
+	 * texts can never drift apart.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @return array{message: string, type: 'success'|'error'}|null Null when
+	 *         the request carries neither query arg.
+	 */
+	private function resolve_status_message(): ?array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only query args set by this plugin's own redirect, not user-submitted form data.
+		if ( isset( $_GET['edbs_import_success'] ) ) {
+			// absint() on an array is 1, so only a string arg counts.
+			$count = static function ( string $key ): int {
+				return isset( $_GET[ $key ] ) && is_string( $_GET[ $key ] ) ? absint( $_GET[ $key ] ) : 0;
+			};
+
+			$scheduled     = $count( 'edbs_import_scheduled' );
+			$duplicates    = $count( 'edbs_import_duplicates' );
+			$invalid_urls  = $count( 'edbs_import_invalid_urls' );
+			$invalid_times = $count( 'edbs_import_invalid_times' );
+
+			$message = sprintf(
+				/* translators: 1: number imported, 2: number skipped */
+				__( 'Import complete. %1$d rows imported, %2$d skipped.', 'boardscribe' ),
+				absint( $_GET['edbs_import_success'] ),
+				absint( $_GET['edbs_import_skipped'] ?? 0 )
+			);
+
+			// Scheduled and duplicate rows have their own counters (they
+			// aren't invalid, so not part of "skipped") and need their own
+			// explanation - appended only when non-zero so a plain import
+			// keeps its original, shorter message.
+			if ( $scheduled > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of rows scheduled for a future date */
+					_n( '%d row was scheduled for a future date and will not appear until then.', '%d rows were scheduled for a future date and will not appear until then.', $scheduled, 'boardscribe' ),
+					$scheduled
+				);
+			}
+
+			if ( $duplicates > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of duplicate rows skipped */
+					_n( '%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped.', '%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped.', $duplicates, 'boardscribe' ),
+					$duplicates
+				);
+			}
+
+			if ( $invalid_urls > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of rows with an invalid URL column */
+					_n( '%d row had an invalid URL; that URL was not saved.', '%d rows had an invalid URL; those URLs were not saved.', $invalid_urls, 'boardscribe' ),
+					$invalid_urls
+				);
+			}
+
+			if ( $invalid_times > 0 ) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of rows with a start or end time that could not be read */
+					_n( '%d row had a start or end time that could not be read; that time was not saved.', '%d rows had a start or end time that could not be read; those times were not saved.', $invalid_times, 'boardscribe' ),
+					$invalid_times
+				);
+			}
+
+			$message .= $this->notes_message( wp_unslash( $_GET['edbs_import_notes'] ?? [] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only, only registered keys are used and each count goes through absint() in notes_message().
+
+			return [
+				'type'    => 'success',
+				'message' => $message,
+			];
+		}
+
+		if ( isset( $_GET['edbs_import_error'] ) ) {
+			$messages = [
+				'no_file'       => __( 'No file was uploaded. Please choose a CSV file and try again.', 'boardscribe' ),
+				'invalid_type'  => __( 'Invalid file type. Please upload a .csv file.', 'boardscribe' ),
+				'upload_failed' => __( 'The file failed to upload completely. Please try again.', 'boardscribe' ),
+			];
+			// sanitize_key() calls strtolower() internally, which is a
+			// TypeError in PHP 8+ if $_GET['edbs_import_error'] is an array
+			// (e.g. a URL crafted/edited to ?edbs_import_error[]=x) - only
+			// pass it a string, falling back to an empty (non-matching) code
+			// otherwise so the generic "unknown error" message below still
+			// applies rather than fataling the page.
+			$raw_code = $_GET['edbs_import_error']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- sanitized (or discarded entirely) immediately below; only kept as its own variable so the is_string() guard can run before sanitize_key() ever sees it.
+			$code     = is_string( $raw_code ) ? sanitize_key( wp_unslash( $raw_code ) ) : '';
+
+			return [
+				'type'    => 'error',
+				'message' => $messages[ $code ] ?? __( 'An unknown error occurred.', 'boardscribe' ),
+			];
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		return null;
+	}
+
+	/**
+	 * Announces the import status message to screen readers via
+	 * wp.a11y.speak(), which pushes text into WP core's own pre-existing
+	 * (initially empty) footer live region after the page has already
+	 * loaded (PRO-1325 / WCAG 4.1.3).
+	 *
+	 * The visible notice markup alone isn't reliably announced: it's
+	 * rendered as part of the initial full-page-reload response (this
+	 * import flow is a classic POST -> redirect -> GET, not an AJAX
+	 * update), and most screen readers only announce live-region content
+	 * that *changes* after the page has already loaded - content already
+	 * present at the first render isn't treated as a change. Deliberately
+	 * does NOT also mark that notice `<div>` itself as a live region
+	 * (e.g. role="status") as a "belt and suspenders" fix: WP core's own
+	 * dismissible-notice JS (common.js) injects a "Dismiss this notice"
+	 * button into any `.is-dismissible` notice shortly after page load -
+	 * a real DOM mutation inside the element - which risks a second,
+	 * unrelated announcement on some screen reader/browser combinations if
+	 * that element were also a live region. speak() into a separate,
+	 * dedicated region avoids that entirely.
+	 *
+	 * The speak() call itself is wrapped in wp.domReady() - wp-a11y's own
+	 * live-region container elements (#a11y-speak-polite/-assertive,
+	 * speak() writes into whichever it finds by that id) are created by its
+	 * setup() function, which wp-a11y registers via its own internal
+	 * domReady() call rather than running eagerly on script execution.
+	 * Without this wrapper, an inline script placed right after the wp-a11y
+	 * handle can run before that setup has fired - speak() finds no
+	 * container element yet and silently no-ops, losing the announcement
+	 * with no error to indicate why.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param string $message The plain-text message to announce.
+	 * @param string $type    'success' or 'error' - an error is announced
+	 *                        assertively (interrupts, per its higher
+	 *                        urgency), success politely (waits its turn),
+	 *                        matching wp.a11y.speak()'s own two politeness
+	 *                        levels.
+	 * @return void
+	 */
+	private function announce_status_message( string $message, string $type ): void {
+		wp_enqueue_script( 'wp-a11y' );
+		wp_add_inline_script(
+			'wp-a11y',
+			sprintf(
+				'wp.domReady( function() { wp.a11y.speak( %s, %s ); } );',
+				wp_json_encode( $message ),
+				wp_json_encode( 'error' === $type ? 'assertive' : 'polite' )
+			)
+		);
 	}
 
 	/**

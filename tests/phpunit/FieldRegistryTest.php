@@ -6,6 +6,7 @@
  */
 
 use EqualizeDigital\BoardScribe\Shortcode\BoardScribeShortcode;
+use EqualizeDigital\BoardScribe\Shortcode\FieldRegistry;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -188,5 +189,99 @@ class FieldRegistryTest extends TestCase {
 		$result = \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::resolve_value( $field, [ 'unexpected', 'array' ] );
 
 		$this->assertSame( '', $result );
+	}
+
+	/**
+	 * A checkbox-type field's resolve_value() coerces the string values a
+	 * REST query param or hand-edited block attribute actually arrives as
+	 * (not a real PHP bool) - this is the exact path
+	 * `open_links_new_window` (and every other checkbox field) goes
+	 * through on every request via register_route()'s sanitize_callback.
+	 *
+	 * @dataProvider checkbox_value_provider
+	 *
+	 * @param mixed $raw_value The raw value as it would arrive from a query string.
+	 * @param bool  $expected  The expected coerced result.
+	 */
+	public function test_resolve_value_coerces_checkbox_strings( $raw_value, bool $expected ): void {
+		$field = [
+			'key'  => 'edbs_test_checkbox',
+			'type' => \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::TYPE_CHECKBOX,
+		];
+
+		$this->assertSame( $expected, \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::resolve_value( $field, $raw_value ) );
+	}
+
+	/**
+	 * @return array<string, array{0: mixed, 1: bool}>
+	 */
+	public function checkbox_value_provider(): array {
+		return [
+			'string false' => [ 'false', false ],
+			'string 0'     => [ '0', false ],
+			'empty string' => [ '', false ],
+			'string true'  => [ 'true', true ],
+			'string 1'     => [ '1', true ],
+			'real bool true'  => [ true, true ],
+			'real bool false' => [ false, false ],
+		];
+	}
+
+	/**
+	 * TYPE_MULTISELECT's resolver sanitizes each comma-separated value as
+	 * a slug (sanitize_title()), same as a taxonomy-backed field like Pro's
+	 * category/type filters requires - and dedupes/drops empties, which a
+	 * FormTokenField client can otherwise send (e.g. a value re-selected
+	 * after being removed, or a trailing comma).
+	 */
+	public function test_resolve_value_sanitizes_multiselect_as_slugs(): void {
+		$field = [
+			'key'  => 'edbs_test_multiselect',
+			'type' => \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::TYPE_MULTISELECT,
+		];
+
+		$result = \EqualizeDigital\BoardScribe\Shortcode\FieldRegistry::resolve_value(
+			$field,
+			'Public Safety,public-safety,Budget & Finance,,'
+		);
+
+		$this->assertSame( 'public-safety,budget-finance', $result );
+	}
+
+	/**
+	 * The time format and its hide toggle are registered; the format is a
+	 * REST arg with a fixed default and the toggle is JS-only like the other
+	 * hide_* fields.
+	 */
+	public function test_time_fields_are_registered(): void {
+		$by_key = array_column( FieldRegistry::all(), null, 'key' );
+
+		$this->assertSame( 'g:i a', $by_key['time_format']['default'] );
+		$this->assertTrue( $by_key['time_format']['rest_arg'] );
+		$this->assertFalse( $by_key['hide_time']['default'] );
+		$this->assertSame( 'hide_columns', $by_key['hide_time']['group'] );
+		$this->assertEmpty( $by_key['hide_time']['rest_arg'] ?? false );
+		$this->assertStringContainsString( 'Link labels still include the time', $by_key['hide_time']['description'] );
+	}
+
+	/**
+	 * An invalid time format falls back to the default instead of being used.
+	 */
+	public function test_invalid_time_format_resolves_to_the_default(): void {
+		$by_key = array_column( FieldRegistry::all(), null, 'key' );
+
+		$this->assertSame( 'H:i', FieldRegistry::resolve_value( $by_key['time_format'], 'H:i' ) );
+		$this->assertSame( 'g:i a', FieldRegistry::resolve_value( $by_key['time_format'], 'H \\h i' ) );
+		$this->assertSame( 'g:i a', FieldRegistry::resolve_value( $by_key['time_format'], 'g:i a T' ) );
+	}
+
+	/**
+	 * time_format reaches the front end through the shared REST arg map.
+	 */
+	public function test_time_format_is_in_the_rest_arg_map(): void {
+		$map = array_column( FieldRegistry::rest_arg_map(), null, 'key' );
+
+		$this->assertSame( 'timeFormat', $map['time_format']['configKey'] );
+		$this->assertArrayNotHasKey( 'hide_time', $map );
 	}
 }

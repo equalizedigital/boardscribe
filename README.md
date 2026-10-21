@@ -57,6 +57,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 | `posts_per_page` | `20` | Number of entries per page. Use `-1` (or `all`) to show every entry, up to the site's configured maximum. |
 | `held_date_format` | `l, F j, Y` | PHP `date()` format for meetings that were held. |
 | `not_held_date_format` | `F Y` | PHP `date()` format for meetings that were not held. |
+| `time_format` | `g:i a` | PHP `date()` format for a meeting's start and end time, shown under its date. Only the time characters `a`, `A`, `g`, `G`, `h`, `H`, `i` and `s` are used. Meetings with no time show none. |
 | `template` | *(table)* | Name of a registered display template to render with. Free ships only the built-in table; add-ons can register additional templates (see [Display Templates](#display-templates--javascript-registries)). |
 | `equal_columns` | `false` | Set to `true` to force all table columns to the same width. |
 | `class` | *(none)* | Custom CSS class(es) added to the `<table>` element. |
@@ -64,6 +65,7 @@ Use the **Settings > Shortcode Builder** to generate the shortcode with your pre
 | `agenda_link_label` / `minutes_link_label` | *("View Agenda" / "View Minutes")* | Overrides the link text for the Agenda/Minutes cell links. |
 | `hide_title` | `false` | Set to `true` to hide the Title column. |
 | `hide_date` | `false` | Set to `true` to hide the Date column. |
+| `hide_time` | `false` | Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. This only changes what is displayed: the agenda and minutes link labels read by screen readers still include the time, so same-day meetings can be told apart. |
 | `hide_agenda` | `false` | Set to `true` to hide the Agenda column. |
 | `hide_minutes` | `false` | Set to `true` to hide the Minutes column. |
 
@@ -82,6 +84,7 @@ A **BoardScribe** block (`equalize-digital/boardscribe`) is also available in th
 Each meeting minute post has four native meta fields:
 
 - **Meeting Date** — Required. Date the meeting occurred (`YYYY-MM-DD`).
+- **Meeting Time** — Optional start and end time, shown under the date.
 - **Agenda URL** — Link to the meeting agenda document.
 - **Minutes URL** — Link to the published meeting minutes document.
 - **Meeting Not Held** — Checkbox to mark that a scheduled meeting did not take place.
@@ -146,9 +149,6 @@ The plugin exposes a large set of hooks, JavaScript registries, and reusable met
 | `edbs_default_meeting_title` | Filters the auto-generated title used when a meeting is saved with a blank title. |
 | `edbs_utm_query_args` | Filters the query parameters appended to outbound equalizedigital.com links. |
 | `edbs_settings_tabs` | Filters the settings page's tab list (slug => `{ icon, label }`); array order controls display order. |
-| `edbs_block_preview_columns` | Filters the column list used by the block editor's server-rendered preview table. |
-| `edbs_block_editor_preview` | Short-circuits the block editor preview with template-specific markup; return a string to use it, or `null`/anything else to fall through to the default flat table. |
-| `edbs_block_preview_max_rows` | Filters the row cap applied to the block editor preview (default 5). |
 
 ### Display Templates & JavaScript Registries
 
@@ -158,7 +158,7 @@ The front-end table renderer can be replaced or extended without a build step. A
 |---|---|
 | `window.edbsExtraColumns` | Array of `{ key, label, renderCell(meeting) }` objects to add extra table columns. `renderCell()`/`label` output is inserted as raw HTML and must be escaped by the caller. |
 | `window.edbsTemplates` | Display-template registry, keyed by name, selected per shortcode/block instance via the `template` attribute. A template provides `render(data, instanceCfg, container)` plus optional `renderPagination`, `renderInfo`, `focus`, `buildRequestUrl`, and `request` overrides. The built-in table is registered as `table`; unrecognized names fall back to it. |
-| `window.edbsInitInstance(container)` | Initializes one `.edbs-boardscribe-wrap` instance on demand, for wrappers injected after `DOMContentLoaded`. |
+| `window.edbsInitInstance(container)` | Initializes one `.edbs-boardscribe-wrap` instance on demand, for wrappers injected after `DOMContentLoaded` - also how the BoardScribe block's own editor preview renders itself, live, against the real REST endpoint (no separate server-rendered preview). |
 | `window.edbsBuildTable(meetings, instanceCfg)` | Returns the standard `<table>` HTML string (same columns, labels, and `window.edbsExtraColumns` handling as the built-in table), useful for a template that renders multiple tables/sections. |
 | `edbs.block.templateChangeAttributes` (`wp.hooks` filter) | Filters the attribute changes applied when the block's template picker changes, so the plugin owning a template can couple other attributes to the switch. |
 
@@ -178,7 +178,6 @@ The following `CustomEvent`s bubble on each instance's `.edbs-boardscribe-wrap` 
 |---|---|
 | `BoardScribeEndpoint::build_meeting_row( $post_id, $format_args, $request = null )` | Builds one meeting's escaped/formatted row data (title, date, agenda/minutes links), firing `edbs_meeting_row_data`. Reuse this instead of re-implementing the same escaping for an export, feed, or widget. |
 | `BoardScribeEndpoint::parse_date( $date_string )` | Parses a raw `edbs_meeting_date` meta value against the same list of accepted formats the endpoint uses. |
-| `BoardScribeBlock::render_preview_table( $columns, $rows, $attributes )` | Renders one preview table for a column/row set in the block editor, the PHP analogue of `window.edbsBuildTable()`. |
 | `MetaBox::generate_default_title( $meeting_date, $post_id = 0 )` | Builds the default "Board Meeting - {date}" title used when a meeting is saved with a blank title. |
 
 ## Want to contribute?

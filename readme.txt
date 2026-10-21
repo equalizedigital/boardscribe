@@ -3,7 +3,7 @@ Contributors: equalizedigital, stevejonesdev, alh0319, williampatton
 Tags: accessibility, document library, document management, meetings, agenda
 Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -86,8 +86,10 @@ Use the **Shortcode Builder** (Board Meetings > Settings > Shortcode Builder) to
 * `posts_per_page` - Entries per page. Use `-1` to show all. Default: `20`.
 * `held_date_format` - PHP date format for meetings that were held. Default: `l, F j, Y`.
 * `not_held_date_format` - PHP date format for meetings not held. Default: `F Y`.
+* `time_format` - PHP date format for a meeting's start and end time, shown under its date. Only the time characters `a`, `A`, `g`, `G`, `h`, `H`, `i` and `s` are used. Meetings with no time show none. Default: `g:i a`.
 * `hide_title` - Set to `true` to hide the Title column. Default: `false`.
 * `hide_date` - Set to `true` to hide the Date column. Default: `false`.
+* `hide_time` - Set to `true` to hide the meeting time shown under the date. The time is part of the Date column, so `hide_date` hides it too. This only changes what is displayed: the agenda and minutes link labels read by screen readers still include the time, so same-day meetings can be told apart. Default: `false`.
 * `hide_agenda` - Set to `true` to hide the Agenda column. Default: `false`.
 * `hide_minutes` - Set to `true` to hide the Minutes column. Default: `false`.
 * `title_label`, `date_label`, `agenda_label`, `minutes_label` - Override the header text for each column. Default: the column's built-in name.
@@ -104,6 +106,7 @@ Use the **Shortcode Builder** (Board Meetings > Settings > Shortcode Builder) to
 Each meeting post stores:
 
 * **Meeting Date** - Required. The date the meeting was or will be held.
+* **Meeting Time** - Optional start and end time, shown under the date.
 * **Agenda URL** - Link to the agenda document.
 * **Minutes URL** - Link to the published minutes document.
 * **Meeting Not Held** - Marks that a scheduled meeting did not take place.
@@ -219,6 +222,29 @@ No. This plugin uses native WordPress meta fields and requires no third-party pl
 7. BoardScribe general settings showing an option to delete all BoardScribe meeting posts and plugin settings when BoardScribe is deleted.
 
 == Changelog ==
+
+= 1.2.0 =
+* New - optional start and end time for each meeting, with Time Format and Hide Time options.
+* New - the CSV importer accepts optional start_time and end_time columns.
+* New - Sort order and Date scope options in the shortcode builder and block, for newest or oldest first and upcoming or past meetings.
+* New - option to open agenda and minutes links in a new tab, with a screen reader warning.
+* New - Meeting Date, Canceled, Agenda, and Minutes columns on the Board Meetings admin list.
+* New - an Edit action on an Agenda or Minutes file that is a linked document.
+* Updated - the Meeting Details box has a new design with one consistent card for Agenda, Minutes, and Supporting Documents.
+* Updated - the Agenda and Minutes Media Library pickers only show document files.
+* Updated - the block editor preview now matches the front end.
+* Updated - the shortcode builder and block sidebar only show options that apply to the selected layout.
+* Updated - "Hide Columns" is now "Hide Data" in the block sidebar and shortcode builder.
+* Updated - the CSV import has a redesigned upload section, announces results to screen readers, reports future-dated rows as scheduled, and skips meetings that already exist.
+* Updated - the Meeting Details box keeps focus after keyboard reordering, works better with screen readers, and announces links that open in a new tab.
+* Fix - a meeting can no longer be published without a valid date.
+* Fix - saved blocks no longer forget a column you chose to show.
+* Fix - the CSV import rejects files that are not CSV or were cut off partway.
+* Fix - replacing a Supporting Document no longer overwrites its custom title, and its title editor no longer jumps to another row.
+* Fix - the External URL field is no longer prefilled with another source's link, and CDN-hosted files no longer show as External URL.
+* Fix - dragging to reorder works in Firefox.
+* Fix - block settings containing a closing square bracket are no longer cut off.
+* Updated - translations.
 
 = 1.1.0 =
 * Added CSV bulk importer for meeting minutes.

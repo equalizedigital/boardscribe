@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:45+0000\n"
+"PO-Revision-Date: 2026-10-20 20:45+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: sk_SK\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,166 @@ msgstr "BoardScribe vyžaduje PHP %1$s alebo vyššiu verziu. Používate PHP %2
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "Pluginu BoardScribe chýba autoloader. Preinštalujte ho z vydaného súboru zip alebo spustite „composer install“, ak vyvíjate zo zdrojového kódu."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Dátum zasadnutia"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Zrušené"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Program"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Zápisnica"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Zobraziť"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Zasadnutie musí mať platný dátum zasadnutia (YYYY-MM-DD), aby ho bolo možné publikovať."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "Zasadnutie bolo uložené ako koncept, pretože nemá dátum zasadnutia. Pridajte dátum a potom ho publikujte."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "%d publikované zasadnutie nemá platný dátum zasadnutia. Pridajte k nemu dátum."
+msgstr[1] "%d publikované zasadnutia nemajú platný dátum zasadnutia. Pridajte dátum ku každému z nich."
+msgstr[2] "%d publikovaných zasadnutí nemá platný dátum zasadnutia. Pridajte dátum ku každému z nich."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Dátum zasadnutia vo formáte RRRR-MM-DD."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "URL adresa dokumentu s programom zasadnutia."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "URL adresa dokumentu so zverejnenou zápisnicou z tohto zasadnutia."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "Či sa zasadnutie nekonalo."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Čas začiatku zasadnutia v 24-hodinovom formáte HH:MM, v časovom pásme webu."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Čas ukončenia zasadnutia v 24-hodinovom formáte HH:MM, v časovom pásme webu."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Ktorý zdroj modálneho okna Pridať/Nahradiť (media_library, external_url alebo ID registrované pluginom) vygeneroval aktuálnu hodnotu poľa %s."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "Obrazovka úprav wp-admin pre základný príspevok poľa %s, ak ho jeho zdroj má (napr. prepojený dokument) – prázdne v prípade bežného súboru z knižnice médií alebo externého odkazu."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "ID prepojeného príspevku, z ktorého vychádza aktuálna hodnota poľa %s, ak ho jeho zdroj má (napr. prepojený dokument) – 0 v prípade bežného súboru z knižnice médií alebo externého odkazu."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Podrobnosti zasadnutia"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Polia v časti Podrobnosti zasadnutia vyžadujú JavaScript."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "Pole „%s“ je resource_list alebo pripojené pole a musí mať nastavené saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Zasadnutie rady"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s – %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Povinné. Vyberte dátum, kedy sa zasadnutie konalo alebo bude konať."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Čas zasadnutia"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Voliteľné. Zobrazuje sa pod dátumom zasadnutia, okrem prípadov, keď je zasadnutie označené ako neuskutočnené."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Vybrať súbor s programom"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "Program zasadnutia rady – {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Vybrať súbor so zápisnicou"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "Zápisnica zo zasadnutia rady – {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Zasadnutie sa nekonalo"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "Toto zasadnutie sa neuskutočnilo."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "Všeobecné"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Nástroj na tvorbu shortcodov"
 
@@ -94,7 +216,7 @@ msgid "Support"
 msgstr "Podpora"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "Nastavenia BoardScribe"
 
@@ -123,144 +245,192 @@ msgstr "Odstrániť všetky príspevky o zasadnutiach BoardScribe a nastavenia p
 msgid "Warning: this cannot be undone."
 msgstr "Upozornenie: túto akciu nie je možné vrátiť späť."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "Nastavenia BoardScribe"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "Nakonfigurujte možnosti shortcodu nižšie, potom skopírujte vygenerovaný shortcode a vložte ho do ľubovoľnej stránky alebo príspevku."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "Nástroj na tvorbu shortcodov vyžaduje JavaScript."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "Sťahovanie a inštalácia BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Typ príspevku Zasadnutia rady"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "Je BoardScribe prístupný?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "Do akých jazykov je BoardScribe preložený?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Ako pridám informácie o veľkosti a type súboru k odkazom?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Dokumentácia"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Potrebujete pomoc? Pozrite si našu dokumentáciu, kde nájdete návody krok za krokom a prehľad funkcií."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Zobraziť dokumentáciu"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(otvorí sa na novej karte)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Kontaktujte nás"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "Máte otázky alebo potrebujete pomoc? Obráťte sa na náš tím podpory."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Kontaktovať podporu"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Rýchle odkazy"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Názov"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s až %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Dátum"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Koniec: %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Program"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Zápisnica"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Názov zasadnutia. Ak zostane prázdny, vygeneruje sa automaticky z dátumu (napr. „Zasadnutie rady – 15. marca 2025“)."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Formát: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "Úplná URL adresa súboru s programom"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Voliteľné. Čas začiatku zasadnutia (napr. %s), zobrazený pod dátumom zasadnutia. Ide o čas zasadnutia, nie čas publikovania vo WordPress (pozri publish_date). Čas, ktorý sa nedá prečítať, sa neuloží a zasadnutie sa napriek tomu naimportuje. Opätovný import súboru nikdy nepridá čas k zasadnutiu, ktoré už existuje."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "Úplná URL adresa súboru so zápisnicou"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Voliteľné. Čas konca zasadnutia v rovnakých formátoch ako start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Úplná adresa URL k súboru programu. Musí to byť úplná adresa http:// alebo https://; neplatná adresa URL sa neuloží."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Úplná adresa URL k súboru zápisnice. Musí to byť úplná adresa http:// alebo https://; neplatná adresa URL sa neuloží."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Akceptované hodnoty: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Akýkoľvek rozpoznateľný dátum alebo dátum a čas (napr. %s). Nastaví skutočný dátum zverejnenia vo WordPress namiesto okamihu importu – použite to na spätne datované historické zasadnutia. Neovplyvňuje dátum zasadnutia ani poradie zoradenia uvedené vyššie."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Akýkoľvek rozpoznateľný dátum alebo dátum a čas (napr. %s). Nastavuje skutočný dátum publikovania vo WordPress namiesto okamihu importu – použite to na spätné datovanie historických zasadnutí. Nemá vplyv na dátum zasadnutia ani poradie zoradenia vyššie. Budúci dátum a čas naplánuje zasadnutie namiesto jeho okamžitého zverejnenia a na webe sa nezobrazí až do tohto termínu."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "Importovať"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Kontrola bezpečnosti zlyhala."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Nedostatočné oprávnenia."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Import dokončený. Bolo importovaných %1$d riadkov, %2$d bolo vynechaných."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "%d riadok bol naplánovaný na budúci dátum a dovtedy sa nezobrazí."
+msgstr[1] "%d riadky boli naplánované na budúci dátum a dovtedy sa nezobrazia."
+msgstr[2] "%d riadkov bolo naplánovaných na budúci dátum a dovtedy sa nezobrazia."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "%d riadok sa zhodoval s existujúcim zasadnutím alebo so starším riadkom v tomto súbore s rovnakým názvom a dátumom a zhodným alebo chýbajúcim časom začiatku a bol vynechaný."
+msgstr[1] "%d riadky sa zhodovali s existujúcim zasadnutím alebo so starším riadkom v tomto súbore s rovnakým názvom a dátumom a zhodným alebo chýbajúcim časom začiatku a boli vynechané."
+msgstr[2] "%d riadkov sa zhodovalo s existujúcim zasadnutím alebo so starším riadkom v tomto súbore s rovnakým názvom a dátumom a zhodným alebo chýbajúcim časom začiatku a boli vynechané."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "%d riadok obsahoval neplatnú adresu URL; táto adresa URL nebola uložená."
+msgstr[1] "%d riadky obsahovali neplatnú adresu URL; tieto adresy URL neboli uložené."
+msgstr[2] "%d riadkov obsahovalo neplatnú adresu URL; tieto adresy URL neboli uložené."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "%d riadok mal čas začiatku alebo konca, ktorý sa nedal prečítať; tento čas nebol uložený."
+msgstr[1] "%d riadky mali čas začiatku alebo konca, ktorý sa nedal prečítať; tieto časy neboli uložené."
+msgstr[2] "%d riadkov malo čas začiatku alebo konca, ktorý sa nedal prečítať; tieto časy neboli uložené."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Nebol nahraný žiadny súbor. Vyberte súbor CSV a skúste to znova."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Neplatný typ súboru. Nahrajte súbor vo formáte .csv."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "Súbor sa nepodarilo úplne nahrať. Skúste to znova."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "Vyskytla sa neznáma chyba."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +459,293 @@ msgstr "Pridať zasadnutie"
 msgid "Add New Meeting"
 msgstr "Pridať nové zasadnutie"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Zobraziť program"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Zobraziť zápisnicu"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Dátum nie je k dispozícii"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Program nie je k dispozícii"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Zápisnica nie je k dispozícii"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Zasadnutie sa nekonalo"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s pre %2$s (otvorí sa v novom okne)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s pre %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Program nie je k dispozícii"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Názov"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Zápisnica nie je k dispozícii"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Dátum"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Zasadnutie sa nekonalo"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Predchádzajúce"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Nasledujúce"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Predchádzajúca strana"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Nasledujúca strana"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Stránkovanie"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Strana %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Zobrazujú sa záznamy %1$s až %2$s z celkovo %3$s"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Zahrnuté roky"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Zoznam rokov oddelených čiarkou. Ponechajte prázdne, ak chcete zobraziť všetky roky."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Dátum začiatku"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Zobraziť iba zasadnutia v tento deň alebo neskôr. Má prednosť pred zahrnutými rokmi."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Dátum ukončenia"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Zobraziť iba zasadnutia v tento deň alebo skôr. Má prednosť pred zahrnutými rokmi."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Počet príspevkov na stránku"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Formát dátumu pre konané zasadnutia"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "Formát PHP funkcie date(). Úplnú referenciu nájdete na php.net/manual/en/datetime.format.php."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Formát dátumu pre nekonané zasadnutia"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Formát času"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "Formát PHP date() pre čas zobrazený pod dátumom zasadnutia, ak je uvedený. Používajú sa iba znaky formátu času a, A, g, G, h, H, i a s."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Šablóna zobrazenia"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Tabuľka (predvolené)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Jeden riadok tabuľky na zasadnutie so stĺpcami, ktoré vyberiete nižšie."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "Vynútiť rovnakú šírku všetkých stĺpcov"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Pomáha konzistentne zarovnať stĺpce pre vertikálny rytmus naprieč riadkami."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Vlastná CSS trieda"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Text odkazu na program"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Text odkazu na zápisnicu"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "Nenašli sa žiadne zverejnené zasadnutia."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Otvárať odkazy na program/zápisnice v novom okne"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Odkazy na program a zápisnice sa otvoria na novej karte prehliadača. Automaticky sa pridá nápoveda pre čítačky obrazovky a rel=\"noopener noreferrer\"."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Čas (zobrazený pod dátumom)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "Čas je súčasťou stĺpca Dátum, takže skrytím stĺpca Dátum sa skryje aj čas. Názvy odkazov stále obsahujú čas, aby bolo možné odlíšiť zasadnutia v rovnaký deň."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Časový rozsah dátumov"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "„Všetky zasadnutia“ predstavuje kompletný archív. „Nadchádzajúce“ zobrazuje iba zasadnutia od dnešného dňa; „Minulé“ zobrazuje iba zasadnutia, ktoré sa už konali."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Všetky zasadnutia"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Nadchádzajúce zasadnutia"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Minulé zasadnutia"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Poradie zoradenia"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "Možnosť „Najnovšie najskôr“ je predvolená a hodí sa pre archív minulých zápisníc. Pre výhľadový zoznam, ako sú nadchádzajúce zasadnutia, zvoľte „Najstaršie najskôr“."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Najnovšie najskôr"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Najstaršie najskôr"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Import dokončený. Bolo importovaných %1$d riadkov, %2$d bolo vynechaných."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Nahrajte súbor CSV na hromadný import zasadnutí."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "Nebol nahraný žiadny súbor. Vyberte súbor CSV a skúste to znova."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Neplatný typ súboru. Nahrajte súbor vo formáte .csv."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "Vyskytla sa neznáma chyba."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Nahrajte súbor CSV na hromadný import zasadnutí. Prvý riadok musí byť hlavička."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "Formát CSV"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Stĺpec"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Povinné"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Poznámky"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Áno"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "Nie"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Opätovný import súboru"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "Riadok s časom začiatku sa vynechá ako duplikát, keď už uložené zasadnutie má rovnaký názov a dátum a buď rovnaký čas začiatku, alebo nemá uvedený čas začiatku. Riadok bez času začiatku sa vynechá, ak akékoľvek uložené zasadnutie má rovnaký názov a dátum. Dvojité nahranie rovnakého súboru nevytvára kópie."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "Pri hľadaní zhody sa používa to, čo je pri jednotlivých zasadnutiach uložené teraz, nie to, čo bolo pôvodne v súbore. Ak po importe zasadnutia zmeníte jeho názov alebo dátum, prípadne zmeníte jeho čas začiatku na iný čas, keď ho riadok obsahuje, pôvodný riadok sa už nezhoduje a opätovný import daného súboru vytvorí nové zasadnutie. Ak chcete existujúce zasadnutia zmeniť, upravte ich vo WordPress namiesto opätovného importovania."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "Nahrať CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Vyberte súbor s použitím vyššie uvedených stĺpcov. Prvý riadok musí byť hlavička a každý platný riadok po nej vytvorí jedno zasadnutie."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "Súbor CSV"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Dátum zasadnutia"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Povinné. Vyberte dátum, kedy sa zasadnutie konalo alebo bude konať."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "URL adresa programu"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Vybrať súbor s programom"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Použiť tento súbor"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Knižnica médií"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "URL adresa zápisnice"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Vybrať súbor so zápisnicou"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Zasadnutie sa nekonalo"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "Toto zasadnutie sa nekonalo"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "Importovať zasadnutia"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +770,11 @@ msgstr "Zobraziť iba zasadnutia v tento deň alebo skôr. Prepíše zahrnuté r
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Zatiaľ neexistujú žiadne výrazy na filtrovanie."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Nastavenia zobrazenia"
 
@@ -560,13 +785,13 @@ msgstr "Názvy stĺpcov"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Texty odkazov"
+msgid "Links"
+msgstr "Odkazy"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Skryť stĺpce"
+msgid "Hide Data"
+msgstr "Skryť údaje"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +809,10 @@ msgstr "Ignoruje limit počtu na stránku uvedený nižšie a načíta každé z
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Záznamov na stránku"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "Náhľad sa nepodarilo načítať. Skontrolujte, či je REST API lokality dostupné, a skúste to znova."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +841,263 @@ msgstr "Shortcode bol skopírovaný do schránky."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "Kopírovanie zlyhalo. Vyberte text shortcodu a skopírujte ho ručne."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Vybrať súbor"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Použiť tento súbor"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Tento typ súboru nie je možné použiť pre toto pole. Vyberte iný súbor."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (otvorí sa na novej karte)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Video z knižnice médií"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Knižnica médií"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "Externá adresa URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "Aktuálny zdroj zostáva nezmenený, kým voľbu nepotvrdíte."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Zadajte úplnú adresu URL začínajúcu sa na http:// alebo https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "Uložiť adresu URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Vybrať z knižnice médií"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Otvorte vstavaný výber súborov WordPressu a vyberte alebo nahrajte súbor."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Zadajte externú adresu URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "Odkaz na súbor alebo webovú stránku hosťovanú inde."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Späť"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "Nahradiť %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "Pridať %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "Posunúť %s nahor"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "Posunúť %s nadol"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Dokument bez názvu"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "Upraviť názov"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Pridať názov"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "Názov bol uložený."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "Úprava názvu bola zrušená."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Názov dokumentu"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "Uložiť"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Zrušiť"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "Položka %1$s bola presunutá na pozíciu %2$d z %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Dokument"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "Nie je pridaný žiadny prvok %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Nastavuje, ako sa tento dokument zobrazuje tu – samotný dokument sa nepremenuje."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "Zobraziť %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "Upraviť"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "Upraviť %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "Upraviť názov položky %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Pridať názov položky %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Nahradiť"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Odstrániť"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "Odstrániť %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "Položka %s bola odstránená."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ Pridať %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "Položka %s bola pridaná."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Položka"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "%s bez názvu"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Pridať názov pre %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Vyberte súbor položky %s"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "Nie je priložený žiadny prvok %s."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "Položka %s bola nahradená."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Začiatok"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Koniec"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "Čas konca je skorší ako čas začiatku, takže toto zasadnutie sa končí nasledujúci deň."
 
 #: block.json
 msgctxt "block title"

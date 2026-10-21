@@ -9,10 +9,9 @@
  * codebase; this test pins that down so a real future regression fails
  * loudly instead of needing another manual comparison.
  *
- * The block-editor `@wordpress` packages (blocks, block-editor, components,
- * server-side-render) are mocked (see jest.config.js) - they're build-time
- * externals (wp.* globals) in the real bundle, not installed packages
- * Jest can resolve.
+ * The block-editor `@wordpress` packages (blocks, block-editor, components)
+ * are mocked (see jest.config.js) - they're build-time externals (wp.*
+ * globals) in the real bundle, not installed packages Jest can resolve.
  */
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
@@ -127,6 +126,32 @@ const FIELD_FIXTURE = [
 		placeholder: null,
 		description: null,
 	},
+	{
+		key: 'hide_location',
+		attributeKey: 'hideLocation',
+		configKey: 'hideLocation',
+		type: 'checkbox',
+		group: 'hide_columns',
+		label: 'Location',
+		default: true,
+	},
+	// PRO-1397: simulates a Pro field marked hidden_from_ui once its
+	// license lapses (e.g. the category filter) - still present in the
+	// localized array (FieldRegistry::js_schema( true )) so the live
+	// preview can map its saved value, but flagged so no picker renders.
+	{
+		key: 'category',
+		attributeKey: 'category',
+		configKey: 'category',
+		type: 'text',
+		group: 'general',
+		label: 'Category',
+		default: '',
+		choices: null,
+		placeholder: null,
+		description: null,
+		hiddenFromUi: true,
+	},
 ];
 
 function defaultAttributes() {
@@ -210,6 +235,24 @@ describe( 'BoardScribe block edit()', () => {
 		expect( controlFor( container, 'number', 'Records Per Page' ) ).not.toBeNull();
 	} );
 
+	// Location is a simulated extension field, not a Pro dependency. This tests
+	// Free's shared grouping and default handling for fields supplied by plugins.
+	it( 'combines core and extension hide controls with their own defaults', () => {
+		const setAttributes = jest.fn();
+		container = renderEdit( defaultAttributes(), setAttributes );
+
+		const panel = container.querySelector( '[data-panel="Hide Data"]' );
+		const title = controlFor( panel, 'toggle', 'Title' ).querySelector( 'input' );
+		const location = controlFor( panel, 'toggle', 'Location' ).querySelector( 'input' );
+		expect( title.checked ).toBe( false );
+		expect( location.checked ).toBe( true );
+		expect( container.querySelectorAll( '[data-panel="Hide Data"]' ) ).toHaveLength( 1 );
+		expect( container.querySelector( '[data-panel="Show Columns"]' ) ).toBeNull();
+
+		act( () => location.click() );
+		expect( setAttributes ).toHaveBeenCalledWith( { hideLocation: false } );
+	} );
+
 	it( 'hides the Records Per Page number field once "Show all meetings" is on', () => {
 		container = renderEdit( { ...defaultAttributes(), postsPerPage: -1 } );
 
@@ -223,10 +266,69 @@ describe( 'BoardScribe block edit()', () => {
 		expect( controlFor( container, 'select', 'Display Template' ) ).not.toBeNull();
 	} );
 
+	/**
+	 * PRO-1416: the template picker's help follows the selected choice
+	 * (field.choiceDescriptions), falling back to the field-level description.
+	 * Mutates the shared fixture in place for the test, like the hiddenFromUi
+	 * test below, since the module keeps a reference to that array.
+	 */
+	it( 'shows the selected template choice\'s own help text (PRO-1416)', () => {
+		const templateField = FIELD_FIXTURE.find( ( field ) => 'template' === field.attributeKey );
+		const original = { choices: templateField.choices, choiceDescriptions: templateField.choiceDescriptions };
+		templateField.choices = { '': 'Table (default)', list: 'List (stacked)' };
+		templateField.choiceDescriptions = { '': 'Table help.', list: 'List help.' };
+
+		try {
+			container = renderEdit( { ...defaultAttributes(), template: '' } );
+			expect( controlFor( container, 'select', 'Display Template' ).getAttribute( 'data-help' ) ).toBe( 'Table help.' );
+			act( () => roots.get( container ).unmount() );
+			container.remove();
+
+			container = renderEdit( { ...defaultAttributes(), template: 'list' } );
+			expect( controlFor( container, 'select', 'Display Template' ).getAttribute( 'data-help' ) ).toBe( 'List help.' );
+		} finally {
+			templateField.choices = original.choices;
+			if ( undefined === original.choiceDescriptions ) {
+				delete templateField.choiceDescriptions;
+			} else {
+				templateField.choiceDescriptions = original.choiceDescriptions;
+			}
+		}
+	} );
+
+	/**
+	 * PRO-1397 follow-up (CodeRabbit finding on PR #141): the template
+	 * picker is a special case rendered outside the generic fieldsByGroup
+	 * loop, so its own hiddenFromUi check needed adding separately - the
+	 * generic loop's skip doesn't cover it. Mutates the shared fixture's
+	 * `template` entry in place for the duration of this one test (rather
+	 * than reloading the module with a different registry, which would
+	 * pull in a second React copy and break hooks) since FIELD_REGISTRY is
+	 * the exact same array object window.edbsBlockFieldRegistry pointed to
+	 * when the module was first imported in beforeAll().
+	 */
+	it( 'renders no Display Template control when the template field itself is hiddenFromUi', () => {
+		const templateField = FIELD_FIXTURE.find( ( field ) => 'template' === field.attributeKey );
+		templateField.hiddenFromUi = true;
+
+		try {
+			container = renderEdit( { ...defaultAttributes(), template: 'year_timeline' } );
+			expect( controlFor( container, 'select', 'Display Template' ) ).toBeNull();
+		} finally {
+			delete templateField.hiddenFromUi;
+		}
+	} );
+
 	it( 'renders no control at all for className - it uses the block\'s native Advanced panel field instead', () => {
 		container = renderEdit( defaultAttributes() );
 
 		expect( container.querySelector( '[data-label="Custom CSS Class"]' ) ).toBeNull();
+	} );
+
+	it( 'renders no control for a hiddenFromUi field (PRO-1397)', () => {
+		container = renderEdit( defaultAttributes() );
+
+		expect( controlFor( container, 'text', 'Category' ) ).toBeNull();
 	} );
 
 	it( 'groups fields into panels matching the shortcode builder\'s groups, skipping empty ones', () => {
@@ -237,7 +339,7 @@ describe( 'BoardScribe block edit()', () => {
 		);
 
 		expect( panelTitles ).toEqual(
-			expect.arrayContaining( [ 'Display Settings', 'Column Labels', 'Hide Columns' ] ),
+			expect.arrayContaining( [ 'Display Settings', 'Column Labels', 'Hide Data' ] ),
 		);
 		// The fixture has no link_labels/show_columns fields - those panels
 		// must not render at all (renderGenericFields() gates on group.length).
@@ -245,3 +347,115 @@ describe( 'BoardScribe block edit()', () => {
 		expect( panelTitles ).not.toContain( 'Show Columns' );
 	} );
 } );
+
+/**
+ * PRO-1331 regression coverage: the block's live preview renders the same
+ * wrapper markup the shortcode emits and drives it through the real
+ * frontend pipeline (window.edbsInitInstance), rather than a server-side
+ * lookalike - see buildInstanceConfig()'s own docblock in block/index.js.
+ */
+describe( 'BoardScribe block edit() live preview', () => {
+	let container;
+
+	beforeEach( () => {
+		jest.useFakeTimers();
+		window.edbsInitInstance = jest.fn();
+	} );
+
+	afterEach( () => {
+		if ( container ) {
+			act( () => {
+				roots.get( container )?.unmount();
+			} );
+			container.remove();
+			container = null;
+		}
+		delete window.edbsInitInstance;
+		jest.useRealTimers();
+	} );
+
+	function rerender( setAttributes, attributes ) {
+		act( () => {
+			roots.get( container ).render(
+				createElement( registerBlockType.mock.settings.edit, { attributes, setAttributes } ),
+			);
+		} );
+	}
+
+	it( 'renders the shortcode\'s wrapper markup and hands it to window.edbsInitInstance', () => {
+		container = renderEdit( defaultAttributes() );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		const wrap = container.querySelector( '.edbs-boardscribe-wrap' );
+		expect( wrap ).not.toBeNull();
+		expect( wrap.querySelector( '.edbs-table-container' ) ).not.toBeNull();
+		expect( wrap.querySelector( '.edbs-pagination-container' ) ).not.toBeNull();
+		expect( window.edbsInitInstance ).toHaveBeenCalledWith( wrap );
+	} );
+
+	it( 'encodes the block\'s attributes into data-config keyed by each field\'s configKey', () => {
+		container = renderEdit( { ...defaultAttributes(), includedYears: '2024,2025' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		const config = JSON.parse( container.querySelector( '.edbs-boardscribe-wrap' ).dataset.config );
+		expect( config.includedYears ).toBe( '2024,2025' );
+		// See instance.js - keeps preview pagination out of the editor's own URL.
+		expect( config.urlState ).toBe( false );
+		expect( config.instanceId ).toEqual( expect.stringMatching( /^edbs_block_preview_/ ) );
+	} );
+
+	it( 'still maps a hiddenFromUi field\'s saved value into data-config (PRO-1397)', () => {
+		container = renderEdit( { ...defaultAttributes(), category: 'finance' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		const config = JSON.parse( container.querySelector( '.edbs-boardscribe-wrap' ).dataset.config );
+		expect( config.category ).toBe( 'finance' );
+	} );
+
+	it( 'debounces rapid attribute changes into a single re-init', () => {
+		const setAttributes = jest.fn();
+		container = renderEdit( defaultAttributes(), setAttributes );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+		window.edbsInitInstance.mockClear();
+
+		rerender( setAttributes, { ...defaultAttributes(), includedYears: '2024' } );
+		act( () => {
+			jest.advanceTimersByTime( 100 );
+		} );
+		rerender( setAttributes, { ...defaultAttributes(), includedYears: '2024,2025' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		expect( window.edbsInitInstance ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'shows an error notice on edbs:fetch-error, and clears it on the next re-init', () => {
+		container = renderEdit( defaultAttributes() );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+
+		act( () => {
+			container.querySelector( '.edbs-boardscribe-wrap' ).dispatchEvent(
+				new CustomEvent( 'edbs:fetch-error', { bubbles: true, detail: {} } ),
+			);
+		} );
+		expect( container.querySelector( '[data-control="notice"][data-status="error"]' ) ).not.toBeNull();
+
+		rerender( jest.fn(), { ...defaultAttributes(), includedYears: '2024' } );
+		act( () => {
+			jest.advanceTimersByTime( 300 );
+		} );
+		expect( container.querySelector( '[data-control="notice"][data-status="error"]' ) ).toBeNull();
+	} );
+} );
+

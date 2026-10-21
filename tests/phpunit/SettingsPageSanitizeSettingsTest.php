@@ -69,6 +69,20 @@ class SettingsPageSanitizeSettingsTest extends TestCase {
 	}
 
 	/**
+	 * options.php passes null, not an empty array, when the whole settings
+	 * group is submitted with every checkbox unchecked - this is the only
+	 * field in the group, so unchecking it is the only way to reach this.
+	 * A plain `array $input` type hint fatals on that with a TypeError,
+	 * which leaves the option's old value in place and makes the setting
+	 * impossible to ever turn off (PRO-1393).
+	 */
+	public function test_null_input_does_not_fatal_and_normalizes_to_0(): void {
+		$result = $this->settings_page->sanitize_settings( null );
+
+		$this->assertSame( 0, $result['delete_on_uninstall'] );
+	}
+
+	/**
 	 * Only the known delete_on_uninstall key is returned - any other
 	 * submitted keys are dropped rather than passed through, since this
 	 * acts as an allow-list for what can be stored in the option.

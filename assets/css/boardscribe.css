@@ -19,6 +19,19 @@
     cursor: not-allowed;
 }
 
+/*
+ * Wide tables (many visible columns, or long unbreakable cell content)
+ * scroll horizontally within their own container rather than overflowing
+ * it - matters most in the block editor's own preview (PRO-1202,
+ * previously handled by a PHP-only inline style on the editor's static
+ * server-rendered preview table; PRO-1331 replaced that with a live
+ * render of this same markup, so the protection has to live here now,
+ * shared by both contexts), but is a reasonable front-end default too.
+ */
+.edbs-table-container {
+    overflow-x: auto;
+}
+
 .edbs-boardscribe-table {
     width: 100%;
     border-collapse: collapse;
@@ -29,6 +42,13 @@
     padding: 8px;
     text-align: left;
     border: 1px solid #ddd;
+}
+
+/* A meeting's time sits on its own line under its date. Both are inside one
+   wrapper so the stacked small-screen layout below keeps them together as a
+   single cell child, next to the generated column label. */
+.edbs-meeting-time {
+    display: block;
 }
 
 /* table-layout: fixed splits the table's 100% width evenly across
@@ -66,6 +86,7 @@
     .edbs-boardscribe-table td {
         display: flex;
         justify-content: space-between;
+        gap: 0.75em;
         padding: 10px;
         border: 1px solid #ddd;
         text-align: left;

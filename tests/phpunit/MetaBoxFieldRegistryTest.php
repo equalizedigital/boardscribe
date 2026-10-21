@@ -1,0 +1,382 @@
+<?php
+/**
+ * Tests for MetaBoxFieldRegistry.
+ *
+ * @package EqualizeDigital\BoardScribe
+ */
+
+use EqualizeDigital\BoardScribe\Admin\MetaBoxFieldRegistry;
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
+
+/**
+ * Covers the edbs_meeting_meta_fields filter and insert_after ordering -
+ * the data-driven replacement for the old per-row action hooks, and the
+ * only place a plugin (Pro) controls where its own field's row lands.
+ */
+class MetaBoxFieldRegistryTest extends TestCase {
+
+	/**
+	 * Resets any filter added by a test.
+	 */
+	public function tear_down(): void {
+		remove_all_filters( 'edbs_meeting_meta_fields' );
+		remove_all_filters( 'edbs_document_media_types' );
+		parent::tear_down();
+	}
+
+	/**
+	 * The core fields are present, in their declared order, when nothing
+	 * filters the registry. The Meeting Time row sits directly after the date.
+	 */
+	public function test_core_fields_are_present_in_declared_order(): void {
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertSame(
+			[ 'edbs_meeting_date', 'edbs_meeting_start_time', 'edbs_agenda_url', 'edbs_minutes_url', 'edbs_meeting_not_held' ],
+			$keys
+		);
+	}
+
+	/**
+	 * The Meeting Time row is one field, optional, and serializes for the
+	 * React app (its render_callback is dropped, like every other callable).
+	 */
+	public function test_meeting_time_row_is_one_optional_field_in_the_js_schema(): void {
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+
+		$this->assertSame( 'time_range', $by_key['edbs_meeting_start_time']['type'] );
+		$this->assertFalse( $by_key['edbs_meeting_start_time']['required'] );
+		$this->assertSame( MeetingTime::META_END, $by_key['edbs_meeting_start_time']['endKey'] );
+		$this->assertArrayNotHasKey( 'edbs_meeting_end_time', $by_key );
+		$this->assertNotFalse( wp_json_encode( MetaBoxFieldRegistry::js_schema() ) );
+	}
+
+	/**
+	 * Pro re-chains the core fields and hangs its own off the date. The
+	 * Meeting Time row must stay directly under the date (not drift to the
+	 * bottom of the box, or between Pro's fields) with that chain in place.
+	 * This mirrors the shape of Pro's add_meta_box_fields().
+	 */
+	public function test_meeting_time_row_stays_under_the_date_with_pro_style_chaining(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$core = [];
+				foreach ( $fields as $i => $field ) {
+					if ( in_array( $field['key'], [ 'edbs_agenda_url', 'edbs_minutes_url', 'edbs_meeting_not_held' ], true ) ) {
+						$core[ $field['key'] ] = $field;
+						unset( $fields[ $i ] );
+					}
+				}
+
+				$not_held                 = $core['edbs_meeting_not_held'];
+				$not_held['insert_after'] = 'edbs_location_id';
+				$agenda                   = $core['edbs_agenda_url'];
+				$agenda['insert_after']   = 'edbs_meeting_not_held';
+				$minutes                  = $core['edbs_minutes_url'];
+				$minutes['insert_after']  = 'edbs_agenda_url';
+
+				$fields   = array_values( $fields );
+				$fields[] = [
+					'key'          => 'edbs_date_display_override',
+					'type'         => 'text',
+					'label'        => 'Date Display Override',
+					'insert_after' => 'edbs_meeting_date',
+				];
+				$fields[] = [
+					'key'          => 'edbs_location_id',
+					'type'         => 'text',
+					'label'        => 'Location',
+					'insert_after' => 'edbs_date_display_override',
+				];
+				$fields[] = $not_held;
+				$fields[] = $agenda;
+				$fields[] = $minutes;
+				$fields[] = [
+					'key'          => 'edbs_livestream_url',
+					'type'         => 'text',
+					'label'        => 'Livestream',
+					'insert_after' => 'edbs_minutes_url',
+				];
+
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertSame(
+			[
+				'edbs_meeting_date',
+				'edbs_meeting_start_time',
+				'edbs_date_display_override',
+				'edbs_location_id',
+				'edbs_meeting_not_held',
+				'edbs_agenda_url',
+				'edbs_minutes_url',
+				'edbs_livestream_url',
+			],
+			$keys
+		);
+	}
+
+	/**
+	 * The same chain with Pro's Location anchored to the date itself, which is
+	 * where it sits while the date-display override is hidden (the default):
+	 * the Meeting Time row still sits directly under the date.
+	 */
+	public function test_meeting_time_row_stays_under_the_date_when_location_shares_its_anchor(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'          => 'edbs_location_id',
+					'type'         => 'text',
+					'label'        => 'Location',
+					'insert_after' => 'edbs_meeting_date',
+				];
+
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertSame( [ 'edbs_meeting_date', 'edbs_meeting_start_time', 'edbs_location_id' ], array_slice( $keys, 0, 3 ) );
+	}
+
+	/**
+	 * A field with no insert_after is appended at the end, same as the old
+	 * edbs_meta_fields hook's behavior.
+	 */
+	public function test_field_without_insert_after_is_appended(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'   => 'pro_category',
+					'type'  => 'text',
+					'label' => 'Category',
+				];
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertSame( 'pro_category', end( $keys ) );
+	}
+
+	/**
+	 * A field with insert_after lands directly after its target row,
+	 * mirroring what edbs_after_agenda_url_field used to guarantee.
+	 */
+	public function test_field_with_insert_after_lands_directly_after_its_target(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'          => 'pro_agenda_document',
+					'type'         => 'document_picker',
+					'label'        => 'Agenda Document',
+					'insert_after' => 'edbs_agenda_url',
+				];
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertSame( 'pro_agenda_document', $keys[ array_search( 'edbs_agenda_url', $keys, true ) + 1 ] );
+	}
+
+	/**
+	 * A field chaining off another *deferred* field (C targets B, and B
+	 * itself has its own insert_after targeting a core field) still lands
+	 * directly after B once B is placed - even when C appears *before* B
+	 * in the filtered array, which a single-pass resolution would get
+	 * wrong (B isn't in $ordered yet when C is processed, so C would
+	 * silently fall through to "append at the end" instead of landing
+	 * next to B). This is exactly the pattern the $group docblock above
+	 * recommends (extracting an already-registered core field and
+	 * re-adding it later with a new insert_after).
+	 */
+	public function test_field_chained_off_a_deferred_field_still_lands_correctly_regardless_of_registration_order(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				// C is appended before B, deliberately reversed from the
+				// order a single-pass resolution would require.
+				$fields[] = [
+					'key'          => 'pro_field_c',
+					'type'         => 'text',
+					'label'        => 'C',
+					'insert_after' => 'pro_field_b',
+				];
+				$fields[] = [
+					'key'          => 'pro_field_b',
+					'type'         => 'text',
+					'label'        => 'B',
+					'insert_after' => 'edbs_agenda_url',
+				];
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$agenda_index = array_search( 'edbs_agenda_url', $keys, true );
+		$this->assertSame( 'pro_field_b', $keys[ $agenda_index + 1 ] );
+		$this->assertSame( 'pro_field_c', $keys[ $agenda_index + 2 ] );
+	}
+
+	/**
+	 * Two fields both targeting the same insert_after anchor land after it
+	 * in registration order, not reversed. Each splice re-searched
+	 * $ordered for the anchor's own index rather than accounting for a
+	 * sibling already spliced in after it earlier in the same pass, so
+	 * registering P then Q (both insert_after => 'edbs_agenda_url') used
+	 * to yield edbs_agenda_url, Q, P.
+	 */
+	public function test_two_fields_sharing_an_insert_after_target_keep_registration_order(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'          => 'pro_field_p',
+					'type'         => 'text',
+					'label'        => 'P',
+					'insert_after' => 'edbs_agenda_url',
+				];
+				$fields[] = [
+					'key'          => 'pro_field_q',
+					'type'         => 'text',
+					'label'        => 'Q',
+					'insert_after' => 'edbs_agenda_url',
+				];
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$agenda_index = array_search( 'edbs_agenda_url', $keys, true );
+		$this->assertSame( 'pro_field_p', $keys[ $agenda_index + 1 ] );
+		$this->assertSame( 'pro_field_q', $keys[ $agenda_index + 2 ] );
+	}
+
+	/**
+	 * A field targeting a key that doesn't exist in the registry is
+	 * appended rather than silently dropped.
+	 */
+	public function test_field_with_unknown_insert_after_target_is_appended_not_dropped(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'          => 'pro_orphan_field',
+					'type'         => 'text',
+					'label'        => 'Orphan',
+					'insert_after' => 'does_not_exist',
+				];
+				return $fields;
+			}
+		);
+
+		$keys = wp_list_pluck( MetaBoxFieldRegistry::all(), 'key' );
+
+		$this->assertContains( 'pro_orphan_field', $keys );
+	}
+
+	/**
+	 * js_schema() drops PHP-only keys (sanitize_callback isn't JSON-safe)
+	 * and always includes the JS-consumed keys, defaulting optional ones.
+	 */
+	public function test_js_schema_drops_sanitize_callback_and_fills_defaults(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'               => 'pro_field',
+					'type'              => 'text',
+					'label'             => 'Pro Field',
+					'sanitize_callback' => 'sanitize_text_field',
+				];
+				return $fields;
+			}
+		);
+
+		$schema = MetaBoxFieldRegistry::js_schema();
+		$pro    = current(
+			array_filter( $schema, static fn( $field ) => 'pro_field' === $field['key'] )
+		);
+
+		$this->assertArrayNotHasKey( 'sanitize_callback', $pro );
+		$this->assertFalse( $pro['required'] );
+		$this->assertFalse( $pro['mediaPicker'] );
+	}
+
+	/**
+	 * js_schema() also drops render_callback (not JSON-safe either) and
+	 * projects init_fn to its camelCase JS key, defaulting to null when a
+	 * field doesn't set one.
+	 */
+	public function test_js_schema_drops_render_callback_and_projects_init_fn(): void {
+		add_filter(
+			'edbs_meeting_meta_fields',
+			static function ( array $fields ): array {
+				$fields[] = [
+					'key'              => 'pro_widget',
+					'type'             => 'html',
+					'label'            => 'Pro Widget',
+					'render_callback'  => '__return_empty_string',
+					'init_fn'          => 'edbsInitProWidget',
+				];
+				return $fields;
+			}
+		);
+
+		$schema = MetaBoxFieldRegistry::js_schema();
+		$pro    = current(
+			array_filter( $schema, static fn( $field ) => 'pro_widget' === $field['key'] )
+		);
+
+		$this->assertArrayNotHasKey( 'render_callback', $pro );
+		$this->assertSame( 'edbsInitProWidget', $pro['initFn'] );
+
+		$core = current(
+			array_filter( $schema, static fn( $field ) => 'edbs_meeting_date' === $field['key'] )
+		);
+		$this->assertNull( $core['initFn'] );
+	}
+
+	/**
+	 * Agenda and minutes limit the Media Library to document types (no
+	 * images), exposed to JS as mediaTypes; other fields stay unrestricted.
+	 */
+	public function test_agenda_and_minutes_limit_media_types_to_documents(): void {
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+
+		foreach ( [ 'edbs_agenda_url', 'edbs_minutes_url' ] as $key ) {
+			$this->assertContains( 'application/pdf', $by_key[ $key ]['mediaTypes'] );
+			$this->assertNotContains( 'image/jpeg', $by_key[ $key ]['mediaTypes'] );
+		}
+		$this->assertNull( $by_key['edbs_meeting_date']['mediaTypes'] );
+	}
+
+	/**
+	 * The edbs_document_media_types filter changes the list, and an empty
+	 * list lifts the limit.
+	 */
+	public function test_document_media_types_are_filterable(): void {
+		add_filter( 'edbs_document_media_types', static fn() => [ 'application/pdf' ] );
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+		$this->assertSame( [ 'application/pdf' ], $by_key['edbs_agenda_url']['mediaTypes'] );
+
+		remove_all_filters( 'edbs_document_media_types' );
+		add_filter( 'edbs_document_media_types', '__return_empty_array' );
+		$by_key = array_column( MetaBoxFieldRegistry::js_schema(), null, 'key' );
+		$this->assertNull( $by_key['edbs_agenda_url']['mediaTypes'] );
+	}
+}

@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use EqualizeDigital\BoardScribe\Helpers\MeetingTime;
 use EqualizeDigital\BoardScribe\REST\BoardScribeEndpoint;
 
 /**
@@ -33,6 +34,7 @@ class FieldRegistry {
 	const TYPE_TEXTAREA        = 'textarea';
 	const TYPE_CHECKBOX        = 'checkbox';
 	const TYPE_SELECT          = 'select';
+	const TYPE_MULTISELECT     = 'multiselect';
 	const TYPE_NUMBER          = 'number';
 	const TYPE_NUMBER_WITH_ALL = 'number_with_all';
 	const TYPE_DATE            = 'date';
@@ -94,16 +96,29 @@ class FieldRegistry {
 	 *     @type string        $group               One of: general, column_labels, hide_columns, show_columns, link_labels.
 	 *     @type string        $label               Human-readable label (builder UI caption/placeholder, block InspectorControl label).
 	 *     @type mixed         $default             Default shortcode-attribute value.
-	 *     @type array         $choices             Value => label options. Only used when type is TYPE_SELECT.
+	 *     @type array         $choices             Value => label options. Used by TYPE_SELECT (single) and
+	 *                                              TYPE_MULTISELECT (comma-separated slugs stored as one string,
+	 *                                              same shape TYPE_SELECT's `sanitize_key()` produces for one
+	 *                                              value - see resolve_value()). For a taxonomy-backed field,
+	 *                                              build this from get_terms() at registration time so it always
+	 *                                              reflects real terms, the same way MeetingCategory/MeetingType
+	 *                                              (boardscribe-pro) do.
+	 *     @type array         $choice_descriptions Optional. Value => help text for that choice, shown instead of
+	 *                                              `description` while it's the selected option. Only used when
+	 *                                              type is TYPE_SELECT. A plugin adding a choice adds its own
+	 *                                              line here (merge, don't assign) so each choice keeps its own text.
 	 *     @type callable|null $sanitize_callback   Overrides the type's default resolver, see resolve_value().
 	 *     @type callable|null $validate_callback   Optional REST validate_callback, only used when rest_arg is true.
 	 *     @type bool          $rest_arg            Whether this field also becomes a REST route arg.
 	 *     @type string|null   $config_key          Overrides the camelCase instance-config key derived from $key.
 	 *     @type string|null   $block_attribute_key Overrides the camelCase block-attribute key derived from $key/config_key.
-	 *     @type bool          $hidden_from_ui      Optional, default false. Excludes the field from js_schema() —
-	 *                                              the settings-page builder app and the block's InspectorControls
-	 *                                              both consume js_schema(), so this hides the field's picker
-	 *                                              control from both without affecting all() (shortcode-attribute
+	 *     @type array|null    $visible_when        Optional. Field key => allowed value(s); the picker only shows while
+	 *                                              every listed field currently holds one of its allowed values
+	 *                                              (e.g. [ 'template' => [ '', 'list' ] ]). UI-only, like
+	 *                                              hidden_from_ui: parsing, REST args and saved values are untouched.
+	 *     @type bool          $hidden_from_ui      Optional, default false. Excludes the field from js_schema()'s
+	 *                                              default call (used by the settings-page builder app) — this
+	 *                                              hides the field's picker control without affecting all() (shortcode-attribute
 	 *                                              defaults/parsing, REST arg registration, and the block's
 	 *                                              attribute schema all still come from all(), so a value already
 	 *                                              saved in existing content — e.g. a Pro field on a shortcode
@@ -111,7 +126,10 @@ class FieldRegistry {
 	 *                                              correctly; only the ability to newly pick the field disappears).
 	 *                                              Intended for a licensable plugin gating which fields a NEW
 	 *                                              shortcode/block instance can be configured with, without
-	 *                                              breaking instances that already used it.
+	 *                                              breaking instances that already used it. The block editor's
+	 *                                              live preview needs the opposite: it must still *render* a
+	 *                                              hidden field's already-saved value (PRO-1397) while hiding
+	 *                                              only its picker — see js_schema()'s own $include_hidden param.
 	 * }
 	 *
 	 * @since 1.0.0
@@ -195,18 +213,39 @@ class FieldRegistry {
 					'rest_arg'          => true,
 				],
 				[
-					'key'     => 'template',
-					'type'    => self::TYPE_SELECT,
-					'group'   => 'general',
-					'label'   => __( 'Display Template', 'boardscribe' ),
-					'default' => '',
+					'key'               => 'time_format',
+					'type'              => self::TYPE_TEXT,
+					'group'             => 'general',
+					'label'             => __( 'Time Format', 'boardscribe' ),
+					// A fixed default, not the site's time_format option: the value is
+					// sent to the REST endpoint on every request and validated there,
+					// and a site format with an escaped character would be rejected.
+					'default'           => MeetingTime::DEFAULT_FORMAT,
+					'description'       => __( 'PHP date() format for the time shown under a meeting\'s date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used.', 'boardscribe' ),
+					'sanitize_callback' => static function ( $value ) {
+						return MeetingTime::sanitize_format( $value, MeetingTime::DEFAULT_FORMAT );
+					},
+					'validate_callback' => [ MeetingTime::class, 'is_valid_format_or_empty' ],
+					'rest_arg'          => true,
+				],
+				[
+					'key'                 => 'template',
+					'type'                => self::TYPE_SELECT,
+					'group'               => 'general',
+					'label'               => __( 'Display Template', 'boardscribe' ),
+					'default'             => '',
 					// Only the built-in table ships here. A plugin providing
 					// another display template (e.g. Pro's year-timeline)
 					// appends its choice to this descriptor via the
 					// edbs_shortcode_field_registry filter, alongside
 					// registering the template itself on window.edbsTemplates.
-					'choices' => [
+					'choices'             => [
 						'' => __( 'Table (default)', 'boardscribe' ),
+					],
+					// Help text for the selected choice; a plugin adding a
+					// template merges its own line in alongside its choice.
+					'choice_descriptions' => [
+						'' => __( 'One table row per meeting, with the columns you choose below.', 'boardscribe' ),
 					],
 				],
 				[
@@ -272,6 +311,15 @@ class FieldRegistry {
 					'rest_arg' => true,
 				],
 				[
+					'key'         => 'open_links_new_window',
+					'type'        => self::TYPE_CHECKBOX,
+					'group'       => 'link_labels',
+					'label'       => __( 'Open Agenda/Minutes Links in a New Window', 'boardscribe' ),
+					'default'     => false,
+					'description' => __( 'Agenda and minutes links open in a new browser tab. A screen-reader hint and rel="noopener noreferrer" are added automatically.', 'boardscribe' ),
+					'rest_arg'    => true,
+				],
+				[
 					'key'     => 'hide_title',
 					'type'    => self::TYPE_CHECKBOX,
 					'group'   => 'hide_columns',
@@ -284,6 +332,14 @@ class FieldRegistry {
 					'group'   => 'hide_columns',
 					'label'   => __( 'Date', 'boardscribe' ),
 					'default' => false,
+				],
+				[
+					'key'         => 'hide_time',
+					'type'        => self::TYPE_CHECKBOX,
+					'group'       => 'hide_columns',
+					'label'       => __( 'Time (shown under the date)', 'boardscribe' ),
+					'default'     => false,
+					'description' => __( 'The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart.', 'boardscribe' ),
 				],
 				[
 					'key'     => 'hide_agenda',
@@ -305,6 +361,45 @@ class FieldRegistry {
 	}
 
 	/**
+	 * Returns {key, configKey, attributeKey} triples for every field
+	 * marked rest_arg (see add_core_fields()'s docblock) - the REST
+	 * query-param name, its matching camelCase instance-config key, and
+	 * its (possibly different — e.g. class -> className) block-attribute
+	 * key.
+	 *
+	 * Single source of truth for "which fields does the endpoint accept,
+	 * and what's each one called on the JS side" - consumed by the
+	 * front-end request builder (so any field a plugin marks rest_arg
+	 * forwards to the endpoint with no request.js edit needed, keyed by
+	 * configKey since that's what instance config uses) and the block
+	 * editor's preview (so it can build a matching fake REST request for
+	 * the edbs_rest_query_args filter instead of only hardcoding the free
+	 * plugin's own query logic - keyed by attributeKey there, since
+	 * $attributes is the block's attribute array, not instance config).
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<int, array{key: string, configKey: string, attributeKey: string}>
+	 */
+	public static function rest_arg_map(): array {
+		$map = [];
+
+		foreach ( self::all() as $field ) {
+			if ( empty( $field['rest_arg'] ) ) {
+				continue;
+			}
+
+			$map[] = [
+				'key'          => $field['key'],
+				'configKey'    => self::config_key( $field ),
+				'attributeKey' => self::block_attribute_key( $field ),
+			];
+		}
+
+		return $map;
+	}
+
+	/**
 	 * Projects the merged field registry into a JSON-safe shape for JS
 	 * consumers (the block editor's InspectorControls and the shortcode
 	 * builder app) - drops PHP-only keys (sanitize_callback/
@@ -314,33 +409,88 @@ class FieldRegistry {
 	 * key/configKey/default for the builder's shortcode generation and
 	 * preview instance config.
 	 *
+	 * A `hidden_from_ui` field is omitted by default (the settings-page
+	 * builder app's own use - it only ever builds a *new* shortcode, so a
+	 * hidden field's picker should simply not exist there). $include_hidden
+	 * is for the block editor instead (PRO-1397): its live preview renders
+	 * the *saved* block through the same instance-config mapping the
+	 * InspectorControls loop reads field descriptors from
+	 * (buildInstanceConfig() in src/js/block/index.js), so a hidden field
+	 * dropped here entirely would also drop out of that preview - a block
+	 * saved while licensed with a hidden field switched on (e.g. a category
+	 * filter) would render correctly on the front end but silently
+	 * differently in the editor. Passing true instead keeps every field in
+	 * the array with a `hiddenFromUi` flag, so the same one localized array
+	 * both drives the preview mapping and lets the InspectorControls loop
+	 * skip flagged fields when building its own pickers - no second map.
+	 *
 	 * @since 1.0.0
 	 *
-	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, placeholder: ?string, description: ?string}>
+	 * @param bool $include_hidden Include hidden_from_ui fields (flagged via hiddenFromUi) instead of omitting them.
+	 * @return array<int, array{key: string, attributeKey: string, configKey: string, type: string, group: string, label: string, default: mixed, choices: ?array, choiceDescriptions: ?array, placeholder: ?string, description: ?string, hiddenFromUi: bool, visibleWhen: ?array<string, string[]>}>
 	 */
-	public static function js_schema(): array {
+	public static function js_schema( bool $include_hidden = false ): array {
 		$schema = [];
 
 		foreach ( self::all() as $field ) {
-			if ( ! empty( $field['hidden_from_ui'] ) ) {
+			$is_hidden = ! empty( $field['hidden_from_ui'] );
+			if ( $is_hidden && ! $include_hidden ) {
 				continue;
 			}
 
 			$schema[] = [
-				'key'          => $field['key'],
-				'attributeKey' => self::block_attribute_key( $field ),
-				'configKey'    => self::config_key( $field ),
-				'type'         => $field['type'] ?? '',
-				'group'        => $field['group'] ?? 'general',
-				'label'        => $field['label'] ?? '',
-				'default'      => $field['default'] ?? '',
-				'choices'      => $field['choices'] ?? null,
-				'placeholder'  => $field['placeholder'] ?? null,
-				'description'  => $field['description'] ?? null,
+				'key'                => $field['key'],
+				'attributeKey'       => self::block_attribute_key( $field ),
+				'configKey'          => self::config_key( $field ),
+				'type'               => $field['type'] ?? '',
+				'group'              => $field['group'] ?? 'general',
+				'label'              => $field['label'] ?? '',
+				'default'            => $field['default'] ?? '',
+				'choices'            => $field['choices'] ?? null,
+				'choiceDescriptions' => $field['choice_descriptions'] ?? null,
+				'placeholder'        => $field['placeholder'] ?? null,
+				'description'        => $field['description'] ?? null,
+				'hiddenFromUi'       => $is_hidden,
+				'visibleWhen'        => self::normalize_visible_when( $field['visible_when'] ?? null ),
 			];
 		}
 
 		return $schema;
+	}
+
+	/**
+	 * Normalizes a visible_when descriptor value to field key => list of
+	 * allowed string values, dropping malformed entries.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param mixed $visible_when Raw visible_when value from a descriptor.
+	 * @return array<string, string[]>|null Null when there are no usable conditions.
+	 */
+	private static function normalize_visible_when( $visible_when ): ?array {
+		if ( ! is_array( $visible_when ) ) {
+			return null;
+		}
+
+		$normalized = [];
+		foreach ( $visible_when as $field_key => $allowed ) {
+			if ( ! is_string( $field_key ) || '' === $field_key ) {
+				continue;
+			}
+			$allowed = array_values(
+				array_map(
+					static function ( $value ) {
+						return is_bool( $value ) ? ( $value ? 'true' : 'false' ) : (string) $value;
+					},
+					array_filter( (array) $allowed, 'is_scalar' )
+				)
+			);
+			if ( $allowed ) {
+				$normalized[ $field_key ] = $allowed;
+			}
+		}
+
+		return $normalized ? $normalized : null;
 	}
 
 	/**
@@ -385,6 +535,9 @@ class FieldRegistry {
 				// validate against, so any well-formed key is accepted here,
 				// same as the pre-registry sanitize_key() behavior.
 				return sanitize_key( (string) $raw_value );
+
+			case self::TYPE_MULTISELECT:
+				return self::sanitize_multiselect( $raw_value );
 
 			case self::TYPE_TEXTAREA:
 				return sanitize_textarea_field( (string) $raw_value );
@@ -535,5 +688,29 @@ class FieldRegistry {
 
 		$int = (int) $value;
 		return $int > 0 ? $int : -1;
+	}
+
+	/**
+	 * Sanitizes a TYPE_MULTISELECT value: a comma-separated list of slugs,
+	 * the same on-the-wire shape a taxonomy-backed field (e.g. Pro's
+	 * category/type filters) already stored as a plain TYPE_TEXT value
+	 * before this type existed - only the authoring control changes, not
+	 * the stored/shortcode-attribute/REST-arg format, so no migration of
+	 * existing content is needed. Not restricted to $field['choices'] for
+	 * the same reason TYPE_SELECT isn't (see resolve_value()) - the
+	 * choices list only populates the picker's suggestions.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param mixed $raw_value A comma-separated string (or an array, from a
+	 *                         REST client sending repeated params - already
+	 *                         normalized to '' by resolve_value() before
+	 *                         this runs, matching every other type here).
+	 * @return string Comma-separated, deduplicated, sanitize_title()'d slugs.
+	 */
+	private static function sanitize_multiselect( $raw_value ): string {
+		$slugs = array_filter( array_map( 'sanitize_title', explode( ',', (string) $raw_value ) ) );
+
+		return implode( ',', array_values( array_unique( $slugs ) ) );
 	}
 }

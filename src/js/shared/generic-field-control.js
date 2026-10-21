@@ -3,8 +3,10 @@ import {
 	TextareaControl,
 	ToggleControl,
 	SelectControl,
+	FormTokenField,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Renders the control matching a field's type - the generic renderer
@@ -24,7 +26,10 @@ import {
  * @return {JSX.Element} The control.
  */
 export function GenericFieldControl( { field, value = '', onChange, controlProps = {} } ) {
-	const help = field.description || undefined;
+	// A select can describe each choice; the selected one's text wins over the
+	// field-level description (PRO-1416).
+	const choiceHelp = ( field.choiceDescriptions || {} )[ value ];
+	const help = choiceHelp || field.description || undefined;
 
 	switch ( field.type ) {
 		case 'checkbox': {
@@ -55,6 +60,61 @@ export function GenericFieldControl( { field, value = '', onChange, controlProps
 					value={ value }
 					options={ options }
 					onChange={ onChange }
+					{ ...controlProps }
+				/>
+			);
+		}
+
+		case 'multiselect': {
+			// Stored/shortcode-attribute value is a comma-separated slug
+			// string (see FieldRegistry::sanitize_multiselect()) - FormTokenField
+			// itself only knows plain display strings, so choices' labels are
+			// what it shows/accepts, mapped back to slugs on change. A typed
+			// token that doesn't match any known label (a typo, or a term
+			// that no longer exists) is silently dropped rather than saved as
+			// free text - this field only ever means "filter by these real
+			// terms", not "create a new one".
+			//
+			// WordPress allows two terms - even in a flat, non-hierarchical
+			// taxonomy - to share the same display name with different
+			// slugs (wp_insert_term() only enforces a unique slug, not a
+			// unique name). A plain label -> slug map would then collide:
+			// whichever term was processed last would own that label, and
+			// picking the token would always save that one slug regardless
+			// of which same-named term the user meant. Disambiguated here by
+			// suffixing " (slug)" onto a label only when it's not unique,
+			// so an ordinary field with no naming collisions renders
+			// exactly as before.
+			const choices = field.choices || {};
+			const labelCounts = {};
+			Object.values( choices ).forEach( ( label ) => {
+				labelCounts[ label ] = ( labelCounts[ label ] || 0 ) + 1;
+			} );
+			const slugToToken = {};
+			const tokenToSlug = {};
+			Object.keys( choices ).forEach( ( slug ) => {
+				const label = choices[ slug ];
+				const token = labelCounts[ label ] > 1 ? `${ label } (${ slug })` : label;
+				slugToToken[ slug ] = token;
+				tokenToSlug[ token ] = slug;
+			} );
+			const selectedSlugs = ( value || '' ).split( ',' ).filter( Boolean );
+			const selectedTokens = selectedSlugs.map( ( slug ) => slugToToken[ slug ] || slug );
+			const suggestions = Object.values( slugToToken );
+			const noChoicesHelp = __( 'No terms exist yet to filter by.', 'boardscribe' );
+
+			return (
+				<FormTokenField
+					label={ field.label }
+					help={ suggestions.length ? help : noChoicesHelp }
+					value={ selectedTokens }
+					suggestions={ suggestions }
+					onChange={ ( tokens ) => {
+						const slugs = tokens
+							.map( ( token ) => tokenToSlug[ token ] )
+							.filter( Boolean );
+						onChange( slugs.join( ',' ) );
+					} }
 					{ ...controlProps }
 				/>
 			);

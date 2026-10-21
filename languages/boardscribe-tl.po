@@ -2,23 +2,23 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BoardScribe 1.0.0\n"
+"Project-Id-Version: BoardScribe 1.2.0-alpha.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/boardscribe\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: PTC (Private Translation Cloud)\n"
+"Language-Team: Tagalog\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-04T16:27:57+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"POT-Creation-Date: 2026-10-20 20:45+0000\n"
+"PO-Revision-Date: 2026-10-20 20:45+0000\n"
+"X-Generator: PTC (Private Translation Cloud)\n"
 "X-Domain: boardscribe\n"
 "Language: tl\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. Plugin Name of the plugin
 #: boardscribe.php
-#: includes/Block/BoardScribeBlock.php:79
+#: includes/Block/BoardScribeBlock.php:145
 #: partials/settings-page.php:22
 msgid "BoardScribe"
 msgstr "BoardScribe"
@@ -48,44 +48,165 @@ msgstr "Ang BoardScribe ay nangangailangan ng PHP %1$s o mas mataas pa. Kasaluku
 msgid "BoardScribe is missing its autoloader. Reinstall from a released zip, or run `composer install` if developing from source."
 msgstr "Nawawala ang autoloader ng BoardScribe. I-reinstall mula sa isang released zip, o i-run ang `composer install` kung nagde-develop mula sa source."
 
-#: includes/Admin/MetaBox.php:126
+#: includes/Admin/AdminColumns.php:52
+#: includes/Admin/MetaBoxFieldRegistry.php:298
+msgid "Meeting Date"
+msgstr "Petsa ng pagpupulong"
+
+#: includes/Admin/AdminColumns.php:56
+#: includes/Admin/AdminColumns.php:200
+msgid "Canceled"
+msgstr "Kinansela"
+
+#: includes/Admin/AdminColumns.php:60
+#: includes/Admin/MetaBoxFieldRegistry.php:321
+#: includes/Shortcode/BoardScribeShortcode.php:152
+#: includes/Shortcode/FieldRegistry.php:287
+#: includes/Shortcode/FieldRegistry.php:348
+#: assets/build/boardscribe.js:1
+msgid "Agenda"
+msgstr "Adyenda"
+
+#: includes/Admin/AdminColumns.php:64
+#: includes/Admin/MetaBoxFieldRegistry.php:329
+#: includes/Shortcode/BoardScribeShortcode.php:153
+#: includes/Shortcode/FieldRegistry.php:294
+#: includes/Shortcode/FieldRegistry.php:355
+#: assets/build/boardscribe.js:1
+msgid "Minutes"
+msgstr "Katitikan"
+
+#: includes/Admin/AdminColumns.php:241
+#: assets/build/metabox/index.js:3
+msgid "View"
+msgstr "Tingnan"
+
+#: includes/Admin/MeetingDateGuard.php:107
+msgid "A meeting needs a valid meeting date (YYYY-MM-DD) before it can be published."
+msgstr "Kailangan ng pulong ng wastong petsa ng pulong (YYYY-MM-DD) bago ito mai-publish."
+
+#: includes/Admin/MeetingDateGuard.php:162
+msgid "The meeting was saved as a draft because it has no meeting date. Add a date, then publish it."
+msgstr "Nai-save ang pulong bilang draft dahil wala itong petsa ng pulong. Magdagdag ng petsa, pagkatapos ay i-publish ito."
+
+#. translators: %d: number of meetings.
+#: includes/Admin/MeetingDateGuard.php:178
+#, php-format
+msgid "%d published meeting has no valid meeting date. Add a date to it."
+msgid_plural "%d published meetings have no valid meeting date. Add a date to each."
+msgstr[0] "Ang %d nai-publish na pulong ay walang wastong petsa ng pulong. Magdagdag ng petsa rito."
+msgstr[1] "Ang %d na nai-publish na mga pulong ay walang wastong petsa ng pulong. Magdagdag ng petsa sa bawat isa."
+
+#: includes/Admin/MetaBox.php:121
 msgid "Meeting date in Y-m-d format."
 msgstr "Petsa ng pagpupulong sa Y-m-d na format."
 
-#: includes/Admin/MetaBox.php:139
+#: includes/Admin/MetaBox.php:134
 msgid "URL to the meeting agenda document."
 msgstr "URL para sa dokumento ng adyenda ng pagpupulong."
 
-#: includes/Admin/MetaBox.php:152
+#: includes/Admin/MetaBox.php:147
 msgid "URL to the published minutes document for this meeting."
 msgstr "URL para sa na-publish na dokumento ng katitikan para sa pagpupulong na ito."
 
-#: includes/Admin/MetaBox.php:165
+#: includes/Admin/MetaBox.php:160
 msgid "Whether the meeting was not held."
 msgstr "Kung ang pagpupulong ay hindi naganap."
 
-#: includes/Admin/MetaBox.php:194
+#: includes/Admin/MetaBox.php:179
+msgid "Meeting start time in 24-hour HH:MM format, in the site timezone."
+msgstr "Oras ng simula ng pulong sa 24-hour HH:MM format, sa timezone ng site."
+
+#: includes/Admin/MetaBox.php:198
+msgid "Meeting end time in 24-hour HH:MM format, in the site timezone."
+msgstr "Oras ng pagtatapos ng pulong sa 24-hour HH:MM format, sa timezone ng site."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:225
+#, php-format
+msgid "Which Add/Replace-modal source (media_library, external_url, or a plugin-registered id) produced %s's current value."
+msgstr "Aling source ng Add/Replace-modal (media_library, external_url, o isang ID na nakarehistro sa plugin) ang gumawa ng kasalukuyang value ng %s."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:239
+#, php-format
+msgid "The wp-admin edit screen for %s's underlying post, when its source has one (e.g. a linked document) - empty for a plain Media Library file or external link."
+msgstr "Ang edit screen ng wp-admin para sa pinagbabatayang post ng %s, kapag mayroon ang source nito (hal. isang naka-link na dokumento) - walang laman para sa karaniwang file ng Media Library o panlabas na link."
+
+#. translators: %s: the resource field's meta key, e.g. edbs_agenda_url.
+#: includes/Admin/MetaBox.php:253
+#, php-format
+msgid "The linked post ID underlying %s's current value, when its source has one (e.g. a linked document) - 0 for a plain Media Library file or external link."
+msgstr "Ang naka-link na post ID na pinagbabatayan ng kasalukuyang value ng %s, kapag mayroon ang source nito (hal. isang naka-link na dokumento) - 0 para sa karaniwang file ng Media Library o panlabas na link."
+
+#: includes/Admin/MetaBox.php:296
 msgid "Meeting Details"
 msgstr "Mga detalye ng pagpupulong"
 
-#: includes/Admin/MetaBox.php:346
+#: includes/Admin/MetaBox.php:357
+msgid "The Meeting Details fields require JavaScript."
+msgstr "Kinakailangan ng JavaScript ng mga field ng Mga Detalye ng Pulong."
+
+#. translators: %s: the misconfigured field's meta key.
+#: includes/Admin/MetaBox.php:470
+#, php-format
+msgid "The \"%s\" field is a resource_list or attached field and must set saved_externally => true."
+msgstr "Ang field na \"%s\" ay isang resource_list o naka-attach na field at dapat itakda ang saved_externally => true."
+
+#: includes/Admin/MetaBox.php:724
 msgctxt "default generated meeting title"
 msgid "Board Meeting"
 msgstr "Pagpupulong ng lupon"
 
 #. translators: 1: "Board Meeting" label, 2: formatted meeting date.
-#: includes/Admin/MetaBox.php:354
+#: includes/Admin/MetaBox.php:732
 #, php-format
 msgctxt "default generated meeting title with date"
 msgid "%1$s - %2$s"
 msgstr "%1$s - %2$s"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:299
+msgid "Required. Select the date the meeting was or will be held."
+msgstr "Kinakailangan. Piliin ang petsa kung kailan naganap o magaganap ang pagpupulong."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:311
+msgid "Meeting Time"
+msgstr "Oras ng pulong"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:312
+msgid "Optional. Shown under the meeting date, except when the meeting is marked not held."
+msgstr "Opsyonal. Ipinapakita sa ilalim ng petsa ng pulong, maliban kung minarkahan ang pulong na hindi idinaos."
+
+#: includes/Admin/MetaBoxFieldRegistry.php:322
+msgid "Choose Agenda File"
+msgstr "Pumili ng file ng adyenda"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:324
+msgid "{date} Board Meeting Agenda"
+msgstr "Agenda ng pagpupulong ng lupon sa {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:330
+msgid "Choose Minutes File"
+msgstr "Pumili ng file ng katitikan"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:332
+msgid "{date} Board Meeting Minutes"
+msgstr "Mga katitikan ng pagpupulong ng lupon sa {date}"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:337
+msgid "Meeting Not Held"
+msgstr "Hindi naganap ang pagpupulong"
+
+#: includes/Admin/MetaBoxFieldRegistry.php:338
+msgid "This meeting was not held."
+msgstr "Hindi idinaos ang pulong na ito."
 
 #: includes/Admin/SettingsPage.php:74
 msgid "General"
 msgstr "Pangkalahatan"
 
 #: includes/Admin/SettingsPage.php:78
-#: includes/Admin/SettingsPage.php:490
+#: includes/Admin/SettingsPage.php:502
 msgid "Shortcode Builder"
 msgstr "Shortcode builder"
 
@@ -94,13 +215,13 @@ msgid "Support"
 msgstr "Suporta"
 
 #: includes/Admin/SettingsPage.php:144
-#: includes/Admin/SettingsPage.php:480
+#: includes/Admin/SettingsPage.php:492
 msgid "BoardScribe Settings"
 msgstr "Mga Setting ng BoardScribe"
 
 #: includes/Admin/SettingsPage.php:145
 msgid "Settings"
-msgstr "Mga Setting"
+msgstr "Mga setting"
 
 #: includes/Admin/SettingsPage.php:172
 msgid "General Settings"
@@ -123,144 +244,188 @@ msgstr "Alisin ang lahat ng post ng pagpupulong ng BoardScribe at mga setting ng
 msgid "Warning: this cannot be undone."
 msgstr "Babala: hindi na ito mababawi."
 
-#: includes/Admin/SettingsPage.php:328
+#: includes/Admin/SettingsPage.php:340
 msgid "BoardScribe settings"
 msgstr "Mga setting ng BoardScribe"
 
-#: includes/Admin/SettingsPage.php:437
+#: includes/Admin/SettingsPage.php:449
 msgid "Configure your shortcode options below, then copy the generated shortcode and paste it into any page or post."
 msgstr "I-configure ang iyong mga opsyon sa shortcode sa ibaba, pagkatapos ay i-copy ang na-generate na shortcode at i-paste ito sa anumang pahina o post."
 
-#: includes/Admin/SettingsPage.php:439
+#: includes/Admin/SettingsPage.php:451
 msgid "The shortcode builder requires JavaScript."
 msgstr "Nangangailangan ng JavaScript ang shortcode builder."
 
-#: includes/Admin/SettingsPage.php:475
+#: includes/Admin/SettingsPage.php:487
 msgid "Downloading and Installing BoardScribe"
 msgstr "Pag-download at Pag-install ng BoardScribe"
 
-#: includes/Admin/SettingsPage.php:485
+#: includes/Admin/SettingsPage.php:497
 msgid "Board Meetings Post Type"
 msgstr "Post type ng mga pagpupulong ng lupon"
 
-#: includes/Admin/SettingsPage.php:495
+#: includes/Admin/SettingsPage.php:507
 msgid "Is BoardScribe accessible?"
 msgstr "Naa-access ba ang BoardScribe?"
 
-#: includes/Admin/SettingsPage.php:500
+#: includes/Admin/SettingsPage.php:512
 msgid "What languages is BoardScribe translated into?"
 msgstr "Sa anong mga wika naisalin ang BoardScribe?"
 
-#: includes/Admin/SettingsPage.php:505
+#: includes/Admin/SettingsPage.php:517
 msgid "How do I add file size and type information to links?"
 msgstr "Paano ako magdaragdag ng impormasyon ng laki at uri ng file sa mga link?"
 
-#: includes/Admin/SettingsPage.php:511
+#: includes/Admin/SettingsPage.php:523
 msgid "Documentation"
 msgstr "Dokumentasyon"
 
-#: includes/Admin/SettingsPage.php:513
+#: includes/Admin/SettingsPage.php:525
 msgid "Need help? Check out our documentation for step-by-step guides and feature walkthroughs."
 msgstr "Kailangan ng tulong? Tingnan ang aming dokumentasyon para sa mga step-by-step na gabay at walkthrough ng mga feature."
 
-#: includes/Admin/SettingsPage.php:516
+#: includes/Admin/SettingsPage.php:528
 msgid "View Documentation"
 msgstr "Tingnan ang dokumentasyon"
 
-#: includes/Admin/SettingsPage.php:517
-#: includes/Admin/SettingsPage.php:528
-#: includes/Admin/SettingsPage.php:539
+#: includes/Admin/SettingsPage.php:529
+#: includes/Admin/SettingsPage.php:540
+#: includes/Admin/SettingsPage.php:551
+#: assets/build/metabox/index.js:3
 msgid "(opens in a new tab)"
 msgstr "(bubukas sa bagong tab)"
 
-#: includes/Admin/SettingsPage.php:522
+#: includes/Admin/SettingsPage.php:534
 msgid "Contact Us"
 msgstr "Makipag-ugnayan sa amin"
 
-#: includes/Admin/SettingsPage.php:524
+#: includes/Admin/SettingsPage.php:536
 msgid "Have questions or need help? Reach out to our support team."
 msgstr "May mga tanong o kailangan ng tulong? Makipag-ugnayan sa aming support team."
 
-#: includes/Admin/SettingsPage.php:527
+#: includes/Admin/SettingsPage.php:539
 msgid "Contact Support"
 msgstr "Makipag-ugnayan sa suporta"
 
-#: includes/Admin/SettingsPage.php:533
+#: includes/Admin/SettingsPage.php:545
 msgid "Quick Links"
 msgstr "Mga mabilisang link"
 
-#: includes/Block/BoardScribeBlock.php:448
-#: includes/Shortcode/BoardScribeShortcode.php:128
-#: includes/Shortcode/FieldRegistry.php:234
-#: includes/Shortcode/FieldRegistry.php:278
-#: assets/build/boardscribe.js:1
-msgid "Title"
-msgstr "Pamagat"
+#. translators: 1: start time, 2: end time, e.g. "5:00 pm to 7:00 pm".
+#: includes/Helpers/MeetingTime.php:256
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s hanggang %2$s"
 
-#: includes/Block/BoardScribeBlock.php:453
-#: includes/Shortcode/BoardScribeShortcode.php:129
-#: includes/Shortcode/FieldRegistry.php:241
-#: includes/Shortcode/FieldRegistry.php:285
-#: assets/build/boardscribe.js:1
-msgid "Date"
-msgstr "Petsa"
+#. translators: %s: end time, e.g. "Ends 7:00 pm".
+#: includes/Helpers/MeetingTime.php:261
+#, php-format
+msgid "Ends %s"
+msgstr "Matatapos nang %s"
 
-#: includes/Block/BoardScribeBlock.php:458
-#: includes/Shortcode/BoardScribeShortcode.php:130
-#: includes/Shortcode/FieldRegistry.php:248
-#: includes/Shortcode/FieldRegistry.php:292
-#: assets/build/boardscribe.js:1
-msgid "Agenda"
-msgstr "Adyenda"
-
-#: includes/Block/BoardScribeBlock.php:463
-#: includes/Shortcode/BoardScribeShortcode.php:131
-#: includes/Shortcode/FieldRegistry.php:255
-#: includes/Shortcode/FieldRegistry.php:299
-#: assets/build/boardscribe.js:1
-msgid "Minutes"
-msgstr "Katitikan"
-
-#: includes/Import/CsvImporter.php:69
+#: includes/Import/CsvImporter.php:74
 msgid "Meeting title. If blank, auto-generated from the date (e.g. \"Board Meeting - March 15, 2025\")."
 msgstr "Pamagat ng pagpupulong. Kung blangko, awtomatikong i-ge-generate mula sa petsa (hal. \"Board Meeting - Marso 15, 2025\")."
 
-#: includes/Import/CsvImporter.php:73
+#: includes/Import/CsvImporter.php:78
 msgid "Format: YYYY-MM-DD"
 msgstr "Format: YYYY-MM-DD"
 
-#: includes/Import/CsvImporter.php:77
-msgid "Full URL to agenda file"
-msgstr "Buong URL sa file ng adyenda"
+#. translators: %s: example time formats — these are literal examples, not to be translated.
+#: includes/Import/CsvImporter.php:84
+#, php-format
+msgid "Optional. The meeting start time (e.g. %s), shown under the meeting date. This is the time of the meeting, not the WordPress publish time (see publish_date). A time that cannot be read is not saved, and the meeting is still imported. Re-importing a file never adds a time to a meeting that already exists."
+msgstr "Opsyonal. Ang oras ng simula ng pulong (hal. %s), na ipinapakita sa ilalim ng petsa ng pulong. Ito ang oras ng pulong, hindi ang oras ng pag-publish sa WordPress (tingnan ang publish_date). Ang oras na hindi mabasa ay hindi mase-save, at mai-import pa rin ang pulong. Ang muling pag-import ng file ay hindi kailanman magdaragdag ng oras sa isang umiiral nang pulong."
 
-#: includes/Import/CsvImporter.php:81
-msgid "Full URL to minutes file"
-msgstr "Buong URL sa file ng katitikan"
+#: includes/Import/CsvImporter.php:90
+msgid "Optional. The meeting end time, in the same formats as start_time."
+msgstr "Opsyonal. Ang oras ng katapusan ng pulong, sa parehong format tulad ng start_time."
+
+#: includes/Import/CsvImporter.php:94
+msgid "Full URL to agenda file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Buong URL sa file ng agenda. Dapat ay isang buong http:// o https:// address; hindi mase-save ang di-wastong URL."
+
+#: includes/Import/CsvImporter.php:98
+msgid "Full URL to minutes file. Must be a full http:// or https:// address; an invalid URL is not saved."
+msgstr "Buong URL sa file ng minutes. Dapat ay isang buong http:// o https:// address; hindi mase-save ang di-wastong URL."
 
 #. translators: %s: the literal CSV values accepted ("yes / 1 / true") — these are fixed tokens the importer checks for, not to be translated.
-#: includes/Import/CsvImporter.php:87
+#: includes/Import/CsvImporter.php:104
 #, php-format
 msgid "Accepted values: %s"
 msgstr "Mga tinatanggap na value: %s"
 
 #. translators: %s: example date/time formats — these are literal examples, not to be translated.
-#: includes/Import/CsvImporter.php:95
+#: includes/Import/CsvImporter.php:112
 #, php-format
-msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above."
-msgstr "Anumang makikilalang petsa o petsa/oras (hal. %s). Itinatakda nito ang aktwal na petsa ng pag-publish sa WordPress sa halip na ang sandali ng pag-import — gamitin ito para i-backdate ang mga nakaraang pagpupulong. Hindi nito naaapektuhan ang petsa ng pagpupulong/pagkakasunod-sunod sa itaas."
+msgid "Any recognizable date or date/time (e.g. %s). Sets the actual WordPress publish date instead of the moment of import — use this to backdate historical meetings. Does not affect the meeting date/sort order above. A future date/time schedules the meeting instead of publishing it immediately, and it will not appear on the site until then."
+msgstr "Anumang makikilalang petsa o petsa/oras (hal. %s). Itinatakda ang aktwal na petsa ng pag-publish sa WordPress sa halip na ang sandali ng pag-import — gamitin ito para ma-backdate ang mga nakaraang pulong. Hindi nito naaapektuhan ang petsa ng pulong/pagkakaayos sa itaas. Ang petsa/oras sa hinaharap ay mag-iiskedyul ng pulong sa halip na i-publish ito agad, at hindi ito lalabas sa site hanggang sa oras na iyon."
 
-#: includes/Import/CsvImporter.php:134
-#: partials/csv-import-page.php:85
+#: includes/Import/CsvImporter.php:151
 msgid "Import"
 msgstr "I-import"
 
-#: includes/Import/CsvImporter.php:159
+#: includes/Import/CsvImporter.php:176
 msgid "Security check failed."
 msgstr "Nabigo ang security check."
 
-#: includes/Import/CsvImporter.php:163
+#: includes/Import/CsvImporter.php:180
 msgid "Insufficient permissions."
 msgstr "Walang sapat na pahintulot."
+
+#. translators: 1: number imported, 2: number skipped
+#: includes/Import/CsvImporter.php:737
+#, php-format
+msgid "Import complete. %1$d rows imported, %2$d skipped."
+msgstr "Tapos na ang pag-import. %1$d na row ang na-import, %2$d ang nilaktawan."
+
+#. translators: %d: number of rows scheduled for a future date
+#: includes/Import/CsvImporter.php:749
+#, php-format
+msgid "%d row was scheduled for a future date and will not appear until then."
+msgid_plural "%d rows were scheduled for a future date and will not appear until then."
+msgstr[0] "Naiskedyul para sa petsa sa hinaharap ang %d row at hindi lalabas hanggang sa oras na iyon."
+msgstr[1] "Naiskedyul para sa petsa sa hinaharap ang %d na row at hindi lalabas hanggang sa oras na iyon."
+
+#. translators: %d: number of duplicate rows skipped
+#: includes/Import/CsvImporter.php:757
+#, php-format
+msgid "%d row matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and was skipped."
+msgid_plural "%d rows matched an existing meeting, or an earlier row in this file, with the same title and date, and a matching or absent start time, and were skipped."
+msgstr[0] "Tumugma ang %d row sa isang umiiral nang pulong, o sa isang naunang row sa file na ito, na may parehong pamagat at petsa, at may tumutugma o walang oras ng simula, at nilaktawan."
+msgstr[1] "Tumugma ang %d na row sa isang umiiral nang pulong, o sa isang naunang row sa file na ito, na may parehong pamagat at petsa, at may tumutugma o walang oras ng simula, at nilaktawan."
+
+#. translators: %d: number of rows with an invalid URL column
+#: includes/Import/CsvImporter.php:765
+#, php-format
+msgid "%d row had an invalid URL; that URL was not saved."
+msgid_plural "%d rows had an invalid URL; those URLs were not saved."
+msgstr[0] "May di-wastong URL ang %d row; hindi na-save ang URL na iyon."
+msgstr[1] "May di-wastong URL ang %d na row; hindi na-save ang mga URL na iyon."
+
+#. translators: %d: number of rows with a start or end time that could not be read
+#: includes/Import/CsvImporter.php:773
+#, php-format
+msgid "%d row had a start or end time that could not be read; that time was not saved."
+msgid_plural "%d rows had a start or end time that could not be read; those times were not saved."
+msgstr[0] "May oras ng simula o katapusan na hindi mabasa ang %d row; hindi na-save ang oras na iyon."
+msgstr[1] "May oras ng simula o katapusan na hindi mabasa ang %d na row; hindi na-save ang mga oras na iyon."
+
+#: includes/Import/CsvImporter.php:788
+msgid "No file was uploaded. Please choose a CSV file and try again."
+msgstr "Walang file na na-upload. Pakisuyong pumili ng CSV file at subukang muli."
+
+#: includes/Import/CsvImporter.php:789
+msgid "Invalid file type. Please upload a .csv file."
+msgstr "Invalid na uri ng file. Pakisuyong mag-upload ng .csv file."
+
+#: includes/Import/CsvImporter.php:790
+msgid "The file failed to upload completely. Please try again."
+msgstr "Hindi ganap na na-upload ang file. Pakisubukan muli."
+
+#: includes/Import/CsvImporter.php:803
+msgid "An unknown error occurred."
+msgstr "May naganap na hindi kilalang error."
 
 #: includes/PostType/BoardScribeCPT.php:39
 msgctxt "Post Type General Name"
@@ -289,243 +454,293 @@ msgstr "Magdagdag ng pagpupulong"
 msgid "Add New Meeting"
 msgstr "Magdagdag ng bagong pagpupulong"
 
-#: includes/REST/BoardScribeEndpoint.php:114
-#: includes/REST/BoardScribeEndpoint.php:285
+#: includes/REST/BoardScribeEndpoint.php:166
+#: includes/REST/BoardScribeEndpoint.php:373
 msgid "View Agenda"
 msgstr "Tingnan ang adyenda"
 
-#: includes/REST/BoardScribeEndpoint.php:115
-#: includes/REST/BoardScribeEndpoint.php:286
+#: includes/REST/BoardScribeEndpoint.php:167
+#: includes/REST/BoardScribeEndpoint.php:374
 msgid "View Minutes"
 msgstr "Tingnan ang katitikan"
 
-#: includes/REST/BoardScribeEndpoint.php:301
+#: includes/REST/BoardScribeEndpoint.php:389
 msgid "Date not available"
 msgstr "Hindi available ang petsa"
 
+#: includes/REST/BoardScribeEndpoint.php:473
+msgid "Agenda not available"
+msgstr "Hindi available ang adyenda"
+
+#: includes/REST/BoardScribeEndpoint.php:500
+msgid "Minutes not available"
+msgstr "Hindi available ang katitikan"
+
+#: includes/REST/BoardScribeEndpoint.php:505
+msgid "Meeting not held"
+msgstr "Hindi naganap ang pagpupulong"
+
+#. translators: 1: meeting date, 2: meeting time or time range, e.g. "5:00 pm to 7:00 pm". Tells apart links for meetings on the same day.
+#. translators: 1: row title or item noun, 2: filename.
+#: includes/REST/BoardScribeEndpoint.php:561
+#: assets/build/metabox/index.js:3
+#, php-format, js-format
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#. translators: 1: link label e.g. "View Agenda", 2: meeting date. Keep the parenthetical wording's key phrase ("new window"/"new tab"/"new document") consistent with what accessibility-checker's link_blank rule looks for in this locale, since that plugin's check runs against this same translated string.
+#: includes/REST/BoardScribeEndpoint.php:566
+#, php-format
+msgid "%1$s for %2$s (opens in a new window)"
+msgstr "%1$s para sa %2$s (bubukas sa bagong window)"
+
 #. translators: 1: link label e.g. "View Agenda", 2: meeting date
-#. translators: 1: link label e.g. "View Minutes", 2: meeting date
-#: includes/REST/BoardScribeEndpoint.php:326
-#: includes/REST/BoardScribeEndpoint.php:340
+#: includes/REST/BoardScribeEndpoint.php:568
 #, php-format
 msgid "%1$s for %2$s"
 msgstr "%1$s para sa %2$s"
 
-#: includes/REST/BoardScribeEndpoint.php:332
-msgid "Agenda not available"
-msgstr "Hindi available ang adyenda"
+#: includes/Shortcode/BoardScribeShortcode.php:150
+#: includes/Shortcode/FieldRegistry.php:273
+#: includes/Shortcode/FieldRegistry.php:326
+#: assets/build/boardscribe.js:1
+msgid "Title"
+msgstr "Pamagat"
 
-#: includes/REST/BoardScribeEndpoint.php:346
-msgid "Minutes not available"
-msgstr "Hindi available ang katitikan"
+#: includes/Shortcode/BoardScribeShortcode.php:151
+#: includes/Shortcode/FieldRegistry.php:280
+#: includes/Shortcode/FieldRegistry.php:333
+#: assets/build/boardscribe.js:1
+msgid "Date"
+msgstr "Petsa"
 
-#: includes/REST/BoardScribeEndpoint.php:351
-msgid "Meeting not held"
-msgstr "Hindi naganap ang pagpupulong"
-
-#: includes/Shortcode/BoardScribeShortcode.php:132
+#: includes/Shortcode/BoardScribeShortcode.php:154
 #: assets/build/boardscribe.js:1
 msgid "Previous"
 msgstr "Nakaraan"
 
-#: includes/Shortcode/BoardScribeShortcode.php:133
+#: includes/Shortcode/BoardScribeShortcode.php:155
 #: assets/build/boardscribe.js:3
 msgid "Next"
 msgstr "Susunod"
 
-#: includes/Shortcode/BoardScribeShortcode.php:134
+#: includes/Shortcode/BoardScribeShortcode.php:156
 #: assets/build/boardscribe.js:1
 msgid "Previous Page"
 msgstr "Nakaraang pahina"
 
 #. translators: %s: page number.
-#: includes/Shortcode/BoardScribeShortcode.php:135
+#: includes/Shortcode/BoardScribeShortcode.php:157
 #: assets/build/boardscribe.js:3
 msgid "Next Page"
 msgstr "Susunod na pahina"
 
-#: includes/Shortcode/BoardScribeShortcode.php:136
+#: includes/Shortcode/BoardScribeShortcode.php:158
 #: assets/build/boardscribe.js:1
 msgid "Pagination"
 msgstr "Pagination"
 
 #. translators: %s: page number
-#: includes/Shortcode/BoardScribeShortcode.php:138
+#: includes/Shortcode/BoardScribeShortcode.php:160
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Page %s"
 msgstr "Pahina %s"
 
 #. translators: 1: first entry number, 2: last entry number, 3: total entries
-#: includes/Shortcode/BoardScribeShortcode.php:140
+#: includes/Shortcode/BoardScribeShortcode.php:162
 #: assets/build/boardscribe.js:1
 #, php-format, js-format
 msgid "Showing %1$s to %2$s of %3$s entries"
 msgstr "Ipinapakita ang %1$s hanggang %2$s ng %3$s na tala"
 
-#: includes/Shortcode/FieldRegistry.php:129
+#: includes/Shortcode/FieldRegistry.php:147
 msgid "Included Years"
 msgstr "Mga kasamang taon"
 
-#: includes/Shortcode/FieldRegistry.php:132
+#: includes/Shortcode/FieldRegistry.php:150
 msgid "Comma-separated list of years. Leave blank to show all years."
 msgstr "Listahan ng mga taon na pinaghihiwalay ng kuwit. Iwanang blangko upang ipakita ang lahat ng taon."
 
-#: includes/Shortcode/FieldRegistry.php:139
+#: includes/Shortcode/FieldRegistry.php:157
 msgid "Start Date"
 msgstr "Petsa ng pagsisimula"
 
-#: includes/Shortcode/FieldRegistry.php:146
+#: includes/Shortcode/FieldRegistry.php:164
 msgid "Only show meetings on or after this date. Takes priority over Included Years."
 msgstr "Ipakita lamang ang mga pagpupulong sa o pagkatapos ng petsang ito. Mas prayoridad kaysa sa Mga Kasamang Taon."
 
-#: includes/Shortcode/FieldRegistry.php:155
+#: includes/Shortcode/FieldRegistry.php:173
 msgid "End Date"
 msgstr "Petsa ng pagtatapos"
 
-#: includes/Shortcode/FieldRegistry.php:157
+#: includes/Shortcode/FieldRegistry.php:175
 msgid "Only show meetings on or before this date. Takes priority over Included Years."
 msgstr "Ipakita lamang ang mga pagpupulong sa o bago ang petsang ito. Mas prayoridad kaysa sa Mga Kasamang Taon."
 
-#: includes/Shortcode/FieldRegistry.php:166
+#: includes/Shortcode/FieldRegistry.php:184
 msgid "Posts Per Page"
 msgstr "Mga post bawat pahina"
 
-#: includes/Shortcode/FieldRegistry.php:174
+#: includes/Shortcode/FieldRegistry.php:192
 msgid "Held Date Format"
 msgstr "Format ng petsa kung naganap"
 
-#: includes/Shortcode/FieldRegistry.php:178
+#: includes/Shortcode/FieldRegistry.php:196
 msgid "PHP date() format. See php.net/manual/en/datetime.format.php for the full reference."
 msgstr "PHP date() format. Tingnan ang php.net/manual/en/datetime.format.php para sa buong reference."
 
-#: includes/Shortcode/FieldRegistry.php:189
+#: includes/Shortcode/FieldRegistry.php:207
 msgid "Not Held Date Format"
 msgstr "Format ng petsa kung hindi naganap"
 
-#: includes/Shortcode/FieldRegistry.php:201
+#: includes/Shortcode/FieldRegistry.php:219
+msgid "Time Format"
+msgstr "Format ng oras"
+
+#: includes/Shortcode/FieldRegistry.php:224
+msgid "PHP date() format for the time shown under a meeting's date, when it has one. Only the time characters a, A, g, G, h, H, i and s are used."
+msgstr "Format ng PHP date() para sa oras na ipinapakita sa ilalim ng petsa ng pulong, kapag mayroon ito. Ang mga character lang ng oras na a, A, g, G, h, H, i at s ang ginagamit."
+
+#: includes/Shortcode/FieldRegistry.php:235
 msgid "Display Template"
 msgstr "Template ng display"
 
-#: includes/Shortcode/FieldRegistry.php:209
+#: includes/Shortcode/FieldRegistry.php:243
 msgid "Table (default)"
 msgstr "Table (default)"
 
-#: includes/Shortcode/FieldRegistry.php:216
+#: includes/Shortcode/FieldRegistry.php:248
+msgid "One table row per meeting, with the columns you choose below."
+msgstr "Isang row ng talahanayan bawat pulong, kasama ang mga column na pipiliin mo sa ibaba."
+
+#: includes/Shortcode/FieldRegistry.php:255
 msgid "Force all columns to the same width"
 msgstr "I-force ang lahat ng column sa parehong lapad"
 
-#: includes/Shortcode/FieldRegistry.php:218
+#: includes/Shortcode/FieldRegistry.php:257
 msgid "Helps align columns consistently for vertical rhythm across rows."
 msgstr "Tumutulong na i-align ang mga column nang may consistent na agwat sa lahat ng row."
 
-#: includes/Shortcode/FieldRegistry.php:224
+#: includes/Shortcode/FieldRegistry.php:263
 msgid "Custom CSS Class"
 msgstr "Custom CSS class"
 
-#: includes/Shortcode/FieldRegistry.php:262
+#: includes/Shortcode/FieldRegistry.php:301
 msgid "Agenda Link Label"
 msgstr "Label ng link ng adyenda"
 
-#: includes/Shortcode/FieldRegistry.php:270
+#: includes/Shortcode/FieldRegistry.php:309
 msgid "Minutes Link Label"
 msgstr "Label ng link ng katitikan"
 
-#: partials/block-editor-preview.php:55
-msgid "No published meetings found."
-msgstr "Walang nahanap na mga na-publish na pagpupulong."
+#: includes/Shortcode/FieldRegistry.php:317
+msgid "Open Agenda/Minutes Links in a New Window"
+msgstr "Buksan ang mga link ng agenda/minutes sa bagong window"
 
-#. translators: 1: number imported, 2: number skipped
+#: includes/Shortcode/FieldRegistry.php:319
+msgid "Agenda and minutes links open in a new browser tab. A screen-reader hint and rel=\"noopener noreferrer\" are added automatically."
+msgstr "Bubukas sa bagong tab ng browser ang mga link ng agenda at minutes. Awtomatikong idinaragdag ang pahiwatig para sa screen-reader at rel=\"noopener noreferrer\"."
+
+#: includes/Shortcode/FieldRegistry.php:340
+msgid "Time (shown under the date)"
+msgstr "Oras (ipinapakita sa ilalim ng petsa)"
+
+#: includes/Shortcode/FieldRegistry.php:342
+msgid "The time is part of the Date column, so hiding the Date column hides it too. Link labels still include the time so same-day meetings can be told apart."
+msgstr "Bahagi ng column ng Petsa ang oras, kaya itatago rin ito kapag itinago ang column ng Petsa. Kasama pa rin sa mga label ng link ang oras upang mapagbukod ang mga pulong sa parehong araw."
+
+#: includes/Shortcode/MeetingDateScope.php:69
+msgid "Date scope"
+msgstr "Saklaw ng petsa"
+
+#: includes/Shortcode/MeetingDateScope.php:70
+msgid "All meetings is the full archive. Upcoming shows only meetings from today onward; Past shows only meetings already held."
+msgstr "Ang Lahat ng pulong ay ang buong archive. Ang Paparating ay nagpapakita lamang ng mga pulong mula ngayon pasulong; ang Nakalipas ay nagpapakita lamang ng mga pulong na naisagawa na."
+
+#: includes/Shortcode/MeetingDateScope.php:73
+msgid "All meetings"
+msgstr "Lahat ng pulong"
+
+#: includes/Shortcode/MeetingDateScope.php:74
+msgid "Upcoming meetings"
+msgstr "Mga paparating na pulong"
+
+#: includes/Shortcode/MeetingDateScope.php:75
+msgid "Past meetings"
+msgstr "Mga nakalipas na pulong"
+
+#: includes/Shortcode/MeetingSort.php:71
+msgid "Sort order"
+msgstr "Pagkakasunod-sunod ng pag-uuri"
+
+#: includes/Shortcode/MeetingSort.php:72
+msgid "Newest first is the default and suits an archive of past minutes. Choose Oldest first for a forward-looking list such as upcoming meetings."
+msgstr "Pinakabago muna ang default at angkop sa archive ng mga nakalipas na minutes. Piliin ang Pinakaluma muna para sa pasulong na listahan gaya ng mga paparating na pulong."
+
+#: includes/Shortcode/MeetingSort.php:75
+msgid "Newest first"
+msgstr "Pinakabago muna"
+
+#: includes/Shortcode/MeetingSort.php:76
+msgid "Oldest first"
+msgstr "Pinakaluma muna"
+
 #: partials/csv-import-page.php:23
-#, php-format
-msgid "Import complete. %1$d rows imported, %2$d skipped."
-msgstr "Tapos na ang pag-import. %1$d na row ang na-import, %2$d ang nilaktawan."
+msgid "Upload a CSV file to bulk-import meetings."
+msgstr "Mag-upload ng CSV file para sa bulk-import ng mga pulong."
 
-#: partials/csv-import-page.php:37
-msgid "No file was uploaded. Please choose a CSV file and try again."
-msgstr "Walang file na na-upload. Pakisuyong pumili ng CSV file at subukang muli."
-
-#: partials/csv-import-page.php:38
-msgid "Invalid file type. Please upload a .csv file."
-msgstr "Invalid na uri ng file. Pakisuyong mag-upload ng .csv file."
-
-#: partials/csv-import-page.php:41
-msgid "An unknown error occurred."
-msgstr "May naganap na hindi kilalang error."
-
-#: partials/csv-import-page.php:48
-msgid "Upload a CSV file to bulk-import meetings. The first row must be a header row."
-msgstr "Mag-upload ng CSV file para sa bulk-import ng mga pagpupulong. Ang unang row ay dapat na header row."
-
-#: partials/csv-import-page.php:50
+#: partials/csv-import-page.php:25
 msgid "CSV Format"
 msgstr "Format ng CSV"
 
-#: partials/csv-import-page.php:54
+#: partials/csv-import-page.php:29
 msgid "Column"
 msgstr "Column"
 
-#: partials/csv-import-page.php:55
+#: partials/csv-import-page.php:30
 msgid "Required"
 msgstr "Kinakailangan"
 
-#: partials/csv-import-page.php:56
+#: partials/csv-import-page.php:31
 msgid "Notes"
 msgstr "Mga tala"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "Yes"
 msgstr "Oo"
 
-#: partials/csv-import-page.php:63
+#: partials/csv-import-page.php:38
 msgid "No"
 msgstr "Hindi"
 
-#: partials/csv-import-page.php:77
-msgid "CSV File"
+#: partials/csv-import-page.php:46
+msgid "Importing a file again"
+msgstr "Pag-import muli ng file"
+
+#: partials/csv-import-page.php:47
+msgid "A row with a start time is skipped as a duplicate when a saved meeting has the same title and date and either the same start time or no start time. A row without a start time is skipped when any saved meeting has the same title and date. Uploading the same file twice does not create copies."
+msgstr "Nilalaktawan bilang duplicate ang isang row na may oras ng simula kapag ang isang na-save na pulong ay may parehong pamagat at petsa at may parehong oras ng simula o walang oras ng simula. Nilalaktawan ang isang row na walang oras ng simula kapag may anumang na-save na pulong na may parehong pamagat at petsa. Ang pag-upload ng parehong file nang dalawang beses ay hindi lumilikha ng mga kopya."
+
+#: partials/csv-import-page.php:48
+msgid "The match uses what is saved on each meeting now, not what the file originally said. If you change a meeting's title or date after importing it, or change its start time to a different time when the row has one, the original row no longer matches and importing that file again creates a new meeting. To change existing meetings, edit them in WordPress instead of importing again."
+msgstr "Ginagamit sa pagtutugma ang kasalukuyang naka-save sa bawat pulong, hindi ang orihinal na nakasaad sa file. Kung papalitan mo ang pamagat o petsa ng pulong pagkatapos itong i-import, o babaguhin ang oras ng simula nito sa ibang oras kung kailan mayroon ang row, hindi na tutugma ang orihinal na row at lilikha ng bagong pulong ang muling pag-import ng file na iyon. Upang baguhin ang mga umiiral nang pulong, i-edit ang mga ito sa WordPress sa halip na mag-import muli."
+
+#: partials/csv-import-page.php:55
+msgid "Upload CSV"
+msgstr "I-upload ang CSV"
+
+#: partials/csv-import-page.php:56
+msgid "Choose a file using the columns above. The first row must be a header row, and each valid row after it creates one meeting."
+msgstr "Pumili ng file gamit ang mga column sa itaas. Ang unang row ay dapat na header row, at bawat wastong row kasunod nito ay lilikha ng isang pulong."
+
+#: partials/csv-import-page.php:59
+msgid "CSV file"
 msgstr "CSV file"
 
-#: partials/meta-box.php:23
-msgid "Meeting Date"
-msgstr "Petsa ng pagpupulong"
-
-#: partials/meta-box.php:34
-msgid "Required. Select the date the meeting was or will be held."
-msgstr "Kinakailangan. Piliin ang petsa kung kailan naganap o magaganap ang pagpupulong."
-
-#: partials/meta-box.php:39
-msgid "Agenda URL"
-msgstr "URL ng adyenda"
-
-#: partials/meta-box.php:54
-msgid "Choose Agenda File"
-msgstr "Pumili ng file ng adyenda"
-
-#: partials/meta-box.php:55
-#: partials/meta-box.php:90
-msgid "Use this file"
-msgstr "Gamitin ang file na ito"
-
-#: partials/meta-box.php:56
-#: partials/meta-box.php:91
-msgid "Media Library"
-msgstr "Media Library"
-
-#: partials/meta-box.php:74
-msgid "Minutes URL"
-msgstr "URL ng katitikan"
-
-#: partials/meta-box.php:89
-msgid "Choose Minutes File"
-msgstr "Pumili ng file ng katitikan"
-
-#: partials/meta-box.php:109
-msgid "Meeting Not Held"
-msgstr "Hindi naganap ang pagpupulong"
-
-#: partials/meta-box.php:120
-msgid "This meeting was not held"
-msgstr "Ang pagpupulong na ito ay hindi naganap"
+#: partials/csv-import-page.php:63
+msgid "Import Meetings"
+msgstr "I-import ang mga pagpupulong"
 
 #. translators: %s: plugin version number.
 #: partials/settings-page.php:27
@@ -550,6 +765,11 @@ msgstr "Ipakita lamang ang mga pagpupulong sa o bago ang petsang ito. Ino-overri
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
+msgid "No terms exist yet to filter by."
+msgstr "Wala pang mga term para mag-filter."
+
+#: assets/build/block/index.js:1
+#: assets/build/builder/index.js:1
 msgid "Display Settings"
 msgstr "Mga setting ng display"
 
@@ -560,13 +780,13 @@ msgstr "Mga label ng column"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Link Labels"
-msgstr "Mga label ng link"
+msgid "Links"
+msgstr "Mga link"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
-msgid "Hide Columns"
-msgstr "Itago ang mga column"
+msgid "Hide Data"
+msgstr "Itago ang data"
 
 #: assets/build/block/index.js:1
 #: assets/build/builder/index.js:1
@@ -584,6 +804,10 @@ msgstr "Inaalis ang limitasyon sa bawat pahina sa ibaba at kinukuha ang bawat pa
 #: assets/build/block/index.js:1
 msgid "Records Per Page"
 msgstr "Mga record bawat pahina"
+
+#: assets/build/block/index.js:1
+msgid "The preview couldn’t load. Check that the site’s REST API is reachable, then try again."
+msgstr "Hindi ma-load ang preview. Tiyaking naaabot ang REST API ng site, pagkatapos ay subukan muli."
 
 #: assets/build/builder/index.js:1
 msgid "Preview"
@@ -612,6 +836,263 @@ msgstr "Na-copy na ang shortcode sa clipboard."
 #: assets/build/builder/index.js:1
 msgid "Copying failed. Select the shortcode text and copy it manually."
 msgstr "Nabigo ang pag-copy. Piliin ang text ng shortcode at i-copy ito nang manu-mano."
+
+#: assets/build/metabox/index.js:1
+msgid "Select a File"
+msgstr "Pumili ng file"
+
+#: assets/build/metabox/index.js:1
+msgid "Use this file"
+msgstr "Gamitin ang file na ito"
+
+#: assets/build/metabox/index.js:1
+msgid "That file type can't be used for this field. Choose a different file."
+msgstr "Hindi magagamit ang uri ng file na iyon para sa field na ito. Pumili ng ibang file."
+
+#. translators: %s: the link's accessible name, e.g. "View Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s (opens in a new tab)"
+msgstr "%s (bubukas sa bagong tab)"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library video"
+msgstr "Video sa Media Library"
+
+#: assets/build/metabox/index.js:3
+msgid "Media Library"
+msgstr "Media Library"
+
+#: assets/build/metabox/index.js:3
+msgid "External URL"
+msgstr "External na URL"
+
+#: assets/build/metabox/index.js:3
+msgid "The current resource stays unchanged until you confirm."
+msgstr "Mananatiling hindi nababago ang kasalukuyang resource hanggang sa ikaw ay magkumpirma."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter a complete URL, starting with http:// or https://."
+msgstr "Maglagay ng kumpletong URL, simula sa http:// o https://."
+
+#: assets/build/metabox/index.js:3
+msgid "Save URL"
+msgstr "I-save ang URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Select from Media Library"
+msgstr "Pumili mula sa media library"
+
+#: assets/build/metabox/index.js:3
+msgid "Open WordPress's native file picker to choose or upload a file."
+msgstr "Buksan ang native na file picker ng WordPress upang pumili o mag-upload ng file."
+
+#: assets/build/metabox/index.js:3
+msgid "Enter an external URL"
+msgstr "Maglagay ng external na URL"
+
+#: assets/build/metabox/index.js:3
+msgid "Link to a file or webpage hosted elsewhere."
+msgstr "I-link sa isang file o webpage na naka-host sa ibang lugar."
+
+#: assets/build/metabox/index.js:3
+msgid "← Back"
+msgstr "← Bumalik"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Replace %s"
+msgstr "Palitan ang %s"
+
+#. translators: %s: field label, e.g. "Agenda".
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add %s"
+msgstr "Idagdag ang %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s up"
+msgstr "Ilipat pataas ang %s"
+
+#. translators: %s: the row's title, e.g. "Board packet".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Move %s down"
+msgstr "Ilipat pababa ang %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Untitled document"
+msgstr "Dokumentong walang pamagat"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit title"
+msgstr "I-edit ang pamagat"
+
+#: assets/build/metabox/index.js:3
+msgid "Add title"
+msgstr "Magdagdag ng pamagat"
+
+#: assets/build/metabox/index.js:3
+msgid "Title saved."
+msgstr "Na-save ang pamagat."
+
+#: assets/build/metabox/index.js:3
+msgid "Title editing canceled."
+msgstr "Kinansela ang pag-edit ng pamagat."
+
+#: assets/build/metabox/index.js:3
+msgid "Document name"
+msgstr "Pangalan ng dokumento"
+
+#: assets/build/metabox/index.js:3
+msgid "Save"
+msgstr "I-save"
+
+#: assets/build/metabox/index.js:3
+msgid "Cancel"
+msgstr "Kanselahin"
+
+#. translators: 1: row title or item noun, 2: new 1-based position, 3: total row count.
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "Nailipat ang %1$s sa posisyong %2$d ng %3$d."
+
+#: assets/build/metabox/index.js:3
+msgid "Document"
+msgstr "Dokumento"
+
+#. translators: %s: item noun, e.g. "documents".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s added."
+msgstr "Walang naidagdag na %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Sets how this document appears here - it does not rename the document itself."
+msgstr "Itinatakda kung paano lalabas ang dokumentong ito rito - hindi nito pinapalitan ang pangalan ng mismong dokumento."
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "View %s"
+msgstr "Tingnan ang %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Edit"
+msgstr "I-edit"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit %s"
+msgstr "I-edit ang %s"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Edit title of %s"
+msgstr "I-edit ang pamagat ng %s"
+
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title of %s"
+msgstr "Magdagdag ng pamagat ng %s"
+
+#: assets/build/metabox/index.js:3
+msgid "Replace"
+msgstr "Palitan"
+
+#: assets/build/metabox/index.js:3
+msgid "Remove"
+msgstr "Alisin"
+
+#. translators: %s: the row's title + filename, e.g. "Board packet, packet.pdf".
+#. translators: %s: the row's title + filename, e.g. "English, en.srt".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Remove %s"
+msgstr "Alisin ang %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s removed."
+msgstr "Naalis ang %s."
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "+ Add %s"
+msgstr "+ Idagdag ang %s"
+
+#. translators: %s: item noun, e.g. "Document".
+#. translators: %s: item noun, e.g. "Caption Track".
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s added."
+msgstr "Naidagdag ang %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Item"
+msgstr "Item"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Untitled %s"
+msgstr "Walang pamagat na %s"
+
+#. translators: %s: the item noun + filename, e.g. "Caption Track, en.srt".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Add title for %s"
+msgstr "Magdagdag ng pamagat para sa %s"
+
+#. translators: %s: item noun, e.g. "Caption Track".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "Select a %s File"
+msgstr "Pumili ng %s na file"
+
+#. translators: %s: field label, e.g. "minutes".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "No %s attached."
+msgstr "Walang kalakip na %s."
+
+#. translators: %s: field label, e.g. "Agenda".
+#: assets/build/metabox/index.js:3
+#, js-format
+msgid "%s replaced."
+msgstr "Napalitan ang %s."
+
+#: assets/build/metabox/index.js:3
+msgid "Start"
+msgstr "Simula"
+
+#: assets/build/metabox/index.js:3
+msgid "End"
+msgstr "Katapusan"
+
+#: assets/build/metabox/index.js:3
+msgid "The end time is earlier than the start time, so this meeting ends the next day."
+msgstr "Mas maaga ang oras ng katapusan kaysa sa oras ng simula, kaya matatapos ang pulong na ito kinabukasan."
 
 #: block.json
 msgctxt "block title"

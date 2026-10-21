@@ -45,6 +45,12 @@ class MetaBoxSaveMetaTest extends TestCase {
 
 		$_POST = [
 			'edbs_meeting_meta_nonce' => wp_create_nonce( 'edbs_save_meeting_meta' ),
+			// MetaBoxApp renders this itself alongside every field's own
+			// input - present here so every other test in this file
+			// exercises the same baseline a real, successfully-rendered
+			// save would have. See test_meta_box_not_rendered_saves_nothing()
+			// for the guard this covers.
+			'edbs_meta_box_rendered'  => '1',
 		];
 	}
 
@@ -186,6 +192,177 @@ class MetaBoxSaveMetaTest extends TestCase {
 	}
 
 	/**
+	 * A save whose $_POST is missing edbs_meta_box_rendered (the React
+	 * app failed to commit - a throwing custom control, a missing/stale
+	 * build, or a WP version lacking a component the bundle needs) saves
+	 * nothing at all, rather than treating every field as blank. Verified
+	 * against the exact real-world symptom (PRO-1394): a meeting already
+	 * marked "not held" must NOT have that checkbox silently cleared just
+	 * because the box that would have re-submitted it never rendered.
+	 */
+	public function test_meta_box_not_rendered_saves_nothing(): void {
+		update_post_meta( $this->post_id, 'edbs_meeting_not_held', '1' );
+
+		unset( $_POST['edbs_meta_box_rendered'] );
+		// No edbs_meeting_not_held in $_POST either - exactly what an
+		// empty-rendered box would submit.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '1', get_post_meta( $this->post_id, 'edbs_meeting_not_held', true ) );
+	}
+
+	/**
+	 * The guard also suppresses maybe_set_default_title() - it's called
+	 * after the per-field save loop and the edbs_save_meeting_meta
+	 * action, both skipped by the same early return, but title
+	 * generation is its own code path and worth locking in directly
+	 * rather than relying on that ordering alone.
+	 */
+	public function test_meta_box_not_rendered_does_not_generate_default_title(): void {
+		unset( $_POST['edbs_meta_box_rendered'] );
+
+		$post_id = self::factory()->post->create(
+			[
+				'post_type'  => 'edbs_meeting',
+				'post_title' => '',
+			]
+		);
+
+		$this->meta_box->save_meta( $post_id );
+
+		$this->assertSame( '', get_post_field( 'post_title', $post_id ) );
+	}
+
+	/**
+	 * The render-marker guard does NOT apply when the native meta box UI
+	 * is suppressed entirely (edbs_use_native_meta_boxes => false,
+	 * documented as the extension point for a full custom replacement UI)
+	 * - add_meta_box() never registers this box in that case, so a
+	 * replacement that still reuses this save path (submitting the same
+	 * edbs_meeting_meta_nonce) was never expected to render this marker,
+	 * and shouldn't be treated as a failed native render.
+	 */
+	public function test_meta_box_not_rendered_saves_normally_when_native_ui_is_disabled(): void {
+		$callback = static fn() => false;
+		add_filter( 'edbs_use_native_meta_boxes', $callback );
+
+		unset( $_POST['edbs_meta_box_rendered'] );
+		$_POST['edbs_meeting_date'] = '2024-03-15';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_use_native_meta_boxes', $callback );
+
+		$this->assertSame( '2024-03-15', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
+	}
+
+	/**
+	 * The action does not fire when edbs_meta_box_rendered is missing,
+	 * since the method returns early before reaching it - protects a
+	 * plugin's own save handler for its own React-rendered fields (e.g.
+	 * Pro's Supporting Documents repeater) the same way.
+	 */
+	public function test_save_meeting_meta_action_does_not_fire_when_meta_box_not_rendered(): void {
+		unset( $_POST['edbs_meta_box_rendered'] );
+
+		$fired    = false;
+		$callback = static function () use ( &$fired ): void {
+			$fired = true;
+		};
+		add_action( 'edbs_save_meeting_meta', $callback );
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_action( 'edbs_save_meeting_meta', $callback );
+
+		$this->assertFalse( $fired );
+	}
+
+	/**
+	 * A 'textarea' field preserves line breaks - sanitize_textarea_field()
+	 * rather than sanitize_text_field(), which would flatten a multi-line
+	 * value to one line (PRO-1394).
+	 */
+	public function test_textarea_field_preserves_line_breaks(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'   => 'test_textarea',
+				'type'  => 'textarea',
+				'label' => 'Test Textarea',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$input                        = "Line one\nLine two\nLine three";
+		$_POST['test_textarea'] = $input;
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( $input, get_post_meta( $this->post_id, 'test_textarea', true ) );
+	}
+
+	/**
+	 * A 'textarea' field's own sanitize_callback receives the
+	 * textarea-sanitized value (line breaks intact), not the already
+	 * text-flattened one (PRO-1394).
+	 */
+	public function test_textarea_field_sanitize_callback_receives_unflattened_value(): void {
+		$received = null;
+		$callback = static function ( array $fields ) use ( &$received ): array {
+			$fields[] = [
+				'key'               => 'test_textarea_callback',
+				'type'              => 'textarea',
+				'label'             => 'Test Textarea Callback',
+				'sanitize_callback' => static function ( $value ) use ( &$received ) {
+					$received = $value;
+					return $value;
+				},
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$input                                   = "Line one\nLine two";
+		$_POST['test_textarea_callback'] = $input;
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( $input, $received );
+	}
+
+	/**
+	 * A field marked saved_externally is skipped by save_field() entirely —
+	 * the plugin owning it is expected to save it itself, typically on the
+	 * edbs_save_meeting_meta action that fires right after.
+	 */
+	public function test_saved_externally_field_is_not_auto_saved(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'              => 'pro_repeater',
+				'type'             => 'html',
+				'label'            => 'Pro Repeater',
+				'saved_externally' => true,
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_repeater'] = 'should-not-be-saved-by-the-generic-loop';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_repeater', true ) );
+	}
+
+	/**
 	 * The edbs_save_meeting_meta action fires after a successful save,
 	 * so Pro plugin can save its own additional meta in the same request.
 	 */
@@ -221,5 +398,314 @@ class MetaBoxSaveMetaTest extends TestCase {
 		remove_action( 'edbs_save_meeting_meta', $callback );
 
 		$this->assertFalse( $fired );
+	}
+
+	/**
+	 * A 'resource' field's `{key}_source` sibling meta is saved verbatim
+	 * (through sanitize_key(), not the field's own esc_url_raw() path) so
+	 * a plugin-registered source id round-trips - see
+	 * MetaBox::save_resource_source()'s docblock.
+	 */
+	public function test_resource_field_source_is_saved(): void {
+		$_POST['edbs_agenda_url']        = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_source'] = 'media_library';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( 'media_library', get_post_meta( $this->post_id, 'edbs_agenda_url_source', true ) );
+	}
+
+	/**
+	 * The `{key}_source` sibling meta is sanitized with sanitize_key()
+	 * rather than left as raw input.
+	 */
+	public function test_resource_field_source_is_sanitized(): void {
+		$_POST['edbs_agenda_url']        = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_source'] = 'Media Library<script>!';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame(
+			sanitize_key( 'Media Library<script>!' ),
+			get_post_meta( $this->post_id, 'edbs_agenda_url_source', true )
+		);
+	}
+
+	/**
+	 * When `{key}_source` isn't present in $_POST at all (e.g. a legacy
+	 * client that doesn't send it), no sibling meta is written.
+	 */
+	public function test_resource_field_source_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_source.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_source', true ) );
+	}
+
+	/**
+	 * A 'resource' field's `{key}_edit_url` sibling meta is run through
+	 * esc_url_raw() before saving, same as the field's own url value -
+	 * see MetaBox::save_resource_edit_url()'s docblock.
+	 */
+	public function test_resource_field_edit_url_is_sanitized(): void {
+		$input                             = 'https://example.com/wp-admin/post.php?post=42&action=edit"><script>alert(1)</script>';
+		$_POST['edbs_agenda_url']          = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_edit_url'] = $input;
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame(
+			esc_url_raw( $input ),
+			get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true )
+		);
+	}
+
+	/**
+	 * When `{key}_edit_url` isn't present in $_POST (the field's source
+	 * has no underlying editable post, e.g. Media Library/External URL),
+	 * no sibling meta is written.
+	 */
+	public function test_resource_field_edit_url_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_edit_url.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true ) );
+	}
+
+	/**
+	 * A 'url'/'resource' field submitted as an array (a URL field name
+	 * edited to "{$key}[]") is silently skipped rather than fataling -
+	 * esc_url_raw() calls ltrim() internally, which is a TypeError in
+	 * PHP 8+ given an array.
+	 */
+	public function test_url_field_submitted_as_array_does_not_fatal(): void {
+		$_POST['edbs_agenda_url'] = [ 'https://example.com/agenda.pdf' ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url', true ) );
+	}
+
+	/**
+	 * The `{key}_edit_url` sibling meta gets the same array-input guard as
+	 * the field's own url value.
+	 */
+	public function test_resource_field_edit_url_submitted_as_array_does_not_fatal(): void {
+		$_POST['edbs_agenda_url']          = 'https://example.com/agenda.pdf';
+		$_POST['edbs_agenda_url_edit_url'] = [ 'https://example.com/wp-admin/post.php?post=42&action=edit' ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_edit_url', true ) );
+	}
+
+	/**
+	 * A 'resource' field's `{key}_document_id` sibling meta is saved
+	 * verbatim (through absint()) - see
+	 * MetaBox::save_resource_document_id()'s docblock.
+	 */
+	public function test_resource_field_document_id_is_saved(): void {
+		$_POST['edbs_agenda_url']             = 'https://example.com/board-documents/agenda-2026-03/';
+		$_POST['edbs_agenda_url_document_id'] = '42';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '42', get_post_meta( $this->post_id, 'edbs_agenda_url_document_id', true ) );
+	}
+
+	/**
+	 * When `{key}_document_id` isn't present in $_POST (the field's
+	 * source has no underlying linked post, e.g. Media Library/External
+	 * URL), no sibling meta is written.
+	 */
+	public function test_resource_field_document_id_not_saved_when_absent(): void {
+		$_POST['edbs_agenda_url'] = 'https://example.com/agenda.pdf';
+		// Deliberately not setting edbs_agenda_url_document_id.
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'edbs_agenda_url_document_id', true ) );
+	}
+
+	/**
+	 * A 'resource_list' field that a plugin forgot to mark
+	 * saved_externally is not saved by the generic loop (its $_POST value
+	 * is a repeater array, not a plain scalar) - it triggers a
+	 * _doing_it_wrong() notice rather than falling through to
+	 * sanitize_text_field() on an array.
+	 */
+	public function test_misconfigured_resource_list_field_is_not_auto_saved(): void {
+		$this->setExpectedIncorrectUsage( 'EqualizeDigital\BoardScribe\Admin\MetaBox::save_field' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'   => 'pro_documents',
+				'type'  => 'resource_list',
+				'label' => 'Pro Documents',
+				// Deliberately missing saved_externally => true.
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_documents'] = [
+			[
+				'label' => 'Budget',
+				'url'   => 'https://example.com/budget.pdf',
+			],
+		];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_documents', true ) );
+	}
+
+	/**
+	 * An 'attached' field that a plugin forgot to mark saved_externally
+	 * is not auto-saved either, regardless of its own $type - the
+	 * attached mechanism itself is always externally saved.
+	 */
+	public function test_misconfigured_attached_field_is_not_auto_saved(): void {
+		$this->setExpectedIncorrectUsage( 'EqualizeDigital\BoardScribe\Admin\MetaBox::save_field' );
+
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'      => 'pro_attached_list',
+				'type'     => 'text',
+				'label'    => 'Pro Attached List',
+				'attached' => true,
+				// Deliberately missing saved_externally => true.
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['pro_attached_list'] = [ [ 'label' => 'English', 'url' => 'https://example.com/en.vtt' ] ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '', get_post_meta( $this->post_id, 'pro_attached_list', true ) );
+	}
+	/**
+	 * A submitted start and end time are saved, normalized to HH:MM.
+	 */
+	public function test_meeting_time_is_saved_normalized(): void {
+		$_POST['edbs_meeting_start_time'] = '17:00';
+		$_POST['edbs_meeting_end_time']   = '19:30:15';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '17:00', get_post_meta( $this->post_id, 'edbs_meeting_start_time', true ) );
+		$this->assertSame( '19:30', get_post_meta( $this->post_id, 'edbs_meeting_end_time', true ) );
+	}
+
+	/**
+	 * Clearing the inputs removes the meta instead of storing an empty row.
+	 */
+	public function test_clearing_meeting_time_deletes_the_meta(): void {
+		update_post_meta( $this->post_id, 'edbs_meeting_start_time', '17:00' );
+		update_post_meta( $this->post_id, 'edbs_meeting_end_time', '19:00' );
+
+		$_POST['edbs_meeting_start_time'] = '';
+		$_POST['edbs_meeting_end_time']   = '';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertFalse( metadata_exists( 'post', $this->post_id, 'edbs_meeting_start_time' ) );
+		$this->assertFalse( metadata_exists( 'post', $this->post_id, 'edbs_meeting_end_time' ) );
+	}
+
+	/**
+	 * A time_range field a plugin registers saves under its own start and end
+	 * keys, not the meeting's.
+	 */
+	public function test_a_registered_time_range_field_saves_under_its_own_keys(): void {
+		$callback = static function ( array $fields ): array {
+			$fields[] = [
+				'key'     => 'edbs_pro_stream_start',
+				'type'    => 'time_range',
+				'end_key' => 'edbs_pro_stream_end',
+				'label'   => 'Stream Time',
+			];
+			return $fields;
+		};
+		add_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$_POST['edbs_pro_stream_start'] = '18:00';
+		$_POST['edbs_pro_stream_end']   = '19:15';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		remove_filter( 'edbs_meeting_meta_fields', $callback );
+
+		$this->assertSame( '18:00', get_post_meta( $this->post_id, 'edbs_pro_stream_start', true ) );
+		$this->assertSame( '19:15', get_post_meta( $this->post_id, 'edbs_pro_stream_end', true ) );
+	}
+
+	/**
+	 * An array posted as a time input is ignored; it does not clear the stored time.
+	 */
+	public function test_array_valued_time_input_leaves_the_stored_time_alone(): void {
+		update_post_meta( $this->post_id, 'edbs_meeting_start_time', '17:00' );
+
+		$_POST['edbs_meeting_start_time'] = [ '18:00' ];
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( '17:00', get_post_meta( $this->post_id, 'edbs_meeting_start_time', true ) );
+	}
+
+	/**
+	 * A junk time is not stored and does not leave an empty row, and the
+	 * rest of the save still goes through.
+	 */
+	public function test_invalid_meeting_time_stores_nothing_and_does_not_block_the_save(): void {
+		$_POST['edbs_meeting_date']       = '2024-03-15';
+		$_POST['edbs_meeting_start_time'] = 'noon';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertFalse( metadata_exists( 'post', $this->post_id, 'edbs_meeting_start_time' ) );
+		$this->assertSame( '2024-03-15', get_post_meta( $this->post_id, 'edbs_meeting_date', true ) );
+	}
+
+	/**
+	 * Saving a meeting without the time inputs leaves existing times alone
+	 * and does not create rows for a meeting that never had one.
+	 */
+	public function test_save_without_time_inputs_changes_nothing(): void {
+		$untimed = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		$timed   = self::factory()->post->create( [ 'post_type' => 'edbs_meeting' ] );
+		update_post_meta( $timed, 'edbs_meeting_start_time', '09:00' );
+
+		$_POST['edbs_meeting_date'] = '2024-03-15';
+
+		$this->meta_box->save_meta( $untimed );
+		$this->meta_box->save_meta( $timed );
+
+		$this->assertFalse( metadata_exists( 'post', $untimed, 'edbs_meeting_start_time' ) );
+		$this->assertFalse( metadata_exists( 'post', $untimed, 'edbs_meeting_end_time' ) );
+		$this->assertSame( '09:00', get_post_meta( $timed, 'edbs_meeting_start_time', true ) );
+	}
+
+	/**
+	 * Re-saving an untimed meeting with the inputs posted empty (what the
+	 * Meeting Time row always does) leaves it with no time rows at all.
+	 */
+	public function test_resaving_an_untimed_meeting_creates_no_time_rows(): void {
+		$_POST['edbs_meeting_start_time'] = '';
+		$_POST['edbs_meeting_end_time']   = '';
+
+		$this->meta_box->save_meta( $this->post_id );
+
+		$this->assertSame( [], array_intersect( [ 'edbs_meeting_start_time', 'edbs_meeting_end_time' ], array_keys( get_post_meta( $this->post_id ) ) ) );
 	}
 }

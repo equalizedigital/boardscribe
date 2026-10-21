@@ -4,7 +4,7 @@
  * entry/output paths (the wp-scripts defaults of src/index.js → build/
  * clash with src/ holding the PHP classes).
  *
- * Three bundles are built:
+ * Four bundles are built:
  * - the frontend bundle (assets/build/boardscribe.js), enqueued by hand
  *   in BoardScribeShortcode.php with no *.asset.php — its externals
  *   are declared manually below;
@@ -15,7 +15,10 @@
  * - the shortcode builder bundle (assets/build/builder/index.js), the
  *   React app on the admin Shortcode Builder page, enqueued by
  *   SettingsPage.php. It also keeps DependencyExtractionWebpackPlugin
- *   and its generated index.asset.php.
+ *   and its generated index.asset.php;
+ * - the meta box bundle (assets/build/metabox/index.js), the React app
+ *   replacing the Meeting Details meta box's PHP-rendered fields,
+ *   enqueued by MetaBox.php. Also keeps DependencyExtractionWebpackPlugin.
  */
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const path = require( 'path' );
@@ -28,10 +31,11 @@ const frontendConfig = {
 	output: {
 		...defaultConfig.output,
 		path: path.resolve( __dirname, 'assets/build' ),
-		// The block/builder bundles below emit into subdirectories of this
-		// output path; without the keep rule, this config's clean step
-		// deletes them (the compilers run in parallel within one webpack run).
-		clean: { keep: /^(block|builder)\// },
+		// The block/builder/metabox bundles below emit into subdirectories
+		// of this output path; without the keep rule, this config's clean
+		// step deletes them (the compilers run in parallel within one
+		// webpack run).
+		clean: { keep: /^(block|builder|metabox)\// },
 	},
 	// Drop DependencyExtractionWebpackPlugin so no *.asset.php is emitted;
 	// the externals it would have provided are declared by hand below.
@@ -69,4 +73,15 @@ const builderConfig = {
 	},
 };
 
-module.exports = [ frontendConfig, blockConfig, builderConfig ];
+const metaboxConfig = {
+	...defaultConfig,
+	entry: {
+		index: path.resolve( __dirname, 'src/js/metabox/index.js' ),
+	},
+	output: {
+		...defaultConfig.output,
+		path: path.resolve( __dirname, 'assets/build/metabox' ),
+	},
+};
+
+module.exports = [ frontendConfig, blockConfig, builderConfig, metaboxConfig ];
