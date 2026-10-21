@@ -16,6 +16,8 @@ jobs:
   build-plugin:
     name: Build plugin zip
     runs-on: ubuntu-latest
+    outputs:
+      zip-name: ${{ steps.build.outputs.zip-name }}
     # Run on release, manual, or PR when the gha-build label is added
     if: |
       github.event_name == 'release' ||
@@ -138,6 +140,7 @@ jobs:
           ZIP_FOLDER="builds/$ZIP_BASENAME"
           unzip -q "builds/$ZIP_NAME" -d "$ZIP_FOLDER"
 
+          echo "zip-name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
           echo "ZIP_PATH=builds/$ZIP_NAME" >> $GITHUB_ENV
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
           echo "ZIP_NAME_NO_EXT=$ZIP_BASENAME" >> $GITHUB_ENV
@@ -226,3 +229,14 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "Uploaded to release: ${{ github.event.release.html_url }}"
           fi
+
+  # Called directly rather than through a workflow_run trigger, which never
+  # matched this workflow. needs: guarantees the release asset is uploaded first.
+  deploy-instawp:
+    name: Deploy to InstaWP
+    needs: build-plugin
+    if: github.event_name == 'release'
+    uses: ./.github/workflows/deploy-on-release-to-instawp.yml
+    with:
+      plugin_zip_url: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/${{ needs.build-plugin.outputs.zip-name }}
+    secrets: inherit
