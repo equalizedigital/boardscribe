@@ -470,7 +470,7 @@ class MetaBox {
 					esc_html__( 'The "%s" field is a resource_list or attached field and must set saved_externally => true.', 'boardscribe' ),
 					esc_html( $key )
 				),
-				'1.6.0'
+				'1.2.0'
 			);
 			return;
 		}
