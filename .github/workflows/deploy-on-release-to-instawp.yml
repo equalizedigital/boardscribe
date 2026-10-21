@@ -1,13 +1,16 @@
 name: Deploy to InstaWP
 
 on:
-  workflow_run:
-    workflows: ["Build BoardScribe Plugin + Playground Link"]
-    types: [completed]
+  workflow_call:
+    inputs:
+      plugin_zip_url:
+        description: 'Publicly fetchable URL to the plugin zip file to deploy.'
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       plugin_zip_path:
-        description: 'Path to the plugin zip file to deploy. Must be a zip file.'
+        description: 'Publicly fetchable URL to the plugin zip file to deploy. Must be a zip file.'
         required: true
         type: string
 
@@ -17,55 +20,11 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event_name == 'workflow_run' &&
-        github.event.workflow_run.conclusion == 'success' &&
-        github.event.workflow_run.event == 'release'
-      )
-
     steps:
-      - name: Get release asset
-        id: get_release_assets
-        if: github.event_name == 'workflow_run'
-        run: |
-          RELEASES_URL="https://api.github.com/repos/${{ github.repository }}/releases"
-          echo "Fetching releases from: $RELEASES_URL"
-
-          RELEASE=$(curl -s \
-            -H "Authorization: token ${{ github.token }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "$RELEASES_URL?per_page=5" | jq -c '[.[] | select(.draft == false)][0]')
-
-          if [[ -z "$RELEASE" || "$RELEASE" == "null" ]]; then
-            echo "No published release found."
-            exit 1
-          fi
-
-          RELEASE_TAG=$(echo "$RELEASE" | jq -r '.tag_name')
-          echo "Using release tag: $RELEASE_TAG"
-
-          ZIP_URL=$(echo "$RELEASE" | jq -r '.assets[]
-            | select(.name | test("^boardscribe-[0-9].*\\.zip$"))
-            | .browser_download_url' | head -n 1)
-
-          if [[ -z "$ZIP_URL" ]]; then
-            echo "No boardscribe zip file found in release assets."
-            exit 1
-          fi
-
-          echo "Found boardscribe zip file: $ZIP_URL"
-          echo "zip_url=$ZIP_URL" >> $GITHUB_OUTPUT
-
       - name: Download and validate plugin zip file
+        env:
+          ZIP_URL: ${{ inputs.plugin_zip_url || inputs.plugin_zip_path }}
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
-            ZIP_URL="${{ steps.get_release_assets.outputs.zip_url }}"
-          else
-            ZIP_URL="${{ github.event.inputs.plugin_zip_path }}"
-          fi
-
           echo "Using ZIP_URL: $ZIP_URL"
 
           ZIP_NAME=$(basename "$ZIP_URL")
@@ -85,6 +44,8 @@ jobs:
           fi
 
       - name: Deploy to InstaWP
+        env:
+          PLUGIN_URL: ${{ inputs.plugin_zip_url || inputs.plugin_zip_path }}
         run: |
           API_KEY=${{ secrets.INSTAWP_API_KEY }}
           SITE_ID_BOARDSCRIBE=${{ secrets.INSTAWP_SITE_ID_BOARDSCRIBE }}
@@ -95,12 +56,6 @@ jobs:
           if [[ -z "$API_KEY" || -z "$SITE_ID_BOARDSCRIBE" ]]; then
             echo "INSTAWP_API_KEY / INSTAWP_SITE_ID_BOARDSCRIBE not set yet - skipping InstaWP deploy."
             exit 0
-          fi
-
-          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
-            PLUGIN_URL="${{ steps.get_release_assets.outputs.zip_url }}"
-          else
-            PLUGIN_URL="${{ github.event.inputs.plugin_zip_path }}"
           fi
 
           echo "Deploying plugin from: $PLUGIN_URL"
