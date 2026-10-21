@@ -437,7 +437,7 @@ class MetaBox {
 	 * skipped entirely — the plugin that owns it saves it itself (see the
 	 * edbs_meeting_meta_fields filter's docblock in MetaBoxFieldRegistry).
 	 *
-	 * @since 1.6.0
+	 * @since 1.2.0
 	 *
 	 * @param int                  $post_id The post ID being saved.
 	 * @param array<string, mixed> $field   Field descriptor from MetaBoxFieldRegistry.
@@ -589,7 +589,7 @@ class MetaBox {
 	 * sanitize_key() rather than a hard enum so a plugin-registered source
 	 * id round-trips without free needing to know it exists.
 	 *
-	 * @since 1.6.0
+	 * @since 1.2.0
 	 *
 	 * @param int    $post_id The post ID being saved.
 	 * @param string $key     The 'resource' field's own meta key.
