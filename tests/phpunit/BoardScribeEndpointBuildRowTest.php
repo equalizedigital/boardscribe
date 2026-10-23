@@ -265,6 +265,25 @@ class BoardScribeEndpointBuildRowTest extends TestCase {
 	}
 
 	/**
+	 * A new-window link gets an aria-hidden arrow icon (the aria-label
+	 * already carries the accessible notice) and the edac-nww-no-icon
+	 * opt-out class so Accessibility Checker doesn't add a second icon.
+	 * A same-window link gets neither.
+	 */
+	public function test_new_window_link_has_hidden_icon_and_no_icon_marker(): void {
+		$new_window = BoardScribeEndpoint::build_link( 'https://example.com/a.pdf', 'View Agenda', 'March 15, 2024', true );
+		$same_window = BoardScribeEndpoint::build_link( 'https://example.com/a.pdf', 'View Agenda', 'March 15, 2024', false );
+
+		$this->assertStringContainsString( '<span class="edbs-new-window-icon" aria-hidden="true"> &#8599;</span>', $new_window );
+		$this->assertStringContainsString( 'edac-nww-no-icon', $new_window );
+		$this->assertStringContainsString( 'anww-no-icon', $new_window );
+
+		$this->assertStringNotContainsString( 'edbs-new-window-icon', $same_window );
+		$this->assertStringNotContainsString( 'no-icon', $same_window );
+		$this->assertStringNotContainsString( 'class=', $same_window );
+	}
+
+	/**
 	 * Calling build_meeting_row() with no $request (e.g. from a future
 	 * non-REST caller like a CSV export) does not throw.
 	 */
