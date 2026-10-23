@@ -274,12 +274,14 @@ class BoardScribeEndpointBuildRowTest extends TestCase {
 		$new_window = BoardScribeEndpoint::build_link( 'https://example.com/a.pdf', 'View Agenda', 'March 15, 2024', true );
 		$same_window = BoardScribeEndpoint::build_link( 'https://example.com/a.pdf', 'View Agenda', 'March 15, 2024', false );
 
-		$this->assertStringContainsString( '<span class="edbs-new-window-icon" aria-hidden="true"> &#8599;</span>', $new_window );
+		$this->assertStringContainsString( '<span class="edbs-new-window-icon" aria-hidden="true"> &#8599;&#xFE0E;</span>', $new_window );
 		$this->assertStringContainsString( 'edac-nww-no-icon', $new_window );
 		$this->assertStringContainsString( 'anww-no-icon', $new_window );
+		$this->assertStringContainsString( 'data-nww-processed="true"', $new_window );
 
 		$this->assertStringNotContainsString( 'edbs-new-window-icon', $same_window );
 		$this->assertStringNotContainsString( 'no-icon', $same_window );
+		$this->assertStringNotContainsString( 'data-nww-processed', $same_window );
 		$this->assertStringNotContainsString( 'class=', $same_window );
 	}
 

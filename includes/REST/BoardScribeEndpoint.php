@@ -431,8 +431,9 @@ class BoardScribeEndpoint {
 	 * before they activate it, per WCAG 3.2.2 / Technique H83 — accessibility-checker's
 	 * own link_blank rule flags target="_blank" without this warning. It also
 	 * appends an aria-hidden arrow icon as a visual cue, and adds the
-	 * edac-nww-no-icon opt-out class so Accessibility Checker's new window
-	 * warning fix doesn't add a second icon.
+	 * edac-nww-no-icon opt-out class and data-nww-processed flag so
+	 * Accessibility Checker's new window warning fix leaves the link alone
+	 * (no second icon, no duplicated aria-label wording, no tooltip).
 	 *
 	 * Public so Pro (or another plugin building its own row output, e.g. a
 	 * CSV/PDF export or iCal feed) can reuse the exact same link markup
@@ -476,11 +477,14 @@ class BoardScribeEndpoint {
 		// Checker's (and the older ANWW plugin's) documented opt-out: its
 		// new window warning fix checks link.closest() for them and skips
 		// adding a second icon to a link that already has one.
+		// data-nww-processed is that fix's own "already handled" flag: it makes
+		// the fix skip the link entirely, so it doesn't append ", opens a new
+		// window" to the aria-label we already worded, or add its tooltip.
 		return '<a href="' . esc_url( $url ) . '"'
 			. ' class="edbs-new-window-link edac-nww-no-icon anww-no-icon"'
-			. ' target="_blank" rel="noopener noreferrer"'
+			. ' target="_blank" rel="noopener noreferrer" data-nww-processed="true"'
 			. ' aria-label="' . esc_attr( $aria_label ) . '">' . esc_html( $label )
-			. '<span class="edbs-new-window-icon" aria-hidden="true"> &#8599;</span></a>';
+			. '<span class="edbs-new-window-icon" aria-hidden="true"> &#8599;&#xFE0E;</span></a>';
 	}
 
 	/**
