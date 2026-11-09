@@ -44,8 +44,9 @@ jobs:
         with:
           node-version: '20'
 
+      # package-lock.json is gitignored in this repo, so `npm ci` cannot be used.
       - name: Install npm dependencies
-        run: npm ci
+        run: npm install --ignore-scripts --prefer-offline --no-audit
 
       # Builds the same package that ships to WordPress.org (webpack build, no-dev
       # composer, scripts/dist.sh). Output: dist/boardscribe-<version>.zip
